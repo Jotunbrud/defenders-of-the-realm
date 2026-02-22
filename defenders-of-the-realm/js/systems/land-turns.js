@@ -216,9 +216,19 @@ Object.assign(game, {
         this.updateMovementButtons();
         
         // Check if Find Magic Gate quest should complete
-        this._checkFindMagicGateCompletion(hero);
+        const questCompleted = this._pendingFindMagicGateQuest;
+        if (questCompleted) {
+            this._checkFindMagicGateCompletion(hero);
+        }
         
-        // Show confirmation
+        // Show confirmation — include quest reward if applicable
+        const questBanner = questCompleted ? `
+            <div style="margin-top: 12px; padding: 10px; background: rgba(74,222,128,0.15); border: 2px solid #4ade80; border-radius: 8px;">
+                <div style="color: #4ade80; font-weight: bold; font-size: 1.1em;">📜 ✅ Quest Complete: Find Magic Gate!</div>
+                <div style="color: #a78bfa; font-size: 0.9em; margin-top: 6px;">🏆 Can be discarded for +2 dice in any combat!</div>
+            </div>
+        ` : '';
+        
         this.showInfoModal('💫 Magic Gate Built!', `
             <div style="text-align: center;">
                 <div style="font-size: 2em; margin: 10px 0;">🌀</div>
@@ -228,6 +238,7 @@ Object.assign(game, {
                 <div style="font-size: 0.9em; color: #999;">
                     Heroes can now travel to this location using Magic Gate cards.
                 </div>
+                ${questBanner}
             </div>
         `);
     },

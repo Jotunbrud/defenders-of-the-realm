@@ -1796,37 +1796,54 @@ Object.assign(game, {
                 hero.questCards.splice(i, 1);
                 this.questDiscardPile++;
                 
-                const progress = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
-                    const e = colorEmojis[data.color] || '⭕';
-                    return `<div style="color: #4ade80; margin: 4px 0;">${e} ${loc} ✅</div>`;
-                }).join('');
-                
-                const cardColorMap = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#1f2937' };
-                const drawnHTML = drawnCards.map(c => {
-                    const borderColor = c.special ? '#9333ea' : (cardColorMap[c.color] || '#666');
-                    return `<span style="color: ${borderColor}; font-weight: bold;">${c.icon || '🎴'} ${c.name}</span>`;
-                }).join(', ');
-                
-                this.showInfoModal('📜 Rumors Complete!', `
-                    <div style="text-align: center;">
-                        <div style="font-size: 2.5em; margin-bottom: 8px;">🍺</div>
-                        <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">All Rumors Gathered!</div>
-                        ${progress}
-                        <div style="color: #d4af37; font-weight: bold; margin-top: 10px;">Drew ${drawnCards.length} Hero Cards:</div>
-                        <div style="margin-top: 6px; font-size: 0.9em;">${drawnHTML || 'Deck empty!'}</div>
-                    </div>
-                `, () => {
-                    // Draw new quest
-                    const newQuest = this.drawQuestCard(heroIndex);
-                    if (newQuest) {
-                        this._drawAndShowNewQuest_display(heroIndex, newQuest);
-                    }
-                });
+                // Defer modal display — store data for showing after movement completes
+                this._pendingRumorsCompletion = {
+                    heroIndex,
+                    hero,
+                    quest,
+                    drawnCards,
+                    colorEmojis
+                };
                 
                 this.renderHeroes();
                 return;
             }
         }
+    },
+    
+    _showPendingRumorsCompletion() {
+        const data = this._pendingRumorsCompletion;
+        if (!data) return;
+        this._pendingRumorsCompletion = null;
+        
+        const { heroIndex, quest, drawnCards, colorEmojis } = data;
+        
+        const progress = Object.entries(quest.mechanic.locations).map(([loc, locData]) => {
+            const e = colorEmojis[locData.color] || '⭕';
+            return `<div style="color: #4ade80; margin: 4px 0;">${e} ${loc} ✅</div>`;
+        }).join('');
+        
+        const cardColorMap = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#1f2937' };
+        const drawnHTML = drawnCards.map(c => {
+            const borderColor = c.special ? '#9333ea' : (cardColorMap[c.color] || '#666');
+            return `<span style="color: ${borderColor}; font-weight: bold;">${c.icon || '🎴'} ${c.name}</span>`;
+        }).join(', ');
+        
+        this.showInfoModal('📜 Rumors Complete!', `
+            <div style="text-align: center;">
+                <div style="font-size: 2.5em; margin-bottom: 8px;">🍺</div>
+                <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">All Rumors Gathered!</div>
+                ${progress}
+                <div style="color: #d4af37; font-weight: bold; margin-top: 10px;">Drew ${drawnCards.length} Hero Cards:</div>
+                <div style="margin-top: 6px; font-size: 0.9em;">${drawnHTML || 'Deck empty!'}</div>
+            </div>
+        `, () => {
+            // Draw new quest
+            const newQuest = this.drawQuestCard(heroIndex);
+            if (newQuest) {
+                this._drawAndShowNewQuest_display(heroIndex, newQuest);
+            }
+        });
     },
     
     // ===== FIND MAGIC GATE: Hook after gate building =====
@@ -1841,19 +1858,7 @@ Object.assign(game, {
         
         quest.completed = true;
         this.addLog(`📜 ✅ ${hero.name} completed quest: Find Magic Gate!`);
-        
-        const heroIndex = this.currentPlayerIndex;
-        
-        this.showInfoModal('📜 Quest Complete!', `
-            <div style="text-align: center;">
-                <div style="font-size: 2.5em; margin-bottom: 8px;">💫</div>
-                <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Magic Gate Quest Complete!</div>
-                <div style="color: #d4af37; margin-bottom: 8px;">Built a Magic Gate at a Red location!</div>
-                <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
-                    🏆 Can be discarded for +2 dice in any combat!
-                </div>
-            </div>
-        `);
+        // NOTE: Modal shown by confirmBuildMagicGate in land-turns.js (combined with gate built modal)
     },
     
     // ===== UNICORN STEED: Horse movement action =====

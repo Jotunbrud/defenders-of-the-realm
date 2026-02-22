@@ -63,6 +63,11 @@ Object.assign(game, {
             this.updateMovementButtons();
             this.updateActionButtons();
             
+            // Show deferred Rumors quest completion modal
+            if (this._pendingRumorsCompletion) {
+                setTimeout(() => this._showPendingRumorsCompletion(), 300);
+            }
+            
             return true;
         }
         
@@ -107,6 +112,11 @@ Object.assign(game, {
             
             // Check for combat
             this.checkForCombatAtLocation(locationName);
+            
+            // Show deferred Rumors quest completion modal
+            if (this._pendingRumorsCompletion) {
+                setTimeout(() => this._showPendingRumorsCompletion(), 300);
+            }
             
             return true;
         }
@@ -598,6 +608,11 @@ Object.assign(game, {
         
         // Check for combat
         this.checkForCombatAtLocation(hero.location);
+        
+        // Show deferred Rumors quest completion modal (after movement fully resolved)
+        if (this._pendingRumorsCompletion) {
+            setTimeout(() => this._showPendingRumorsCompletion(), 300);
+        }
     },
     
     cancelMovement() {

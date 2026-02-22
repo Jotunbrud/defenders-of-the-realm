@@ -343,37 +343,40 @@ Object.assign(game, {
         // Reset combat bonus dice
         this._combatBonusDiceActive = false;
         
-        // Check for Find Magic Gate quest (combat bonus dice)
-        const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
-        if (bonusDiceQuest) {
-            const combatType = this.currentCombat.type === 'minions' ? 'minion' : 'general';
-            this._pendingCombatBonusDice = bonusDiceQuest;
-            
-            this.showInfoModal('💫 Find Magic Gate', `
-                <div style="text-align: center;">
-                    <div style="font-size: 2em; margin-bottom: 8px;">💫</div>
-                    <div style="color: #d4af37; margin-bottom: 12px;">
-                        Discard <strong>Find Magic Gate</strong> quest card to add <strong>+2 bonus dice</strong> to this ${combatType} combat?
+        if (this.currentCombat.type === 'minions') {
+            // Check for Find Magic Gate quest (combat bonus dice) — minion path
+            const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
+            if (bonusDiceQuest) {
+                this._pendingCombatBonusDice = bonusDiceQuest;
+                
+                this.showInfoModal('💫 Find Magic Gate', `
+                    <div style="text-align: center;">
+                        <div style="font-size: 2em; margin-bottom: 8px;">💫</div>
+                        <div style="color: #d4af37; margin-bottom: 12px;">
+                            Discard <strong>Find Magic Gate</strong> quest card to add <strong>+2 bonus dice</strong> to this minion combat?
+                        </div>
+                        <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">
+                            This quest card will be permanently discarded.
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game._useCombatBonusDice()">
+                                💫 Use (+2 Dice)
+                            </button>
+                            <button class="btn" style="flex: 1; background: #666;" onclick="game._skipCombatBonusDice()">
+                                Skip
+                            </button>
+                        </div>
                     </div>
-                    <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">
-                        This quest card will be permanently discarded.
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game._useCombatBonusDice()">
-                            💫 Use (+2 Dice)
-                        </button>
-                        <button class="btn" style="flex: 1; background: #666;" onclick="game._skipCombatBonusDice()">
-                            Skip
-                        </button>
-                    </div>
-                </div>
-            `);
-            const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-            if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
-            return;
+                `);
+                const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+                if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
+                return;
+            }
+            this.rollMinionCombat();
+        } else {
+            // General combat — bonus dice check handled inside rollGeneralCombat
+            this.rollGeneralCombat();
         }
-        
-        this._proceedWithCombatRoll();
     },
     
     _useCombatBonusDice() {
@@ -397,22 +400,43 @@ Object.assign(game, {
         this.updateDeckCounts();
         this.closeInfoModal();
         
-        this._proceedWithCombatRoll();
+        this.rollMinionCombat();
     },
     
     _skipCombatBonusDice() {
         this._pendingCombatBonusDice = null;
         this._combatBonusDiceActive = false;
         this.closeInfoModal();
-        this._proceedWithCombatRoll();
+        this.rollMinionCombat();
     },
     
-    _proceedWithCombatRoll() {
-        if (this.currentCombat.type === 'minions') {
-            this.rollMinionCombat();
-        } else {
-            this.rollGeneralCombat();
-        }
+    _useGeneralBonusDice() {
+        const hero = this.heroes[this.currentPlayerIndex];
+        const bonusDice = this._pendingCombatBonusDice;
+        if (!bonusDice) return;
+        
+        hero.questCards.splice(bonusDice.questIndex, 1);
+        this.questDiscardPile++;
+        this._combatBonusDiceActive = true;
+        this._pendingCombatBonusDice = null;
+        
+        this.addLog(`💫 ${hero.name} discards Find Magic Gate quest for +2 bonus combat dice!`);
+        
+        const heroIndex = this.currentPlayerIndex;
+        const newQuest = this.drawQuestCard(heroIndex);
+        
+        this.renderHeroes();
+        this.updateDeckCounts();
+        this.closeInfoModal();
+        
+        this.rollGeneralCombat();
+    },
+    
+    _skipGeneralBonusDice() {
+        this._pendingCombatBonusDice = null;
+        this._combatBonusDiceActive = false;
+        this.closeInfoModal();
+        this.rollGeneralCombat();
     },
     
     rollMinionCombat() {
@@ -1092,6 +1116,50 @@ Object.assign(game, {
                 this.selectedCardsForAttack = [];
                 return;
             }
+            
+            // Reset reroll flags if not already set by rollCombatDice
+            if (!this._generalBonusDiceChecked) {
+                this.eagleRiderRerollUsed = false;
+                this.dwarfDragonSlayerUsed = false;
+                this._battleLuckChecked = false;
+                this._pendingBattleLuck = null;
+                this._unicornSteedRerollUsed = false;
+                this._pendingUnicornReroll = null;
+                this._combatBonusDiceActive = false;
+            }
+            
+            // Check for Find Magic Gate quest (combat bonus dice)
+            if (!this._generalBonusDiceChecked) {
+                this._generalBonusDiceChecked = true;
+                const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
+                if (bonusDiceQuest) {
+                    this._pendingCombatBonusDice = bonusDiceQuest;
+                    
+                    this.showInfoModal('💫 Find Magic Gate', `
+                        <div style="text-align: center;">
+                            <div style="font-size: 2em; margin-bottom: 8px;">💫</div>
+                            <div style="color: #d4af37; margin-bottom: 12px;">
+                                Discard <strong>Find Magic Gate</strong> quest card to add <strong>+2 bonus dice</strong> to this general combat?
+                            </div>
+                            <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">
+                                This quest card will be permanently discarded.
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game._useGeneralBonusDice()">
+                                    💫 Use (+2 Dice)
+                                </button>
+                                <button class="btn" style="flex: 1; background: #666;" onclick="game._skipGeneralBonusDice()">
+                                    Skip
+                                </button>
+                            </div>
+                        </div>
+                    `);
+                    const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+                    if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
+                    return;
+                }
+            }
+            this._generalBonusDiceChecked = false;
             
             // Use selected cards from card selection modal
             // Filter out any undefined cards (in case indices are out of bounds)
@@ -2306,6 +2374,7 @@ Object.assign(game, {
         this.currentCombat = null;
         this.rangedAttack = false;
         this._combatBonusDiceActive = false;
+        this._generalBonusDiceChecked = false;
     },
     
 });

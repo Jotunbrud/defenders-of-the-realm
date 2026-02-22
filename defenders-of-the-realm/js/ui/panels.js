@@ -585,43 +585,6 @@ Object.assign(game, {
                 eagleBtn.style.background = '#666';
             }
         }
-        
-        // Update Unicorn Steed button (dynamic — only shown when hero has completed quest)
-        let unicornBtn = document.getElementById('unicorn-steed-btn');
-        const hasUnicornSteed = this._hasUnicornSteed(hero);
-        
-        if (hasUnicornSteed) {
-            // Create button if it doesn't exist
-            if (!unicornBtn) {
-                const movementSection = eagleBtn ? eagleBtn.parentElement : (horseBtn ? horseBtn.parentElement : null);
-                if (movementSection) {
-                    unicornBtn = document.createElement('button');
-                    unicornBtn.id = 'unicorn-steed-btn';
-                    unicornBtn.innerHTML = '<span class="action-btn-icon">🦄 </span>Unicorn';
-                    unicornBtn.title = 'Unicorn Steed (move 2 spaces, no card required)';
-                    unicornBtn.onclick = () => game.useUnicornSteed();
-                    movementSection.appendChild(unicornBtn);
-                }
-            }
-            if (unicornBtn) {
-                unicornBtn.style.display = '';
-                if (hasActions) {
-                    unicornBtn.disabled = false;
-                    unicornBtn.className = 'btn btn-primary';
-                    unicornBtn.style.opacity = '1';
-                    unicornBtn.style.cursor = 'pointer';
-                    unicornBtn.style.background = '';
-                } else {
-                    unicornBtn.disabled = true;
-                    unicornBtn.className = 'btn';
-                    unicornBtn.style.opacity = '0.5';
-                    unicornBtn.style.cursor = 'not-allowed';
-                    unicornBtn.style.background = '#666';
-                }
-            }
-        } else if (unicornBtn) {
-            unicornBtn.style.display = 'none';
-        }
     },
     
     updateActionButtons() {
@@ -956,6 +919,45 @@ Object.assign(game, {
                 // Hero has no special skill - hide button
                 specialSkillBtn.style.display = 'none';
             }
+        }
+        
+        // Update Unicorn Steed button (dynamic — only shown when hero has completed quest)
+        // Placed in actions section: after Special Skill, before Build Magic Gate
+        let unicornBtn = document.getElementById('unicorn-steed-btn');
+        const hasUnicornSteed = this._hasUnicornSteed(hero);
+        
+        if (hasUnicornSteed) {
+            // Create button if it doesn't exist
+            if (!unicornBtn) {
+                const buildGateBtn2 = document.getElementById('build-magic-gate-btn');
+                const actionsSection = buildGateBtn2 ? buildGateBtn2.parentElement : null;
+                if (actionsSection && buildGateBtn2) {
+                    unicornBtn = document.createElement('button');
+                    unicornBtn.id = 'unicorn-steed-btn';
+                    unicornBtn.innerHTML = '<span class="action-btn-icon">🦄 </span>Unicorn';
+                    unicornBtn.title = 'Unicorn Steed (move 2 spaces, no card required)';
+                    unicornBtn.onclick = () => game.useUnicornSteed();
+                    actionsSection.insertBefore(unicornBtn, buildGateBtn2);
+                }
+            }
+            if (unicornBtn) {
+                unicornBtn.style.display = '';
+                if (hasActions) {
+                    unicornBtn.disabled = false;
+                    unicornBtn.className = 'btn btn-primary';
+                    unicornBtn.style.opacity = '1';
+                    unicornBtn.style.cursor = 'pointer';
+                    unicornBtn.style.background = '';
+                } else {
+                    unicornBtn.disabled = true;
+                    unicornBtn.className = 'btn';
+                    unicornBtn.style.opacity = '0.5';
+                    unicornBtn.style.cursor = 'not-allowed';
+                    unicornBtn.style.background = '#666';
+                }
+            }
+        } else if (unicornBtn) {
+            unicornBtn.style.display = 'none';
         }
         
         // Update Build Magic Gate button

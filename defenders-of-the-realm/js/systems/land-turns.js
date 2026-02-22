@@ -889,12 +889,15 @@ Object.assign(game, {
         const isRegularCard = card.faction1 && !card.type;
         if (isRegularCard && this._findMilitiaSecuresCard()) return true;
         
-        // Strong Defenses: any hero with the card, any card with a general (regular + patrol)
+        // Strong Defenses: any hero with the card, any card with a general that will advance
         const hasGeneral = card.general && card.general !== '';
-        if (hasGeneral && this._findStrongDefensesCard()) return true;
+        const general = hasGeneral ? this.generals.find(g => g.color === card.general) : null;
+        const generalWillAdvance = general && !general.defeated 
+            && !(this.generalWounds[card.general] && this.generalWounds[card.general].type === 'major');
+        if (generalWillAdvance && this._findStrongDefensesCard()) return true;
         
-        // Organize Militia quest: any hero with a completed quest, any card with a general
-        if (hasGeneral && this._findOrganizeMilitiaQuestCard()) return true;
+        // Organize Militia quest: any hero with a completed quest, any card with a general that will advance
+        if (generalWillAdvance && this._findOrganizeMilitiaQuestCard()) return true;
         
         return false;
     },
@@ -1276,7 +1279,11 @@ Object.assign(game, {
             
             const strongHolder = this._findStrongDefensesCard();
             const hasGeneral = card.general && card.general !== '';
-            const canUseStrong = strongHolder && hasGeneral && !this.strongDefensesActive
+            // Only show block buttons if general will actually advance (not defeated, no major wounds)
+            const general = hasGeneral ? this.generals.find(g => g.color === card.general) : null;
+            const generalWillAdvance = general && !general.defeated 
+                && !(this.generalWounds[card.general] && this.generalWounds[card.general].type === 'major');
+            const canUseStrong = strongHolder && generalWillAdvance && !this.strongDefensesActive
                 && card.type !== 'all_quiet' && card.type !== 'monarch_city_special';
             
             if (canUseStrong) {
@@ -1303,7 +1310,7 @@ Object.assign(game, {
             if (existingMilitiaQuestBtn) existingMilitiaQuestBtn.remove();
             
             const militiaQuestHolder = this._findOrganizeMilitiaQuestCard();
-            const canUseMilitiaQuest = militiaQuestHolder && hasGeneral && !this.strongDefensesActive && !this.organizeMilitiaActive
+            const canUseMilitiaQuest = militiaQuestHolder && generalWillAdvance && !this.strongDefensesActive && !this.organizeMilitiaActive
                 && card.type !== 'all_quiet' && card.type !== 'monarch_city_special';
             
             if (canUseMilitiaQuest) {

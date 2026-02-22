@@ -1218,12 +1218,9 @@ Object.assign(game, {
                 btn.textContent = 'Resolve Card';
             }
             
-            // Wizard Wisdom: Add discard button if Wizard is current hero and this is not a re-draw
+            // Clean up ALL dynamic buttons from previous card/phase
             const btnContainer = btn.parentElement;
-            const existingWisdomBtn = document.getElementById('wisdom-discard-btn');
-            if (existingWisdomBtn) existingWisdomBtn.remove();
-            const existingMilitiaBtn = document.getElementById('militia-secures-btn');
-            if (existingMilitiaBtn) existingMilitiaBtn.remove();
+            this._cleanupEndOfTurnButtons();
             
             const hero = this.heroes[this.currentPlayerIndex];
             
@@ -1274,9 +1271,6 @@ Object.assign(game, {
             }
             
             // Strong Defenses: Show if ANY hero has the card and this card has general movement
-            const existingStrongBtn = document.getElementById('strong-defenses-btn');
-            if (existingStrongBtn) existingStrongBtn.remove();
-            
             const strongHolder = this._findStrongDefensesCard();
             const hasGeneral = card.general && card.general !== '';
             // Only show block buttons if general will actually advance (not defeated, no major wounds)
@@ -1306,9 +1300,6 @@ Object.assign(game, {
             }
             
             // Organize Militia: Show if ANY hero has a completed quest, any card with general movement
-            const existingMilitiaQuestBtn = document.getElementById('organize-militia-btn');
-            if (existingMilitiaQuestBtn) existingMilitiaQuestBtn.remove();
-            
             const militiaQuestHolder = this._findOrganizeMilitiaQuestCard();
             const canUseMilitiaQuest = militiaQuestHolder && generalWillAdvance && !this.strongDefensesActive && !this.organizeMilitiaActive
                 && card.type !== 'all_quiet' && card.type !== 'monarch_city_special';
@@ -1681,14 +1672,8 @@ Object.assign(game, {
         if (btn) {
             btn.textContent = cardNum < totalCards ? 'Draw Next Card' : 'End Night Phase';
             
-            // Remove Wisdom button if present from preview phase
-            const existingWisdomBtn = document.getElementById('wisdom-discard-btn');
-            if (existingWisdomBtn) existingWisdomBtn.remove();
-            const btnContainer = btn.parentElement;
-            btnContainer.style.display = '';
-            btnContainer.style.gap = '';
-            btnContainer.style.justifyContent = '';
-            btn.style.flex = '';
+            // Remove all dynamic buttons from preview phase
+            this._cleanupEndOfTurnButtons();
         }
     },
     

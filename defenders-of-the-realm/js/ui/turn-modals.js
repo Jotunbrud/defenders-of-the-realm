@@ -3,9 +3,32 @@
 // ═══════════════════════════════════════════════════════════════
 
 Object.assign(game, {
+    // Clean up any dynamic buttons added to the end-of-turn button container
+    _cleanupEndOfTurnButtons() {
+        const ids = ['wisdom-discard-btn', 'militia-secures-btn', 'strong-defenses-btn', 'organize-militia-btn'];
+        ids.forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+        // Also remove indicator divs that may have been appended
+        const content = document.getElementById('end-of-turn-content');
+        if (content) {
+            content.querySelectorAll('[id$="-indicator"]').forEach(el => el.remove());
+        }
+        // Reset button container styles
+        const btn = document.getElementById('end-of-turn-btn');
+        if (btn) {
+            const btnContainer = btn.parentElement;
+            btnContainer.style.display = '';
+            btnContainer.style.gap = '';
+            btnContainer.style.justifyContent = '';
+            btn.style.flex = '';
+        }
+    },
+    
     showDaytimeModal(hero, damageInfo) {
         const modal = document.getElementById('end-of-turn-modal');
         const content = document.getElementById('end-of-turn-content');
+        
+        // Clean up any buttons from previous turn's darkness phase
+        this._cleanupEndOfTurnButtons();
         
         let damageHTML = '';
         const rawDamage = damageInfo.minionDamage + damageInfo.fearDamage;
@@ -252,6 +275,9 @@ Object.assign(game, {
     showEveningModal(hero, drawnCards, thieveryBonus, questCardBonus = 0, questCardBonusName = '') {
         const modal = document.getElementById('end-of-turn-modal');
         const content = document.getElementById('end-of-turn-content');
+        
+        // Clean up any lingering dynamic buttons
+        this._cleanupEndOfTurnButtons();
         
         const cardColorMap = {
             'red': '#dc2626',
@@ -761,14 +787,6 @@ Object.assign(game, {
                         <strong style="color: #f59e0b;">🏰 Strong Defenses:</strong> 
                         <span style="color: ${this.getGeneralColor(event.color)}; text-decoration: line-through;">${event.general}: ${event.minions} minion${event.minions !== 1 ? 's' : ''} → ${event.location}</span>
                         <span style="color: #fbbf24; font-weight: bold; margin-left: 6px;">BLOCKED</span>
-                    </div>
-                `;
-            } else if (event.type === 'organize_militia') {
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #16a34a; background: rgba(22,163,74,0.2); border-radius: 3px;">
-                        <strong style="color: #4ade80;">📜 Organize Militia:</strong> 
-                        <span style="color: ${this.getGeneralColor(event.color)}; text-decoration: line-through;">${event.general}: ${event.minions} minion${event.minions !== 1 ? 's' : ''} → ${event.location}</span>
-                        <span style="color: #4ade80; font-weight: bold; margin-left: 6px;">BLOCKED</span>
                     </div>
                 `;
             }

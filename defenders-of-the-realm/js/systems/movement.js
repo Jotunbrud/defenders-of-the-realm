@@ -1070,7 +1070,7 @@ Object.assign(game, {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
                 <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
-                <h2 class="modal-title">📋 Release Notes - Version 5.3.7</h2>
+                <h2 class="modal-title">📋 Release Notes - Version 5.3.9</h2>
 
                 <div style="margin: 20px 0;">
                     <h3 style="color: #ffd700; margin-bottom: 10px;">🎉 MINOR RELEASE - Quest System, UI Overhaul & Bug Fixes</h3>
@@ -1100,8 +1100,9 @@ Object.assign(game, {
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                         <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Darkness Spreads Improvements</div>
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
-                            • Block general buttons (Strong Defenses, Organize Militia) only appear when general will actually advance<br>
+                            • Block general buttons (Strong Defenses, Organize Militia) only appear on Step 3 Darkness Spreads Draw modal when general will actually advance<br>
                             • Defeated generals and generals with major wounds no longer trigger block button display<br>
+                            • Dynamic buttons (Militia, Strong Defenses, Organize Militia, Wizard Wisdom) fully cleaned up at every modal transition — no longer persist across Step 1, Step 2, or Step 3 Results<br>
                             • Cards auto-resolve without unnecessary pause when no blocking options available
                         </div>
                     </div>
@@ -1120,7 +1121,7 @@ Object.assign(game, {
 
                     <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
-                            Version 5.3.7 - Minor Release
+                            Version 5.3.9 - Minor Release
                         </div>
                     </div>
                 </div>

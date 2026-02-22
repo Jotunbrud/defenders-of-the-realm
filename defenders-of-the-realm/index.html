@@ -320,11 +320,10 @@
 
     <!-- Heroes Modal -->
     <div class="modal" id="heroes-modal" onclick="game.closeHeroesModal(event)" style="pointer-events: auto;">
-        <div class="modal-content" onclick="event.stopPropagation()" style="pointer-events: auto;">
-            <button onclick="game.closeHeroesModal()" class="modal-close-btn">×</button>
+        <div class="modal-content" onclick="event.stopPropagation()" style="pointer-events: auto; padding-top: 25px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 class="modal-title" style="margin: 0;">👥 Heroes</h2>
-                <button class="btn" onclick="game.closeHeroesModal()">✕ Close</button>
+                <h2 class="modal-title" style="margin: 0; font-size: 1.2em;">👥 Heroes</h2>
+                <button onclick="game.closeHeroesModal()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
             </div>
             <div id="heroes-modal-list"></div>
         </div>

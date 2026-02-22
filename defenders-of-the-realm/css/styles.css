@@ -409,8 +409,8 @@
         }
 
         .hero-detail-card {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-            border: 3px solid #3b82f6;
+            background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
+            border: 3px solid #d4d4d4;
             border-radius: 12px;
             padding: 20px;
         }
@@ -437,8 +437,8 @@
         }
 
         .hero-detail-card .ability-section {
-            background: rgba(0,0,0,0.3);
-            border: 2px solid rgba(255,215,0,0.3);
+            background: transparent;
+            border: none;
             border-radius: 8px;
             padding: 12px;
             margin-top: 15px;

@@ -921,7 +921,7 @@ Object.assign(game, {
             
             attackStyleHTML = `
                 <div class="ability-section" style="margin-top: 10px;">
-                    <div style="font-weight: bold; color: #ffd700; margin-bottom: 8px;">🎯 Current Attack Style</div>
+                    <div style="font-weight: bold; color: #000; margin-bottom: 8px;">🎯 Current Attack Style</div>
                     <div style="display: flex; flex-direction: column; gap: 8px;">
                         <div style="padding: 10px 12px; border-radius: 8px; border: ${skyBorder}; background: ${skyBg}; opacity: ${skyOpacity};">
                             <div style="font-weight: bold; color: #60a5fa; margin-bottom: 3px;">
@@ -966,10 +966,14 @@ Object.assign(game, {
             : '';
         
         detailContent.innerHTML = `
-            <div class="hero-detail-card" style="background: linear-gradient(135deg, ${hero.color}dd 0%, ${hero.color}aa 100%);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <h2 class="modal-title" style="margin: 0; font-size: 1.2em;">${hero.symbol} ${hero.name}</h2>
+                <button onclick="game.closeHeroDetail()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
+            </div>
+            <div class="hero-detail-card">
                 ${this.getHeroPixelArt(hero.name)}
                 <div class="hero-name">${hero.symbol} ${hero.name}</div>
-                
+
                 <div class="hero-stats">
                     <div class="stat">
                         <div style="font-size: 1.2em;">❤️</div>
@@ -987,29 +991,29 @@ Object.assign(game, {
                         <div style="font-size: 1.2em; font-weight: bold;">${hero.taint}</div>
                     </div>
                 </div>
-                
+
                 <div class="ability-section" style="margin-top: 5px;">
                     <div style="text-align: center;">${actionTokensHTML}</div>
                     ${bonusActionNote}
                 </div>
-                
+
                 <div class="ability-section">
-                    <div style="font-weight: bold; color: #ffd700; margin-bottom: 8px;">⚡ Special Ability</div>
+                    <div style="font-weight: bold; color: #000; margin-bottom: 8px;">⚡ Special Ability</div>
                     <div>${hero.ability}</div>
                 </div>
-                
+
                 ${attackStyleHTML}
-                
+
                 <div class="ability-section" style="margin-top: 10px;">
-                    <div style="font-weight: bold; color: #ffd700; margin-bottom: 5px;">📍 Current Location</div>
+                    <div style="font-weight: bold; color: #000; margin-bottom: 5px;">📍 Current Location</div>
                     <div>${hero.location}</div>
                 </div>
-                
+
                 <div class="cards-section">
-                    <div style="font-weight: bold; color: #ffd700; margin-bottom: 8px;">🎴 Cards (${hero.cards.length})</div>
+                    <div style="font-weight: bold; color: #000; margin-bottom: 8px;">🎴 Cards (${hero.cards.length})</div>
                     ${cardsHTML}
                 </div>
-                
+
                 ${this._buildHeroQuestSection(hero)}
             </div>
         `;
@@ -1062,6 +1066,57 @@ Object.assign(game, {
     },
     
     showReleaseNotes() {
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.id = 'release-notes-modal';
+        modal.style.zIndex = '15000';
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
+                <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
+                <h2 class="modal-title">📋 Release Notes - Version 5.3.11</h2>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #ffd700; margin-bottom: 10px;">🎨 UI - Hero Detail Modal Redesign</h3>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">🎨 Hero Detail Modal</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Hero detail modal redesigned — title and close button on same line, silver placard with black text, removed redundant close button
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            Version 5.3.11 - UI Update
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button class="btn" style="flex: 1;" onclick="game.showV5310ReleaseNotes()">
+                        📦 v5.3.10 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showV539ReleaseNotes()">
+                        📦 v5.3.9 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showV530ReleaseNotes()">
+                        📦 v5.3.0 Release Notes
+                    </button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="this.closest('.modal').remove()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    },
+
+    showV5310ReleaseNotes() {
+        const existing = document.getElementById('release-notes-modal');
+        if (existing) existing.remove();
+
         const modal = document.createElement('div');
         modal.className = 'modal active';
         modal.id = 'release-notes-modal';

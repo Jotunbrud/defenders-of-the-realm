@@ -763,6 +763,14 @@ Object.assign(game, {
                         <span style="color: #fbbf24; font-weight: bold; margin-left: 6px;">BLOCKED</span>
                     </div>
                 `;
+            } else if (event.type === 'organize_militia') {
+                html += `
+                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #16a34a; background: rgba(22,163,74,0.2); border-radius: 3px;">
+                        <strong style="color: #4ade80;">📜 Organize Militia:</strong> 
+                        <span style="color: ${this.getGeneralColor(event.color)}; text-decoration: line-through;">${event.general}: ${event.minions} minion${event.minions !== 1 ? 's' : ''} → ${event.location}</span>
+                        <span style="color: #4ade80; font-weight: bold; margin-left: 6px;">BLOCKED</span>
+                    </div>
+                `;
             }
         });
         

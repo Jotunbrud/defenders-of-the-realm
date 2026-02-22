@@ -422,10 +422,15 @@ Object.assign(game, {
                 }
                 
                 // Complete Quest button - show if hero has a completable quest at this location
-                if (this.actionsRemaining > 0) {
+                if (this.actionsRemaining > 0 && locationName === currentHero.location) {
                     const questResult = this._getCompletableQuest(currentHero);
-                    if (questResult && questResult.quest.location === locationName) {
-                        html += `<button class="btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.completeQuestAction()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">🎯 Complete Quest: ${questResult.quest.name}</button>`;
+                    if (questResult) {
+                        const q = questResult.quest;
+                        // Show if: standard quest at this location, OR new quest types (already validated by _getCompletableQuest)
+                        const isHere = q.location === locationName || q.mechanic.type === 'build_gate_red' || q.mechanic.type === 'multi_location_action' || q.mechanic.type === 'variable_dice_roll';
+                        if (isHere) {
+                            html += `<button class="btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.completeQuestAction()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">🎯 Complete Quest: ${q.name}</button>`;
+                        }
                     }
                 }
                 

@@ -555,9 +555,92 @@ Object.assign(game, {
         // Reset Battle Luck check for each hero's roll
         this._battleLuckChecked = false;
         this._pendingBattleLuck = null;
+        // Reset Unicorn Steed re-roll for each hero's roll
+        this._unicornSteedRerollUsed = false;
+        this._pendingUnicornReroll = null;
+        // Reset combat bonus dice for each hero
+        this._combatBonusDiceActive = false;
         
+        // Check for Find Magic Gate quest (combat bonus dice) for THIS hero
+        const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
+        if (bonusDiceQuest) {
+            this._pendingCombatBonusDice = bonusDiceQuest;
+            this._pendingGroupCombatArgs = { hero, general, cardsToUse };
+            
+            this.showInfoModal('💫 Find Magic Gate', `
+                <div style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 8px;">💫</div>
+                    <div style="color: #d4af37; margin-bottom: 12px;">
+                        Discard <strong>Find Magic Gate</strong> quest card to add <strong>+2 bonus dice</strong> to ${hero.name}'s roll vs ${general.name}?
+                    </div>
+                    <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">
+                        This quest card will be permanently discarded.
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game._useCombatBonusDiceGroup()">
+                            💫 Use (+2 Dice)
+                        </button>
+                        <button class="btn" style="flex: 1; background: #666;" onclick="game._skipCombatBonusDiceGroup()">
+                            Skip
+                        </button>
+                    </div>
+                </div>
+            `);
+            const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
+            return;
+        }
+        
+        this._rollGroupAttackerDice(hero, general, cardsToUse);
+    },
+    
+    _useCombatBonusDiceGroup() {
+        const args = this._pendingGroupCombatArgs;
+        const bonusDice = this._pendingCombatBonusDice;
+        if (!args || !bonusDice) return;
+        
+        const hero = args.hero;
+        
+        // Discard quest card
+        hero.questCards.splice(bonusDice.questIndex, 1);
+        this.questDiscardPile++;
+        this._combatBonusDiceActive = true;
+        this._pendingCombatBonusDice = null;
+        this._pendingGroupCombatArgs = null;
+        
+        this.addLog(`💫 ${hero.name} discards Find Magic Gate quest for +2 bonus combat dice!`);
+        
+        const heroIndex = this.heroes.indexOf(hero);
+        const newQuest = this.drawQuestCard(heroIndex);
+        
+        this.renderHeroes();
+        this.updateDeckCounts();
+        this.closeInfoModal();
+        
+        this._rollGroupAttackerDice(args.hero, args.general, args.cardsToUse);
+    },
+    
+    _skipCombatBonusDiceGroup() {
+        const args = this._pendingGroupCombatArgs;
+        this._pendingCombatBonusDice = null;
+        this._pendingGroupCombatArgs = null;
+        this._combatBonusDiceActive = false;
+        this.closeInfoModal();
+        
+        if (args) {
+            this._rollGroupAttackerDice(args.hero, args.general, args.cardsToUse);
+        }
+    },
+    
+    _rollGroupAttackerDice(hero, general, cardsToUse) {
         // Calculate total dice
-        const totalDice = cardsToUse.reduce((sum, card) => sum + card.dice, 0);
+        const baseDice = cardsToUse.reduce((sum, card) => sum + card.dice, 0);
+        const combatBonusDice = this._combatBonusDiceActive ? 2 : 0;
+        const totalDice = baseDice + combatBonusDice;
+        
+        if (combatBonusDice > 0) {
+            this.addLog(`💫 Find Magic Gate: +${combatBonusDice} bonus combat dice!`);
+        }
         
         // Get hit requirement
         const getGeneralHitRequirement = (faction) => {
@@ -794,6 +877,44 @@ Object.assign(game, {
             }
         }
         this._battleLuckChecked = false;
+        
+        // Unicorn Steed: re-roll ALL failed dice once per combat (not against Varkolak)
+        if (!this._unicornSteedRerollUsed && general.combatSkill !== 'no_rerolls') {
+            if (this._hasUnicornSteed(hero)) {
+                const hasFailedDice = diceRolls.some(r => !r.hit);
+                if (hasFailedDice) {
+                    const failedCount = diceRolls.filter(r => !r.hit).length;
+                    let dicePreviewHTML = '';
+                    diceRolls.forEach(d => {
+                        dicePreviewHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
+                    });
+                    this._pendingUnicornReroll = { type: 'group_general', hero, general, cardsToUse, totalDice, hitReq, diceRolls, damage };
+                    const rerollHTML = `
+                        <div style="margin: 20px 0;">
+                            <div style="color: ${hero.color}; margin-bottom: 8px; font-weight: bold;">${hero.symbol} ${hero.name}'s Roll</div>
+                            <div style="color: #d4af37; margin-bottom: 8px;">${totalDice} dice | Need: ${hitReq}+ to hit</div>
+                            <div class="dice-result-container">${dicePreviewHTML}</div>
+                            <div style="text-align: center; margin-top: 8px; color: #ffd700;">${damage} hit(s)</div>
+                        </div>
+                        <div style="background: rgba(212,175,55,0.2); padding: 14px; border: 2px solid #d4af37; border-radius: 8px; margin-top: 10px;">
+                            <div style="color: #d4af37; font-weight: bold; margin-bottom: 8px;">🦄 Unicorn Steed — Re-roll Available!</div>
+                            <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedCount} failed dice. This cannot be undone.</div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-primary" style="flex: 1; background: #b45309;" onclick="game._useUnicornSteedReroll()">
+                                    🦄 Re-roll Failed Dice
+                                </button>
+                                <button class="btn btn-primary" style="flex: 1;" onclick="game._declineUnicornSteedReroll()">
+                                    ✓ Accept Roll
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    this.showCombatResults(rerollHTML, `${hero.name} vs ${general.name} — Unicorn Steed? (Group)`, true);
+                    return;
+                }
+            }
+        }
+        this._unicornSteedRerollUsed = false;
         
         // GORGUTT PARRY (applies to each hero individually)
         let parryMessage = '';

@@ -337,7 +337,77 @@ Object.assign(game, {
         // Reset Battle Luck check
         this._battleLuckChecked = false;
         this._pendingBattleLuck = null;
+        // Reset Unicorn Steed re-roll
+        this._unicornSteedRerollUsed = false;
+        this._pendingUnicornReroll = null;
+        // Reset combat bonus dice
+        this._combatBonusDiceActive = false;
         
+        // Check for Find Magic Gate quest (combat bonus dice)
+        const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
+        if (bonusDiceQuest) {
+            const combatType = this.currentCombat.type === 'minions' ? 'minion' : 'general';
+            this._pendingCombatBonusDice = bonusDiceQuest;
+            
+            this.showInfoModal('💫 Find Magic Gate', `
+                <div style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 8px;">💫</div>
+                    <div style="color: #d4af37; margin-bottom: 12px;">
+                        Discard <strong>Find Magic Gate</strong> quest card to add <strong>+2 bonus dice</strong> to this ${combatType} combat?
+                    </div>
+                    <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">
+                        This quest card will be permanently discarded.
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game._useCombatBonusDice()">
+                            💫 Use (+2 Dice)
+                        </button>
+                        <button class="btn" style="flex: 1; background: #666;" onclick="game._skipCombatBonusDice()">
+                            Skip
+                        </button>
+                    </div>
+                </div>
+            `);
+            const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
+            return;
+        }
+        
+        this._proceedWithCombatRoll();
+    },
+    
+    _useCombatBonusDice() {
+        const hero = this.heroes[this.currentPlayerIndex];
+        const bonusDice = this._pendingCombatBonusDice;
+        if (!bonusDice) return;
+        
+        // Discard quest card
+        hero.questCards.splice(bonusDice.questIndex, 1);
+        this.questDiscardPile++;
+        this._combatBonusDiceActive = true;
+        this._pendingCombatBonusDice = null;
+        
+        this.addLog(`💫 ${hero.name} discards Find Magic Gate quest for +2 bonus combat dice!`);
+        
+        // Draw new quest
+        const heroIndex = this.currentPlayerIndex;
+        const newQuest = this.drawQuestCard(heroIndex);
+        
+        this.renderHeroes();
+        this.updateDeckCounts();
+        this.closeInfoModal();
+        
+        this._proceedWithCombatRoll();
+    },
+    
+    _skipCombatBonusDice() {
+        this._pendingCombatBonusDice = null;
+        this._combatBonusDiceActive = false;
+        this.closeInfoModal();
+        this._proceedWithCombatRoll();
+    },
+    
+    _proceedWithCombatRoll() {
         if (this.currentCombat.type === 'minions') {
             this.rollMinionCombat();
         } else {
@@ -389,6 +459,12 @@ Object.assign(game, {
             }
         }
         
+        // Combat bonus dice from Find Magic Gate quest
+        let combatBonusDiceRemaining = this._combatBonusDiceActive ? 2 : 0;
+        if (combatBonusDiceRemaining > 0) {
+            this.addLog(`💫 Find Magic Gate: +${combatBonusDiceRemaining} bonus combat dice!`);
+        }
+        
         for (let [color, count] of Object.entries(minionsObj)) {
             if (count === 0) continue;
             
@@ -401,12 +477,21 @@ Object.assign(game, {
             let defeated = 0;
             const rolls = [];
             
-            for (let i = 0; i < count; i++) {
+            // Roll base dice (1 per minion)
+            const bonusForThisColor = Math.min(combatBonusDiceRemaining, 2);
+            const totalDiceForColor = count + bonusForThisColor;
+            combatBonusDiceRemaining -= bonusForThisColor;
+            
+            for (let i = 0; i < totalDiceForColor; i++) {
                 const roll = Math.floor(Math.random() * 6) + 1;
                 const hit = roll >= hitReq;
                 if (hit) defeated++;
-                rolls.push({roll, hit});
+                const isBonus = i >= count;
+                rolls.push({roll, hit, isBonus});
             }
+            
+            // Can't defeat more minions than exist
+            defeated = Math.min(defeated, count);
             
             colorResults.push({ color, count, hitReq, diceColor, defeated, rolls });
             totalDefeated += defeated;
@@ -531,15 +616,19 @@ Object.assign(game, {
         if (this._getQuestCombatBonus(hero) > 0) {
             html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>';
         }
+        if (this._combatBonusDiceActive) {
+            html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(212,175,55,0.15); border: 1px solid #d4af37; border-radius: 5px;"><span style="color: #d4af37; font-weight: bold;">💫 Find Magic Gate: +2 bonus dice</span></div>';
+        }
         colorResults.forEach(cr => {
             const factionName = cr.color === 'green' ? 'Orc' : 
                                cr.color === 'black' ? 'Undead' : 
                                cr.color === 'red' ? 'Demon' : 'Dragon';
             let diceHTML = '';
             cr.rolls.forEach(r => {
+                const bonusBorder = r.isBonus ? 'border: 2px solid #d4af37;' : '';
                 diceHTML += `<div class="die-result ${r.hit ? 'hit' : 'miss'}" 
-                                  style="background-color: ${r.hit ? '#4ade80' : cr.diceColor};">
-                                ${r.roll}
+                                  style="background-color: ${r.hit ? '#4ade80' : cr.diceColor}; ${bonusBorder}">
+                                ${r.roll}${r.isBonus ? '✦' : ''}
                             </div>`;
             });
             html += `
@@ -822,6 +911,98 @@ Object.assign(game, {
     },
     // ===== END BATTLE LUCK SYSTEM =====
     
+    // ===== UNICORN STEED RE-ROLL SYSTEM =====
+    _useUnicornSteedReroll() {
+        const state = this._pendingUnicornReroll;
+        if (!state) return;
+        this._unicornSteedRerollUsed = true;
+        this._pendingUnicornReroll = null;
+        
+        document.getElementById('combat-results-modal').classList.remove('active');
+        
+        const hero = this.heroes[this.currentPlayerIndex];
+        this.addLog(`🦄 ${hero.name} uses Unicorn Steed to re-roll failed dice!`);
+        
+        if (state.type === 'minions') {
+            const newColorResults = [];
+            let newTotalDefeated = 0;
+            
+            state.colorResults.forEach(cr => {
+                const newRolls = [];
+                let newDefeated = 0;
+                
+                cr.rolls.forEach(r => {
+                    if (r.hit) {
+                        newRolls.push(r);
+                        newDefeated++;
+                    } else {
+                        const roll = Math.floor(Math.random() * 6) + 1;
+                        const hit = roll >= cr.hitReq;
+                        if (hit) newDefeated++;
+                        newRolls.push({roll, hit});
+                    }
+                });
+                
+                newColorResults.push({ ...cr, rolls: newRolls, defeated: newDefeated });
+                newTotalDefeated += newDefeated;
+            });
+            
+            this._applyMinionCombatResults(newColorResults, newTotalDefeated);
+        } else if (state.type === 'solo_general') {
+            const newDiceRolls = [];
+            let newDamage = 0;
+            
+            state.diceRolls.forEach(r => {
+                if (r.hit) {
+                    newDiceRolls.push(r);
+                    newDamage++;
+                } else {
+                    const roll = Math.floor(Math.random() * 6) + 1;
+                    const hit = roll >= state.hitReq;
+                    if (hit) newDamage++;
+                    newDiceRolls.push({roll, hit});
+                }
+            });
+            
+            this._finalizeSoloCombat(state.hero, state.general, state.cardsToUse, newDamage, state.hitReq, newDiceRolls, newDamage);
+        } else if (state.type === 'group_general') {
+            const newDiceRolls = [];
+            let newDamage = 0;
+            
+            state.diceRolls.forEach(r => {
+                if (r.hit) {
+                    newDiceRolls.push(r);
+                    newDamage++;
+                } else {
+                    const roll = Math.floor(Math.random() * 6) + 1;
+                    const hit = roll >= state.hitReq;
+                    if (hit) newDamage++;
+                    newDiceRolls.push({roll, hit});
+                }
+            });
+            
+            this._finalizeGroupAttackerCombat(state.hero, state.general, state.cardsToUse, state.totalDice, state.hitReq, newDiceRolls, newDamage);
+        }
+    },
+    
+    _declineUnicornSteedReroll() {
+        const state = this._pendingUnicornReroll;
+        if (!state) return;
+        this._unicornSteedRerollUsed = true;
+        this._pendingUnicornReroll = null;
+        
+        document.getElementById('combat-results-modal').classList.remove('active');
+        
+        if (state.type === 'minions') {
+            this._applyMinionCombatResults(state.colorResults, state.totalDefeated);
+        } else if (state.type === 'solo_general') {
+            this._finalizeSoloCombat(state.hero, state.general, state.cardsToUse, state.damage, state.hitReq, state.diceRolls, state.damage);
+        } else if (state.type === 'group_general') {
+            this._finalizeGroupAttackerCombat(state.hero, state.general, state.cardsToUse, state.totalDice, state.hitReq, state.diceRolls, state.damage);
+        }
+    },
+    // ===== END UNICORN STEED RE-ROLL SYSTEM =====
+    
     _applyMinionCombatResults(colorResults, totalDefeated) {
         // Check for Battle Luck re-roll opportunity
         if (!this._battleLuckChecked) {
@@ -837,6 +1018,36 @@ Object.assign(game, {
             }
         }
         this._battleLuckChecked = false;
+        
+        // Unicorn Steed: re-roll ALL failed dice once per combat
+        if (!this._unicornSteedRerollUsed) {
+            const hero2 = this.heroes[this.currentPlayerIndex];
+            if (this._hasUnicornSteed(hero2)) {
+                const hasFailedDice = colorResults.some(cr => cr.rolls.some(r => !r.hit));
+                if (hasFailedDice) {
+                    const failedCount = colorResults.reduce((sum, cr) => sum + cr.rolls.filter(r => !r.hit).length, 0);
+                    this._pendingUnicornReroll = { type: 'minions', colorResults, totalDefeated };
+                    const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
+                    const rerollHTML = resultsHTML + `
+                        <div style="background: rgba(212,175,55,0.2); padding: 14px; border: 2px solid #d4af37; border-radius: 8px; margin-top: 10px;">
+                            <div style="color: #d4af37; font-weight: bold; margin-bottom: 8px;">🦄 Unicorn Steed — Re-roll Available!</div>
+                            <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedCount} failed dice. This cannot be undone.</div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-primary" style="flex: 1; background: #b45309;" onclick="game._useUnicornSteedReroll()">
+                                    🦄 Re-roll Failed Dice
+                                </button>
+                                <button class="btn btn-primary" style="flex: 1;" onclick="game._declineUnicornSteedReroll()">
+                                    ✓ Accept Roll
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    this.showCombatResults(rerollHTML, `${totalDefeated} minion(s) defeated — Unicorn Steed?`, true);
+                    return;
+                }
+            }
+        }
+        this._unicornSteedRerollUsed = false;
         
         const hero = this.heroes[this.currentPlayerIndex];
         const location = (this.currentCombat && this.currentCombat.target) || hero.location;
@@ -983,7 +1194,13 @@ Object.assign(game, {
     _continueSoloCombat(hero, general, cardsToUse) {
         try {
             // Calculate total dice from all selected cards (after curse)
-            const totalDice = cardsToUse.reduce((sum, card) => sum + card.dice, 0);
+            const baseDice = cardsToUse.reduce((sum, card) => sum + card.dice, 0);
+            const combatBonusDice = this._combatBonusDiceActive ? 2 : 0;
+            const totalDice = baseDice + combatBonusDice;
+            
+            if (combatBonusDice > 0) {
+                this.addLog(`💫 Find Magic Gate: +${combatBonusDice} bonus combat dice!`);
+            }
             
             if (totalDice === 0) {
                 // 0 dice = 0 damage — proceed to finalize (hero suffers penalty)
@@ -1262,6 +1479,49 @@ Object.assign(game, {
             }
         }
         this._battleLuckChecked = false;
+        
+        // Unicorn Steed: re-roll ALL failed dice once per combat (not against Varkolak)
+        if (!this._unicornSteedRerollUsed && general.combatSkill !== 'no_rerolls') {
+            if (this._hasUnicornSteed(hero)) {
+                const hasFailedDice = diceRolls.some(r => !r.hit);
+                if (hasFailedDice) {
+                    const failedCount = diceRolls.filter(r => !r.hit).length;
+                    const cardNames = cardsToUse.map(c => c.name).join(', ');
+                    let dicePreviewHTML = '';
+                    diceRolls.forEach(d => {
+                        dicePreviewHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
+                    });
+                    this._pendingUnicornReroll = { type: 'solo_general', hero, general, cardsToUse, totalDice, hitReq, diceRolls, damage };
+                    const rerollHTML = `
+                        <div style="margin: 20px 0;">
+                            <div style="color: #ffd700; margin-bottom: 12px; font-size: 1.1em;">
+                                <strong>Used ${cardsToUse.length} card(s):</strong> ${cardNames}
+                            </div>
+                            <div style="color: #d4af37; margin-bottom: 8px;">
+                                Total Dice: ${totalDice} | Need: ${hitReq}+ to hit
+                            </div>
+                            <div class="dice-result-container">${dicePreviewHTML}</div>
+                            <div style="text-align: center; margin-top: 12px; color: #ffd700; font-size: 1.1em;">${damage} hit(s) so far</div>
+                        </div>
+                        <div style="background: rgba(212,175,55,0.2); padding: 14px; border: 2px solid #d4af37; border-radius: 8px; margin-top: 10px;">
+                            <div style="color: #d4af37; font-weight: bold; margin-bottom: 8px;">🦄 Unicorn Steed — Re-roll Available!</div>
+                            <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedCount} failed dice. This cannot be undone.</div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-primary" style="flex: 1; background: #b45309;" onclick="game._useUnicornSteedReroll()">
+                                    🦄 Re-roll Failed Dice
+                                </button>
+                                <button class="btn btn-primary" style="flex: 1;" onclick="game._declineUnicornSteedReroll()">
+                                    ✓ Accept Roll
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    this.showCombatResults(rerollHTML, `${hero.name} vs ${general.name} — Unicorn Steed?`, true);
+                    return;
+                }
+            }
+        }
+        this._unicornSteedRerollUsed = false;
         
         // Build dice HTML from final rolls
         let diceHTML = '';
@@ -2045,6 +2305,7 @@ Object.assign(game, {
         document.getElementById('dice-display').innerHTML = '';
         this.currentCombat = null;
         this.rangedAttack = false;
+        this._combatBonusDiceActive = false;
     },
     
 });

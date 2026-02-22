@@ -6,7 +6,8 @@
 function createQuestDeck() {
     const questDeck = [];
     let questId = 1;
-    // ── MAGIC ITEM QUESTS (4 cards) ──
+    // ── MAGIC ITEM QUESTS (4 cards) — COMMENTED OUT FOR TESTING ──
+    /*
     
     // 1. Amulet of the Gods
     questDeck.push({
@@ -100,20 +101,111 @@ function createQuestDeck() {
         }
     });
     
-    // ── PLACEHOLDER QUESTS (20 cards) ──
+    */
+    
+    // ── IMPLEMENTED QUESTS ──
+    
+    // Find Magic Gate — Build a Magic Gate at any Red location
+    questDeck.push({
+        id: questId++,
+        name: 'Find Magic Gate',
+        description: 'Build a Magic Gate on any Red Location. Spend 1 action and a matching location card to build the gate (standard gate rules apply).',
+        difficulty: 'Easy',
+        reward: 'Discard this Quest Card to add 2 dice to any combat roll, including a battle against a General.',
+        effect: 'active',
+        completed: false,
+        location: null, // Special: any red location
+        mechanic: {
+            type: 'build_gate_red',
+            actionCost: 1,
+            failDiscard: false,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'combat_bonus_dice',
+            combatBonusDice: 2,
+            requirePresence: false
+        }
+    });
+    
+    // Unicorn Steed — Travel to Unicorn Forest
+    questDeck.push({
+        id: questId++,
+        name: 'Unicorn Steed',
+        description: 'Travel to the Unicorn Forest and entice a unicorn to become your steed. Spend 1 action per die roll. A roll of 5 or 6 on any of the dice succeeds.',
+        difficulty: 'Medium',
+        reward: 'You may move as if you always have a Horse. Additionally, the Unicorn Steed grants 1 re-roll of all failed dice each combat.',
+        effect: 'passive',
+        completed: false,
+        location: 'Unicorn Forest',
+        mechanic: {
+            type: 'variable_dice_roll',
+            actionCost: 1,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: false,
+            rewardType: 'unicorn_steed',
+            rewardValue: 'horse_movement_and_reroll'
+        }
+    });
+    
+    // Rumors (Quest) — Visit 3 Inns
+    questDeck.push({
+        id: questId++,
+        name: 'Rumors',
+        description: 'Travel to 3 Inns to gather intelligence. Visit Eagle Nest Inn (Blue), Chimera Inn (Black), and Gryphon Inn (Red). No action required — just pass through or end on each location.',
+        difficulty: 'Medium',
+        reward: 'Draw 4 Hero Cards when Quest is completed.',
+        effect: 'active',
+        completed: false,
+        location: null, // Special: multiple locations
+        mechanic: {
+            type: 'multi_location_visit',
+            actionCost: 0,
+            failDiscard: false,
+            rewardType: 'draw_hero_cards',
+            rewardValue: 4,
+            locations: {
+                'Eagle Nest Inn': { color: 'blue', visited: false },
+                'Chimera Inn': { color: 'black', visited: false },
+                'Gryphon Inn': { color: 'red', visited: false }
+            }
+        }
+    });
+    
+    // Organize Militia — Visit 3 locations and spend 1 action at each
+    questDeck.push({
+        id: questId++,
+        name: 'Organize Militia',
+        description: 'Travel to the following locations and spend 1 action at each location organizing the locals: Pleasant Hill (Red), McCorm Highlands (Black), Greenleaf Village (Green).',
+        difficulty: 'Medium',
+        reward: 'Discard to prevent a general from moving during Darkness Spreads.',
+        effect: 'active',
+        completed: false,
+        location: null, // Special: multiple locations
+        mechanic: {
+            type: 'multi_location_action',
+            actionCost: 1,
+            failDiscard: false,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'block_general_advance',
+            locations: {
+                'Pleasant Hill': { color: 'red', organized: false },
+                'McCorm Highlands': { color: 'black', organized: false },
+                'Greenleaf Village': { color: 'green', organized: false }
+            }
+        }
+    });
+    
+    // ── PLACEHOLDER QUESTS (13 cards) — COMMENTED OUT FOR TESTING ──
+    /*
     // These use the standard dice_roll mechanic but have no implemented reward yet.
     // rewardType: 'placeholder' — completion logs success but grants no mechanical benefit.
     
     const placeholderQuests = [
-        { name: 'Dragon Scale Shield', location: 'Blizzard Mountains', description: 'Search the frozen peaks for a shield forged from dragon scales.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
-        { name: 'Elven Cloak of Shadows', location: 'Father Oak Forest', description: 'Seek the ancient elven cloak hidden among the great oaks.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
-        { name: 'Staff of the Archmage', location: 'Enchanted Glade', description: 'Channel the arcane energies of the glade to restore the staff.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
-        { name: 'Ring of the Phoenix', location: 'Scorpion Canyon', description: 'Brave the scorching canyon to recover the legendary ring.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Horn of Summoning', location: 'Eagle Peak Pass', description: 'Sound the ancient horn atop Eagle Peak to rally allies.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Crystal of Clarity', location: 'Crystal Hills', description: 'Attune to the crystal veins in the hills to gain insight.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
         { name: 'Tome of Lost Knowledge', location: 'Whispering Woods', description: 'Decipher the whispers of the woods to unlock the tome.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
         { name: 'Gauntlets of Might', location: 'Orc Valley', description: 'Forge the gauntlets in the fires of Orc Valley.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
-        { name: 'Potion of Restoration', location: 'Unicorn Forest', description: 'Gather ingredients from the sacred unicorn groves.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 4, failDiscard: true },
+
         { name: 'Map of Hidden Paths', location: 'Wolf Pass', description: 'Navigate the treacherous pass to uncover secret routes.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Blessed Chalice', location: 'Angel Tear Falls', description: 'Fill the chalice with the waters of Angel Tear Falls.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Shadow Blade', location: 'Ghost Marsh', description: 'Retrieve the cursed blade from the depths of the marsh.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
@@ -196,5 +288,6 @@ function createQuestDeck() {
             requirePresence: false
         }
     });
+    */
     return questDeck;
 }

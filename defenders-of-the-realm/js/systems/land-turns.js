@@ -215,6 +215,9 @@ Object.assign(game, {
         this.updateActionButtons();
         this.updateMovementButtons();
         
+        // Check if Find Magic Gate quest should complete
+        this._checkFindMagicGateCompletion(hero);
+        
         // Show confirmation
         this.showInfoModal('💫 Magic Gate Built!', `
             <div style="text-align: center;">
@@ -810,6 +813,8 @@ Object.assign(game, {
         this.militiaSecuredSlot = null;
         // Clear strong defenses state for new card
         this.strongDefensesActive = false;
+        // Clear organize militia state for new card
+        this.organizeMilitiaActive = false;
         
         this.darknessCardsDrawn++;
         const cardNum = this.darknessCardsDrawn;
@@ -870,6 +875,9 @@ Object.assign(game, {
         // Strong Defenses: any hero with the card, any card with a general (regular + patrol)
         const hasGeneral = card.general && card.general !== '';
         if (hasGeneral && this._findStrongDefensesCard()) return true;
+        
+        // Organize Militia quest: any hero with a completed quest, any card with a general
+        if (hasGeneral && this._findOrganizeMilitiaQuestCard()) return true;
         
         return false;
     },
@@ -1053,9 +1061,10 @@ Object.assign(game, {
                 ? `<strong style="color: ${generalColor};">General:</strong> <strong style="color: ${generalColor};">${generalName}</strong> advances → <strong>${card.location3}</strong> (no minions)`
                 : `<strong style="color: ${generalColor};">General:</strong> <strong style="color: ${generalColor};">${generalName}</strong> — ${card.minions3} minion${card.minions3 > 1 ? 's' : ''} → <strong>${card.location3}</strong>`;
             
-            const sdBlockedPatrol = this.strongDefensesActive;
+            const sdBlockedPatrol = this.strongDefensesActive || this.organizeMilitiaActive;
             const sdStylePatrol = sdBlockedPatrol ? 'opacity: 0.4; text-decoration: line-through;' : '';
-            const sdLabelPatrol = sdBlockedPatrol ? '<div style="color: #f59e0b; font-size: 0.85em; margin-top: 4px;">🏰 Strong Defenses — General movement cancelled</div>' : '';
+            const sdLabelPatrol = this.strongDefensesActive ? '<div style="color: #f59e0b; font-size: 0.85em; margin-top: 4px;">🏰 Strong Defenses — General movement cancelled</div>' : 
+                                 this.organizeMilitiaActive ? '<div style="color: #4ade80; font-size: 0.85em; margin-top: 4px;">📜 Organize Militia — General movement cancelled</div>' : '';
             const generalWarnings = sdBlockedPatrol ? [] : this.predictGeneralOutcome(card.general, card.minions3, card.location3);
             
             cardContent = `
@@ -1143,9 +1152,10 @@ Object.assign(game, {
             const minion2Warnings = !generalOnly && !militia2 ? this.predictMinionOutcome(card.faction2, card.minions2, card.location2) : [];
             
             // Strong Defenses: mark blocked general
-            const sdBlocked = this.strongDefensesActive;
+            const sdBlocked = this.strongDefensesActive || this.organizeMilitiaActive;
             const sdStyle = sdBlocked ? 'opacity: 0.4; text-decoration: line-through;' : '';
-            const sdLabel = sdBlocked ? '<div style="color: #f59e0b; font-size: 0.85em; margin-top: 4px;">🏰 Strong Defenses — General movement cancelled</div>' : '';
+            const sdLabel = this.strongDefensesActive ? '<div style="color: #f59e0b; font-size: 0.85em; margin-top: 4px;">🏰 Strong Defenses — General movement cancelled</div>' : 
+                           this.organizeMilitiaActive ? '<div style="color: #4ade80; font-size: 0.85em; margin-top: 4px;">📜 Organize Militia — General movement cancelled</div>' : '';
             const generalWarnings = sdBlocked ? [] : this.predictGeneralOutcome(card.general, card.minions3, card.location3);
             
             cardContent = `
@@ -1271,6 +1281,33 @@ Object.assign(game, {
                 btnContainer.appendChild(strongBtn);
             }
             
+            // Organize Militia: Show if ANY hero has a completed quest, any card with general movement
+            const existingMilitiaQuestBtn = document.getElementById('organize-militia-btn');
+            if (existingMilitiaQuestBtn) existingMilitiaQuestBtn.remove();
+            
+            const militiaQuestHolder = this._findOrganizeMilitiaQuestCard();
+            const canUseMilitiaQuest = militiaQuestHolder && hasGeneral && !this.strongDefensesActive && !this.organizeMilitiaActive
+                && card.type !== 'all_quiet' && card.type !== 'monarch_city_special';
+            
+            if (canUseMilitiaQuest) {
+                if (!hasSpecialButtons) {
+                    btnContainer.style.display = 'flex';
+                    btnContainer.style.gap = '10px';
+                    btnContainer.style.justifyContent = 'center';
+                    btn.style.flex = '1';
+                }
+                hasSpecialButtons = true;
+                
+                const militiaQuestBtn = document.createElement('button');
+                militiaQuestBtn.id = 'organize-militia-btn';
+                militiaQuestBtn.className = 'btn btn-primary';
+                militiaQuestBtn.style.cssText = 'flex: 1; background: linear-gradient(135deg, #16a34a, #15803d); border-color: #4ade80;';
+                const genName2 = this.generals.find(g => g.color === card.general)?.name || 'General';
+                militiaQuestBtn.textContent = `📜 Block ${genName2} (${militiaQuestHolder.hero.symbol})`;
+                militiaQuestBtn.onclick = () => game._organizeMilitiaConfirm();
+                btnContainer.appendChild(militiaQuestBtn);
+            }
+            
             // Show militia secured indicator if already active
             if (this.militiaSecuredSlot) {
                 const securedDiv = document.createElement('div');
@@ -1288,7 +1325,16 @@ Object.assign(game, {
                 content.appendChild(sdDiv);
             }
             
-            if (!hasSpecialButtons && !this.militiaSecuredSlot && !this.strongDefensesActive) {
+            // Show organize militia indicator if already active
+            if (this.organizeMilitiaActive) {
+                const omDiv = document.createElement('div');
+                omDiv.style.cssText = 'text-align: center; margin-top: 8px; padding: 6px; background: rgba(22,163,74,0.2); border: 1px solid #16a34a; border-radius: 4px;';
+                const genName = this.generals.find(g => g.color === card.general)?.name || 'General';
+                omDiv.innerHTML = `<span style="color: #4ade80; font-size: 0.9em;">📜 Organize Militia active — ${genName} movement will be cancelled</span>`;
+                content.appendChild(omDiv);
+            }
+            
+            if (!hasSpecialButtons && !this.militiaSecuredSlot && !this.strongDefensesActive && !this.organizeMilitiaActive) {
                 // Reset container to centered single button
                 btnContainer.style.display = '';
                 btnContainer.style.gap = '';
@@ -1412,18 +1458,21 @@ Object.assign(game, {
                     locationsPatrolled: patrolCount
                 });
             }
-            // Strong Defenses: skip general movement
-            if (this.strongDefensesActive) {
+            // Strong Defenses / Organize Militia: skip general movement
+            if (this.strongDefensesActive || this.organizeMilitiaActive) {
                 const generalName = this.generals.find(g => g.color === card.general)?.name || 'Unknown';
+                const blockType = this.strongDefensesActive ? 'strong_defenses' : 'organize_militia';
+                const blockLabel = this.strongDefensesActive ? '🏰 Strong Defenses' : '📜 Organize Militia';
                 events.push({
-                    type: 'strong_defenses',
+                    type: blockType,
                     general: generalName,
                     color: card.general,
                     minions: card.minions3,
                     location: card.location3
                 });
-                this.addLog(`  🏰 Strong Defenses: ${generalName} movement to ${card.location3} BLOCKED`);
+                this.addLog(`  ${blockLabel}: ${generalName} movement to ${card.location3} BLOCKED`);
                 this.strongDefensesActive = false;
+                this.organizeMilitiaActive = false;
             } else {
                 this.processGeneralMovement(card.general, card.minions3, card.location3, events);
             }
@@ -1533,18 +1582,21 @@ Object.assign(game, {
             // Clear militia state after resolve
             this.militiaSecuredSlot = null;
             
-            // Strong Defenses: skip general movement
-            if (this.strongDefensesActive) {
+            // Strong Defenses / Organize Militia: skip general movement
+            if (this.strongDefensesActive || this.organizeMilitiaActive) {
                 const genName = this.generals.find(g => g.color === card.general)?.name || 'Unknown';
+                const blockType = this.strongDefensesActive ? 'strong_defenses' : 'organize_militia';
+                const blockLabel = this.strongDefensesActive ? '🏰 Strong Defenses' : '📜 Organize Militia';
                 events.push({
-                    type: 'strong_defenses',
+                    type: blockType,
                     general: genName,
                     color: card.general,
                     minions: card.minions3,
                     location: card.location3
                 });
-                this.addLog(`  🏰 Strong Defenses: ${genName} movement to ${card.location3} BLOCKED`);
+                this.addLog(`  ${blockLabel}: ${genName} movement to ${card.location3} BLOCKED`);
                 this.strongDefensesActive = false;
+                this.organizeMilitiaActive = false;
             } else {
                 this.processGeneralMovement(card.general, card.minions3, card.location3, events);
             }

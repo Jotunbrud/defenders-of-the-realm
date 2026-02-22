@@ -391,7 +391,29 @@ Object.assign(game, {
             const statusColor = quest.completed ? '#4ade80' : '#ef4444';
             const borderColor = quest.completed ? '#4ade80' : '#dc2626';
             const bgColor = quest.completed ? 'rgba(74,222,128,0.1)' : 'rgba(220,38,38,0.1)';
-            const locationText = quest.location ? `📍 ${quest.location}` : '';
+            let locationText = quest.location ? `📍 ${quest.location}` : '';
+            
+            // Multi-location progress (Rumors, Organize Militia)
+            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
+            if (!quest.completed && quest.mechanic && quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
+                locationText = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
+                    const emoji = colorEmojis[data.color] || '⭕';
+                    const check = data.visited ? '✅' : '⬜';
+                    const color = data.visited ? '#4ade80' : '#999';
+                    return `<span style="color: ${color};">${emoji} ${loc} ${check}</span>`;
+                }).join(' &nbsp;');
+            }
+            if (!quest.completed && quest.mechanic && quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
+                locationText = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
+                    const emoji = colorEmojis[data.color] || '⭕';
+                    const check = data.organized ? '✅' : '⬜';
+                    const color = data.organized ? '#4ade80' : '#999';
+                    return `<span style="color: ${color};">${emoji} ${loc} ${check}</span>`;
+                }).join(' &nbsp;');
+            }
+            if (quest.mechanic && quest.mechanic.type === 'build_gate_red' && !quest.completed) {
+                locationText = '📍 Any Red Location (with matching card)';
+            }
             
             cardsHTML += `
                 <div id="quest-card-option-${i}" onclick="game.selectQuestCard(${i}, ${heroIndex}, ${questIndex})"
@@ -425,6 +447,7 @@ Object.assign(game, {
                 <button id="view-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmViewQuest()">🗺️ View Quest</button>
                 <button id="use-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmUseQuest()">✨ Use</button>
             </div>
+            <div id="quest-use-context-hint" style="text-align: center;"></div>
         `;
         
         this.showInfoModal(modalTitle, contentHTML);
@@ -461,7 +484,21 @@ Object.assign(game, {
         // Update View Quest button
         const viewBtn = document.getElementById('view-quest-btn');
         if (viewBtn) {
-            const canView = quest.location && !quest.completed;
+            // Can view if quest has a single location and is not completed
+            const hasSingleLoc = quest.location && !quest.completed;
+            // Multi-location quests: show first unvisited/unorganized location
+            let multiLocTarget = null;
+            if (!quest.completed && quest.mechanic) {
+                if (quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
+                    const unvisited = Object.entries(quest.mechanic.locations).find(([, d]) => !d.visited);
+                    if (unvisited) multiLocTarget = unvisited[0];
+                }
+                if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
+                    const undone = Object.entries(quest.mechanic.locations).find(([, d]) => !d.organized);
+                    if (undone) multiLocTarget = undone[0];
+                }
+            }
+            const canView = hasSingleLoc || multiLocTarget;
             viewBtn.disabled = !canView;
             viewBtn.style.opacity = canView ? '1' : '0.5';
             viewBtn.style.cursor = canView ? 'pointer' : 'not-allowed';
@@ -472,11 +509,27 @@ Object.assign(game, {
         const useBtn = document.getElementById('use-quest-btn');
         if (useBtn) {
             let canUse = quest.completed && quest.mechanic && quest.mechanic.rewardType === 'use_quest_card_anytime';
+            // Exclude context-dependent rewards (these have their own buttons in combat/darkness phase)
+            if (canUse && quest.mechanic.rewardValue === 'combat_bonus_dice') canUse = false;
+            if (canUse && quest.mechanic.rewardValue === 'block_general_advance') canUse = false;
             // If requirePresence, check hero is on a valid location
             if (canUse && quest.mechanic.requirePresence && quest.mechanic.rewardValue === 'remove_taint') {
                 const hero = this.heroes[heroIndex];
                 canUse = this.taintCrystals[hero.location] && this.taintCrystals[hero.location] > 0;
             }
+            
+            // Show context hint for combat/darkness quests
+            let contextHint = '';
+            if (quest.completed && quest.mechanic) {
+                if (quest.mechanic.rewardValue === 'combat_bonus_dice') {
+                    contextHint = '<div style="color: #d4af37; font-size: 0.8em; margin-top: 4px;">⚔️ Used automatically before combat rolls</div>';
+                } else if (quest.mechanic.rewardValue === 'block_general_advance') {
+                    contextHint = '<div style="color: #d4af37; font-size: 0.8em; margin-top: 4px;">🌙 Used during Darkness Spreads phase</div>';
+                }
+            }
+            const hintDiv = document.getElementById('quest-use-context-hint');
+            if (hintDiv) hintDiv.innerHTML = contextHint;
+            
             useBtn.disabled = !canUse;
             useBtn.style.opacity = canUse ? '1' : '0.5';
             useBtn.style.cursor = canUse ? 'pointer' : 'not-allowed';
@@ -505,9 +558,36 @@ Object.assign(game, {
     viewQuestOnMap(heroIndex, questIndex) {
         const hero = this.heroes[heroIndex];
         const quest = hero.questCards[questIndex];
-        if (!quest || !quest.location) return;
+        if (!quest) return;
         
-        const coords = this.locationCoords[quest.location];
+        // Determine target location(s) to highlight
+        let targetLocation = quest.location;
+        let multiLocations = null;
+        
+        if (quest.mechanic) {
+            if (quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
+                multiLocations = Object.entries(quest.mechanic.locations);
+                const unvisited = multiLocations.find(([, d]) => !d.visited);
+                targetLocation = unvisited ? unvisited[0] : multiLocations[0][0];
+            }
+            if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
+                multiLocations = Object.entries(quest.mechanic.locations);
+                const undone = multiLocations.find(([, d]) => !d.organized);
+                targetLocation = undone ? undone[0] : multiLocations[0][0];
+            }
+            if (quest.mechanic.type === 'build_gate_red') {
+                // Highlight hero's current location if red, or first red location
+                const locData = this.locationCoords[hero.location];
+                if (locData && locData.faction === 'red') {
+                    targetLocation = hero.location;
+                } else {
+                    targetLocation = Object.entries(this.locationCoords).find(([, c]) => c.faction === 'red')?.[0] || hero.location;
+                }
+            }
+        }
+        
+        if (!targetLocation) return;
+        const coords = this.locationCoords[targetLocation];
         if (!coords) return;
         
         // Ensure map is showing
@@ -518,24 +598,50 @@ Object.assign(game, {
         
         const svg = document.getElementById('game-map');
         
-        // Create pulsing red highlight on quest location (matches standard location-highlight style)
-        const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        highlight.classList.add('quest-location-highlight');
-        highlight.setAttribute('cx', coords.x);
-        highlight.setAttribute('cy', coords.y);
-        highlight.setAttribute('r', coords.type === 'inn' ? '34' : '45');
-        highlight.setAttribute('fill', 'rgba(140, 0, 0, 0.55)');
-        highlight.setAttribute('stroke', '#ff3333');
-        highlight.setAttribute('stroke-width', '4');
-        highlight.setAttribute('stroke-dasharray', '6,4');
-        highlight.setAttribute('pointer-events', 'none');
-        const animate = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
-        animate.setAttribute('attributeName', 'opacity');
-        animate.setAttribute('values', '0.6;1;0.6');
-        animate.setAttribute('dur', '2s');
-        animate.setAttribute('repeatCount', 'indefinite');
-        highlight.appendChild(animate);
-        (document.getElementById('effects-layer') || svg).appendChild(highlight);
+        // Create pulsing red highlight on quest location(s)
+        const effectsLayer = document.getElementById('effects-layer') || svg;
+        
+        const addHighlight = (locName) => {
+            const c = this.locationCoords[locName];
+            if (!c) return;
+            const hl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            hl.classList.add('quest-location-highlight');
+            hl.setAttribute('cx', c.x);
+            hl.setAttribute('cy', c.y);
+            hl.setAttribute('r', c.type === 'inn' ? '34' : '45');
+            hl.setAttribute('fill', 'rgba(140, 0, 0, 0.55)');
+            hl.setAttribute('stroke', '#ff3333');
+            hl.setAttribute('stroke-width', '4');
+            hl.setAttribute('stroke-dasharray', '6,4');
+            hl.setAttribute('pointer-events', 'none');
+            const anim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+            anim.setAttribute('attributeName', 'opacity');
+            anim.setAttribute('values', '0.6;1;0.6');
+            anim.setAttribute('dur', '2s');
+            anim.setAttribute('repeatCount', 'indefinite');
+            hl.appendChild(anim);
+            effectsLayer.appendChild(hl);
+        };
+        
+        if (multiLocations) {
+            multiLocations.forEach(([locName]) => addHighlight(locName));
+        } else {
+            addHighlight(targetLocation);
+        }
+        
+        // Build location text for banner
+        const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
+        let locationDisplay = '';
+        if (multiLocations) {
+            locationDisplay = multiLocations.map(([locName, data]) => {
+                const emoji = colorEmojis[data.color] || '⭕';
+                const done = data.visited || data.organized;
+                const check = done ? '✅' : '⬜';
+                return `<span style="color: ${done ? '#4ade80' : '#ef4444'};">${emoji} ${locName} ${check}</span>`;
+            }).join(' &nbsp;');
+        } else {
+            locationDisplay = `<span style="color: #ef4444;">📍 ${targetLocation}</span>`;
+        }
         
         // Show quest indicator banner
         let indicator = document.getElementById('quest-view-indicator');
@@ -556,7 +662,7 @@ Object.assign(game, {
             </div>
             <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 8px;">${quest.description}</div>
             <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; font-size: 0.85em; margin-bottom: 8px;">
-                <span style="color: #ef4444;">📍 ${quest.location}</span>
+                ${locationDisplay}
                 <span style="color: ${hero.color};">${hero.symbol} ${hero.name}</span>
             </div>
             <div style="color: #a78bfa; font-size: 0.85em; margin-bottom: 12px;">🏆 ${quest.reward}</div>
@@ -786,8 +892,34 @@ Object.assign(game, {
             const quest = hero.questCards[i];
             if (quest.completed) continue;
             if (!quest.mechanic) continue;
-            if (quest.location && hero.location === quest.location) {
+            
+            // Standard dice_roll: must be at quest location
+            if (quest.mechanic.type === 'dice_roll' && quest.location && hero.location === quest.location) {
                 return { quest, questIndex: i };
+            }
+            
+            // Variable dice roll (Unicorn Steed): must be at quest location
+            if (quest.mechanic.type === 'variable_dice_roll' && quest.location && hero.location === quest.location) {
+                return { quest, questIndex: i };
+            }
+            
+            // Build gate at red location: hero must be at a red location without a gate, with a matching card
+            if (quest.mechanic.type === 'build_gate_red') {
+                const locData = this.locationCoords[hero.location];
+                if (locData && locData.faction === 'red' && !locData.magicGate) {
+                    const hasMatchingCard = hero.cards.some(c => c.name === hero.location);
+                    if (hasMatchingCard) {
+                        return { quest, questIndex: i };
+                    }
+                }
+            }
+            
+            // Multi-location action (Organize Militia): hero at an unvisited location
+            if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
+                const locEntry = quest.mechanic.locations[hero.location];
+                if (locEntry && !locEntry.organized) {
+                    return { quest, questIndex: i };
+                }
             }
         }
         return null;
@@ -829,6 +961,30 @@ Object.assign(game, {
         
         const { quest, questIndex } = result;
         const m = quest.mechanic;
+        
+        // Build Gate at Red Location (Find Magic Gate)
+        if (m.type === 'build_gate_red') {
+            // Delegate to the normal gate building flow — quest completes in confirmBuildMagicGate hook
+            this._pendingFindMagicGateQuest = { questIndex };
+            this.buildMagicGate();
+            return;
+        }
+        
+        // Variable dice roll (Unicorn Steed) — show action selector
+        if (m.type === 'variable_dice_roll') {
+            this._showUnicornSteedRollModal(hero, quest, questIndex);
+            return;
+        }
+        
+        // Multi-location action (Organize Militia)
+        if (m.type === 'multi_location_action') {
+            if (this.actionsRemaining < (m.actionCost || 1)) {
+                this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
+                return;
+            }
+            this._organizeLocationAction(hero, quest, questIndex);
+            return;
+        }
         
         if (this.actionsRemaining < (m.actionCost || 1)) {
             this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
@@ -1402,6 +1558,404 @@ Object.assign(game, {
         };
         
         this._startBattleStrategyMinionPhase();
+    },
+    
+    // ===== UNICORN STEED: Variable Dice Roll =====
+    _showUnicornSteedRollModal(hero, quest, questIndex) {
+        const maxActions = this.actionsRemaining;
+        if (maxActions <= 0) {
+            this.showInfoModal('📜', '<div>No actions remaining!</div>');
+            return;
+        }
+        
+        let optionsHTML = '<div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 15px 0;">';
+        for (let i = 1; i <= Math.min(maxActions, 6); i++) {
+            optionsHTML += `
+                <div onclick="game._rollUnicornSteedDice(${i}, ${questIndex})" 
+                     style="cursor: pointer; width: 70px; height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                            border: 3px solid #d4af37; border-radius: 10px; background: rgba(212,175,55,0.1); transition: all 0.2s;"
+                     onmouseover="this.style.background='rgba(212,175,55,0.3)'" onmouseout="this.style.background='rgba(212,175,55,0.1)'">
+                    <div style="font-size: 1.5em; font-weight: bold; color: #d4af37;">${i}</div>
+                    <div style="font-size: 0.7em; color: #999;">${i} action${i > 1 ? 's' : ''}</div>
+                </div>
+            `;
+        }
+        optionsHTML += '</div>';
+        
+        const contentHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">🦄</div>
+                <div style="color: #d4af37; margin-bottom: 12px;">
+                    Spend actions to roll dice. Each action = 1 die. Need 5+ on any die to succeed.
+                </div>
+                <div style="color: #999; margin-bottom: 8px; font-size: 0.9em;">
+                    You have ${maxActions} action${maxActions > 1 ? 's' : ''} remaining. Choose how many to spend:
+                </div>
+                ${optionsHTML}
+            </div>
+        `;
+        
+        this.showInfoModal('🦄 Unicorn Steed', contentHTML);
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
+    },
+    
+    _rollUnicornSteedDice(actionCount, questIndex) {
+        const hero = this.heroes[this.currentPlayerIndex];
+        const quest = hero.questCards[questIndex];
+        if (!quest) return;
+        
+        this.closeInfoModal();
+        
+        const m = quest.mechanic;
+        this.actionsRemaining -= actionCount;
+        this.addLog(`📜 ${hero.name} spends ${actionCount} action${actionCount > 1 ? 's' : ''} to attempt Unicorn Steed quest (${actionCount} dice)`);
+        
+        const rolls = [];
+        let successes = 0;
+        
+        // Sorceress Visions: +1 extra die
+        const visionsBonus = hero.name === 'Sorceress' ? 1 : 0;
+        const totalDice = actionCount + visionsBonus;
+        if (visionsBonus > 0) {
+            this.addLog(`⚡ Visions: ${hero.name} rolls ${totalDice} dice instead of ${actionCount}!`);
+        }
+        
+        for (let i = 0; i < totalDice; i++) {
+            const roll = Math.floor(Math.random() * 6) + 1;
+            const hit = roll >= m.successOn;
+            if (hit) successes++;
+            rolls.push({ roll, hit });
+        }
+        
+        const passed = successes >= (m.successCount || 1);
+        
+        const visionsNote = visionsBonus > 0 ? `<div style="color: #ec4899; margin-bottom: 8px; font-size: 0.9em;">⚡ Visions: +1 bonus die!</div>` : '';
+        
+        let diceHTML = '<div style="display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap;">';
+        rolls.forEach(r => {
+            const color = r.hit ? '#4ade80' : '#ef4444';
+            const bg = r.hit ? 'rgba(74,222,128,0.2)' : 'rgba(239,68,68,0.2)';
+            const border = r.hit ? '#4ade80' : '#ef4444';
+            diceHTML += `<div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; 
+                font-size: 1.5em; font-weight: bold; border-radius: 8px; color: ${color}; 
+                background: ${bg}; border: 2px solid ${border};">${r.roll}</div>`;
+        });
+        diceHTML += '</div>';
+        
+        const heroIndex = this.currentPlayerIndex;
+        
+        if (passed) {
+            quest.completed = true;
+            this.addLog(`📜 ✅ ${hero.name} completed quest: Unicorn Steed! Horse movement + combat re-roll unlocked!`);
+            
+            const contentHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em; margin-bottom: 8px;">🦄</div>
+                    <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Unicorn Steed Tamed!</div>
+                    <div style="color: #999; margin-bottom: 8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
+                    ${visionsNote}
+                    ${diceHTML}
+                    <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
+                        🏆 Permanent Horse Movement + Re-roll all failed dice once per combat
+                    </div>
+                </div>
+            `;
+            
+            this.showInfoModal('🦄 Quest Complete!', contentHTML);
+        } else {
+            this.addLog(`📜 ❌ ${hero.name} failed Unicorn Steed quest (${actionCount} dice, no 5+)`);
+            
+            const contentHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em; margin-bottom: 8px;">🦄</div>
+                    <div style="color: #ef4444; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">The Unicorn Escapes!</div>
+                    <div style="color: #999; margin-bottom: 8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
+                    ${visionsNote}
+                    ${diceHTML}
+                    <div style="color: #d4af37; margin-top: 10px; font-size: 0.9em;">Quest card stays — try again!</div>
+                </div>
+            `;
+            
+            this.showInfoModal('🦄 Quest Failed', contentHTML);
+        }
+        
+        this.updateGameStatus();
+        this.updateActionButtons();
+        this.renderHeroes();
+        
+        const mapModal = document.getElementById('map-modal');
+        if (mapModal && mapModal.classList.contains('active')) {
+            this.updateMapStatus();
+            this.updateMovementButtons();
+        }
+    },
+    
+    // ===== ORGANIZE MILITIA: Spend action at location =====
+    _organizeLocationAction(hero, quest, questIndex) {
+        const m = quest.mechanic;
+        const locEntry = m.locations[hero.location];
+        if (!locEntry || locEntry.organized) return;
+        
+        this.actionsRemaining -= (m.actionCost || 1);
+        locEntry.organized = true;
+        
+        const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
+        const emoji = colorEmojis[locEntry.color] || '⭕';
+        this.addLog(`📜 ${hero.name} organizes militia at ${hero.location} ${emoji}`);
+        
+        // Check if all locations are organized
+        const allOrganized = Object.values(m.locations).every(loc => loc.organized);
+        
+        if (allOrganized) {
+            quest.completed = true;
+            this.addLog(`📜 ✅ ${hero.name} completed quest: Organize Militia!`);
+            
+            const contentHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em; margin-bottom: 8px;">🛡️</div>
+                    <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Militia Organized!</div>
+                    <div style="color: #d4af37; margin-bottom: 8px;">All locations organized:</div>
+                    ${Object.entries(m.locations).map(([loc, data]) => {
+                        const e = colorEmojis[data.color] || '⭕';
+                        return `<div style="color: #4ade80; margin: 4px 0;">${e} ${loc} ✅</div>`;
+                    }).join('')}
+                    <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
+                        🏆 Can be discarded to prevent a General from advancing!
+                    </div>
+                </div>
+            `;
+            
+            this.showInfoModal('📜 Quest Complete!', contentHTML);
+        } else {
+            const progress = Object.entries(m.locations).map(([loc, data]) => {
+                const e = colorEmojis[data.color] || '⭕';
+                const status = data.organized ? '✅' : '⏳';
+                return `<div style="color: ${data.organized ? '#4ade80' : '#999'}; margin: 4px 0;">${e} ${loc} ${status}</div>`;
+            }).join('');
+            
+            this.showInfoModal('📜 Militia Organized!', `
+                <div style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 8px;">🛡️</div>
+                    <div style="color: #d4af37; font-weight: bold; margin-bottom: 12px;">Organized locals at ${hero.location}!</div>
+                    ${progress}
+                </div>
+            `);
+        }
+        
+        this.updateGameStatus();
+        this.updateActionButtons();
+        this.renderHeroes();
+        
+        const mapModal = document.getElementById('map-modal');
+        if (mapModal && mapModal.classList.contains('active')) {
+            this.updateMapStatus();
+            this.updateMovementButtons();
+        }
+    },
+    
+    // ===== RUMORS QUEST: Auto-track inn visits =====
+    _checkRumorsQuestProgress(hero, locationName) {
+        if (!hero.questCards) return;
+        
+        for (let i = 0; i < hero.questCards.length; i++) {
+            const quest = hero.questCards[i];
+            if (quest.completed) continue;
+            if (!quest.mechanic || quest.mechanic.type !== 'multi_location_visit') continue;
+            
+            const locEntry = quest.mechanic.locations[locationName];
+            if (!locEntry || locEntry.visited) continue;
+            
+            // Mark as visited
+            locEntry.visited = true;
+            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
+            const emoji = colorEmojis[locEntry.color] || '⭕';
+            this.addLog(`📜 ${hero.name} visits ${locationName} ${emoji} — Rumors quest progress updated!`);
+            
+            // Check if all visited
+            const allVisited = Object.values(quest.mechanic.locations).every(loc => loc.visited);
+            
+            if (allVisited) {
+                quest.completed = true;
+                this.addLog(`📜 ✅ ${hero.name} completed quest: Rumors! Drawing ${quest.mechanic.rewardValue} Hero Cards!`);
+                
+                // Draw hero cards
+                const cardsToDraw = quest.mechanic.rewardValue;
+                let drawnCards = [];
+                for (let c = 0; c < cardsToDraw; c++) {
+                    if (this.heroDeck && this.heroDeck.length > 0) {
+                        const card = this.heroDeck.pop();
+                        hero.cards.push(card);
+                        drawnCards.push(card);
+                    }
+                }
+                this.updateDeckCounts();
+                
+                // Discard quest card and draw new one
+                const heroIndex = this.heroes.indexOf(hero);
+                hero.questCards.splice(i, 1);
+                this.questDiscardPile++;
+                
+                const progress = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
+                    const e = colorEmojis[data.color] || '⭕';
+                    return `<div style="color: #4ade80; margin: 4px 0;">${e} ${loc} ✅</div>`;
+                }).join('');
+                
+                const cardColorMap = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#1f2937' };
+                const drawnHTML = drawnCards.map(c => {
+                    const borderColor = c.special ? '#9333ea' : (cardColorMap[c.color] || '#666');
+                    return `<span style="color: ${borderColor}; font-weight: bold;">${c.icon || '🎴'} ${c.name}</span>`;
+                }).join(', ');
+                
+                this.showInfoModal('📜 Rumors Complete!', `
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; margin-bottom: 8px;">🍺</div>
+                        <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">All Rumors Gathered!</div>
+                        ${progress}
+                        <div style="color: #d4af37; font-weight: bold; margin-top: 10px;">Drew ${drawnCards.length} Hero Cards:</div>
+                        <div style="margin-top: 6px; font-size: 0.9em;">${drawnHTML || 'Deck empty!'}</div>
+                    </div>
+                `, () => {
+                    // Draw new quest
+                    const newQuest = this.drawQuestCard(heroIndex);
+                    if (newQuest) {
+                        this._drawAndShowNewQuest_display(heroIndex, newQuest);
+                    }
+                });
+                
+                this.renderHeroes();
+                return;
+            }
+        }
+    },
+    
+    // ===== FIND MAGIC GATE: Hook after gate building =====
+    _checkFindMagicGateCompletion(hero) {
+        if (!this._pendingFindMagicGateQuest) return;
+        
+        const questIndex = this._pendingFindMagicGateQuest.questIndex;
+        this._pendingFindMagicGateQuest = null;
+        
+        if (!hero.questCards || !hero.questCards[questIndex]) return;
+        const quest = hero.questCards[questIndex];
+        
+        quest.completed = true;
+        this.addLog(`📜 ✅ ${hero.name} completed quest: Find Magic Gate!`);
+        
+        const heroIndex = this.currentPlayerIndex;
+        
+        this.showInfoModal('📜 Quest Complete!', `
+            <div style="text-align: center;">
+                <div style="font-size: 2.5em; margin-bottom: 8px;">💫</div>
+                <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Magic Gate Quest Complete!</div>
+                <div style="color: #d4af37; margin-bottom: 8px;">Built a Magic Gate at a Red location!</div>
+                <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
+                    🏆 Can be discarded for +2 dice in any combat!
+                </div>
+            </div>
+        `);
+    },
+    
+    // ===== UNICORN STEED: Horse movement action =====
+    useUnicornSteed() {
+        if (this.activeMovement) {
+            this.clearMovementMode();
+        }
+        
+        if (this.actionsRemaining <= 0) {
+            this.showInfoModal('⚠️', '<div>No actions remaining!</div>');
+            return;
+        }
+        
+        const hero = this.heroes[this.currentPlayerIndex];
+        
+        // Same as Noble Steed: 2-space horse movement, no card required
+        this.activeMovement = {
+            cardIndex: -1,
+            movementType: 'Unicorn Steed',
+            maxMoves: 2,
+            movesRemaining: 2,
+            startLocation: hero.location,
+            cardUsed: null
+        };
+        
+        const boardContainer = document.getElementById('board-container');
+        if (boardContainer) {
+            boardContainer.style.cursor = 'default';
+            boardContainer.style.pointerEvents = 'none';
+        }
+        
+        const svg = document.getElementById('game-map');
+        if (svg) {
+            svg.style.pointerEvents = 'auto';
+        }
+        
+        this.showMovementIndicator();
+        this.highlightReachableLocations();
+    },
+    
+    // ===== UNICORN STEED: Check if hero has completed steed =====
+    _hasUnicornSteed(hero) {
+        if (!hero.questCards) return false;
+        return hero.questCards.some(q => q.completed && q.mechanic && q.mechanic.rewardType === 'unicorn_steed');
+    },
+    
+    // ===== FIND MAGIC GATE: Check for completed combat bonus quest =====
+    _findCombatBonusDiceQuest(hero) {
+        if (!hero.questCards) return null;
+        for (let i = 0; i < hero.questCards.length; i++) {
+            const q = hero.questCards[i];
+            if (q.completed && q.mechanic && q.mechanic.rewardType === 'use_quest_card_anytime' && q.mechanic.rewardValue === 'combat_bonus_dice') {
+                return { quest: q, questIndex: i };
+            }
+        }
+        return null;
+    },
+    
+    // ===== ORGANIZE MILITIA: Find completed quest on any hero =====
+    _findOrganizeMilitiaQuestCard() {
+        for (let i = 0; i < this.heroes.length; i++) {
+            const hero = this.heroes[i];
+            if (!hero.questCards || hero.health <= 0) continue;
+            for (let j = 0; j < hero.questCards.length; j++) {
+                const q = hero.questCards[j];
+                if (q.completed && q.mechanic && q.mechanic.rewardType === 'use_quest_card_anytime' && q.mechanic.rewardValue === 'block_general_advance') {
+                    return { hero, heroIndex: i, questIndex: j, quest: q };
+                }
+            }
+        }
+        return null;
+    },
+    
+    // ===== ORGANIZE MILITIA: Confirm use during darkness phase =====
+    _organizeMilitiaConfirm() {
+        const holder = this._findOrganizeMilitiaQuestCard();
+        if (!holder) return;
+        
+        const card = this.darknessCurrentCard;
+        const generalName = this.generals.find(g => g.color === card.general)?.name || 'Unknown';
+        
+        // Remove quest card from hero
+        holder.hero.questCards.splice(holder.questIndex, 1);
+        this.questDiscardPile++;
+        
+        // Store blocked state (reuse strongDefensesActive pattern)
+        this.organizeMilitiaActive = true;
+        
+        this.addLog(`📜 🛡️ ${holder.hero.name} uses Organize Militia — prevents ${generalName} from advancing!`);
+        
+        this.closeInfoModal();
+        this.renderHeroes();
+        this.updateDeckCounts();
+        
+        // Draw new quest card for the hero
+        const newQuest = this.drawQuestCard(holder.heroIndex);
+        
+        // Re-render the preview with blocked general shown
+        const cardNum = this.darknessCardsDrawn;
+        const totalCards = this.darknessCardsToDraw;
+        const generalOnly = this.darknessCurrentGeneralOnly;
+        this.showDarknessCardPreview(card, cardNum, totalCards, generalOnly);
     },
     
     _getLocationsWithMinions() {

@@ -32,6 +32,9 @@ Object.assign(game, {
             const oldLocation = hero.location;
             hero.location = locationName;
             
+            // Check Rumors quest progress (auto-track inn visits)
+            this._checkRumorsQuestProgress(hero, locationName);
+            
             // Discard the Magic Gate card
             const card = hero.cards[this.activeMovement.cardIndex];
             hero.cards.splice(this.activeMovement.cardIndex, 1);
@@ -75,6 +78,9 @@ Object.assign(game, {
             const oldLocation = hero.location;
             hero.location = locationName;
             this.actionsRemaining--;
+            
+            // Check Rumors quest progress (auto-track inn visits)
+            this._checkRumorsQuestProgress(hero, locationName);
             
             this.wizardTeleportUsedThisTurn = true;
             this.addLog(`${hero.name} teleported to ${locationName} (wizard ability - no card consumed)`);
@@ -526,6 +532,9 @@ Object.assign(game, {
         console.log(`[MOVEMENT] Moves remaining AFTER: ${this.activeMovement.movesRemaining}`);
         
         this.addLog(`${hero.name} moved: ${oldLocation} → ${locationName} (${this.activeMovement.movementType}: ${this.activeMovement.movesRemaining} moves left)`);
+        
+        // Check Rumors quest progress (auto-track inn visits)
+        this._checkRumorsQuestProgress(hero, locationName);
         
         // Update map
         this.renderTokens();

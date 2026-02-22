@@ -1468,7 +1468,7 @@ Object.assign(game, {
                         <div class="stat card-stat" data-hero-index="${index}" style="cursor: pointer; text-decoration: underline;">🎴 ${hero.cards.length}</div>
                         <div class="stat quest-stat" data-hero-index="${index}" style="color: #ef4444; cursor: pointer; text-decoration: underline;">📜 ${hero.questCards ? hero.questCards.filter(q => !q.discarded).length : 0}</div>
                     </div>
-                    <div style="font-size: 0.75em; margin-top: 5px;">
+                    <div style="font-size: 0.75em; margin-top: 5px; color: #333;">
                         📍 ${hero.location}
                     </div>
                     ${attackStyleBadge}
@@ -1478,9 +1478,9 @@ Object.assign(game, {
                             background: rgba(220,38,38,0.15); border: 1px solid #dc2626; color: #ef4444;">
                             📜 ${q.name}
                         </div>`).join('')}
-                    <div style="margin-top: 8px; padding: 8px; background: rgba(255,215,0,0.1); border-radius: 4px; font-size: 0.8em; color: #ffd700; line-height: 1.4;">
+                    <div style="margin-top: 8px; padding: 8px; background: transparent; border-radius: 4px; font-size: 0.8em; color: #000; line-height: 1.4;">
                         <div style="font-weight: bold; margin-bottom: 4px;">⚡ Special Ability:</div>
-                        <div style="color: #d4af37;">${hero.ability}</div>
+                        <div style="color: #333;">${hero.ability}</div>
                     </div>
                 </div>
             `}).join('');

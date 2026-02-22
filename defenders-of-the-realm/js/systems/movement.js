@@ -1024,15 +1024,74 @@ Object.assign(game, {
         modal.className = 'modal active';
         modal.id = 'release-notes-modal';
         modal.style.zIndex = '15000';
-        
+
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
                 <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
-                <h2 class="modal-title">📋 Release Notes - Version 5.2.2</h2>
-                
+                <h2 class="modal-title">📋 Release Notes - Version 5.3.0</h2>
+
                 <div style="margin: 20px 0;">
-                    <h3 style="color: #ffd700; margin-bottom: 10px;">🎉 MAJOR RELEASE - Quest Cards, All Heroes, Settings & Splash Screen</h3>
-                    
+                    <h3 style="color: #ffd700; margin-bottom: 10px;">🎉 MINOR RELEASE - Map Update, GitHub & Netlify Integration</h3>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Game Map Update</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Updated game map with improved visual design and layout
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ GitHub Integration</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Integrated project with GitHub repository using Claude Code for streamlined development workflow
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Netlify Deployment</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Deployed game as a web application hosted on Netlify for easy access and sharing
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            Version 5.3.0 - Minor Release
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button class="btn" style="flex: 1;" onclick="game.showV522ReleaseNotes()">
+                        📦 v5.2.2 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showV500ReleaseNotes()">
+                        📦 v5.0.0 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showArchivedReleaseNotes()">
+                        📜 Archived Release History
+                    </button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="this.closest('.modal').remove()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    },
+
+    showV522ReleaseNotes() {
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.style.zIndex = '16000';
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
+                <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
+                <h2 class="modal-title">📦 v5.2.2 - Quest Cards, All Heroes, Settings & Splash Screen</h2>
+
+                <div style="margin: 20px 0;">
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                         <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Quest Card System (24 Cards)</div>
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
@@ -1046,7 +1105,7 @@ Object.assign(game, {
                             • War Banner protects against Hero Defeated penalties in both solo and group combat
                         </div>
                     </div>
-                    
+
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                         <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ All 9 Heroes Added</div>
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
@@ -1056,7 +1115,7 @@ Object.assign(game, {
                             • Hero-specific combat skills: Eagle Rider Sky/Ground attack, Dwarf Dragon Slayer reroll, Barbarian rage, and more
                         </div>
                     </div>
-                    
+
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                         <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Game Settings Modal</div>
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
@@ -1068,7 +1127,7 @@ Object.assign(game, {
                             • All setting changes logged to game log
                         </div>
                     </div>
-                    
+
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                         <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Splash Screen</div>
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
@@ -1077,28 +1136,14 @@ Object.assign(game, {
                             • Click or tap anywhere to proceed to game setup
                         </div>
                     </div>
-                    
-                    <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
-                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
-                            Version 5.2.2 - Major Release
-                        </div>
-                    </div>
                 </div>
-                
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn" style="flex: 1;" onclick="game.showV500ReleaseNotes()">
-                        📦 v5.0.0 Release Notes
-                    </button>
-                    <button class="btn" style="flex: 1;" onclick="game.showArchivedReleaseNotes()">
-                        📜 Archived Release History
-                    </button>
-                    <button class="btn btn-primary" style="flex: 1;" onclick="this.closest('.modal').remove()">
-                        Close
-                    </button>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="this.closest('.modal').remove()">Close</button>
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
     },
     

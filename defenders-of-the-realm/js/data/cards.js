@@ -175,5 +175,3 @@ const DARKNESS_DECK_DATA = [
     { faction1: 'blue', minions1: 1, location1: 'Rock Bridge Pass', faction2: 'black', minions2: 1, location2: 'Dark Woods', general: 'red', minions3: 1, location3: 'Bounty Bay' },
     { faction1: 'blue', minions1: 2, location1: 'Blizzard Mountains', faction2: 'black', minions2: 1, location2: 'Fire River', general: 'blue', minions3: 2, location3: 'Greenleaf Village' }
 ];
-
-];

@@ -1519,4 +1519,137 @@ Object.assign(game, {
     },
     
     showLocationActions(locationName) {
+        const hero = this.heroes[this.currentPlayerIndex];
+        const location = this.locationCoords[locationName];
+        const minionsHere = this.minions[locationName];
+        const generalHere = this.generals.find(g => g.location === locationName && !g.defeated);
+        const heroIsHere = hero.location === locationName;
+
+        const totalMinions = minionsHere ? Object.values(minionsHere).reduce((a, b) => a + b, 0) : 0;
+
+        // Build location info
+        document.getElementById('location-name-title').textContent = locationName;
+
+        let content = `<div style="margin-bottom: 15px;">`;
+
+        if (location.type === 'city') {
+            content += `<div style="color: #ffd700;">👑 Monarch City - The heart of the realm</div>`;
+        } else if (location.type === 'inn') {
+            content += `<div style="color: #d97706;">🍺 Inn - Rumors action available here</div>`;
+        } else if (location.type === 'general') {
+            content += `<div style="color: #ef4444;">⚠️ General's Lair</div>`;
+        }
+
+        if (generalHere) {
+            content += `<div style="margin-top: 8px; padding: 8px; background: rgba(220,38,38,0.2); border-radius: 5px;">
+                <strong>👹 ${generalHere.name}</strong> (${generalHere.faction})
+                <div>Life Tokens: ${generalHere.health}/${generalHere.maxHealth}</div>
+            </div>`;
+        }
+
+        if (totalMinions > 0) {
+            content += `<div style="margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 5px;">
+                <strong>Minions:</strong><br>`;
+            for (let [color, count] of Object.entries(minionsHere)) {
+                if (count > 0) {
+                    const colorName = color.charAt(0).toUpperCase() + color.slice(1);
+                    content += `${colorName}: ${count}<br>`;
+                }
+            }
+            content += `</div>`;
+        }
+
+        const heroesHere = this.heroes.filter(h => h.location === locationName);
+        if (heroesHere.length > 0) {
+            content += `<div style="margin-top: 8px;">
+                <strong>Heroes here:</strong> ${heroesHere.map(h => h.symbol + ' ' + h.name).join(', ')}
+            </div>`;
+        }
+
+        content += `</div>`;
+
+        document.getElementById('location-actions-content').innerHTML = content;
+
+        // Build action buttons
+        const buttonsDiv = document.getElementById('location-action-buttons');
+        buttonsDiv.innerHTML = '';
+
+        if (!heroIsHere) {
+            const moveBtn = document.createElement('button');
+            moveBtn.className = 'btn btn-primary';
+            moveBtn.textContent = '🥾 Foot';
+            moveBtn.title = `Move to ${locationName} by foot (1 action)`;
+            moveBtn.onclick = () => {
+                this.closeLocationActions();
+                this.moveToLocation(locationName);
+            };
+            buttonsDiv.appendChild(moveBtn);
+
+            // Ranger Archery: direct ranged attack at connected location
+            if (hero.name === 'Ranger' && totalMinions > 0 && this.actionsRemaining > 0 && this.areLocationsConnected(hero.location, locationName)) {
+                const archeryBtn = document.createElement('button');
+                archeryBtn.className = 'btn btn-primary';
+                archeryBtn.textContent = `🏹 Archery`;
+                archeryBtn.onclick = () => {
+                    this.closeLocationActions();
+                    this.engageMinionsAtLocation(locationName);
+                };
+                buttonsDiv.appendChild(archeryBtn);
+            }
+        } else {
+            // Hero is at this location
+            if (totalMinions > 0) {
+                const engageMinionsBtn = document.createElement('button');
+                engageMinionsBtn.className = 'btn btn-primary';
+                engageMinionsBtn.textContent = '⚔️ Engage Minions';
+                engageMinionsBtn.onclick = () => {
+                    this.closeLocationActions();
+                    this.engageMinionsFromMap();
+                };
+                buttonsDiv.appendChild(engageMinionsBtn);
+
+                // Wizard Fireball button
+                if (hero.name === 'Wizard') {
+                    const minionColors = Object.entries(minionsHere).filter(([c, n]) => n > 0).map(([c]) => c);
+                    const hasMatchingCard = minionColors.some(color => hero.cards.some(card => card.color === color));
+                    if (hasMatchingCard) {
+                        const fireballBtn = document.createElement('button');
+                        fireballBtn.className = 'btn btn-primary';
+                        fireballBtn.style.background = '#dc2626';
+                        fireballBtn.textContent = '🔥 Fireball';
+                        fireballBtn.onclick = () => {
+                            this.closeLocationActions();
+                            this.wizardFireball();
+                        };
+                        buttonsDiv.appendChild(fireballBtn);
+                    }
+                }
+            }
+
+            if (generalHere && totalMinions === 0) {
+                const attackGeneralBtn = document.createElement('button');
+                attackGeneralBtn.className = 'btn btn-danger';
+                attackGeneralBtn.textContent = '👹 Attack General';
+                attackGeneralBtn.onclick = () => {
+                    this.closeLocationActions();
+                    this.attackGeneralFromMap();
+                };
+                buttonsDiv.appendChild(attackGeneralBtn);
+            }
+
+            if (location.type === 'inn') {
+                const rumorsBtn = document.createElement('button');
+                rumorsBtn.className = 'btn btn-primary';
+                rumorsBtn.style.background = '#d97706';
+                rumorsBtn.textContent = '🍺 Gather Rumors';
+                rumorsBtn.onclick = () => {
+                    this.closeLocationActions();
+                    this.rumorsAction();
+                };
+                buttonsDiv.appendChild(rumorsBtn);
+            }
+        }
+
+        document.getElementById('location-actions-modal').classList.add('active');
+    },
 });

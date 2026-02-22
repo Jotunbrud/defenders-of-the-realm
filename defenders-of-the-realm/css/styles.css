@@ -69,7 +69,7 @@
         @media (min-width: 768px) {
             .board-container {
                 width: 100%;
-                height: calc(100vh - 220px);
+                height: calc(100vh - 180px);
                 min-height: 400px;
                 padding-bottom: 0;
             }

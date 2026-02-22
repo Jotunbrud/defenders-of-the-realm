@@ -35,7 +35,7 @@
     <div class="game-container">
         <div class="game-header">
             <h1>⚔️ Defenders of the Realm ⚔️</h1>
-            <div style="font-size: 0.85em; color: #d4af37; margin-top: 5px;">Version 5.3.0 - Beta</div>
+            <div style="font-size: 0.85em; color: #d4af37; margin-top: 5px;">Version 5.3.6 - Beta</div>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
                 <button class="btn btn-primary" onclick="game.showRules()">📜 Rules</button>
                 <button class="btn btn-primary" onclick="game.showTips()">💡 Tips</button>
@@ -155,10 +155,10 @@
             <h2 class="modal-title">⚔️ Select Cards for Attack</h2>
             <div id="general-card-selection-content"></div>
             <div id="general-card-selection-buttons" style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn btn-primary" style="flex: 1;" onclick="console.log('Attack button clicked'); window.game.confirmGeneralAttack();">
+                <button class="btn btn-primary" style="flex: 1;" onclick="game.confirmGeneralAttack();">
                     ⚔️ Attack
                 </button>
-                <button class="btn" style="flex: 1;" onclick="console.log('Cancel button clicked'); game.cancelGeneralAttack()">
+                <button class="btn" style="flex: 1;" onclick="game.cancelGeneralAttack()">
                     Cancel
                 </button>
             </div>
@@ -238,7 +238,7 @@
                     <button class="btn btn-primary" id="engage-minions-btn" onclick="game.engageMinionsFromMap()" style="padding: 8px 12px;" title="Engage minions in combat">
                         <span class="action-btn-icon">⚔️ </span>Engage Minions
                     </button>
-                    <button class="btn btn-primary" id="attack-general-btn" onclick="console.log('Attack General button clicked!'); game.attackGeneralFromMap()" style="padding: 8px 12px;" title="Attack an enemy general">
+                    <button class="btn btn-primary" id="attack-general-btn" onclick="game.attackGeneralFromMap()" style="padding: 8px 12px;" title="Attack an enemy general">
                         <span class="action-btn-icon">👹 </span>Attack General
                     </button>
                     <button class="btn btn-primary" id="quest-cards-btn" onclick="game.showQuestCardsModal()" style="padding: 8px 12px;" title="View Quest Cards">
@@ -468,17 +468,6 @@
 
     <!-- ═══ INITIALIZE ═══ -->
     <script>
-        // Verify game is accessible
-        console.log('Game object exposed to window:', window.game);
-        console.log('confirmGeneralAttack exists:', typeof window.game.confirmGeneralAttack);
-        
-        // Test button access
-        setTimeout(() => {
-            const btn = document.querySelector('#general-card-selection-modal button');
-            console.log('Attack button found:', btn);
-            console.log('Button onclick:', btn ? btn.getAttribute('onclick') : 'button not found');
-        }, 1000);
-        
         // Initialize game object
         game.init();
     </script>

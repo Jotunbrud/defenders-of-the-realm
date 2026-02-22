@@ -1070,7 +1070,7 @@ Object.assign(game, {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
                 <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
-                <h2 class="modal-title">📋 Release Notes - Version 5.3.5</h2>
+                <h2 class="modal-title">📋 Release Notes - Version 5.3.6</h2>
 
                 <div style="margin: 20px 0;">
                     <h3 style="color: #ffd700; margin-bottom: 10px;">🎉 MINOR RELEASE - Map Update, GitHub & Netlify Integration</h3>
@@ -1098,7 +1098,7 @@ Object.assign(game, {
 
                     <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
-                            Version 5.3.5 - Minor Release
+                            Version 5.3.6 - Minor Release
                         </div>
                     </div>
                 </div>

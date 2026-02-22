@@ -1070,6 +1070,61 @@ Object.assign(game, {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
                 <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
+                <h2 class="modal-title">📋 Release Notes - Version 5.3.10</h2>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #ffd700; margin-bottom: 10px;">🐛 BUG FIX - End Turn Modal & Block Button Fixes</h3>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">🐛 End Turn Modal Fix</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Fixed end-of-turn button showing wrong phase name — now correctly displays "End Daytime Phase" and "End Evening Phase" in their respective modals
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">🐛 Block Button Fix</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Fixed Strong Defenses and Organize Militia block buttons appearing when a general's darkness card targets Monarch City but the general is not actually adjacent — now checks reachability before showing block options
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            Version 5.3.10 - Bug Fix
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button class="btn" style="flex: 1;" onclick="game.showV539ReleaseNotes()">
+                        📦 v5.3.9 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showV530ReleaseNotes()">
+                        📦 v5.3.0 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showV522ReleaseNotes()">
+                        📦 v5.2.2 Release Notes
+                    </button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="this.closest('.modal').remove()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    },
+
+    showV539ReleaseNotes() {
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.id = 'release-notes-modal';
+        modal.style.zIndex = '15500';
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
+                <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
                 <h2 class="modal-title">📋 Release Notes - Version 5.3.9</h2>
 
                 <div style="margin: 20px 0;">
@@ -1132,12 +1187,6 @@ Object.assign(game, {
                     </button>
                     <button class="btn" style="flex: 1;" onclick="game.showV522ReleaseNotes()">
                         📦 v5.2.2 Release Notes
-                    </button>
-                    <button class="btn" style="flex: 1;" onclick="game.showV500ReleaseNotes()">
-                        📦 v5.0.0 Release Notes
-                    </button>
-                    <button class="btn" style="flex: 1;" onclick="game.showArchivedReleaseNotes()">
-                        📜 Archived Release History
                     </button>
                     <button class="btn btn-primary" style="flex: 1;" onclick="this.closest('.modal').remove()">
                         Close

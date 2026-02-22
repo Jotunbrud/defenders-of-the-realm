@@ -200,6 +200,8 @@ Object.assign(game, {
         `;
         
         this._endOfTurnModalMode = 'daytime';
+        const endBtn = document.getElementById('end-of-turn-btn');
+        if (endBtn) endBtn.textContent = 'End Daytime Phase';
         modal.classList.add('active');
     },
     
@@ -367,6 +369,8 @@ Object.assign(game, {
         `;
         
         this._endOfTurnModalMode = 'evening';
+        const endBtn = document.getElementById('end-of-turn-btn');
+        if (endBtn) endBtn.textContent = 'End Evening Phase';
         modal.classList.add('active');
     },
     

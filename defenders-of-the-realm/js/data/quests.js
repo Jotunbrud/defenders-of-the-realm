@@ -1,13 +1,12 @@
 // ═══════════════════════════════════════════════════════════════
 // DEFENDERS OF THE REALM - Quest Card Definitions
-// 24 quest cards with types, requirements, and rewards
+// 21 quest cards with types, requirements, and rewards
 // ═══════════════════════════════════════════════════════════════
 
 function createQuestDeck() {
     const questDeck = [];
     let questId = 1;
-    // ── MAGIC ITEM QUESTS (4 cards) — COMMENTED OUT FOR TESTING ──
-    /*
+    // ── MAGIC ITEM QUESTS (4 cards) ──
     
     // 1. Amulet of the Gods
     questDeck.push({
@@ -101,8 +100,6 @@ function createQuestDeck() {
         }
     });
     
-    */
-    
     // ── IMPLEMENTED QUESTS ──
     
     // Find Magic Gate — Build a Magic Gate at any Red location
@@ -195,8 +192,7 @@ function createQuestDeck() {
         }
     });
     
-    // ── PLACEHOLDER QUESTS (13 cards) — COMMENTED OUT FOR TESTING ──
-    /*
+    // ── PLACEHOLDER QUESTS (9 cards) ──
     // These use the standard dice_roll mechanic but have no implemented reward yet.
     // rewardType: 'placeholder' — completion logs success but grants no mechanical benefit.
     
@@ -210,11 +206,7 @@ function createQuestDeck() {
         { name: 'Blessed Chalice', location: 'Angel Tear Falls', description: 'Fill the chalice with the waters of Angel Tear Falls.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Shadow Blade', location: 'Ghost Marsh', description: 'Retrieve the cursed blade from the depths of the marsh.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
         { name: 'Talisman of Warding', location: 'Cursed Plateau', description: 'Perform the ritual of warding atop the cursed plateau.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
-        { name: 'Compass of the Wanderer', location: 'Sea Bird Port', description: 'Calibrate the ancient compass using the port\'s lighthouse.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 4, failDiscard: true },
-        { name: 'Cloak of the North Wind', location: 'Amarak Peak', description: 'Brave the icy summit to claim the enchanted cloak.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
-        { name: 'Serpent Fang Dagger', location: 'Serpent Swamp', description: 'Extract a fang from the great serpent of the swamp.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
-        { name: 'Lantern of Truth', location: 'Raven Forest', description: 'Ignite the lantern with the ghostly flames of Raven Forest.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
-        { name: 'Crown of the Ancients', location: 'Dancing Stone', description: 'Solve the riddle of the dancing stones to claim the crown.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true }
+        { name: 'Compass of the Wanderer', location: 'Sea Bird Port', description: 'Calibrate the ancient compass using the port\'s lighthouse.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 4, failDiscard: true }
     ];
     
     placeholderQuests.forEach(pq => {
@@ -288,6 +280,5 @@ function createQuestDeck() {
             requirePresence: false
         }
     });
-    */
     return questDeck;
 }

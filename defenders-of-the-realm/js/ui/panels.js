@@ -982,6 +982,14 @@ Object.assign(game, {
                 buildGateBtn.style.background = '#666';
             }
         }
+        
+        // Show deferred Rumors quest completion modal
+        // Triggers here because updateActionButtons runs after every state change
+        // Only show when movement and combat are fully resolved
+        if (this._pendingRumorsCompletion && !this.activeMovement && !this.currentCombat) {
+            // Use a microtask to ensure all rendering is done first
+            Promise.resolve().then(() => this._showPendingRumorsCompletion());
+        }
     },
     
     closeMap(event) {

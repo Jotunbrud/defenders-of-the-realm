@@ -748,19 +748,27 @@ Object.assign(game, {
         // Update Complete Quest button
         const completeQuestBtn = document.getElementById('complete-quest-btn');
         if (completeQuestBtn) {
-            const canComplete = hasActions && this._getCompletableQuest(hero) !== null;
+            const questResult = hasActions ? this._getCompletableQuest(hero) : null;
+            const canComplete = questResult !== null;
             if (canComplete) {
                 completeQuestBtn.disabled = false;
                 completeQuestBtn.className = 'btn btn-primary';
                 completeQuestBtn.style.opacity = '1';
                 completeQuestBtn.style.cursor = 'pointer';
                 completeQuestBtn.style.background = '#dc2626';
+                // Show specific label for multi-location action quests
+                if (questResult.quest.mechanic?.type === 'multi_location_action') {
+                    completeQuestBtn.innerHTML = `<span class="action-btn-icon">📜 </span>Organize: ${questResult.quest.name}`;
+                } else {
+                    completeQuestBtn.innerHTML = `<span class="action-btn-icon">🎯 </span>Complete Quest`;
+                }
             } else {
                 completeQuestBtn.disabled = true;
                 completeQuestBtn.className = 'btn';
                 completeQuestBtn.style.opacity = '0.5';
                 completeQuestBtn.style.cursor = 'not-allowed';
                 completeQuestBtn.style.background = '#666';
+                completeQuestBtn.innerHTML = `<span class="action-btn-icon">🎯 </span>Complete Quest`;
             }
         }
         

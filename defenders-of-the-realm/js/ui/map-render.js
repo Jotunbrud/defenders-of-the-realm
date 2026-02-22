@@ -429,7 +429,11 @@ Object.assign(game, {
                         // Show if: standard quest at this location, OR new quest types (already validated by _getCompletableQuest)
                         const isHere = q.location === locationName || q.mechanic.type === 'build_gate_red' || q.mechanic.type === 'multi_location_action' || q.mechanic.type === 'variable_dice_roll';
                         if (isHere) {
-                            html += `<button class="btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.completeQuestAction()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">🎯 Complete Quest: ${q.name}</button>`;
+                            // Use specific label for multi-location action quests (requires action spend)
+                            const btnLabel = q.mechanic.type === 'multi_location_action'
+                                ? `📜 Organize: ${q.name} (1 action)`
+                                : `🎯 Complete Quest: ${q.name}`;
+                            html += `<button class="btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.completeQuestAction()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">${btnLabel}</button>`;
                         }
                     }
                 }

@@ -1002,13 +1002,13 @@ Object.assign(game, {
             return;
         }
         
-        // Multi-location action (Organize Militia)
+        // Multi-location action (Organize Militia) — show confirmation before spending action
         if (m.type === 'multi_location_action') {
             if (this.actionsRemaining < (m.actionCost || 1)) {
                 this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
                 return;
             }
-            this._organizeLocationAction(hero, quest, questIndex);
+            this._confirmOrganizeAction(hero, quest, questIndex);
             return;
         }
         
@@ -1787,6 +1787,43 @@ Object.assign(game, {
     },
     
     // ===== ORGANIZE MILITIA: Spend action at location =====
+    _confirmOrganizeAction(hero, quest, questIndex) {
+        const m = quest.mechanic;
+        const locEntry = m.locations[hero.location];
+        if (!locEntry || locEntry.organized) return;
+        
+        const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
+        const emoji = colorEmojis[locEntry.color] || '⭕';
+        const actionCost = m.actionCost || 1;
+        
+        // Show progress so far
+        const progress = Object.entries(m.locations).map(([loc, data]) => {
+            const e = colorEmojis[data.color] || '⭕';
+            const isCurrent = loc === hero.location;
+            const status = data.organized ? '✅' : (isCurrent ? '👉' : '⬜');
+            const color = data.organized ? '#4ade80' : (isCurrent ? '#ffd700' : '#666');
+            return `<div style="color: ${color}; margin: 3px 0; font-weight: ${isCurrent ? 'bold' : 'normal'};">${e} ${loc} ${status}</div>`;
+        }).join('');
+        
+        this.showInfoModal('📜 Organize Militia', `
+            <div style="text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">🛡️</div>
+                <div style="color: #d4af37; font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">Organize locals at ${hero.location}?</div>
+                <div style="color: #ef4444; font-weight: bold; margin-bottom: 12px;">Cost: ${actionCost} Action (${this.actionsRemaining} remaining)</div>
+                <div style="margin-bottom: 12px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                    ${progress}
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn" style="flex: 1; background: #666;" onclick="game.closeInfoModal()">Cancel</button>
+                    <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game.closeInfoModal(); game._organizeLocationAction(game.heroes[game.currentPlayerIndex], game.heroes[game.currentPlayerIndex].questCards[${questIndex}], ${questIndex})">⚡ Organize (${actionCost} Action)</button>
+                </div>
+            </div>
+        `);
+        // Hide the default Continue button
+        const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtn && defaultBtn.querySelector('.btn-primary')) defaultBtn.style.display = 'none';
+    },
+    
     _organizeLocationAction(hero, quest, questIndex) {
         const m = quest.mechanic;
         const locEntry = m.locations[hero.location];

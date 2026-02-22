@@ -1068,13 +1068,97 @@ Object.assign(game, {
         modal.style.zIndex = '15000';
 
         modal.innerHTML = `
-            <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
                 <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
                 <h2 class="modal-title">📋 Release Notes - Version 5.3.6</h2>
 
                 <div style="margin: 20px 0;">
-                    <h3 style="color: #ffd700; margin-bottom: 10px;">🎉 MINOR RELEASE - Map Update, GitHub & Netlify Integration</h3>
+                    <h3 style="color: #ffd700; margin-bottom: 10px;">🎉 MINOR RELEASE - Quest System, UI Overhaul & Bug Fixes</h3>
 
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Quest System Overhaul</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • 19-card quest deck with fully implemented mechanics replacing placeholders<br>
+                            • New quest types: Organize Militia (multi-location action), Find Magic Gate (build gate at red location), Unicorn Steed (variable dice roll horse movement), Rumors (visit 3 inns)<br>
+                            • Quest retirement system — completed/used/failed quests stay on hero card with status labels (⏳ In Progress, ✅ Ready, 🏆 Used, ❌ Failed)<br>
+                            • Quest draw rules fixed: new quest drawn on completion or fail+discard only, never on active effect use<br>
+                            • Organize Militia requires explicit action spend with confirmation modal showing progress and cost<br>
+                            • Rumors quest tracks visits across multi-step movement (eagle flight, horse) with triple-check failsafe
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Map Board UI Redesign</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Compact header — title, tips, and close button on single row (saves ~50px vertical space)<br>
+                            • Game Log moved from below-map panel to action tray button with popup modal<br>
+                            • Larger map play area on desktop (board container height increased)<br>
+                            • Action tray shows context-sensitive quest labels (📜 Organize vs 🎯 Complete Quest)
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Darkness Spreads Improvements</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Block general buttons (Strong Defenses, Organize Militia) only appear when general will actually advance<br>
+                            • Defeated generals and generals with major wounds no longer trigger block button display<br>
+                            • Cards auto-resolve without unnecessary pause when no blocking options available
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">🐛 Bug Fixes</div>
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            • Fixed Find Magic Gate modal not appearing during gate building<br>
+                            • Fixed Rumors deferred modal displaying incorrectly after inn visit<br>
+                            • Fixed combat bonus dice not triggering for general attacks<br>
+                            • Fixed Unicorn Steed button positioning in quest completion modal<br>
+                            • Fixed hero death/respawn preserving retired quest history correctly<br>
+                            • Cleaned up debug console.log statements from combat and init code
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
+                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
+                            Version 5.3.6 - Minor Release
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button class="btn" style="flex: 1;" onclick="game.showV530ReleaseNotes()">
+                        📦 v5.3.0 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showV522ReleaseNotes()">
+                        📦 v5.2.2 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showV500ReleaseNotes()">
+                        📦 v5.0.0 Release Notes
+                    </button>
+                    <button class="btn" style="flex: 1;" onclick="game.showArchivedReleaseNotes()">
+                        📜 Archived Release History
+                    </button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="this.closest('.modal').remove()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    },
+
+    showV530ReleaseNotes() {
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.style.zIndex = '16000';
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
+                <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
+                <h2 class="modal-title">📦 v5.3.0 - Map Update, GitHub & Netlify Integration</h2>
+
+                <div style="margin: 20px 0;">
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                         <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">✅ Game Map Update</div>
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
@@ -1095,27 +1179,10 @@ Object.assign(game, {
                             • Deployed game as a web application hosted on Netlify for easy access and sharing
                         </div>
                     </div>
-
-                    <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
-                        <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
-                            Version 5.3.6 - Minor Release
-                        </div>
-                    </div>
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
-                    <button class="btn" style="flex: 1;" onclick="game.showV522ReleaseNotes()">
-                        📦 v5.2.2 Release Notes
-                    </button>
-                    <button class="btn" style="flex: 1;" onclick="game.showV500ReleaseNotes()">
-                        📦 v5.0.0 Release Notes
-                    </button>
-                    <button class="btn" style="flex: 1;" onclick="game.showArchivedReleaseNotes()">
-                        📜 Archived Release History
-                    </button>
-                    <button class="btn btn-primary" style="flex: 1;" onclick="this.closest('.modal').remove()">
-                        Close
-                    </button>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="this.closest('.modal').remove()">Close</button>
                 </div>
             </div>
         `;

@@ -363,12 +363,23 @@ Object.assign(game, {
     
     _showQuestCardsForHeroes(filterHeroIndex) {
         // Collect quest cards from heroes (all or filtered)
-        const allQuests = [];
+        const activeQuests = [];
+        const retiredQuests = [];
         this.heroes.forEach((hero, heroIndex) => {
             if (filterHeroIndex !== null && heroIndex !== filterHeroIndex) return;
             if (hero.questCards) {
                 hero.questCards.forEach((quest, questIndex) => {
-                    allQuests.push({ hero, heroIndex, quest, questIndex });
+                    if (quest.discarded) {
+                        retiredQuests.push({ hero, heroIndex, quest, questIndex });
+                    } else {
+                        activeQuests.push({ hero, heroIndex, quest, questIndex });
+                    }
+                });
+            }
+            // Legacy archived quests (from before in-place tracking)
+            if (hero.completedQuests) {
+                hero.completedQuests.forEach((quest) => {
+                    retiredQuests.push({ hero, heroIndex, quest, isLegacy: true });
                 });
             }
         });
@@ -376,16 +387,16 @@ Object.assign(game, {
         const filterHero = filterHeroIndex !== null ? this.heroes[filterHeroIndex] : null;
         const modalTitle = filterHero ? `📜 ${filterHero.symbol} ${filterHero.name}'s Quests` : '📜 Quest Cards';
         
-        if (allQuests.length === 0) {
+        if (activeQuests.length === 0 && retiredQuests.length === 0) {
             this.showInfoModal(modalTitle, filterHero ? `<div>${filterHero.name} has no quest cards!</div>` : '<div>No heroes have any quest cards!</div>');
             return;
         }
         
         this._selectedQuestCard = null;
-        this._questCardsList = allQuests;
+        this._questCardsList = activeQuests;
         
         let cardsHTML = '<div id="quest-cards-list" style="display: flex; flex-direction: column; gap: 10px;">';
-        allQuests.forEach(({ hero, heroIndex, quest, questIndex }, i) => {
+        activeQuests.forEach(({ hero, heroIndex, quest, questIndex }, i) => {
             const statusIcon = quest.completed ? '✅' : '⏳';
             const statusText = quest.completed ? 'COMPLETED' : 'In Progress';
             const statusColor = quest.completed ? '#4ade80' : '#ef4444';
@@ -437,11 +448,34 @@ Object.assign(game, {
         });
         cardsHTML += '</div>';
         
+        // Build retired quests section (used/discarded/failed)
+        let archivedHTML = '';
+        if (retiredQuests.length > 0) {
+            archivedHTML = '<div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #555;">';
+            archivedHTML += '<div style="color: #666; font-size: 0.85em; font-weight: bold; margin-bottom: 8px;">📋 Quest History (Used/Discarded)</div>';
+            retiredQuests.forEach(({ hero, quest, isLegacy }) => {
+                const icon = quest.failed ? '❌' : '🏆';
+                const label = isLegacy ? (quest.useReason || 'Used') : (quest.failed ? 'Failed' : (quest.discardReason || 'Used'));
+                archivedHTML += `
+                    <div style="border: 2px solid #444; padding: 8px 12px; border-radius: 6px; background: rgba(50,50,50,0.3); margin-bottom: 6px; opacity: 0.7;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <div style="font-weight: bold; color: #888; font-size: 0.95em;">📜 ${quest.name}</div>
+                            <div style="font-size: 0.75em; padding: 2px 8px; border-radius: 10px; background: rgba(100,100,100,0.4); color: #888; font-weight: bold;">${icon} ${quest.failed ? 'FAILED' : 'USED'}</div>
+                        </div>
+                        <div style="font-size: 0.8em; color: #777; margin-top: 3px;">${label}</div>
+                        ${filterHeroIndex === null ? `<div style="font-size: 0.75em; color: ${hero.color}; margin-top: 2px;">${hero.symbol} ${hero.name}</div>` : ''}
+                    </div>
+                `;
+            });
+            archivedHTML += '</div>';
+        }
+        
         const contentHTML = `
             <div style="color: #d4af37; margin-bottom: 12px;">
                 ${filterHero ? `${filterHero.name}'s quest cards. Select a quest to view or use.` : 'Quest cards assigned to heroes. Select a quest to view or use.'}
             </div>
-            ${cardsHTML}
+            ${activeQuests.length > 0 ? cardsHTML : '<div style="color: #666; margin-bottom: 10px;">No active quest cards.</div>'}
+            ${archivedHTML}
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button class="btn" style="flex: 1; background: #666;" onclick="game.closeInfoModal()">Close</button>
                 <button id="view-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmViewQuest()">🗺️ View Quest</button>
@@ -455,9 +489,9 @@ Object.assign(game, {
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
         
-        // Auto-select if only one quest
-        if (allQuests.length === 1) {
-            this.selectQuestCard(0, allQuests[0].heroIndex, allQuests[0].questIndex);
+        // Auto-select if only one active quest
+        if (activeQuests.length === 1) {
+            this.selectQuestCard(0, activeQuests[0].heroIndex, activeQuests[0].questIndex);
         }
     },
     
@@ -680,7 +714,7 @@ Object.assign(game, {
     useCompletedQuestCard(heroIndex, questIndex) {
         const hero = this.heroes[heroIndex];
         const quest = hero.questCards[questIndex];
-        if (!quest || !quest.completed) return;
+        if (!quest || !quest.completed || quest.discarded) return;
         
         const m = quest.mechanic;
         if (m.rewardType === 'use_quest_card_anytime' && m.rewardValue === 'remove_taint') {
@@ -833,9 +867,8 @@ Object.assign(game, {
             this.taintCrystalsRemaining++;
         }
         
-        // Discard the quest card
-        hero.questCards.splice(questIndex, 1);
-        this.questDiscardPile++;
+        // Retire the quest card (mark as used, keep in questCards for history)
+        this._retireQuest(hero, quest, `Removed Taint Crystal at ${locationName}`);
         
         this.addLog(`📜 ✨ ${hero.name} used ${quest.name} to remove a Tainted Crystal at ${locationName}!`);
         
@@ -890,7 +923,7 @@ Object.assign(game, {
         if (!hero.questCards) return null;
         for (let i = 0; i < hero.questCards.length; i++) {
             const quest = hero.questCards[i];
-            if (quest.completed) continue;
+            if (quest.completed || quest.discarded) continue;
             if (!quest.mechanic) continue;
             
             // Standard dice_roll: must be at quest location
@@ -930,7 +963,7 @@ Object.assign(game, {
         let bonus = 0;
         if (hero.questCards) {
             hero.questCards.forEach(q => {
-                if (q.completed && q.mechanic && q.mechanic.rewardType === 'bonus_actions') {
+                if (q.completed && !q.discarded && q.mechanic && q.mechanic.rewardType === 'bonus_actions') {
                     bonus += q.mechanic.rewardValue;
                 }
             });
@@ -943,7 +976,7 @@ Object.assign(game, {
         let bonus = 0;
         if (hero.questCards) {
             hero.questCards.forEach(q => {
-                if (q.completed && q.mechanic && q.mechanic.rewardType === 'bonus_hero_card') {
+                if (q.completed && !q.discarded && q.mechanic && q.mechanic.rewardType === 'bonus_hero_card') {
                     bonus += q.mechanic.rewardValue;
                 }
             });
@@ -1105,8 +1138,8 @@ Object.assign(game, {
             `;
             
             if (m.failDiscard) {
-                hero.questCards.splice(questIndex, 1);
-                this.questDiscardPile++;
+                this._retireQuest(hero, quest, 'Quest failed');
+                quest.failed = true;
                 this.updateDeckCounts();
             }
             
@@ -1158,6 +1191,7 @@ Object.assign(game, {
     drawQuestCard(heroIndex) {
         const hero = this.heroes[heroIndex];
         if (!hero.questCards) hero.questCards = [];
+        if (!hero.completedQuests) hero.completedQuests = [];
         
         if (this.questDeck.length === 0) {
             this.addLog(`📜 Quest deck is empty — no quest card drawn for ${hero.name}.`);
@@ -1176,11 +1210,81 @@ Object.assign(game, {
         const hero = this.heroes[heroIndex];
         if (!hero.questCards || questIndex >= hero.questCards.length) return;
         
-        const quest = hero.questCards.splice(questIndex, 1)[0];
-        this.questDiscardPile++;
+        const quest = hero.questCards[questIndex];
+        if (quest.discarded) return; // Already discarded
+        this._retireQuest(hero, quest, 'Discarded');
         this.addLog(`📜 ${hero.name}'s quest "${quest.name}" was discarded.`);
         this.updateDeckCounts();
         this.updateActionButtons();
+    },
+    
+    // Mark a quest as retired (discarded/used/failed) — keeps it in questCards for history display
+    _retireQuest(hero, quest, reason) {
+        quest.discarded = true;
+        quest.discardReason = reason || 'Used';
+        this.questDiscardPile++;
+        console.log(`[QUEST] Retired "${quest.name}" for ${hero.name} — ${reason}`);
+    },
+    
+    // Build quest cards section for hero detail modal
+    _buildHeroQuestSection(hero) {
+        const allQuests = hero.questCards || [];
+        const legacyCompleted = hero.completedQuests || []; // backwards compat
+        
+        if (allQuests.length === 0 && legacyCompleted.length === 0) return '';
+        
+        const active = allQuests.filter(q => !q.completed && !q.discarded);
+        const ready = allQuests.filter(q => q.completed && !q.discarded);
+        const retired = allQuests.filter(q => q.discarded);
+        
+        let html = '<div class="cards-section" style="margin-top: 10px;">';
+        html += `<div style="font-weight: bold; color: #ffd700; margin-bottom: 8px;">📜 Quests (${active.length + ready.length} active${retired.length + legacyCompleted.length > 0 ? `, ${retired.length + legacyCompleted.length} used` : ''})</div>`;
+        
+        // Ready-to-use quests (completed, not discarded)
+        ready.forEach(q => {
+            html += `<div class="card-item" style="border-left: 3px solid #4ade80; padding-left: 8px; margin-bottom: 4px;">
+                <span style="color: #4ade80; font-weight: bold;">✅</span> ${q.name}
+                <span style="color: #4ade80; font-size: 0.8em;">(ready to use)</span>
+            </div>`;
+        });
+        
+        // In-progress quests
+        active.forEach(q => {
+            let progressNote = '';
+            if (q.mechanic?.type === 'multi_location_visit' && q.mechanic.locations) {
+                const visited = Object.values(q.mechanic.locations).filter(l => l.visited).length;
+                const total = Object.values(q.mechanic.locations).length;
+                progressNote = ` <span style="color: #d4af37; font-size: 0.8em;">(${visited}/${total} visited)</span>`;
+            } else if (q.mechanic?.type === 'multi_location_action' && q.mechanic.locations) {
+                const done = Object.values(q.mechanic.locations).filter(l => l.organized).length;
+                const total = Object.values(q.mechanic.locations).length;
+                progressNote = ` <span style="color: #d4af37; font-size: 0.8em;">(${done}/${total} organized)</span>`;
+            }
+            html += `<div class="card-item" style="border-left: 3px solid #ef4444; padding-left: 8px; margin-bottom: 4px;">
+                <span style="color: #ef4444; font-weight: bold;">⏳</span> ${q.name}${progressNote}
+            </div>`;
+        });
+        
+        // Retired quests (used/discarded/failed)
+        retired.forEach(q => {
+            const icon = q.failed ? '❌' : '🏆';
+            const label = q.failed ? 'Failed' : (q.discardReason || 'Used');
+            html += `<div class="card-item" style="border-left: 3px solid #555; padding-left: 8px; margin-bottom: 4px; opacity: 0.6;">
+                <span style="color: #888;">${icon}</span> <span style="color: #777;">${q.name}</span>
+                <span style="color: #666; font-size: 0.75em; font-style: italic;"> — ${label}</span>
+            </div>`;
+        });
+        
+        // Legacy archived quests (from before this system)
+        legacyCompleted.forEach(q => {
+            html += `<div class="card-item" style="border-left: 3px solid #555; padding-left: 8px; margin-bottom: 4px; opacity: 0.6;">
+                <span style="color: #888;">🏆</span> <span style="color: #777;">${q.name}</span>
+                <span style="color: #666; font-size: 0.75em; font-style: italic;"> — ${q.useReason}</span>
+            </div>`;
+        });
+        
+        html += '</div>';
+        return html;
     },
     
     executeSpecialMagicGate(heroIndex, cardIndex) {
@@ -1758,22 +1862,37 @@ Object.assign(game, {
     _checkRumorsQuestProgress(hero, locationName) {
         if (!hero.questCards) return;
         
+        console.log(`[RUMORS] Checking progress for ${hero.name} at ${locationName}, questCards count: ${hero.questCards.length}`);
+        
         for (let i = 0; i < hero.questCards.length; i++) {
             const quest = hero.questCards[i];
             if (quest.completed) continue;
+            if (quest.discarded) continue;
             if (!quest.mechanic || quest.mechanic.type !== 'multi_location_visit') continue;
             
+            console.log(`[RUMORS] Found multi_location_visit quest: ${quest.name}`);
+            console.log(`[RUMORS] Quest locations:`, JSON.stringify(quest.mechanic.locations));
+            
             const locEntry = quest.mechanic.locations[locationName];
-            if (!locEntry || locEntry.visited) continue;
+            if (!locEntry) {
+                console.log(`[RUMORS] Location "${locationName}" not in quest locations`);
+                continue;
+            }
+            if (locEntry.visited) {
+                console.log(`[RUMORS] Location "${locationName}" already visited`);
+                continue;
+            }
             
             // Mark as visited
             locEntry.visited = true;
             const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
             const emoji = colorEmojis[locEntry.color] || '⭕';
             this.addLog(`📜 ${hero.name} visits ${locationName} ${emoji} — Rumors quest progress updated!`);
+            console.log(`[RUMORS] ✅ Marked ${locationName} as visited!`);
             
             // Check if all visited
             const allVisited = Object.values(quest.mechanic.locations).every(loc => loc.visited);
+            console.log(`[RUMORS] All visited?`, allVisited);
             
             if (allVisited) {
                 quest.completed = true;
@@ -1791,10 +1910,9 @@ Object.assign(game, {
                 }
                 this.updateDeckCounts();
                 
-                // Discard quest card and draw new one
+                // Retire quest (mark as used, keep in questCards for history) and draw new one
                 const heroIndex = this.heroes.indexOf(hero);
-                hero.questCards.splice(i, 1);
-                this.questDiscardPile++;
+                this._retireQuest(hero, quest, 'Reward: Drew 4 Hero Cards');
                 
                 // Defer modal display — store data for showing after movement completes
                 this._pendingRumorsCompletion = {
@@ -1902,7 +2020,7 @@ Object.assign(game, {
     // ===== UNICORN STEED: Check if hero has completed steed =====
     _hasUnicornSteed(hero) {
         if (!hero.questCards) return false;
-        return hero.questCards.some(q => q.completed && q.mechanic && q.mechanic.rewardType === 'unicorn_steed');
+        return hero.questCards.some(q => q.completed && !q.discarded && q.mechanic && q.mechanic.rewardType === 'unicorn_steed');
     },
     
     // ===== FIND MAGIC GATE: Check for completed combat bonus quest =====
@@ -1910,7 +2028,7 @@ Object.assign(game, {
         if (!hero.questCards) return null;
         for (let i = 0; i < hero.questCards.length; i++) {
             const q = hero.questCards[i];
-            if (q.completed && q.mechanic && q.mechanic.rewardType === 'use_quest_card_anytime' && q.mechanic.rewardValue === 'combat_bonus_dice') {
+            if (q.completed && !q.discarded && q.mechanic && q.mechanic.rewardType === 'use_quest_card_anytime' && q.mechanic.rewardValue === 'combat_bonus_dice') {
                 return { quest: q, questIndex: i };
             }
         }
@@ -1924,7 +2042,7 @@ Object.assign(game, {
             if (!hero.questCards || hero.health <= 0) continue;
             for (let j = 0; j < hero.questCards.length; j++) {
                 const q = hero.questCards[j];
-                if (q.completed && q.mechanic && q.mechanic.rewardType === 'use_quest_card_anytime' && q.mechanic.rewardValue === 'block_general_advance') {
+                if (q.completed && !q.discarded && q.mechanic && q.mechanic.rewardType === 'use_quest_card_anytime' && q.mechanic.rewardValue === 'block_general_advance') {
                     return { hero, heroIndex: i, questIndex: j, quest: q };
                 }
             }
@@ -1940,9 +2058,8 @@ Object.assign(game, {
         const card = this.darknessCurrentCard;
         const generalName = this.generals.find(g => g.color === card.general)?.name || 'Unknown';
         
-        // Remove quest card from hero
-        holder.hero.questCards.splice(holder.questIndex, 1);
-        this.questDiscardPile++;
+        // Retire quest card (mark as used, keep in questCards for history)
+        this._retireQuest(holder.hero, holder.quest, `Blocked ${generalName} from advancing`);
         
         // Store blocked state (reuse strongDefensesActive pattern)
         this.organizeMilitiaActive = true;

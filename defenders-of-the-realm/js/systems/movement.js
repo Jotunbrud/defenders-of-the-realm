@@ -554,6 +554,10 @@ Object.assign(game, {
         this.showMovementIndicator();
         this.highlightReachableLocations();
         
+        // Belt-and-suspenders: re-check Rumors progress after rendering
+        // in case the earlier check at line 537 was somehow skipped
+        this._checkRumorsQuestProgress(hero, hero.location);
+        
         return true; // Movement consumed the click
     },
     
@@ -562,6 +566,9 @@ Object.assign(game, {
         
         const hero = this.heroes[this.currentPlayerIndex];
         const movement = this.activeMovement;
+        
+        // Backup Rumors quest check for final location (catches any missed mid-movement checks)
+        this._checkRumorsQuestProgress(hero, hero.location);
         
         // Discard the card (only if not foot movement)
         if (movement.cardIndex >= 0 && movement.cardUsed) {
@@ -1002,6 +1009,8 @@ Object.assign(game, {
                     <div style="font-weight: bold; color: #ffd700; margin-bottom: 8px;">🎴 Cards (${hero.cards.length})</div>
                     ${cardsHTML}
                 </div>
+                
+                ${this._buildHeroQuestSection(hero)}
             </div>
         `;
         
@@ -1037,7 +1046,7 @@ Object.assign(game, {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
                 <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
-                <h2 class="modal-title">📋 Release Notes - Version 5.3.0</h2>
+                <h2 class="modal-title">📋 Release Notes - Version 5.3.1</h2>
 
                 <div style="margin: 20px 0;">
                     <h3 style="color: #ffd700; margin-bottom: 10px;">🎉 MINOR RELEASE - Map Update, GitHub & Netlify Integration</h3>
@@ -1065,7 +1074,7 @@ Object.assign(game, {
 
                     <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
-                            Version 5.3.0 - Minor Release
+                            Version 5.3.1 - Minor Release
                         </div>
                     </div>
                 </div>

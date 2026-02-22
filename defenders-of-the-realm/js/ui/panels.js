@@ -983,6 +983,12 @@ Object.assign(game, {
             }
         }
         
+        // Failsafe: ensure Rumors quest progress is tracked for current location
+        // Catches edge cases where mid-movement checks may be missed
+        if (hero.questCards && !this.activeMovement) {
+            this._checkRumorsQuestProgress(hero, hero.location);
+        }
+        
         // Show deferred Rumors quest completion modal
         // Triggers here because updateActionButtons runs after every state change
         // Only show when movement and combat are fully resolved

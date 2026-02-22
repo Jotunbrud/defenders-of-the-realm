@@ -384,9 +384,9 @@ Object.assign(game, {
         const bonusDice = this._pendingCombatBonusDice;
         if (!bonusDice) return;
         
-        // Discard quest card
-        hero.questCards.splice(bonusDice.questIndex, 1);
-        this.questDiscardPile++;
+        // Retire quest card (mark as used, keep in questCards for history)
+        const quest = hero.questCards[bonusDice.questIndex];
+        if (quest) this._retireQuest(hero, quest, '+2 bonus dice (minion combat)');
         this._combatBonusDiceActive = true;
         this._pendingCombatBonusDice = null;
         
@@ -415,8 +415,8 @@ Object.assign(game, {
         const bonusDice = this._pendingCombatBonusDice;
         if (!bonusDice) return;
         
-        hero.questCards.splice(bonusDice.questIndex, 1);
-        this.questDiscardPile++;
+        const quest = hero.questCards[bonusDice.questIndex];
+        if (quest) this._retireQuest(hero, quest, '+2 bonus dice (general combat)');
         this._combatBonusDiceActive = true;
         this._pendingCombatBonusDice = null;
         

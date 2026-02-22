@@ -601,9 +601,9 @@ Object.assign(game, {
         
         const hero = args.hero;
         
-        // Discard quest card
-        hero.questCards.splice(bonusDice.questIndex, 1);
-        this.questDiscardPile++;
+        // Retire quest card (mark as used, keep in questCards for history)
+        const quest = hero.questCards[bonusDice.questIndex];
+        if (quest) this._retireQuest(hero, quest, '+2 bonus dice (group combat)');
         this._combatBonusDiceActive = true;
         this._pendingCombatBonusDice = null;
         this._pendingGroupCombatArgs = null;

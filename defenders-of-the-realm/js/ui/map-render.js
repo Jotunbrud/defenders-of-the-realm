@@ -438,7 +438,7 @@ Object.assign(game, {
                 if (currentHero.questCards) {
                     const heroIdx = this.currentPlayerIndex;
                     currentHero.questCards.forEach((quest, qIdx) => {
-                        if (quest.completed && quest.mechanic && quest.mechanic.rewardType === 'use_quest_card_anytime') {
+                        if (quest.completed && !quest.discarded && quest.mechanic && quest.mechanic.rewardType === 'use_quest_card_anytime') {
                             if (quest.mechanic.rewardValue === 'remove_taint') {
                                 const hasTaintHere = this.taintCrystals[locationName] && this.taintCrystals[locationName] > 0;
                                 if (quest.mechanic.requirePresence) {
@@ -1462,14 +1462,14 @@ Object.assign(game, {
                         <div class="stat">❤️ ${hero.health}/${hero.maxHealth}</div>
                         <div class="stat" style="${actionsColor}">⚡ ${heroActions}/${heroMaxActions}</div>
                         <div class="stat card-stat" data-hero-index="${index}" style="cursor: pointer; text-decoration: underline;">🎴 ${hero.cards.length}</div>
-                        <div class="stat quest-stat" data-hero-index="${index}" style="color: #ef4444; cursor: pointer; text-decoration: underline;">📜 ${hero.questCards ? hero.questCards.length : 0}</div>
+                        <div class="stat quest-stat" data-hero-index="${index}" style="color: #ef4444; cursor: pointer; text-decoration: underline;">📜 ${hero.questCards ? hero.questCards.filter(q => !q.discarded).length : 0}</div>
                     </div>
                     <div style="font-size: 0.75em; margin-top: 5px;">
                         📍 ${hero.location}
                     </div>
                     ${attackStyleBadge}
                     ${shapeshiftBadge}
-                    ${(hero.questCards || []).filter(q => q.completed).map(q => `
+                    ${(hero.questCards || []).filter(q => q.completed && !q.discarded).map(q => `
                         <div style="margin-top: 6px; padding: 4px 8px; border-radius: 5px; font-size: 0.8em; font-weight: bold; display: inline-block;
                             background: rgba(220,38,38,0.15); border: 1px solid #dc2626; color: #ef4444;">
                             📜 ${q.name}

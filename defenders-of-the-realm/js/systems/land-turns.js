@@ -476,12 +476,13 @@ Object.assign(game, {
         hero.cards = [];
         this.heroDiscardPile += cardCount;
         
-        // Discard all quest cards
-        const questCount = hero.questCards ? hero.questCards.length : 0;
-        if (questCount > 0) {
-            this.questDiscardPile += questCount;
-            hero.questCards = [];
-            this.addLog(`📜 ${hero.name} loses ${questCount} quest card(s)!`);
+        // Discard all active quest cards (keep retired ones for history)
+        const activeQuestCount = hero.questCards ? hero.questCards.filter(q => !q.discarded).length : 0;
+        if (activeQuestCount > 0) {
+            this.questDiscardPile += activeQuestCount;
+            // Keep only retired/discarded quests for history
+            hero.questCards = hero.questCards.filter(q => q.discarded);
+            this.addLog(`📜 ${hero.name} loses ${activeQuestCount} quest card(s)!`);
             this.updateDeckCounts();
         }
         
@@ -582,8 +583,9 @@ Object.assign(game, {
         
         this.addLog(`${this.defeatedHero.originalName} replaced by ${heroName} at Monarch City with 2 cards`);
         
-        // Draw a new quest card
+        // Draw a new quest card (replacement hero starts fresh)
         hero.questCards = [];
+        hero.completedQuests = [];
         const newQuest = this.drawQuestCard(heroIndex);
         if (newQuest) {
             this.addLog(`📜 ${heroName} draws quest: ${newQuest.name}`);
@@ -613,8 +615,8 @@ Object.assign(game, {
         
         this.addLog(`${hero.name} respawns at Monarch City with 2 cards`);
         
-        // Draw a new quest card
-        hero.questCards = [];
+        // Draw a new quest card (keep retired quests for history)
+        hero.questCards = hero.questCards ? hero.questCards.filter(q => q.discarded) : [];
         const newQuest = this.drawQuestCard(heroIndex);
         if (newQuest) {
             this.addLog(`📜 ${hero.name} draws quest: ${newQuest.name}`);

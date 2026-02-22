@@ -184,10 +184,14 @@
 
     <!-- Map Modal -->
     <div class="modal" id="map-modal" onclick="game.closeMapOnBackground(event)">
-        <div class="modal-content" style="max-width: 95vw; max-height: 95vh; padding: 10px; padding-top: 60px; display: flex; flex-direction: column;" onclick="event.stopPropagation()">
-            <button onclick="game.closeMap()" class="modal-close-btn">×</button>
-            <button onclick="game.showTips()" style="position: absolute; top: 15px; right: 55px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #d4af37; border-radius: 50%; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Show gameplay tips">💡</button>
-            <h2 class="modal-title" style="margin: 0 0 10px 0;">🗺️ Game Board</h2>
+        <div class="modal-content" style="max-width: 95vw; max-height: 95vh; padding: 10px; display: flex; flex-direction: column;" onclick="event.stopPropagation()">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <h2 class="modal-title" style="margin: 0; font-size: 1.2em;">🗺️ Game Board</h2>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button onclick="game.showTips()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #d4af37; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Show gameplay tips">💡</button>
+                    <button onclick="game.closeMap()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Close map">×</button>
+                </div>
+            </div>
             
             <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
                 <div style="font-weight: bold; color: #ffd700; font-size: 1.1em; margin-bottom: 8px;">⚡ Actions</div>
@@ -245,6 +249,9 @@
                     </button>
                     <button class="btn btn-primary" id="special-cards-btn" onclick="game.showSpecialCardsModal()" style="padding: 8px 12px;" title="Play a Special Card">
                         <span class="action-btn-icon">🌟 </span>Special Cards
+                    </button>
+                    <button class="btn" id="game-log-btn" onclick="game.showGameLogModal()" style="padding: 8px 12px; background: rgba(100,100,100,0.8); border-color: #d4af37;" title="View Game Log">
+                        <span class="action-btn-icon">📜 </span>Game Log
                     </button>
                     <button class="btn btn-primary" id="map-end-turn-btn" onclick="game.endTurnFromMap()" style="margin-left: auto;"><span class="action-btn-icon">⏭️ </span>End Turn</button>
                 </div>
@@ -306,15 +313,8 @@
                 <span onclick="game.resetMapZoom()" style="cursor: pointer; color: #d4af37; text-decoration: underline;" title="Reset zoom and position">🔄 Reset View</span>
             </div>
             
-            <div style="background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 6px; padding: 8px; margin-top: 6px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <h4 style="color: #ffd700; margin: 0; font-size: 0.95em;">📜 Game Log</h4>
-                    <button class="btn" style="padding: 3px 10px; font-size: 0.75em;" onclick="game.toggleLog()">
-                        <span id="log-toggle-text">Show</span>
-                    </button>
-                </div>
-                <div id="game-log" style="display: none; max-height: 200px; overflow-y: auto;"></div>
-            </div>
+            <!-- Game log container (hidden, populated by addLog, read by showGameLogModal) -->
+            <div id="game-log" style="display: none;"></div>
         </div>
     </div>
 

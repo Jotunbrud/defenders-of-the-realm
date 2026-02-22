@@ -1024,17 +1024,41 @@ Object.assign(game, {
         }
     },
     
-    toggleLog() {
-        const log = document.getElementById('game-log');
-        const toggleText = document.getElementById('log-toggle-text');
+    showGameLogModal() {
+        const logEl = document.getElementById('game-log');
+        const logContent = logEl ? logEl.innerHTML : '<div style="color: #666;">No log entries yet.</div>';
         
-        if (log.style.display === 'none') {
-            log.style.display = 'block';
-            toggleText.textContent = 'Hide';
-        } else {
-            log.style.display = 'none';
-            toggleText.textContent = 'Show';
-        }
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.id = 'game-log-modal';
+        modal.style.zIndex = '15000';
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 700px; max-height: 80vh; display: flex; flex-direction: column;" onclick="event.stopPropagation()">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                    <h2 class="modal-title" style="margin: 0;">📜 Game Log</h2>
+                    <button onclick="this.closest('.modal').remove()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%;">×</button>
+                </div>
+                <div style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.4); border: 1px solid #333; border-radius: 6px; padding: 10px; min-height: 200px;">
+                    ${logContent}
+                </div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="btn btn-primary" onclick="this.closest('.modal').remove()" style="padding: 8px 24px;">Close</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Scroll to bottom of log
+        const logContainer = modal.querySelector('div[style*="overflow-y"]');
+        if (logContainer) logContainer.scrollTop = logContainer.scrollHeight;
+    },
+    
+    toggleLog() {
+        // Legacy — now opens modal
+        this.showGameLogModal();
     },
     
     showReleaseNotes() {
@@ -1046,7 +1070,7 @@ Object.assign(game, {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 700px;">
                 <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
-                <h2 class="modal-title">📋 Release Notes - Version 5.3.4</h2>
+                <h2 class="modal-title">📋 Release Notes - Version 5.3.5</h2>
 
                 <div style="margin: 20px 0;">
                     <h3 style="color: #ffd700; margin-bottom: 10px;">🎉 MINOR RELEASE - Map Update, GitHub & Netlify Integration</h3>
@@ -1074,7 +1098,7 @@ Object.assign(game, {
 
                     <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 8px; border: 1px solid #4ade80; margin-bottom: 15px;">
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
-                            Version 5.3.4 - Minor Release
+                            Version 5.3.5 - Minor Release
                         </div>
                     </div>
                 </div>

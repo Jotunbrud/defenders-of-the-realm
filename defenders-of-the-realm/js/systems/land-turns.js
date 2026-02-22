@@ -229,6 +229,7 @@ Object.assign(game, {
             </div>
         ` : '';
         
+        const heroIndex = this.currentPlayerIndex;
         this.showInfoModal('💫 Magic Gate Built!', `
             <div style="text-align: center;">
                 <div style="font-size: 2em; margin: 10px 0;">🌀</div>
@@ -240,7 +241,10 @@ Object.assign(game, {
                 </div>
                 ${questBanner}
             </div>
-        `);
+        `, questCompleted ? () => {
+            // Draw new quest card on quest completion
+            this._drawAndShowNewQuest(heroIndex);
+        } : null);
     },
     
     healLandFromLocation(locationName) {

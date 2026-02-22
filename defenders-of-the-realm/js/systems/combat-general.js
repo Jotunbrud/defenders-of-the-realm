@@ -610,9 +610,6 @@ Object.assign(game, {
         
         this.addLog(`💫 ${hero.name} discards Find Magic Gate quest for +2 bonus combat dice!`);
         
-        const heroIndex = this.heroes.indexOf(hero);
-        const newQuest = this.drawQuestCard(heroIndex);
-        
         this.renderHeroes();
         this.updateDeckCounts();
         this.closeInfoModal();

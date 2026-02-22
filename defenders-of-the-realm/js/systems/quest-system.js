@@ -872,16 +872,13 @@ Object.assign(game, {
         
         this.addLog(`📜 ✨ ${hero.name} used ${quest.name} to remove a Tainted Crystal at ${locationName}!`);
         
-        // Draw a new quest card
-        const newQuest = this.drawQuestCard(heroIndex);
-        
         this.updateDeckCounts();
         this.updateGameStatus();
         this.updateActionButtons();
         this.renderHeroes();
         this.renderTokens();
         
-        // Show success modal, then show new quest if drawn
+        // Show success modal
         const successHTML = `
             <div style="text-align: center;">
                 <div style="font-size: 2.5em; margin-bottom: 8px;">✨</div>
@@ -892,11 +889,7 @@ Object.assign(game, {
             </div>
         `;
         
-        this.showInfoModal('📜 Quest Used', successHTML, () => {
-            if (newQuest) {
-                this._drawAndShowNewQuest_display(heroIndex, newQuest);
-            }
-        });
+        this.showInfoModal('📜 Quest Used', successHTML);
     },
     
     _drawAndShowNewQuest_display(heroIndex, newQuest) {
@@ -1116,10 +1109,8 @@ Object.assign(game, {
             }
             
             this.showInfoModal('📜 Quest Complete!', contentHTML, () => {
-                // Draw new quest card — but NOT for use_quest_card_anytime (card stays until used)
-                if (m.rewardType !== 'use_quest_card_anytime') {
-                    this._drawAndShowNewQuest(heroIndex);
-                }
+                // Draw new quest card on completion
+                this._drawAndShowNewQuest(heroIndex);
             });
         } else {
             // FAILURE
@@ -1830,7 +1821,11 @@ Object.assign(game, {
                 </div>
             `;
             
-            this.showInfoModal('📜 Quest Complete!', contentHTML);
+            this.showInfoModal('📜 Quest Complete!', contentHTML, () => {
+                // Draw new quest card on completion
+                const heroIndex = this.heroes.indexOf(hero);
+                this._drawAndShowNewQuest(heroIndex);
+            });
         } else {
             const progress = Object.entries(m.locations).map(([loc, data]) => {
                 const e = colorEmojis[data.color] || '⭕';
@@ -2069,9 +2064,6 @@ Object.assign(game, {
         this.closeInfoModal();
         this.renderHeroes();
         this.updateDeckCounts();
-        
-        // Draw new quest card for the hero
-        const newQuest = this.drawQuestCard(holder.heroIndex);
         
         // Re-render the preview with blocked general shown
         const cardNum = this.darknessCardsDrawn;

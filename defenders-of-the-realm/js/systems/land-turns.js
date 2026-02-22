@@ -892,8 +892,17 @@ Object.assign(game, {
         // Strong Defenses: any hero with the card, any card with a general that will advance
         const hasGeneral = card.general && card.general !== '';
         const general = hasGeneral ? this.generals.find(g => g.color === card.general) : null;
-        const generalWillAdvance = general && !general.defeated 
+        let generalWillAdvance = general && !general.defeated
             && !(this.generalWounds[card.general] && this.generalWounds[card.general].type === 'major');
+        // If card targets Monarch City, verify general can actually reach it next step
+        if (generalWillAdvance && card.location3 === 'Monarch City') {
+            try {
+                const nextStep = this.getColoredPathTowardMonarchCity(general);
+                if (nextStep !== 'Monarch City') {
+                    generalWillAdvance = false;
+                }
+            } catch(e) { /* defensive — allow if path check fails */ }
+        }
         if (generalWillAdvance && this._findStrongDefensesCard()) return true;
         
         // Organize Militia quest: any hero with a completed quest, any card with a general that will advance
@@ -1275,8 +1284,17 @@ Object.assign(game, {
             const hasGeneral = card.general && card.general !== '';
             // Only show block buttons if general will actually advance (not defeated, no major wounds)
             const general = hasGeneral ? this.generals.find(g => g.color === card.general) : null;
-            const generalWillAdvance = general && !general.defeated 
+            let generalWillAdvance = general && !general.defeated
                 && !(this.generalWounds[card.general] && this.generalWounds[card.general].type === 'major');
+            // If card targets Monarch City, verify general can actually reach it next step
+            if (generalWillAdvance && card.location3 === 'Monarch City') {
+                try {
+                    const nextStep = this.getColoredPathTowardMonarchCity(general);
+                    if (nextStep !== 'Monarch City') {
+                        generalWillAdvance = false;
+                    }
+                } catch(e) { /* defensive — allow if path check fails */ }
+            }
             const canUseStrong = strongHolder && generalWillAdvance && !this.strongDefensesActive
                 && card.type !== 'all_quiet' && card.type !== 'monarch_city_special';
             

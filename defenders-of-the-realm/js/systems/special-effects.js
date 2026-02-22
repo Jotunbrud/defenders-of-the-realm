@@ -3,17 +3,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 Object.assign(game, {
-        const locations = [];
-        for (let [locName, data] of Object.entries(this.locationCoords)) {
-            const minionsHere = this.minions[locName];
-            if (minionsHere) {
-                const total = Object.values(minionsHere).reduce((a, b) => a + b, 0);
-                if (total > 0) locations.push(locName);
-            }
-        }
-        return locations;
-    },
-    
     _startBattleStrategyMinionPhase() {
         const state = this.battleStrategyState;
         const locsWithMinions = this._getLocationsWithMinions();

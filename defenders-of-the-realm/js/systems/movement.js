@@ -975,7 +975,7 @@ Object.assign(game, {
             `<span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${bgColor};border:1px solid ${borderColor};color:${textColor};">${label}</span>`;
 
         ready.forEach(q => {
-            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;cursor:pointer;">
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:6px 8px;margin:4px 0;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.3);border-radius:6px;cursor:pointer;">
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}</div>
                 ${questBadge('Completed', 'rgba(22,163,74,0.15)', '#16a34a', '#15803d')}
             </div>`;
@@ -991,14 +991,14 @@ Object.assign(game, {
                 const total = Object.values(q.mechanic.locations).length;
                 progressNote = ` (${done}/${total})`;
             }
-            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;cursor:pointer;">
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:6px 8px;margin:4px 0;background:rgba(202,138,4,0.08);border:1px solid rgba(202,138,4,0.3);border-radius:6px;cursor:pointer;">
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}${progressNote}</div>
                 ${questBadge('In Progress', 'rgba(202,138,4,0.15)', '#ca8a04', '#a16207')}
             </div>`;
         });
         retired.forEach(q => {
             const label = q.failed ? 'Discarded' : 'Used';
-            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;cursor:pointer;opacity:0.7;">
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:6px 8px;margin:4px 0;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.3);border-radius:6px;cursor:pointer;opacity:0.7;">
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}</div>
                 ${questBadge(label, 'rgba(220,38,38,0.15)', '#dc2626', '#b91c1c')}
             </div>`;
@@ -1025,8 +1025,8 @@ Object.assign(game, {
         });
         selectorHTML += '</div>';
 
-        // Quests section with box
-        const questsSeparator = questsHTML ? `<div style="margin-top:10px;padding:8px;background:rgba(139,115,85,0.08);border:1px solid rgba(139,115,85,0.3);border-radius:6px;"><div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-bottom:6px;">📜 Quests</div>${questsHTML}</div>` : '';
+        // Quests section with line separator
+        const questsSeparator = questsHTML ? `<div style="border-top:1px solid rgba(139,115,85,0.4);margin-top:10px;padding-top:10px;"><div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-bottom:6px;">📜 Quests</div>${questsHTML}</div>` : '';
 
         detailContent.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">

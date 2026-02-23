@@ -373,7 +373,7 @@ Object.assign(game, {
                     if (rumorsLeft > 0) {
                         html += `<button class="btn" onclick="event.stopPropagation(); game.rumorsAction()" style="width: 100%; background: #d97706; margin-bottom: 5px;">🍺 Rumors</button>`;
                         if (currentHero.name === 'Rogue') {
-                            html += `<button class="btn" onclick="event.stopPropagation(); game.craftyAction()" style="width: 100%; background: #7c3aed; margin-bottom: 5px;">🗡️ Crafty</button>`;
+                            html += `<button class="btn" onclick="event.stopPropagation(); game.craftyAction()" style="width: 100%; background: #b91c1c; margin-bottom: 5px;">🗡️ Crafty</button>`;
                         }
                     } else {
                         html += `<button class="btn" disabled style="width: 100%; background: #666; cursor: not-allowed; opacity: 0.5; margin-bottom: 5px;">🍺 Rumors</button>`;
@@ -720,7 +720,7 @@ Object.assign(game, {
                     background: rgba(236,72,153,0.2); border: 1px solid ${sfColors[this.shapeshiftForm]}; color: ${sfColors[this.shapeshiftForm]};"><span class="shapeshift-desktop">${sfIcons[this.shapeshiftForm]} ${sfNames[this.shapeshiftForm]}</span><span class="shapeshift-mobile">${sfIcons[this.shapeshiftForm]}</span></span>`;
             } else {
                 attackStyleTooltipHTML += ` <span style="margin-left: 4px; padding: 2px 7px; border-radius: 4px; font-size: 0.75em; font-weight: bold; vertical-align: top;
-                    background: rgba(236,72,153,0.1); border: 1px solid #ec4899; color: #ec4899;">⚡ Normal</span>`;
+                    background: rgba(251,191,36,0.1); border: 1px solid #fbbf24; color: #fbbf24;">⚡ Normal</span>`;
             }
         }
         
@@ -1447,7 +1447,7 @@ Object.assign(game, {
                         </div>`;
                     } else {
                         shapeshiftBadge = `<div style="margin-top: 6px; padding: 4px 8px; border-radius: 5px; font-size: 0.8em; font-weight: bold; display: inline-block;
-                            background: rgba(236,72,153,0.1); border: 1px solid #ec4899; color: #ec4899;">
+                            background: rgba(251,191,36,0.1); border: 1px solid #fbbf24; color: #fbbf24;">
                             ⚡ Normal Form
                         </div>`;
                     }

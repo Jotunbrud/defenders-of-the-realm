@@ -129,7 +129,7 @@ Object.assign(game, {
         if (selected) {
             selected.classList.add('ss-active');
             selected.style.background = 'rgba(236,72,153,0.2)';
-            selected.style.borderColor = '#ec4899';
+            selected.style.borderColor = '#fbbf24';
         }
         
         const btn = document.getElementById('ss-confirm-btn');
@@ -323,7 +323,7 @@ Object.assign(game, {
         // Update movement indicator text
         const indicator = document.getElementById('movement-indicator');
         if (indicator) {
-            indicator.innerHTML = `<span style="color: #fbbf24;">✝️ Turn Undead</span> — Select an adjacent location to move Undead to<br><span style="font-size: 0.85em;">${undeadCount} Undead minion${undeadCount !== 1 ? 's' : ''} remaining at ${location}</span>`;
+            indicator.innerHTML = `<span style="color: #6b9bd2;">✝️ Turn Undead</span> — Select an adjacent location to move Undead to<br><span style="font-size: 0.85em;">${undeadCount} Undead minion${undeadCount !== 1 ? 's' : ''} remaining at ${location}</span>`;
         }
     },
     
@@ -368,12 +368,12 @@ Object.assign(game, {
         
         let quantityHTML = '';
         if (maxToMove === 1) {
-            quantityHTML = `<div style="color: #fbbf24; font-size: 1.3em; font-weight: bold; margin: 15px 0;">Moving 1 Undead minion</div>`;
+            quantityHTML = `<div style="color: #6b9bd2; font-size: 1.3em; font-weight: bold; margin: 15px 0;">Moving 1 Undead minion</div>`;
         } else {
             const buttons = [];
             for (let i = 1; i <= maxToMove; i++) {
                 buttons.push(`<button id="tu-qty-${i}" onclick="game._turnUndeadSetQuantity(${i}, ${maxToMove})" 
-                    style="width: 45px; height: 45px; border-radius: 8px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: all 0.15s; ${i === 1 ? 'background: #fbbf24; color: #000; border: 2px solid #fbbf24;' : 'background: rgba(0,0,0,0.4); color: #fbbf24; border: 2px solid #666;'}">${i}</button>`);
+                    style="width: 45px; height: 45px; border-radius: 8px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: all 0.15s; ${i === 1 ? 'background: #1e3a7a; color: #fff; border: 2px solid #6b9bd2;' : 'background: rgba(0,0,0,0.4); color: #6b9bd2; border: 2px solid #666;'}">${i}</button>`);
             }
             quantityHTML = `
                 <div style="margin: 15px 0;">
@@ -413,12 +413,12 @@ Object.assign(game, {
             const btn = document.getElementById(`tu-qty-${i}`);
             if (btn) {
                 if (i === count) {
-                    btn.style.background = '#fbbf24';
-                    btn.style.color = '#000';
-                    btn.style.border = '2px solid #fbbf24';
+                    btn.style.background = '#1e3a7a';
+                    btn.style.color = '#fff';
+                    btn.style.border = '2px solid #6b9bd2';
                 } else {
                     btn.style.background = 'rgba(0,0,0,0.4)';
-                    btn.style.color = '#fbbf24';
+                    btn.style.color = '#6b9bd2';
                     btn.style.border = '2px solid #666';
                 }
             }
@@ -553,9 +553,9 @@ Object.assign(game, {
         const fromMap = this._turnUndeadFromMap;
         this.showInfoModal('✝️ Turn Undead — Results', `
             <div style="text-align: center; padding: 10px;">
-                <div style="padding: 20px; border: 2px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 8px;">
+                <div style="padding: 20px; border: 2px solid #1e3a7a; background: rgba(30,58,122,0.15); border-radius: 8px;">
                     <div style="font-size: 2em; margin-bottom: 10px;">✝️</div>
-                    <div style="font-size: 1.3em; color: #fbbf24; font-weight: bold;">Turn Undead Complete</div>
+                    <div style="font-size: 1.3em; color: #6b9bd2; font-weight: bold;">Turn Undead Complete</div>
                     <div style="color: #d4af37; margin-top: 5px;">From <strong>${sourceLocation}</strong></div>
                     <div style="margin-top: 12px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; text-align: left;">
                         ${resultsHTML}

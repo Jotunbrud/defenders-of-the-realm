@@ -219,9 +219,9 @@ Object.assign(game, {
                     const totalBonus = woodsBonus + blessedBonus + ambushBonus + questBonus;
                     const effectiveHitReq = Math.max(2, faction.hitReq - totalBonus);
                     let bonusText = '';
-                    if (ambushBonus > 0) bonusText = ` <span style="color: #ec4899; font-size: 0.85em;">(Ambush +2: was ${faction.hitReq}+)</span>`;
+                    if (ambushBonus > 0) bonusText = ` <span style="color: #fbbf24; font-size: 0.85em;">(Ambush +2: was ${faction.hitReq}+)</span>`;
                     else if (woodsBonus > 0) bonusText = ` <span style="color: #4ade80; font-size: 0.85em;">(Woods Lore: was ${faction.hitReq}+)</span>`;
-                    if (blessedBonus > 0) bonusText += ` <span style="color: #fbbf24; font-size: 0.85em;">(Blessed Attacks: was ${faction.hitReq}+)</span>`;
+                    if (blessedBonus > 0) bonusText += ` <span style="color: #6b9bd2; font-size: 0.85em;">(Blessed Attacks: was ${faction.hitReq}+)</span>`;
                     if (questBonus > 0) bonusText += ` <span style="color: #a78bfa; font-size: 0.85em;">(Amulet +1)</span>`;
                     return `<div style="margin: 5px 0; padding: 8px; background: rgba(0,0,0,0.3); border-left: 3px solid ${this.getGeneralColor(color)}; border-radius: 3px;">
                         ${faction.emoji} <strong>${count}x ${faction.name}</strong> — ${effectiveHitReq}+ to hit${bonusText}
@@ -231,10 +231,10 @@ Object.assign(game, {
             
             const woodsLoreNotice = woodsBonus > 0 ? `<div style="margin: 8px 0; padding: 8px; background: rgba(21,128,61,0.2); border: 1px solid #15803d; border-radius: 5px; text-align: center;"><span style="color: #4ade80; font-weight: bold;">🏹 Woods Lore Active — +1 to all attack rolls!</span></div>` : '';
             const hasBlessed = hero.name === 'Cleric' && Object.entries(minionsObj).some(([c, n]) => n > 0 && (c === 'black' || c === 'red'));
-            const blessedAttacksNotice = hasBlessed ? `<div style="margin: 8px 0; padding: 8px; background: rgba(251,191,36,0.15); border: 1px solid #fbbf24; border-radius: 5px; text-align: center;"><span style="color: #fbbf24; font-weight: bold;">✝️ Blessed Attacks — +1 to rolls vs Undead & Demons!</span></div>` : '';
+            const blessedAttacksNotice = hasBlessed ? `<div style="margin: 8px 0; padding: 8px; background: rgba(30,58,122,0.15); border: 1px solid #1e3a7a; border-radius: 5px; text-align: center;"><span style="color: #6b9bd2; font-weight: bold;">✝️ Blessed Attacks — +1 to rolls vs Undead & Demons!</span></div>` : '';
             const archeryNotice = this.rangedAttack ? `<div style="margin: 8px 0; padding: 8px; background: rgba(21,128,61,0.2); border: 1px solid #15803d; border-radius: 5px; text-align: center;"><span style="color: #4ade80; font-weight: bold;">🏹 Archery — Ranged attack from ${this.heroes[this.currentPlayerIndex].location}</span></div>` : '';
             const hasAmbushMinion = hero.name === 'Sorceress' && this.shapeshiftForm && !this.ambushMinionUsed && Object.entries(minionsObj).some(([c, n]) => n > 0 && c === this.shapeshiftForm);
-            const ambushNotice = hasAmbushMinion ? `<div style="margin: 8px 0; padding: 8px; background: rgba(236,72,153,0.15); border: 1px solid #ec4899; border-radius: 5px; text-align: center;"><span style="color: #ec4899; font-weight: bold;">⚡ Ambush — +2 to each die vs matching faction!</span></div>` : '';
+            const ambushNotice = hasAmbushMinion ? `<div style="margin: 8px 0; padding: 8px; background: rgba(251,191,36,0.15); border: 1px solid #fbbf24; border-radius: 5px; text-align: center;"><span style="color: #fbbf24; font-weight: bold;">⚡ Ambush — +2 to each die vs matching faction!</span></div>` : '';
             const questCombatBonus = this._getQuestCombatBonus(hero);
             const amuletNotice = questCombatBonus > 0 ? `<div style="margin: 8px 0; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px; text-align: center;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods — +1 to all attack rolls!</span></div>` : '';
             
@@ -627,7 +627,7 @@ Object.assign(game, {
         if (hero.name === 'Cleric') {
             const hasBlessed = colorResults.some(cr => cr.color === 'black' || cr.color === 'red');
             if (hasBlessed) {
-                html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(251,191,36,0.15); border: 1px solid #fbbf24; border-radius: 5px;"><span style="color: #fbbf24; font-weight: bold;">✝️ Blessed Attacks: +1 vs Undead & Demons</span></div>';
+                html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(30,58,122,0.15); border: 1px solid #1e3a7a; border-radius: 5px;"><span style="color: #6b9bd2; font-weight: bold;">✝️ Blessed Attacks: +1 vs Undead & Demons</span></div>';
             }
         }
         if (this._getQuestCombatBonus(hero) > 0) {
@@ -1961,7 +1961,7 @@ Object.assign(game, {
                     woundsTaken = Math.max(0, woundsTaken - 1);
                     const abilityName = hero.name === 'Paladin' ? 'Aura' : 'Armor';
                     const rollText = woundDieType && woundRoll !== null ? ` (${woundDieType}: [${woundRoll}])` : '';
-                    summaryHTML += `<div style="margin: 5px 0; color: #fbbf24;">${hero.symbol} ${hero.name}: ${original} wounds${rollText} - 1 (${abilityName}) = ${woundsTaken} wounds</div>`;
+                    summaryHTML += `<div style="margin: 5px 0; color: ${hero.color};">${hero.symbol} ${hero.name}: ${original} wounds${rollText} - 1 (${abilityName}) = ${woundsTaken} wounds</div>`;
                 } else {
                     summaryHTML += `<div style="margin: 5px 0;">${hero.symbol} ${hero.name}: ${woundsTaken} wound${woundsTaken !== 1 ? 's' : ''}`;
                     if (woundDieType && woundRoll !== null) summaryHTML += ` (${woundDieType}: [${woundRoll}])`;

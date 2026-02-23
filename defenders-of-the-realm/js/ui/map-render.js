@@ -791,9 +791,11 @@ Object.assign(game, {
 
         const cColor = card.special ? cardColorMap.any : (cardColorMap[card.color] || cardColorMap.any);
         const general = colorToGeneral[card.color] || colorToGeneral.any;
+        // Dice color: use faction color if card has a specific faction, otherwise purple
+        const diceColorObj = card.special && card.color && cardColorMap[card.color] ? cardColorMap[card.color] : cColor;
 
         const dicePool = Array(card.dice).fill(0).map(() =>
-            `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${cColor.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
+            `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${diceColorObj.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
         ).join('');
 
         let bannerHTML = '';
@@ -803,9 +805,11 @@ Object.assign(game, {
                 <div class="hero-banner-name">✨ ${card.name}</div>
             </div>`;
             bodyHTML = `
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin:8px 0;">Special</div>
-                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:6px;">${card.description || 'Special ability'}</div>
-                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${cColor.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
+                <div style="margin:8px 0;padding:8px 10px;background:rgba(109,40,168,0.1);border:1.5px solid #6d28a8;border-radius:6px;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin-bottom:4px;">Special</div>
+                    <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;">${card.description || 'Special ability'}</div>
+                </div>
+                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${diceColorObj.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
                 <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center;">${dicePool}</div>
             `;
         } else {

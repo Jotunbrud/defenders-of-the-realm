@@ -898,134 +898,168 @@ Object.assign(game, {
         }
     },
     
+    // Track which hero is displayed in hero detail modal
+    _heroDetailViewIndex: 0,
+
     showHeroDetail(index) {
-        const hero = this.heroes[index];
-        const detailContent = document.getElementById('hero-detail-content');
-        
-        const cardsHTML = hero.cards.length > 0 
-            ? hero.cards.map(card => `<div class="card-item">🎴 ${card}</div>`).join('')
-            : '<div class="card-item" style="opacity: 0.7;">No cards</div>';
-        
-        // Eagle Rider attack style indicator
-        let attackStyleHTML = '';
-        if (hero.name === 'Eagle Rider') {
-            const style = this.eagleRiderAttackStyle;
-            const skySelected = style === 'sky';
-            const groundSelected = style === 'ground';
-            const skyBorder = skySelected ? '3px solid #60a5fa' : '1px solid #555';
-            const groundBorder = groundSelected ? '3px solid #f59e0b' : '1px solid #555';
-            const skyBg = skySelected ? 'rgba(96, 165, 250, 0.2)' : 'rgba(0,0,0,0.2)';
-            const groundBg = groundSelected ? 'rgba(245, 158, 11, 0.2)' : 'rgba(0,0,0,0.2)';
-            const skyOpacity = skySelected ? '1' : '0.5';
-            const groundOpacity = groundSelected ? '1' : '0.5';
-            
-            attackStyleHTML = `
-                <div class="ability-section" style="margin-top: 10px;">
-                    <div style="font-weight: bold; color: #000; margin-bottom: 8px;">🎯 Current Attack Style</div>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="padding: 10px 12px; border-radius: 8px; border: ${skyBorder}; background: ${skyBg}; opacity: ${skyOpacity};">
-                            <div style="font-weight: bold; color: #60a5fa; margin-bottom: 3px;">
-                                ${skySelected ? '▶ ' : ''}☁️ Sky Attack
-                            </div>
-                            <div style="font-size: 0.85em; color: #d4af37;">No end-of-turn penalties (fear, damage, or card loss)</div>
-                        </div>
-                        <div style="padding: 10px 12px; border-radius: 8px; border: ${groundBorder}; background: ${groundBg}; opacity: ${groundOpacity};">
-                            <div style="font-weight: bold; color: #f59e0b; margin-bottom: 3px;">
-                                ${groundSelected ? '▶ ' : ''}⚔️ Ground Attack
-                            </div>
-                            <div style="font-size: 0.85em; color: #d4af37;">Re-roll all dice once per combat (except vs Undead General)</div>
-                        </div>
-                    </div>
-                    ${!style ? '<div style="margin-top: 6px; color: #ef4444; font-size: 0.9em;">⚠️ No style selected yet</div>' : ''}
-                </div>
-            `;
-        }
-        
-        // Action tokens display for current hero
-        const isCurrentHero = index === this.currentPlayerIndex;
-        const heroDetailQuestBonus = this._getQuestActionBonus(hero);
-        const currentActions = isCurrentHero ? this.actionsRemaining : (hero.health + heroDetailQuestBonus);
-        const maxActions = isCurrentHero ? Math.max(hero.health + heroDetailQuestBonus, this.actionsRemaining) : (hero.health + heroDetailQuestBonus);
-        let actionTokensHTML = '';
-        for (let i = 0; i < maxActions; i++) {
-            if (i < currentActions) {
-                if (i >= hero.health && i < hero.health + heroDetailQuestBonus) {
-                    actionTokensHTML += `<span style="font-size: 1.2em; filter: hue-rotate(300deg);" title="Bonus action (Boots of Speed)">⚡</span>`;
-                } else if (i >= hero.health + heroDetailQuestBonus) {
-                    const bonusSource = hero.name === 'Eagle Rider' ? 'Fresh Mount' : hero.name === 'Dwarf' ? 'Mountain Lore' : 'Bonus';
-                    actionTokensHTML += `<span style="font-size: 1.2em; filter: hue-rotate(180deg);" title="Bonus action (${bonusSource})">⚡</span>`;
-                } else {
-                    actionTokensHTML += '<span style="font-size: 1.2em;">⚡</span>';
-                }
-            } else {
-                actionTokensHTML += '<span style="font-size: 1.2em; opacity: 0.3; filter: grayscale(100%);">⚡</span>';
-            }
-        }
-        const bonusActionNote = (isCurrentHero && this.actionsRemaining > hero.health) 
-            ? `<div style="font-size: 0.8em; color: #0ea5e9; margin-top: 4px;">${heroDetailQuestBonus > 0 ? '📜 Includes Boots of Speed bonus' : hero.name === 'Dwarf' ? '⛏️ Includes Mountain Lore bonus' : '🦅 Includes Fresh Mount bonus'}</div>` 
-            : '';
-        
-        detailContent.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <h2 class="modal-title" style="margin: 0; font-size: 1.2em;">${hero.symbol} ${hero.name}</h2>
-                <button onclick="game.closeHeroDetail()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
-            </div>
-            <div class="hero-detail-card">
-                ${this.getHeroPixelArt(hero.name)}
-                <div class="hero-name">${hero.symbol} ${hero.name}</div>
-
-                <div class="hero-stats">
-                    <div class="stat">
-                        <div style="font-size: 1.2em;">❤️</div>
-                        <div>Life Tokens</div>
-                        <div style="font-size: 1.2em; font-weight: bold;">${hero.health}/${hero.maxHealth}</div>
-                    </div>
-                    <div class="stat">
-                        <div style="font-size: 1.2em;">⚡</div>
-                        <div>Actions</div>
-                        <div style="font-size: 1.2em; font-weight: bold;">${currentActions}/${maxActions}</div>
-                    </div>
-                    <div class="stat">
-                        <div style="font-size: 1.2em;">💀</div>
-                        <div>Taint</div>
-                        <div style="font-size: 1.2em; font-weight: bold;">${hero.taint}</div>
-                    </div>
-                </div>
-
-                <div class="ability-section" style="margin-top: 5px;">
-                    <div style="text-align: center;">${actionTokensHTML}</div>
-                    ${bonusActionNote}
-                </div>
-
-                <div class="ability-section">
-                    <div style="font-weight: bold; color: #000; margin-bottom: 8px;">⚡ Special Ability</div>
-                    <div>${hero.ability}</div>
-                </div>
-
-                ${attackStyleHTML}
-
-                <div class="ability-section" style="margin-top: 10px;">
-                    <div style="font-weight: bold; color: #000; margin-bottom: 5px;">📍 Current Location</div>
-                    <div>${hero.location}</div>
-                </div>
-
-                <div class="cards-section">
-                    <div style="font-weight: bold; color: #000; margin-bottom: 8px;">🎴 Cards (${hero.cards.length})</div>
-                    ${cardsHTML}
-                </div>
-
-                ${this._buildHeroQuestSection(hero)}
-            </div>
-        `;
-        
+        this._heroDetailViewIndex = index;
+        this._renderHeroDetailCard();
         document.getElementById('heroes-modal').classList.remove('active');
         document.getElementById('hero-detail-modal').classList.add('active');
+    },
+
+    _renderHeroDetailCard() {
+        const index = this._heroDetailViewIndex;
+        const hero = this.heroes[index];
+        const detailContent = document.getElementById('hero-detail-content');
+        const isActive = index === this.currentPlayerIndex;
+
+        const cardColorMap = {
+            red:   { bg: "rgba(220,38,38,0.12)", border: "#dc2626", text: "#dc2626", dice: "#dc2626" },
+            blue:  { bg: "rgba(59,130,246,0.12)", border: "#3b82f6", text: "#3b82f6", dice: "#3b82f6" },
+            green: { bg: "rgba(22,163,74,0.12)", border: "#16a34a", text: "#16a34a", dice: "#16a34a" },
+            black: { bg: "rgba(55,65,81,0.12)", border: "#374151", text: "#374151", dice: "#374151" },
+            any:   { bg: "rgba(109,40,168,0.12)", border: "#6d28a8", text: "#6d28a8", dice: "#6d28a8" },
+        };
+
+        // Cards section
+        let cardsHTML = '';
+        if (hero.cards.length > 0) {
+            hero.cards.forEach((card, ci) => {
+                const cColor = card.special ? cardColorMap.any : (cardColorMap[card.color] || cardColorMap.any);
+                const diceBoxes = Array(card.dice).fill(0).map(() =>
+                    `<span style="display:inline-block;width:20px;height:20px;background:${cColor.dice};border-radius:3px;margin:1px;"></span>`
+                ).join('');
+                const specialDesc = card.special && card.description
+                    ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;margin-top:2px;">${card.description}</div>`
+                    : '';
+                cardsHTML += `
+                    <div class="hero-detail-card-item" data-card-index="${ci}" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin:4px 0;background:${cColor.bg};border:1px solid ${cColor.border};border-radius:6px;cursor:pointer;">
+                        <div>
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${cColor.text};font-size:0.9em;">${card.icon || '🎴'} ${card.name}</div>
+                            ${specialDesc}
+                        </div>
+                        <div style="display:flex;gap:2px;">${diceBoxes}</div>
+                    </div>`;
+            });
+        } else {
+            cardsHTML = '<div style="color:#8b7355;font-style:italic;font-size:0.85em;">No cards</div>';
+        }
+
+        // Quests section
+        const allQuests = hero.questCards || [];
+        const active = allQuests.filter(q => !q.completed && !q.discarded);
+        const ready = allQuests.filter(q => q.completed && !q.discarded);
+        const retired = allQuests.filter(q => q.discarded);
+        let questsHTML = '';
+        const questBadge = (label, bgColor, borderColor, textColor) =>
+            `<span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${bgColor};border:1px solid ${borderColor};color:${textColor};">${label}</span>`;
+
+        ready.forEach(q => {
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;border-bottom:1px solid rgba(139,115,85,0.2);cursor:pointer;">
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}</div>
+                ${questBadge('✅ Completed', 'rgba(22,163,74,0.15)', '#16a34a', '#15803d')}
+            </div>`;
+        });
+        active.forEach(q => {
+            let progressNote = '';
+            if (q.mechanic?.type === 'multi_location_visit' && q.mechanic.locations) {
+                const visited = Object.values(q.mechanic.locations).filter(l => l.visited).length;
+                const total = Object.values(q.mechanic.locations).length;
+                progressNote = ` (${visited}/${total})`;
+            } else if (q.mechanic?.type === 'multi_location_action' && q.mechanic.locations) {
+                const done = Object.values(q.mechanic.locations).filter(l => l.organized).length;
+                const total = Object.values(q.mechanic.locations).length;
+                progressNote = ` (${done}/${total})`;
+            }
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;border-bottom:1px solid rgba(139,115,85,0.2);cursor:pointer;">
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}${progressNote}</div>
+                ${questBadge('⏳ In Progress', 'rgba(202,138,4,0.15)', '#ca8a04', '#a16207')}
+            </div>`;
+        });
+        retired.forEach(q => {
+            const label = q.failed ? '❌ Discarded' : '🏆 Used';
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;border-bottom:1px solid rgba(139,115,85,0.2);cursor:pointer;opacity:0.7;">
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}</div>
+                ${questBadge(label, 'rgba(220,38,38,0.15)', '#dc2626', '#b91c1c')}
+            </div>`;
+        });
+
+        // Parchment card border
+        const cardBorder = isActive ? '3px solid #d4af37' : '3px solid #8b7355';
+        const cardShadow = isActive
+            ? '0 0 16px rgba(212,175,55,0.5), inset 0 0 0 1px rgba(139,115,85,0.3)'
+            : '0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)';
+
+        // Hero selector buttons
+        let selectorHTML = '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;">';
+        this.heroes.forEach((h, idx) => {
+            const isSel = idx === index;
+            const btnBorder = isSel ? '3px solid #d4af37' : '2px solid rgba(0,0,0,0.3)';
+            const btnShadow = isSel
+                ? '0 0 12px rgba(212,175,55,0.5), 0 2px 6px rgba(0,0,0,0.4)'
+                : '0 2px 6px rgba(0,0,0,0.4)';
+            selectorHTML += `<button class="hero-banner-name" onclick="game._heroDetailViewIndex=${idx};game._renderHeroDetailCard();"
+                style="padding:5px 10px;border-radius:6px;background:${h.color};color:#fff;font-size:0.75em;
+                border:${btnBorder};text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);
+                -webkit-text-stroke:none;box-shadow:${btnShadow};cursor:pointer;">${h.symbol} ${h.name}</button>`;
+        });
+        selectorHTML += '</div>';
+
+        detailContent.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">🛡️ Hero Details</h2>
+                <button onclick="game.closeHeroDetail()" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
+            </div>
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:${cardBorder};border-radius:10px;overflow:hidden;box-shadow:${cardShadow};margin-bottom:10px;">
+                <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                    <div class="hero-banner-name">${hero.symbol} ${hero.name}</div>
+                    <div style="font-size:0.85em;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);font-weight:bold;">❤️ ${hero.health}/${hero.maxHealth}</div>
+                </div>
+                <div style="padding:10px 14px;">
+                    <div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-bottom:6px;">🎴 Cards (${hero.cards.length})</div>
+                    ${cardsHTML}
+                    ${questsHTML ? `<div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-top:10px;margin-bottom:6px;">📜 Quests</div>${questsHTML}` : ''}
+                </div>
+            </div>
+            ${selectorHTML}
+        `;
+
+        // Attach click handlers for cards and quests
+        setTimeout(() => {
+            hero.cards.forEach((card, ci) => {
+                const el = detailContent.querySelector(`.hero-detail-card-item[data-card-index="${ci}"]`);
+                if (el) {
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        game._showCardDetailFromHeroDetail(hero, ci);
+                    });
+                }
+            });
+            detailContent.querySelectorAll('.hero-detail-quest-row').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const qName = el.getAttribute('data-quest-name');
+                    const quest = (hero.questCards || []).find(q => q.name === qName);
+                    if (quest) game._showQuestDetailFromHeroDetail(hero, quest);
+                });
+            });
+        }, 10);
     },
     
     closeHeroDetail(event) {
         if (!event || event.target.id === 'hero-detail-modal') {
             document.getElementById('hero-detail-modal').classList.remove('active');
         }
+    },
+
+    _showCardDetailFromHeroDetail(hero, cardIndex) {
+        const card = hero.cards[cardIndex];
+        if (card) this.showCardDetailModal(card);
+    },
+
+    _showQuestDetailFromHeroDetail(hero, quest) {
+        this.showQuestDetailModal(hero, quest);
     },
     
     showGameLogModal() {

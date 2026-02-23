@@ -766,93 +766,63 @@ Object.assign(game, {
     },
     
     showCardDetailModal(card) {
-        console.log('showCardDetailModal called with card:', card);
-        
         const modal = document.getElementById('card-detail-modal');
         const content = document.getElementById('card-detail-content');
-        
-        console.log('Modal element:', modal);
-        console.log('Content element:', content);
-        
-        if (!modal) {
-            console.error('Card detail modal not found!');
+
+        if (!modal || !content) {
             this.showInfoModal('⚠️', '<div>Error: Card detail modal not found!</div>');
             return;
         }
-        
-        if (!content) {
-            console.error('Card detail content not found!');
-            this.showInfoModal('⚠️', '<div>Error: Card detail content not found!</div>');
-            return;
-        }
-        
+
         const colorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
+            red:   { bg: "rgba(220,38,38,0.12)", border: "#dc2626", text: "#dc2626" },
+            blue:  { bg: "rgba(59,130,246,0.12)", border: "#3b82f6", text: "#3b82f6" },
+            green: { bg: "rgba(22,163,74,0.12)", border: "#16a34a", text: "#16a34a" },
+            black: { bg: "rgba(55,65,81,0.12)", border: "#374151", text: "#374151" },
         };
-        
-        const colorToGeneral = {
-            'red': 'Balazarg (Demons)',
-            'blue': 'Sapphire (Dragonkin)',
-            'green': 'Gorgutt (Orcs)',
-            'black': 'Varkolak (Undead)'
-        };
-        
-        const colorToFaction = {
-            'red': 'Demons',
-            'blue': 'Dragonkin',
-            'green': 'Orcs',
-            'black': 'Undead'
-        };
-        
-        const borderColor = (card.special ? '#9333ea' : (colorMap[card.color] || '#8B7355'));
-        const general = colorToGeneral[card.color] || 'Any General';
-        const faction = colorToFaction[card.color] || 'any';
-        
+        const specialColor = { bg: "rgba(109,40,168,0.12)", border: "#6d28a8", text: "#6d28a8" };
+
+        const colorToFaction = { red: 'Demons', blue: 'Dragonkin', green: 'Orcs', black: 'Undead' };
+        const cColor = card.special ? specialColor : (colorMap[card.color] || specialColor);
+        const faction = colorToFaction[card.color] || 'Any';
+
+        const dicePool = Array(card.dice).fill(0).map(() =>
+            `<span style="display:inline-block;width:28px;height:28px;background:${cColor.border};border-radius:4px;margin:2px;"></span>`
+        ).join('');
+
+        let bodyHTML = '';
+        if (card.special) {
+            bodyHTML = `
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${cColor.text};text-align:center;margin:8px 0;">🌟 Special Card</div>
+                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:6px;">${card.description || 'Special ability'}</div>
+            `;
+        } else {
+            bodyHTML = `
+                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:6px;">
+                    <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.1em;">Target:</strong> ${faction}
+                </div>
+            `;
+        }
+
         content.innerHTML = `
-            <div style="border: 3px solid ${borderColor}; border-radius: 8px; padding: 20px; background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%);">
-                <div style="text-align: center; font-size: 1.5em; margin-bottom: 10px;">
-                    ${card.icon || '🎴'}
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">🎴 Card Details</h2>
+                <button onclick="game.closeCardDetail()" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
+            </div>
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cColor.border};border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                <div style="padding:14px;">
+                    <div style="text-align:center;font-size:1.5em;margin-bottom:4px;">${card.icon || '🎴'}</div>
+                    <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.1em;color:${cColor.text};margin-bottom:10px;">${card.name}</div>
+                    <div style="text-align:center;margin:10px 0;">${dicePool}</div>
+                    ${bodyHTML}
                 </div>
-                <div style="text-align: center; font-size: 1.3em; font-weight: bold; color: ${borderColor}; margin-bottom: 15px;">
-                    ${card.name}
-                </div>
-                <div style="text-align: center; margin: 15px 0;">
-                    ${Array(card.dice).fill(0).map(() => 
-                        `<span style="display: inline-block; width: 35px; height: 35px; background: ${borderColor}; border-radius: 4px; margin: 3px; line-height: 35px; font-weight: bold; font-size: 1.2em;">🎲</span>`
-                    ).join('')}
-                </div>
-                ${card.special ? `
-                    <div style="text-align: center; font-size: 1.1em; margin: 15px 0; color: #9333ea;">
-                        <strong>🌟 Special Card</strong>
-                    </div>
-                    <div style="margin-top: 10px; padding: 10px; background: rgba(147,51,234,0.15); border-radius: 4px; border: 1px solid #9333ea;">
-                        <strong style="color: #9333ea;">Effect:</strong> ${card.description || 'Special ability'}
-                    </div>
-                    <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; font-size: 0.95em;">
-                        <strong>Play anytime</strong> — Does not use an action<br>
-                        <strong>OR</strong> use ${card.dice} dice in combat vs ${general}
-                    </div>
-                ` : `
-                    <div style="text-align: center; font-size: 1.1em; margin: 15px 0;">
-                        <strong>Roll ${card.dice} dice against ${faction} generals</strong>
-                    </div>
-                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 4px;">
-                        <strong>Target:</strong> ${general}
-                    </div>
-                    <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 4px; font-size: 0.95em;">
-                        <strong>Location:</strong> Can be used at ${card.name} or to fight any ${faction} general
-                    </div>
-                `}
+            </div>
+            <div style="text-align:center;margin-top:10px;">
+                <button class="btn btn-primary" onclick="game.closeCardDetail()" style="padding:8px 24px;">Close</button>
             </div>
         `;
-        
-        console.log('Setting modal content and activating...');
+
         modal.classList.add('active');
-        console.log('Modal activated, classList:', modal.classList.toString());
-        console.log('Modal style.display:', modal.style.display);
     },
     
     closeCardDetail() {
@@ -1408,111 +1378,103 @@ Object.assign(game, {
         return svg;
     },
     
+    // Track which hero is displayed in the heroes modal
+    _heroesModalViewIndex: 0,
+
     renderHeroes() {
         // Render current hero summary
         const currentHero = this.heroes[this.currentPlayerIndex];
         // Update deck counts
         this.updateDeckCounts();
 
-        // Render heroes list for modal
+        // Render heroes list for modal — ONE hero at a time with selector buttons
         const heroesModalList = document.getElementById('heroes-modal-list');
         if (heroesModalList) {
-            heroesModalList.innerHTML = this.heroes.map((hero, index) => {
-                // Eagle Rider attack style badge
-                let attackStyleBadge = '';
-                if (hero.name === 'Eagle Rider' && this.eagleRiderAttackStyle) {
-                    const isSky = this.eagleRiderAttackStyle === 'sky';
-                    attackStyleBadge = `<div style="margin-top: 6px; padding: 4px 8px; border-radius: 5px; font-size: 0.8em; font-weight: bold; display: inline-block;
-                        background: ${isSky ? 'rgba(96, 165, 250, 0.3)' : 'rgba(245, 158, 11, 0.3)'}; 
-                        border: 1px solid ${isSky ? '#60a5fa' : '#f59e0b'}; 
-                        color: ${isSky ? '#60a5fa' : '#f59e0b'};">
-                        ${isSky ? '☁️ Sky Attack' : '⚔️ Ground Attack'}
-                    </div>`;
-                }
-                
-                // Sorceress Shape Shifter badge
-                const isActive = index === this.currentPlayerIndex;
-                let shapeshiftBadge = '';
-                if (hero.name === 'Sorceress' && isActive) {
-                    if (this.shapeshiftForm) {
-                        const sfNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-                        const sfIcons = { green: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#16a34a;border:1.5px solid #000;vertical-align:middle;"></span>', black: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#1f2937;border:1.5px solid #000;vertical-align:middle;"></span>', red: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#dc2626;border:1.5px solid #000;vertical-align:middle;"></span>', blue: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#2563eb;border:1.5px solid #000;vertical-align:middle;"></span>' };
-                        const sfColors = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
-                        const sfn = sfNames[this.shapeshiftForm];
-                        const sfi = sfIcons[this.shapeshiftForm];
-                        const sfc = sfColors[this.shapeshiftForm];
-                        shapeshiftBadge = `<div style="margin-top: 6px; padding: 4px 8px; border-radius: 5px; font-size: 0.8em; font-weight: bold; display: inline-block;
-                            background: rgba(236,72,153,0.2); border: 1px solid ${sfc}; color: ${sfc};">
-                            <span class="shapeshift-desktop">${sfi} ${sfn} Form</span><span class="shapeshift-mobile">${sfi}</span>
-                        </div>`;
-                    } else {
-                        shapeshiftBadge = `<div style="margin-top: 6px; padding: 4px 8px; border-radius: 5px; font-size: 0.8em; font-weight: bold; display: inline-block;
-                            background: rgba(251,191,36,0.1); border: 1px solid #fbbf24; color: #fbbf24;">
-                            ⚡ Normal Form
-                        </div>`;
-                    }
-                }
-                
-                const heroQuestBonus = this._getQuestActionBonus(hero);
-                const heroActions = isActive ? this.actionsRemaining : (hero.health + heroQuestBonus);
-                const heroMaxActions = isActive ? Math.max(hero.health + heroQuestBonus, this.actionsRemaining) : (hero.health + heroQuestBonus);
-                const actionsColor = (isActive && this.actionsRemaining > hero.health) ? 'color: #0ea5e9;' : (heroQuestBonus > 0 ? 'color: #0ea5e9;' : '');
-                
-                return `
-                <div class="hero-card ${isActive ? 'active' : ''}" 
-                     data-hero-index="${index}">
-                    <div class="hero-name">${hero.symbol} ${hero.name}</div>
-                    <div class="hero-stats">
-                        <div class="stat">❤️ ${hero.health}/${hero.maxHealth}</div>
-                        <div class="stat" style="${actionsColor}">⚡ ${heroActions}/${heroMaxActions}</div>
-                        <div class="stat card-stat" data-hero-index="${index}" style="cursor: pointer; text-decoration: underline;">🎴 ${hero.cards.length}</div>
-                        <div class="stat quest-stat" data-hero-index="${index}" style="color: #ef4444; cursor: pointer; text-decoration: underline;">📜 ${hero.questCards ? hero.questCards.filter(q => !q.discarded).length : 0}</div>
-                    </div>
-                    <div style="font-size: 0.75em; margin-top: 5px; color: #333;">
-                        📍 ${hero.location}
-                    </div>
-                    ${attackStyleBadge}
-                    ${shapeshiftBadge}
-                    ${(hero.questCards || []).filter(q => q.completed && !q.discarded).map(q => `
-                        <div style="margin-top: 6px; padding: 4px 8px; border-radius: 5px; font-size: 0.8em; font-weight: bold; display: inline-block;
-                            background: rgba(220,38,38,0.15); border: 1px solid #dc2626; color: #ef4444;">
-                            📜 ${q.name}
-                        </div>`).join('')}
-                    <div style="margin-top: 8px; padding: 8px; background: transparent; border-radius: 4px; font-size: 0.8em; color: #000; line-height: 1.4;">
-                        <div style="font-weight: bold; margin-bottom: 4px;">⚡ Special Ability:</div>
-                        <div style="color: #333;">${hero.ability}</div>
-                    </div>
-                </div>
-            `}).join('');
-            
-            // Add hover events to CARD STAT ONLY (not entire hero card)
-            this.heroes.forEach((hero, index) => {
-                const cardStat = heroesModalList.querySelector(`.card-stat[data-hero-index="${index}"]`);
-                if (cardStat) {
-                    // Show on hover over card icon
-                    cardStat.addEventListener('mouseenter', (e) => {
-                        this.showHeroCardsInModal(hero, e);
-                    });
-                    
-                    // Click to close
-                    cardStat.addEventListener('click', (e) => {
-                        const tooltip = document.getElementById('hover-tooltip');
-                        if (tooltip.classList.contains('active')) {
-                            this.hideTooltip(true);
-                        }
-                    });
-                }
-                
-                // Quest stat click handler
-                const questStat = heroesModalList.querySelector(`.quest-stat[data-hero-index="${index}"]`);
-                if (questStat) {
-                    questStat.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.showHeroQuestCardsModal(index);
-                    });
-                }
-            });
+            // Default to current active hero
+            if (this._heroesModalViewIndex == null || this._heroesModalViewIndex >= this.heroes.length) {
+                this._heroesModalViewIndex = this.currentPlayerIndex;
+            }
+            this._renderHeroesModalCard();
         }
+    },
+
+    _renderHeroesModalCard() {
+        const heroesModalList = document.getElementById('heroes-modal-list');
+        if (!heroesModalList) return;
+
+        const viewIdx = this._heroesModalViewIndex;
+        const hero = this.heroes[viewIdx];
+        const isActive = viewIdx === this.currentPlayerIndex;
+        const activeQuests = (hero.questCards || []).filter(q => !q.discarded);
+
+        // Completed quest badges
+        const completedQuestBadges = (hero.questCards || []).filter(q => q.completed && !q.discarded).map(q => `
+            <div style="margin-top: 6px; padding: 4px 8px; border-radius: 5px; font-size: 0.75em; display: inline-block;
+                background: rgba(139,115,85,0.1); border: 1px solid rgba(139,115,85,0.3); color: #2c1810;"
+                class="hero-section-label">
+                📜 ${q.name}
+            </div>`).join('');
+
+        // Build the single hero card (parchment style)
+        const cardBorder = isActive ? '3px solid #d4af37' : '3px solid #8b7355';
+        const cardShadow = isActive
+            ? '0 0 16px rgba(212,175,55,0.5), inset 0 0 0 1px rgba(139,115,85,0.3)'
+            : '0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)';
+
+        let cardHTML = `
+            <div style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%);
+                border: ${cardBorder}; border-radius: 10px; overflow: hidden;
+                box-shadow: ${cardShadow}; margin-bottom: 10px;">
+                <div style="background: linear-gradient(135deg, ${hero.color}cc 0%, ${hero.color}99 100%);
+                    padding: 6px 14px; border-bottom: 2px solid #8b7355;
+                    display: flex; align-items: center; justify-content: space-between;">
+                    <div class="hero-banner-name">${hero.symbol} ${hero.name}</div>
+                    <div style="font-size: 0.85em; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5); font-weight: bold;">❤️ ${hero.health}/${hero.maxHealth}</div>
+                </div>
+                <div style="padding: 10px 14px;">
+                    <div style="display: flex; gap: 12px; margin-bottom: 8px;">
+                        <span class="heroes-card-stat" data-hero-index="${viewIdx}" style="cursor: pointer; text-decoration: underline; color: #2c1810; font-weight: bold; font-size: 0.85em;">🎴 ${hero.cards.length}</span>
+                        <span class="heroes-quest-stat" data-hero-index="${viewIdx}" style="cursor: pointer; text-decoration: underline; color: #8b0000; font-weight: bold; font-size: 0.85em;">📜 ${activeQuests.length}</span>
+                    </div>
+                    ${completedQuestBadges}
+                    <div class="hero-ability-text" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5; margin-top: 6px;">${hero.ability}</div>
+                </div>
+            </div>`;
+
+        // Hero selector buttons at bottom
+        let selectorHTML = '<div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">';
+        this.heroes.forEach((h, idx) => {
+            const isSelected = idx === viewIdx;
+            const btnBorder = isSelected ? '3px solid #d4af37' : '2px solid rgba(0,0,0,0.3)';
+            const btnShadow = isSelected
+                ? '0 0 12px rgba(212,175,55,0.5), 0 2px 6px rgba(0,0,0,0.4)'
+                : '0 2px 6px rgba(0,0,0,0.4)';
+            selectorHTML += `<button class="hero-banner-name" onclick="game._heroesModalViewIndex=${idx}; game._renderHeroesModalCard();"
+                style="padding: 5px 10px; border-radius: 6px; background: ${h.color}; color: #fff; font-size: 0.75em;
+                border: ${btnBorder}; text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5);
+                -webkit-text-stroke: none; box-shadow: ${btnShadow}; cursor: pointer;">${h.symbol} ${h.name}</button>`;
+        });
+        selectorHTML += '</div>';
+
+        heroesModalList.innerHTML = cardHTML + selectorHTML;
+
+        // Attach click handlers for card/quest stats
+        setTimeout(() => {
+            const cardStat = heroesModalList.querySelector(`.heroes-card-stat[data-hero-index="${viewIdx}"]`);
+            if (cardStat) {
+                cardStat.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    game.showHeroDetail(viewIdx);
+                });
+            }
+            const questStat = heroesModalList.querySelector(`.heroes-quest-stat[data-hero-index="${viewIdx}"]`);
+            if (questStat) {
+                questStat.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    game.showHeroQuestCardsModal(viewIdx);
+                });
+            }
+        }, 10);
     },
     
     updateDeckCounts() {

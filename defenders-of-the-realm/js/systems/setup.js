@@ -149,11 +149,11 @@ Object.assign(game, {
         selection.innerHTML = visibleHeroes.map(({hero, originalIndex}) => `
             <div class="hero-select" onclick="game.toggleHeroSelection(${originalIndex})" id="hero-select-${originalIndex}">
                 <div style="background: linear-gradient(135deg, ${hero.color}cc 0%, ${hero.color}99 100%); padding: 6px 14px; border-bottom: 2px solid #8b7355; display: flex; align-items: center; justify-content: space-between;">
-                    <div style="font-size: 1.05em; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.6); letter-spacing: 0.5px;">${hero.symbol} ${hero.name}</div>
-                    <div style="font-size: 0.85em; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.6); font-weight: bold;">❤️ ${hero.health}</div>
+                    <div class="hero-banner-name">${hero.symbol} ${hero.name}</div>
+                    <div style="font-size: 0.85em; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5); font-weight: bold;">❤️ ${hero.maxHealth}</div>
                 </div>
                 <div style="padding: 10px 14px;">
-                    <div style="font-size: 0.85em; color: #3d2b1f; line-height: 1.5;">${hero.ability}</div>
+                    <div class="hero-ability-text-select" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5;">${hero.ability}</div>
                 </div>
             </div>
         `).join('');

@@ -955,7 +955,7 @@ Object.assign(game, {
                 cardsHTML += `
                     <div class="hero-detail-card-item" data-card-index="${ci}" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin:4px 0;background:${cColor.bg};border:1px solid ${cColor.border};border-radius:6px;cursor:pointer;">
                         <div>
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${cColor.text};font-size:0.9em;">${card.special ? '✨' : (card.icon || '🎴')} ${card.name}</div>
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${cColor.text};font-size:0.9em;">${card.special ? '🌟' : (card.icon || '🎴')} ${card.name}</div>
                             ${specialDesc}
                         </div>
                         <div style="display:flex;gap:2px;">${diceBoxes}</div>
@@ -1106,7 +1106,7 @@ Object.assign(game, {
         let bodyHTML = '';
         if (card.special) {
             bannerHTML = `<div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
-                <div class="hero-banner-name">✨ ${card.name}</div>
+                <div class="hero-banner-name">🌟 ${card.name}</div>
             </div>`;
             bodyHTML = `
                 <div style="margin:8px 0;padding:8px 10px;background:rgba(109,40,168,0.1);border:1.5px solid #6d28a8;border-radius:6px;">
@@ -1136,7 +1136,7 @@ Object.assign(game, {
             selectorHTML += `<button class="hero-banner-name" onclick="game._heroDetailCardData=game.heroes[game._heroDetailViewIndex].cards[${ci}];game._renderHeroDetailContent();"
                 style="padding:4px 8px;border-radius:6px;background:${btnColor};color:#fff;font-size:0.7em;
                 border:${btnBorder};text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);
-                -webkit-text-stroke:none;box-shadow:${btnShadow};cursor:pointer;">${c.special ? '✨' : (c.icon || '🎴')} ${c.name}</button>`;
+                -webkit-text-stroke:none;box-shadow:${btnShadow};cursor:pointer;">${c.special ? '🌟' : (c.icon || '🎴')} ${c.name}</button>`;
         });
         selectorHTML += '</div>';
 

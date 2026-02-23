@@ -194,33 +194,9 @@ Object.assign(game, {
     onHeroTrayClick(event) {
         const hero = this.heroes[this.currentPlayerIndex];
         if (!hero) return;
-        
-        // Find the hero's token on the map to position tooltip near it
-        const heroTokenSvg = document.querySelector(`.hero-token-svg[data-hero-index="${this.currentPlayerIndex}"]`);
-        let fakeEvent = event;
-        if (heroTokenSvg) {
-            const circle = heroTokenSvg.querySelector('circle');
-            if (circle) {
-                const svg = document.getElementById('game-map');
-                const pt = svg.createSVGPoint();
-                pt.x = parseFloat(circle.getAttribute('cx'));
-                pt.y = parseFloat(circle.getAttribute('cy'));
-                const screenPt = pt.matrixTransform(svg.getScreenCTM());
-                fakeEvent = { clientX: screenPt.x, clientY: screenPt.y };
-            }
-        }
-        
-        // Show/toggle the hero tooltip
-        const tooltip = document.getElementById('hover-tooltip');
-        if (tooltip.classList.contains('active') && 
-            tooltip.getAttribute('data-hero-name') === hero.name) {
-            this.hideTooltip(true);
-        } else {
-            this.showHeroCardsTooltip(hero, fakeEvent, true);
-        }
-        
-        // Pulse the hero token gold
-        this.pulseHeroToken(this.currentPlayerIndex);
+
+        // Open the hero details modal for the active hero
+        this.showHeroDetail(this.currentPlayerIndex);
     },
     
     pulseHeroToken(heroIndex) {

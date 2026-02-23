@@ -647,18 +647,18 @@ Object.assign(game, {
                 const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
                 const cardName = card.name.replace(/'/g, "\\'");
                 const generalWithFaction = colorToGeneralWithFaction[card.color] || 'Any General';
-                const cardIcon = card.special ? '✨' : (card.icon || '🎴');
+                const cardIcon = card.special ? '🌟' : (card.icon || '🎴');
                 cardsHTML += `
                     <div class="hero-card-item-${cardIndex}" data-card-index="${cardIndex}"
                          style="padding: 8px; margin: 5px 0; border-left: 3px solid ${borderColor}; background: rgba(0,0,0,0.3); cursor: pointer; border-radius: 3px; transition: background 0.2s;">
                         <div style="font-weight: bold; color: ${borderColor};">${cardIcon} ${card.name}</div>
-                        <div style="font-size: 0.85em;">${card.special ? "✨ Special — Play anytime" : "🎲 " + card.dice + " dice vs " + generalWithFaction}</div>
+                        <div style="font-size: 0.85em;">${card.special ? "🌟 Special — Play anytime" : "🎲 " + card.dice + " dice vs " + generalWithFaction}</div>
                     </div>
                 `;
             });
             cardsHTML += '</div>';
         }
-        
+
         // Add close button to tooltip container if stationary (not content)
         if (stationary) {
             let closeBtn = tooltip.querySelector('.tooltip-close-x');
@@ -802,7 +802,7 @@ Object.assign(game, {
         let bodyHTML = '';
         if (card.special) {
             bannerHTML = `<div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
-                <div class="hero-banner-name">✨ ${card.name}</div>
+                <div class="hero-banner-name">🌟 ${card.name}</div>
             </div>`;
             bodyHTML = `
                 <div style="margin:8px 0;padding:8px 10px;background:rgba(109,40,168,0.1);border:1.5px solid #6d28a8;border-radius:6px;">
@@ -1572,7 +1572,7 @@ Object.assign(game, {
             hero.cards.forEach((card, cardIndex) => {
                 const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
                 const generalWithFaction = colorToGeneralWithFaction[card.color] || 'Any General';
-                const cardIcon = card.special ? '✨' : (card.icon || '🎴');
+                const cardIcon = card.special ? '🌟' : (card.icon || '🎴');
 
                 // Store card in global scope with unique key
                 const cardKey = `heroCard_${hero.name}_${cardIndex}`;
@@ -1583,7 +1583,7 @@ Object.assign(game, {
                          onmousedown="console.log('mousedown on card'); window.game.showCardDetailModal(window['${cardKey}']); return false;"
                          style="padding: 8px; margin: 5px 0; border-left: 3px solid ${borderColor}; background: rgba(0,0,0,0.3); cursor: pointer; border-radius: 3px; transition: background 0.2s;">
                         <div style="font-weight: bold; color: ${borderColor};">${cardIcon} ${card.name}</div>
-                        <div style="font-size: 0.85em;">${card.special ? "✨ Special — Play anytime" : "🎲 " + card.dice + " dice vs " + generalWithFaction}</div>
+                        <div style="font-size: 0.85em;">${card.special ? "🌟 Special — Play anytime" : "🎲 " + card.dice + " dice vs " + generalWithFaction}</div>
                     </div>
                 `;
             });

@@ -91,19 +91,19 @@ Object.assign(game, {
             // Build ability lines
             let abilityLines = '';
             if (damageInfo.shadowHidden) {
-                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: #a78bfa;">🗡️ Hide In The Shadows: Avoided ${damageInfo.minionDamageBlocked} minion wound${damageInfo.minionDamageBlocked !== 1 ? 's' : ''}!</div>`;
+                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: #f87171;">🗡️ Hide In The Shadows: Avoided ${damageInfo.minionDamageBlocked} minion wound${damageInfo.minionDamageBlocked !== 1 ? 's' : ''}!</div>`;
             }
             if (damageInfo.shapeshiftProtected) {
                 const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
                 const fname = factionNames[damageInfo.shapeshiftForm] || damageInfo.shapeshiftForm;
-                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: #ec4899;">⚡ Shape Shifter: Avoided ${damageInfo.shapeshiftDamageBlocked} ${fname} wound${damageInfo.shapeshiftDamageBlocked !== 1 ? 's' : ''}!</div>`;
+                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: #fbbf24;">⚡ Shape Shifter: Avoided ${damageInfo.shapeshiftDamageBlocked} ${fname} wound${damageInfo.shapeshiftDamageBlocked !== 1 ? 's' : ''}!</div>`;
             }
             if (damageInfo.fearBlocked) {
-                abilityLines += '<div style="margin-top: 5px; font-style: italic; color: #fbbf24;">⚔️ Bravery: Immune to undead fear damage!</div>';
+                abilityLines += '<div style="margin-top: 5px; font-style: italic; color: #a78bfa;">⚔️ Bravery: Immune to undead fear damage!</div>';
             }
             if (damageInfo.auraReduction > 0) {
                 const abilityName = hero.name === 'Dwarf' ? '⛏️ Armor and Toughness' : '✝️ Aura of Righteousness';
-                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: #fbbf24;">${abilityName}: Reduced ${damageInfo.auraReduction} damage!</div>`;
+                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: ${hero.color};">${abilityName}: Reduced ${damageInfo.auraReduction} damage!</div>`;
             }
             
             if (damageInfo.totalDamage > 0) {
@@ -174,7 +174,7 @@ Object.assign(game, {
         if (spyHolder && woundedGenerals.length > 0 && !this.spyBlockedGeneral) {
             spyButtonHTML = `
                 <div style="text-align: center; margin: 8px 0;">
-                    <button class="btn" onclick="game._spyInCampShowPicker()" style="background: rgba(124,58,237,0.3); border: 2px solid #7c3aed; color: #a78bfa; padding: 8px 16px; font-size: 0.95em;">
+                    <button class="btn" onclick="game._spyInCampShowPicker()" style="background: rgba(185,28,28,0.3); border: 2px solid #b91c1c; color: #f87171; padding: 8px 16px; font-size: 0.95em;">
                         👤 Spy In The Camp (${spyHolder.hero.symbol} ${spyHolder.hero.name})
                     </button>
                 </div>`;

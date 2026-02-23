@@ -928,7 +928,7 @@ Object.assign(game, {
             hero.cards.forEach((card, ci) => {
                 const cColor = card.special ? cardColorMap.any : (cardColorMap[card.color] || cardColorMap.any);
                 const diceBoxes = Array(card.dice).fill(0).map(() =>
-                    `<span style="display:inline-block;width:20px;height:20px;background:${cColor.dice};border-radius:3px;margin:1px;"></span>`
+                    `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${cColor.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
                 ).join('');
                 const specialDesc = card.special && card.description
                     ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;margin-top:2px;">${card.description}</div>`
@@ -936,7 +936,7 @@ Object.assign(game, {
                 cardsHTML += `
                     <div class="hero-detail-card-item" data-card-index="${ci}" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin:4px 0;background:${cColor.bg};border:1px solid ${cColor.border};border-radius:6px;cursor:pointer;">
                         <div>
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${cColor.text};font-size:0.9em;">${card.icon || '🎴'} ${card.name}</div>
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${cColor.text};font-size:0.9em;">${card.special ? '✨' : (card.icon || '🎴')} ${card.name}</div>
                             ${specialDesc}
                         </div>
                         <div style="display:flex;gap:2px;">${diceBoxes}</div>
@@ -1111,12 +1111,16 @@ Object.assign(game, {
                 <h2 class="modal-title">📋 Release Notes - Version 5.3.11</h2>
 
                 <div style="margin: 20px 0;">
-                    <h3 style="color: #ffd700; margin-bottom: 10px;">🎨 UI - Hero Detail Modal Redesign</h3>
+                    <h3 style="color: #ffd700; margin-bottom: 10px;">🎨 UI - Parchment Theme & Modal Redesign</h3>
 
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">🎨 Hero Detail Modal</div>
+                        <div style="color: #4ade80; font-weight: bold; margin-bottom: 8px;">🎨 Parchment Theme</div>
                         <div style="font-size: 0.95em; color: #d4af37; line-height: 1.6;">
-                            • Hero detail modal redesigned — title and close button on same line, silver placard with black text, removed redundant close button
+                            • Hero cards, detail cards, and stat badges updated to warm parchment gradients<br>
+                            • Card detail modal redesigned with faction-colored banners and general icons<br>
+                            • Quest detail modal redesigned with red banner, inline reward text, and centered status badges<br>
+                            • Special card icons now use ✨ sparkle consistently across all views<br>
+                            • Dice boxes updated to 22px colored squares with 🎲 emoji
                         </div>
                     </div>
 

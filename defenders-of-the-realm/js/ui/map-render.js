@@ -647,12 +647,12 @@ Object.assign(game, {
                 const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
                 const cardName = card.name.replace(/'/g, "\\'");
                 const generalWithFaction = colorToGeneralWithFaction[card.color] || 'Any General';
-                const cardIcon = card.icon || '🎴';
+                const cardIcon = card.special ? '✨' : (card.icon || '🎴');
                 cardsHTML += `
                     <div class="hero-card-item-${cardIndex}" data-card-index="${cardIndex}"
                          style="padding: 8px; margin: 5px 0; border-left: 3px solid ${borderColor}; background: rgba(0,0,0,0.3); cursor: pointer; border-radius: 3px; transition: background 0.2s;">
                         <div style="font-weight: bold; color: ${borderColor};">${cardIcon} ${card.name}</div>
-                        <div style="font-size: 0.85em;">${card.special ? "🌟 Special — Play anytime" : "🎲 " + card.dice + " dice vs " + generalWithFaction}</div>
+                        <div style="font-size: 0.85em;">${card.special ? "✨ Special — Play anytime" : "🎲 " + card.dice + " dice vs " + generalWithFaction}</div>
                     </div>
                 `;
             });
@@ -774,33 +774,47 @@ Object.assign(game, {
             return;
         }
 
-        const colorMap = {
-            red:   { bg: "rgba(220,38,38,0.12)", border: "#dc2626", text: "#dc2626" },
-            blue:  { bg: "rgba(59,130,246,0.12)", border: "#3b82f6", text: "#3b82f6" },
-            green: { bg: "rgba(22,163,74,0.12)", border: "#16a34a", text: "#16a34a" },
-            black: { bg: "rgba(55,65,81,0.12)", border: "#374151", text: "#374151" },
+        const cardColorMap = {
+            red:   { bg: "rgba(220,38,38,0.12)", border: "#dc2626", text: "#dc2626", dice: "#dc2626" },
+            blue:  { bg: "rgba(59,130,246,0.12)", border: "#3b82f6", text: "#3b82f6", dice: "#3b82f6" },
+            green: { bg: "rgba(22,163,74,0.12)", border: "#16a34a", text: "#16a34a", dice: "#16a34a" },
+            black: { bg: "rgba(55,65,81,0.12)", border: "#374151", text: "#374151", dice: "#374151" },
+            any:   { bg: "rgba(109,40,168,0.12)", border: "#6d28a8", text: "#6d28a8", dice: "#6d28a8" },
         };
-        const specialColor = { bg: "rgba(109,40,168,0.12)", border: "#6d28a8", text: "#6d28a8" };
+        const colorToGeneral = {
+            red:   { name: "Balazarg", icon: "👹", faction: "Demon" },
+            blue:  { name: "Sapphire", icon: "🐉", faction: "Dragon" },
+            green: { name: "Gorgutt", icon: "👺", faction: "Orc" },
+            black: { name: "Varkolak", icon: "💀", faction: "Undead" },
+            any:   { name: "Any General", icon: "⚔️", faction: "any" },
+        };
 
-        const colorToFaction = { red: 'Demons', blue: 'Dragonkin', green: 'Orcs', black: 'Undead' };
-        const cColor = card.special ? specialColor : (colorMap[card.color] || specialColor);
-        const faction = colorToFaction[card.color] || 'Any';
+        const cColor = card.special ? cardColorMap.any : (cardColorMap[card.color] || cardColorMap.any);
+        const general = colorToGeneral[card.color] || colorToGeneral.any;
 
         const dicePool = Array(card.dice).fill(0).map(() =>
-            `<span style="display:inline-block;width:28px;height:28px;background:${cColor.border};border-radius:4px;margin:2px;"></span>`
+            `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${cColor.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
         ).join('');
 
+        let bannerHTML = '';
         let bodyHTML = '';
         if (card.special) {
+            bannerHTML = `<div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
+                <div class="hero-banner-name">✨ ${card.name}</div>
+            </div>`;
             bodyHTML = `
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${cColor.text};text-align:center;margin:8px 0;">🌟 Special Card</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin:8px 0;">Special</div>
                 <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:6px;">${card.description || 'Special ability'}</div>
+                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${cColor.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
+                <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center;">${dicePool}</div>
             `;
         } else {
+            bannerHTML = `<div style="background:linear-gradient(135deg,${cColor.border}cc 0%,${cColor.border}99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
+                <div class="hero-banner-name">${card.icon || '🎴'} ${card.name}</div>
+            </div>`;
             bodyHTML = `
-                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:6px;">
-                    <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.1em;">Target:</strong> ${faction}
-                </div>
+                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${cColor.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
+                <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center;">${dicePool}</div>
             `;
         }
 
@@ -810,10 +824,8 @@ Object.assign(game, {
                 <button onclick="game.closeCardDetail()" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
             </div>
             <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cColor.border};border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                ${bannerHTML}
                 <div style="padding:14px;">
-                    <div style="text-align:center;font-size:1.5em;margin-bottom:4px;">${card.icon || '🎴'}</div>
-                    <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.1em;color:${cColor.text};margin-bottom:10px;">${card.name}</div>
-                    <div style="text-align:center;margin:10px 0;">${dicePool}</div>
                     ${bodyHTML}
                 </div>
             </div>
@@ -1541,7 +1553,7 @@ Object.assign(game, {
             hero.cards.forEach((card, cardIndex) => {
                 const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
                 const generalWithFaction = colorToGeneralWithFaction[card.color] || 'Any General';
-                const cardIcon = card.icon || '🎴'; // Default icon if missing
+                const cardIcon = card.special ? '✨' : (card.icon || '🎴');
 
                 // Store card in global scope with unique key
                 const cardKey = `heroCard_${hero.name}_${cardIndex}`;
@@ -1552,7 +1564,7 @@ Object.assign(game, {
                          onmousedown="console.log('mousedown on card'); window.game.showCardDetailModal(window['${cardKey}']); return false;"
                          style="padding: 8px; margin: 5px 0; border-left: 3px solid ${borderColor}; background: rgba(0,0,0,0.3); cursor: pointer; border-radius: 3px; transition: background 0.2s;">
                         <div style="font-weight: bold; color: ${borderColor};">${cardIcon} ${card.name}</div>
-                        <div style="font-size: 0.85em;">${card.special ? "🌟 Special — Play anytime" : "🎲 " + card.dice + " dice vs " + generalWithFaction}</div>
+                        <div style="font-size: 0.85em;">${card.special ? "✨ Special — Play anytime" : "🎲 " + card.dice + " dice vs " + generalWithFaction}</div>
                     </div>
                 `;
             });

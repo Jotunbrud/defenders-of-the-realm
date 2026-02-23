@@ -168,23 +168,25 @@
         }
 
         .hero-card {
-            background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
-            border: 2px solid #d4d4d4;
-            border-radius: 8px;
-            padding: 10px;
+            background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%);
+            border: 3px solid #8b7355;
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 0;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3);
+            margin-bottom: 10px;
         }
 
         .hero-card.active {
-            border-color: #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            border-color: #d4af37;
+            box-shadow: 0 0 16px rgba(212,175,55,0.5), inset 0 0 0 1px rgba(139,115,85,0.3);
         }
 
         .hero-name {
             font-size: 1em;
             font-weight: bold;
-            color: #000;
             margin-bottom: 5px;
         }
 
@@ -196,9 +198,11 @@
         }
 
         .stat {
-            background: rgba(0,0,0,0.3);
-            padding: 2px 6px;
-            border-radius: 3px;
+            background: rgba(139,115,85,0.15);
+            border: 1px solid rgba(139,115,85,0.3);
+            padding: 2px 7px;
+            border-radius: 4px;
+            color: #3d2b1f;
         }
 
         .generals-panel {
@@ -411,10 +415,11 @@
         }
 
         .hero-detail-card {
-            background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
-            border: 3px solid #d4d4d4;
-            border-radius: 12px;
-            padding: 20px;
+            background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%);
+            border: 3px solid #8b7355;
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 0;
         }
 
         .hero-detail-card .hero-name {

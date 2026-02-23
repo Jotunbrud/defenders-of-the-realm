@@ -945,8 +945,9 @@ Object.assign(game, {
         if (hero.cards.length > 0) {
             hero.cards.forEach((card, ci) => {
                 const cColor = card.special ? cardColorMap.any : (cardColorMap[card.color] || cardColorMap.any);
+                const diceColor = card.special && card.color && cardColorMap[card.color] ? cardColorMap[card.color] : cColor;
                 const diceBoxes = Array(card.dice).fill(0).map(() =>
-                    `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${cColor.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
+                    `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${diceColor.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
                 ).join('');
                 const specialDesc = card.special && card.description
                     ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;margin-top:2px;">${card.description}</div>`
@@ -954,7 +955,7 @@ Object.assign(game, {
                 cardsHTML += `
                     <div class="hero-detail-card-item" data-card-index="${ci}" style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin:4px 0;background:${cColor.bg};border:1px solid ${cColor.border};border-radius:6px;cursor:pointer;">
                         <div>
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${cColor.text};font-size:0.9em;">${card.special ? '✨' : (card.icon || '🎴')} ${card.name}</div>
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${cColor.text};font-size:0.9em;">${card.special ? '🌟' : (card.icon || '🎴')} ${card.name}</div>
                             ${specialDesc}
                         </div>
                         <div style="display:flex;gap:2px;">${diceBoxes}</div>
@@ -974,9 +975,9 @@ Object.assign(game, {
             `<span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${bgColor};border:1px solid ${borderColor};color:${textColor};">${label}</span>`;
 
         ready.forEach(q => {
-            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;border-bottom:1px solid rgba(139,115,85,0.2);cursor:pointer;">
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;cursor:pointer;">
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}</div>
-                ${questBadge('✅ Completed', 'rgba(22,163,74,0.15)', '#16a34a', '#15803d')}
+                ${questBadge('Completed', 'rgba(22,163,74,0.15)', '#16a34a', '#15803d')}
             </div>`;
         });
         active.forEach(q => {
@@ -990,14 +991,14 @@ Object.assign(game, {
                 const total = Object.values(q.mechanic.locations).length;
                 progressNote = ` (${done}/${total})`;
             }
-            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;border-bottom:1px solid rgba(139,115,85,0.2);cursor:pointer;">
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;cursor:pointer;">
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}${progressNote}</div>
-                ${questBadge('⏳ In Progress', 'rgba(202,138,4,0.15)', '#ca8a04', '#a16207')}
+                ${questBadge('In Progress', 'rgba(202,138,4,0.15)', '#ca8a04', '#a16207')}
             </div>`;
         });
         retired.forEach(q => {
-            const label = q.failed ? '❌ Discarded' : '🏆 Used';
-            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;border-bottom:1px solid rgba(139,115,85,0.2);cursor:pointer;opacity:0.7;">
+            const label = q.failed ? 'Discarded' : 'Used';
+            questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:5px 0;cursor:pointer;opacity:0.7;">
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}</div>
                 ${questBadge(label, 'rgba(220,38,38,0.15)', '#dc2626', '#b91c1c')}
             </div>`;
@@ -1024,8 +1025,8 @@ Object.assign(game, {
         });
         selectorHTML += '</div>';
 
-        // Bug 4: separator between cards and quests
-        const questsSeparator = questsHTML ? `<div style="border-top:1px solid rgba(139,115,85,0.3);margin-top:10px;padding-top:8px;"><div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-bottom:6px;">📜 Quests</div>${questsHTML}</div>` : '';
+        // Quests section with box
+        const questsSeparator = questsHTML ? `<div style="margin-top:10px;padding:8px;background:rgba(139,115,85,0.08);border:1px solid rgba(139,115,85,0.3);border-radius:6px;"><div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-bottom:6px;">📜 Quests</div>${questsHTML}</div>` : '';
 
         detailContent.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
@@ -1094,21 +1095,25 @@ Object.assign(game, {
 
         const cColor = card.special ? cardColorMap.any : (cardColorMap[card.color] || cardColorMap.any);
         const general = colorToGeneral[card.color] || colorToGeneral.any;
+        // Dice color: use faction color if card has a specific faction, otherwise purple
+        const diceColorObj = card.special && card.color && cardColorMap[card.color] ? cardColorMap[card.color] : cColor;
 
         const dicePool = Array(card.dice).fill(0).map(() =>
-            `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${cColor.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
+            `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${diceColorObj.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
         ).join('');
 
         let bannerHTML = '';
         let bodyHTML = '';
         if (card.special) {
             bannerHTML = `<div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
-                <div class="hero-banner-name">✨ ${card.name}</div>
+                <div class="hero-banner-name">🌟 ${card.name}</div>
             </div>`;
             bodyHTML = `
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin:8px 0;">Special</div>
-                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:6px;">${card.description || 'Special ability'}</div>
-                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${cColor.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
+                <div style="margin:8px 0;padding:8px 10px;background:rgba(109,40,168,0.1);border:1.5px solid #6d28a8;border-radius:6px;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin-bottom:4px;">Special</div>
+                    <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;">${card.description || 'Special ability'}</div>
+                </div>
+                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${diceColorObj.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
                 <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center;">${dicePool}</div>
             `;
         } else {
@@ -1131,7 +1136,7 @@ Object.assign(game, {
             selectorHTML += `<button class="hero-banner-name" onclick="game._heroDetailCardData=game.heroes[game._heroDetailViewIndex].cards[${ci}];game._renderHeroDetailContent();"
                 style="padding:4px 8px;border-radius:6px;background:${btnColor};color:#fff;font-size:0.7em;
                 border:${btnBorder};text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);
-                -webkit-text-stroke:none;box-shadow:${btnShadow};cursor:pointer;">${c.special ? '✨' : (c.icon || '🎴')} ${c.name}</button>`;
+                -webkit-text-stroke:none;box-shadow:${btnShadow};cursor:pointer;">${c.special ? '🌟' : (c.icon || '🎴')} ${c.name}</button>`;
         });
         selectorHTML += '</div>';
 
@@ -1163,17 +1168,17 @@ Object.assign(game, {
         let statusLabel, statusBg, statusBorder, statusColor;
         if (quest.discarded) {
             const isFailed = quest.failed;
-            statusLabel = isFailed ? '❌ Discarded' : '🏆 Used';
+            statusLabel = isFailed ? 'Discarded' : 'Used';
             statusBg = 'rgba(220,38,38,0.15)';
             statusBorder = '#dc2626';
             statusColor = '#b91c1c';
         } else if (quest.completed) {
-            statusLabel = '✅ Completed';
+            statusLabel = 'Completed';
             statusBg = 'rgba(22,163,74,0.15)';
             statusBorder = '#16a34a';
             statusColor = '#15803d';
         } else {
-            statusLabel = '⏳ In Progress';
+            statusLabel = 'In Progress';
             statusBg = 'rgba(202,138,4,0.15)';
             statusBorder = '#ca8a04';
             statusColor = '#a16207';

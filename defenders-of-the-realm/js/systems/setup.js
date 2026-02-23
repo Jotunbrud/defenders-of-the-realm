@@ -507,11 +507,11 @@ Object.assign(game, {
         const svg = document.getElementById('game-map');
         if (!svg) return;
         
-        // Click on hero token to show cards tooltip
+        // Click on hero token to open hero details modal
         svg.addEventListener('click', (e) => {
             // Try to find hero token - check both target and what's at the click point
             let heroToken = e.target.closest('.hero-token-svg');
-            
+
             // If target is SVG itself, look for hero tokens at click coordinates
             if (!heroToken && e.target.tagName === 'svg') {
                 const elements = document.elementsFromPoint(e.clientX, e.clientY);
@@ -520,24 +520,15 @@ Object.assign(game, {
                     if (heroToken) break;
                 }
             }
-            
+
             const tooltip = document.getElementById('hover-tooltip');
             const clickedTooltip = e.target.closest('#hover-tooltip');
-            
-            // If clicked on a hero token, toggle that hero's tooltip
+
+            // If clicked on a hero token, open hero details modal
             if (heroToken) {
                 e.stopPropagation();
                 const heroIndex = parseInt(heroToken.dataset.heroIndex);
-                const hero = this.heroes[heroIndex];
-                
-                // If tooltip is already showing for this hero, hide it
-                if (tooltip.classList.contains('active') && 
-                    tooltip.getAttribute('data-hero-name') === hero.name) {
-                    this.hideTooltip(true);
-                } else {
-                    // Show tooltip for this hero
-                    this.showHeroCardsTooltip(hero, e, true);
-                }
+                this.showHeroDetail(heroIndex);
             }
             // Close tooltip if clicking outside hero tokens and tooltip
             else if (!clickedTooltip && tooltip.classList.contains('active')) {

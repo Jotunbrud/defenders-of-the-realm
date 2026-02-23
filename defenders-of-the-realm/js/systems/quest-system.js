@@ -354,7 +354,20 @@ Object.assign(game, {
     },
     
     showQuestCardsModal() {
-        this._showQuestCardsForHeroes(null); // null = all heroes
+        // Open hero detail modal in quest view for the active hero
+        const hero = this.heroes[this.currentPlayerIndex];
+        const quests = hero?.questCards || [];
+        if (quests.length > 0) {
+            this._heroDetailViewIndex = this.currentPlayerIndex;
+            this._heroDetailView = 'quest';
+            this._heroDetailQuestData = quests[0];
+            this._heroDetailCardData = null;
+            this._renderHeroDetailContent();
+            document.getElementById('heroes-modal').classList.remove('active');
+            document.getElementById('hero-detail-modal').classList.add('active');
+        } else {
+            this.showInfoModal('📜 Quests', `<div>${hero.name} has no quest cards!</div>`);
+        }
     },
     
     showHeroQuestCardsModal(heroIndex) {
@@ -1223,17 +1236,17 @@ Object.assign(game, {
         let statusLabel, statusBg, statusBorder, statusColor;
         if (quest.discarded) {
             const isFailed = quest.failed;
-            statusLabel = isFailed ? '❌ Discarded' : '🏆 Used';
+            statusLabel = isFailed ? 'Discarded' : 'Used';
             statusBg = 'rgba(220,38,38,0.15)';
             statusBorder = '#dc2626';
             statusColor = '#b91c1c';
         } else if (quest.completed) {
-            statusLabel = '✅ Completed';
+            statusLabel = 'Completed';
             statusBg = 'rgba(22,163,74,0.15)';
             statusBorder = '#16a34a';
             statusColor = '#15803d';
         } else {
-            statusLabel = '⏳ In Progress';
+            statusLabel = 'In Progress';
             statusBg = 'rgba(202,138,4,0.15)';
             statusBorder = '#ca8a04';
             statusColor = '#a16207';

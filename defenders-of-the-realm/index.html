@@ -334,7 +334,7 @@
 
     <!-- Hero Detail Modal -->
     <div class="modal" id="hero-detail-modal" onclick="game.closeHeroDetail(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-content" onclick="event.stopPropagation()" style="padding-top: 20px;">
             <div id="hero-detail-content"></div>
         </div>
     </div>
@@ -794,10 +794,9 @@
         </div>
     </div>
     
-    <!-- Card Detail Modal -->
+    <!-- Card Detail Modal (standalone, used from tooltips) -->
     <div id="card-detail-modal" class="modal" style="z-index: 30000;">
-        <div class="modal-content" style="max-width: 500px;">
-            <button onclick="game.closeCardDetail()" class="modal-close-btn">×</button>
+        <div class="modal-content" style="max-width: 500px; padding-top: 20px;">
             <div id="card-detail-content"></div>
         </div>
     </div>

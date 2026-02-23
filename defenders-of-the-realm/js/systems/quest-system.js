@@ -1217,6 +1217,85 @@ Object.assign(game, {
         console.log(`[QUEST] Retired "${quest.name}" for ${hero.name} — ${reason}`);
     },
     
+    // Show a Quest Detail modal for a specific quest card
+    showQuestDetailModal(hero, quest) {
+        // Determine status
+        let statusLabel, statusBg, statusBorder, statusColor;
+        if (quest.discarded) {
+            const isFailed = quest.failed;
+            statusLabel = isFailed ? '❌ Discarded' : '🏆 Used';
+            statusBg = 'rgba(220,38,38,0.15)';
+            statusBorder = '#dc2626';
+            statusColor = '#b91c1c';
+        } else if (quest.completed) {
+            statusLabel = '✅ Completed';
+            statusBg = 'rgba(22,163,74,0.15)';
+            statusBorder = '#16a34a';
+            statusColor = '#15803d';
+        } else {
+            statusLabel = '⏳ In Progress';
+            statusBg = 'rgba(202,138,4,0.15)';
+            statusBorder = '#ca8a04';
+            statusColor = '#a16207';
+        }
+
+        // Progress note for multi-location quests
+        let progressHTML = '';
+        if (!quest.completed && !quest.discarded && quest.mechanic) {
+            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
+            if (quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
+                progressHTML = '<div style="margin-top:8px;">';
+                for (const [loc, data] of Object.entries(quest.mechanic.locations)) {
+                    const emoji = colorEmojis[data.color] || '⭕';
+                    const check = data.visited ? '✅' : '⬜';
+                    const clr = data.visited ? '#15803d' : '#8b7355';
+                    progressHTML += `<div style="color:${clr};font-size:0.85em;padding:2px 0;">${emoji} ${loc} ${check}</div>`;
+                }
+                progressHTML += '</div>';
+            }
+            if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
+                progressHTML = '<div style="margin-top:8px;">';
+                for (const [loc, data] of Object.entries(quest.mechanic.locations)) {
+                    const emoji = colorEmojis[data.color] || '⭕';
+                    const check = data.organized ? '✅' : '⬜';
+                    const clr = data.organized ? '#15803d' : '#8b7355';
+                    progressHTML += `<div style="color:${clr};font-size:0.85em;padding:2px 0;">${emoji} ${loc} ${check}</div>`;
+                }
+                progressHTML += '</div>';
+            }
+        }
+
+        const contentHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">📜 Quest Details</h2>
+                <button onclick="game.closeInfoModal()" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
+            </div>
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                <div style="padding:14px;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.1em;color:#2c1810;margin-bottom:6px;">📜 ${quest.name}</div>
+                    <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description || ''}</div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${statusBg};border:1px solid ${statusBorder};color:${statusColor};">${statusLabel}</span>
+                    </div>
+                    ${progressHTML}
+                    ${quest.reward ? `
+                    <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;margin-bottom:4px;">🏆 Reward</div>
+                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;">${quest.reward}</div>
+                    </div>` : ''}
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:10px;">
+                <button class="btn btn-primary" onclick="game.closeInfoModal()" style="padding:8px 24px;">Close</button>
+            </div>
+        `;
+
+        this.showInfoModal('📜 Quest Details', contentHTML);
+        // Hide the default Continue button since we have our own Close button
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+    },
+
     // Build quest cards section for hero detail modal
     _buildHeroQuestSection(hero) {
         const allQuests = hero.questCards || [];

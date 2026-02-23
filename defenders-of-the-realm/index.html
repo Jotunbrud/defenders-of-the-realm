@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Defenders of the Realm</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- ── SPLASH SCREEN ── -->
@@ -126,7 +129,7 @@
     <!-- Setup Modal -->
     <div class="modal active" id="setup-modal">
         <div class="modal-content">
-            <h2 class="modal-title">Game Setup</h2>
+            <h2 class="modal-title modal-heading">⚔️ Hero Selection</h2>
             <p style="margin-bottom: 15px; text-align: center;">Select your heroes (1-4 players)</p>
             <div id="hero-selection"></div>
             
@@ -322,7 +325,7 @@
     <div class="modal" id="heroes-modal" onclick="game.closeHeroesModal(event)" style="pointer-events: auto;">
         <div class="modal-content" onclick="event.stopPropagation()" style="pointer-events: auto; padding-top: 25px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 class="modal-title" style="margin: 0; font-size: 1.2em;">👥 Heroes</h2>
+                <h2 class="modal-title modal-heading" style="margin: 0; font-size: 1.2em;">👥 Heroes</h2>
                 <button onclick="game.closeHeroesModal()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
             </div>
             <div id="heroes-modal-list"></div>

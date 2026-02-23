@@ -720,6 +720,40 @@
             .hero-tray-left, .hero-tray-center, .hero-tray-right { flex: 0 1 auto; }
         }
 
+        /* Parchment modal typography */
+        .hero-banner-name {
+          font-family: 'Cinzel', Georgia, serif;
+          font-weight: 900;
+          font-size: 1.05em;
+          color: #fff;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .hero-ability-text strong {
+          font-family: 'Cinzel', Georgia, serif;
+          font-size: 1em;
+          color: #1a0f0a;
+          display: inline;
+          font-weight: 900;
+        }
+
+        .hero-ability-text-select strong {
+          font-family: 'Cinzel', Georgia, serif;
+          font-size: 1em;
+          color: #1a0f0a;
+          display: inline;
+          font-weight: 900;
+        }
+
+        .hero-section-label {
+          font-family: 'Cinzel', Georgia, serif;
+          font-weight: 900;
+        }
+
+        .modal-heading {
+          font-family: 'Cinzel', Georgia, serif;
+        }
+
         /* ── SPLASH SCREEN ── */
         @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=MedievalSharp&display=swap');
 

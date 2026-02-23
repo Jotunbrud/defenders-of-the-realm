@@ -354,20 +354,7 @@ Object.assign(game, {
     },
     
     showQuestCardsModal() {
-        // Open hero detail modal in quest view for the active hero
-        const hero = this.heroes[this.currentPlayerIndex];
-        const quests = hero?.questCards || [];
-        if (quests.length > 0) {
-            this._heroDetailViewIndex = this.currentPlayerIndex;
-            this._heroDetailView = 'quest';
-            this._heroDetailQuestData = quests[0];
-            this._heroDetailCardData = null;
-            this._renderHeroDetailContent();
-            document.getElementById('heroes-modal').classList.remove('active');
-            document.getElementById('hero-detail-modal').classList.add('active');
-        } else {
-            this.showInfoModal('📜 Quests', `<div>${hero.name} has no quest cards!</div>`);
-        }
+        this._showQuestCardsForHeroes(null); // null = all heroes
     },
     
     showHeroQuestCardsModal(heroIndex) {

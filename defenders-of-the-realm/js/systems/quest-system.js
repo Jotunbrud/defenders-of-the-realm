@@ -1271,18 +1271,20 @@ Object.assign(game, {
                 <button onclick="game.closeInfoModal()" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
             </div>
             <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
+                    <div class="hero-banner-name">📜 ${quest.name}</div>
+                </div>
                 <div style="padding:14px;">
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.1em;color:#2c1810;margin-bottom:6px;">📜 ${quest.name}</div>
                     <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description || ''}</div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    ${quest.reward ? `
+                    <div style="margin-top:8px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                    </div>` : ''}
+                    ${progressHTML}
+                    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${statusBg};border:1px solid ${statusBorder};color:${statusColor};">${statusLabel}</span>
                     </div>
-                    ${progressHTML}
-                    ${quest.reward ? `
-                    <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;margin-bottom:4px;">🏆 Reward</div>
-                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;">${quest.reward}</div>
-                    </div>` : ''}
                 </div>
             </div>
             <div style="text-align:center;margin-top:10px;">

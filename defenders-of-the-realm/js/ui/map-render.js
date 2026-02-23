@@ -1449,7 +1449,7 @@ Object.assign(game, {
                         <span class="heroes-quest-stat" data-hero-index="${viewIdx}" style="cursor: pointer; text-decoration: underline; color: #8b0000; font-weight: bold; font-size: 0.85em;">📜 ${activeQuests.length}</span>
                     </div>
                     ${completedQuestBadges}
-                    <div class="hero-ability-text" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5; margin-top: 6px;">${hero.ability}</div>
+                    <div class="hero-ability-text" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5; margin-top: 8px; border-top: 1px solid rgba(139,115,85,0.3); padding-top: 8px;">${hero.ability}</div>
                 </div>
             </div>`;
 
@@ -1476,14 +1476,29 @@ Object.assign(game, {
             if (cardStat) {
                 cardStat.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    game.showHeroDetail(viewIdx);
+                    // Open hero detail modal in card view (shows first card)
+                    const hero = game.heroes[viewIdx];
+                    if (hero.cards.length > 0) {
+                        game._heroDetailCardData = hero.cards[0];
+                        game.showHeroDetail(viewIdx, 'card');
+                    } else {
+                        game.showHeroDetail(viewIdx);
+                    }
                 });
             }
             const questStat = heroesModalList.querySelector(`.heroes-quest-stat[data-hero-index="${viewIdx}"]`);
             if (questStat) {
                 questStat.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    game.showHeroQuestCardsModal(viewIdx);
+                    // Open hero detail modal in quest view (shows first quest)
+                    const hero = game.heroes[viewIdx];
+                    const activeQuests = (hero.questCards || []).filter(q => !q.discarded);
+                    if (activeQuests.length > 0) {
+                        game._heroDetailQuestData = activeQuests[0];
+                        game.showHeroDetail(viewIdx, 'quest');
+                    } else {
+                        game.showHeroDetail(viewIdx);
+                    }
                 });
             }
         }, 10);

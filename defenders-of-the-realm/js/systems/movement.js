@@ -900,12 +900,30 @@ Object.assign(game, {
     
     // Track which hero is displayed in hero detail modal
     _heroDetailViewIndex: 0,
+    // View state: 'hero' | 'card' | 'quest'
+    _heroDetailView: 'hero',
+    _heroDetailCardData: null,
+    _heroDetailQuestData: null,
 
-    showHeroDetail(index) {
+    showHeroDetail(index, view) {
         this._heroDetailViewIndex = index;
-        this._renderHeroDetailCard();
+        this._heroDetailView = view || 'hero';
+        this._heroDetailCardData = null;
+        this._heroDetailQuestData = null;
+        this._renderHeroDetailContent();
         document.getElementById('heroes-modal').classList.remove('active');
         document.getElementById('hero-detail-modal').classList.add('active');
+    },
+
+    _renderHeroDetailContent() {
+        const view = this._heroDetailView;
+        if (view === 'card') {
+            this._renderCardDetailView();
+        } else if (view === 'quest') {
+            this._renderQuestDetailView();
+        } else {
+            this._renderHeroDetailCard();
+        }
     },
 
     _renderHeroDetailCard() {
@@ -999,12 +1017,15 @@ Object.assign(game, {
             const btnShadow = isSel
                 ? '0 0 12px rgba(212,175,55,0.5), 0 2px 6px rgba(0,0,0,0.4)'
                 : '0 2px 6px rgba(0,0,0,0.4)';
-            selectorHTML += `<button class="hero-banner-name" onclick="game._heroDetailViewIndex=${idx};game._renderHeroDetailCard();"
+            selectorHTML += `<button class="hero-banner-name" onclick="game._heroDetailViewIndex=${idx};game._heroDetailView='hero';game._renderHeroDetailContent();"
                 style="padding:5px 10px;border-radius:6px;background:${h.color};color:#fff;font-size:0.75em;
                 border:${btnBorder};text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);
                 -webkit-text-stroke:none;box-shadow:${btnShadow};cursor:pointer;">${h.symbol} ${h.name}</button>`;
         });
         selectorHTML += '</div>';
+
+        // Bug 4: separator between cards and quests
+        const questsSeparator = questsHTML ? `<div style="border-top:1px solid rgba(139,115,85,0.3);margin-top:10px;padding-top:8px;"><div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-bottom:6px;">📜 Quests</div>${questsHTML}</div>` : '';
 
         detailContent.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
@@ -1019,7 +1040,7 @@ Object.assign(game, {
                 <div style="padding:10px 14px;">
                     <div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-bottom:6px;">🎴 Cards (${hero.cards.length})</div>
                     ${cardsHTML}
-                    ${questsHTML ? `<div class="hero-section-label" style="font-size:0.85em;color:#2c1810;margin-top:10px;margin-bottom:6px;">📜 Quests</div>${questsHTML}` : ''}
+                    ${questsSeparator}
                 </div>
             </div>
             ${selectorHTML}
@@ -1032,7 +1053,7 @@ Object.assign(game, {
                 if (el) {
                     el.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        game._showCardDetailFromHeroDetail(hero, ci);
+                        game._showCardDetailInHeroModal(ci);
                     });
                 }
             });
@@ -1041,14 +1062,216 @@ Object.assign(game, {
                     e.stopPropagation();
                     const qName = el.getAttribute('data-quest-name');
                     const quest = (hero.questCards || []).find(q => q.name === qName);
-                    if (quest) game._showQuestDetailFromHeroDetail(hero, quest);
+                    if (quest) game._showQuestDetailInHeroModal(quest);
                 });
             });
         }, 10);
     },
-    
+
+    // Card detail view rendered inside hero detail modal (Bug 5 fix)
+    _renderCardDetailView() {
+        const index = this._heroDetailViewIndex;
+        const hero = this.heroes[index];
+        const card = this._heroDetailCardData;
+        const detailContent = document.getElementById('hero-detail-content');
+
+        if (!card) { this._heroDetailView = 'hero'; this._renderHeroDetailCard(); return; }
+
+        const cardColorMap = {
+            red:   { bg: "rgba(220,38,38,0.12)", border: "#dc2626", text: "#dc2626", dice: "#dc2626" },
+            blue:  { bg: "rgba(59,130,246,0.12)", border: "#3b82f6", text: "#3b82f6", dice: "#3b82f6" },
+            green: { bg: "rgba(22,163,74,0.12)", border: "#16a34a", text: "#16a34a", dice: "#16a34a" },
+            black: { bg: "rgba(55,65,81,0.12)", border: "#374151", text: "#374151", dice: "#374151" },
+            any:   { bg: "rgba(109,40,168,0.12)", border: "#6d28a8", text: "#6d28a8", dice: "#6d28a8" },
+        };
+        const colorToGeneral = {
+            red:   { name: "Balazarg", icon: "👹", faction: "Demon" },
+            blue:  { name: "Sapphire", icon: "🐉", faction: "Dragon" },
+            green: { name: "Gorgutt", icon: "👺", faction: "Orc" },
+            black: { name: "Varkolak", icon: "💀", faction: "Undead" },
+            any:   { name: "Any General", icon: "⚔️", faction: "any" },
+        };
+
+        const cColor = card.special ? cardColorMap.any : (cardColorMap[card.color] || cardColorMap.any);
+        const general = colorToGeneral[card.color] || colorToGeneral.any;
+
+        const dicePool = Array(card.dice).fill(0).map(() =>
+            `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:${cColor.dice};border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3);">🎲</span>`
+        ).join('');
+
+        let bannerHTML = '';
+        let bodyHTML = '';
+        if (card.special) {
+            bannerHTML = `<div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
+                <div class="hero-banner-name">✨ ${card.name}</div>
+            </div>`;
+            bodyHTML = `
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin:8px 0;">Special</div>
+                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:6px;">${card.description || 'Special ability'}</div>
+                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${cColor.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
+                <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center;">${dicePool}</div>
+            `;
+        } else {
+            bannerHTML = `<div style="background:linear-gradient(135deg,${cColor.border}cc 0%,${cColor.border}99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
+                <div class="hero-banner-name">${card.icon || '🎴'} ${card.name}</div>
+            </div>`;
+            bodyHTML = `
+                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${cColor.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
+                <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center;">${dicePool}</div>
+            `;
+        }
+
+        // Card selector buttons
+        let selectorHTML = '<div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:10px;">';
+        hero.cards.forEach((c, ci) => {
+            const isSelected = c === card;
+            const btnColor = c.special ? '#6d28a8' : (cardColorMap[c.color] || cardColorMap.any).border;
+            const btnBorder = isSelected ? '3px solid #d4af37' : '2px solid rgba(0,0,0,0.3)';
+            const btnShadow = isSelected ? '0 0 12px rgba(212,175,55,0.5), 0 2px 6px rgba(0,0,0,0.4)' : '0 2px 6px rgba(0,0,0,0.4)';
+            selectorHTML += `<button class="hero-banner-name" onclick="game._heroDetailCardData=game.heroes[game._heroDetailViewIndex].cards[${ci}];game._renderHeroDetailContent();"
+                style="padding:4px 8px;border-radius:6px;background:${btnColor};color:#fff;font-size:0.7em;
+                border:${btnBorder};text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);
+                -webkit-text-stroke:none;box-shadow:${btnShadow};cursor:pointer;">${c.special ? '✨' : (c.icon || '🎴')} ${c.name}</button>`;
+        });
+        selectorHTML += '</div>';
+
+        detailContent.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">🎴 Card Detail</h2>
+                <button onclick="game._heroDetailView='hero';game._renderHeroDetailContent();" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Back to Hero">×</button>
+            </div>
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cColor.border};border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                ${bannerHTML}
+                <div style="padding:14px;">
+                    ${bodyHTML}
+                </div>
+            </div>
+            ${selectorHTML}
+        `;
+    },
+
+    // Quest detail view rendered inside hero detail modal (Bug 6 fix)
+    _renderQuestDetailView() {
+        const index = this._heroDetailViewIndex;
+        const hero = this.heroes[index];
+        const quest = this._heroDetailQuestData;
+        const detailContent = document.getElementById('hero-detail-content');
+
+        if (!quest) { this._heroDetailView = 'hero'; this._renderHeroDetailCard(); return; }
+
+        // Determine status
+        let statusLabel, statusBg, statusBorder, statusColor;
+        if (quest.discarded) {
+            const isFailed = quest.failed;
+            statusLabel = isFailed ? '❌ Discarded' : '🏆 Used';
+            statusBg = 'rgba(220,38,38,0.15)';
+            statusBorder = '#dc2626';
+            statusColor = '#b91c1c';
+        } else if (quest.completed) {
+            statusLabel = '✅ Completed';
+            statusBg = 'rgba(22,163,74,0.15)';
+            statusBorder = '#16a34a';
+            statusColor = '#15803d';
+        } else {
+            statusLabel = '⏳ In Progress';
+            statusBg = 'rgba(202,138,4,0.15)';
+            statusBorder = '#ca8a04';
+            statusColor = '#a16207';
+        }
+
+        // Progress for multi-location quests
+        let progressHTML = '';
+        if (!quest.completed && !quest.discarded && quest.mechanic) {
+            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
+            if (quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
+                progressHTML = '<div style="margin-top:8px;">';
+                for (const [loc, data] of Object.entries(quest.mechanic.locations)) {
+                    const emoji = colorEmojis[data.color] || '⭕';
+                    const check = data.visited ? '✅' : '⬜';
+                    const clr = data.visited ? '#15803d' : '#8b7355';
+                    progressHTML += `<div style="color:${clr};font-size:0.85em;padding:2px 0;">${emoji} ${loc} ${check}</div>`;
+                }
+                progressHTML += '</div>';
+            }
+            if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
+                progressHTML = '<div style="margin-top:8px;">';
+                for (const [loc, data] of Object.entries(quest.mechanic.locations)) {
+                    const emoji = colorEmojis[data.color] || '⭕';
+                    const check = data.organized ? '✅' : '⬜';
+                    const clr = data.organized ? '#15803d' : '#8b7355';
+                    progressHTML += `<div style="color:${clr};font-size:0.85em;padding:2px 0;">${emoji} ${loc} ${check}</div>`;
+                }
+                progressHTML += '</div>';
+            }
+        }
+
+        // Quest selector buttons
+        const allQuests = hero.questCards || [];
+        let selectorHTML = '<div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:10px;">';
+        allQuests.forEach((q, qi) => {
+            const isSelected = q === quest;
+            const btnBorder = isSelected ? '3px solid #d4af37' : '2px solid rgba(0,0,0,0.3)';
+            const btnShadow = isSelected ? '0 0 12px rgba(212,175,55,0.5), 0 2px 6px rgba(0,0,0,0.4)' : '0 2px 6px rgba(0,0,0,0.4)';
+            const btnBg = q.discarded ? '#666' : (q.completed ? '#15803d' : '#b91c1c');
+            selectorHTML += `<button class="hero-banner-name" onclick="game._heroDetailQuestData=game.heroes[game._heroDetailViewIndex].questCards[${qi}];game._renderHeroDetailContent();"
+                style="padding:4px 8px;border-radius:6px;background:${btnBg};color:#fff;font-size:0.7em;
+                border:${btnBorder};text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);
+                -webkit-text-stroke:none;box-shadow:${btnShadow};cursor:pointer;">📜 ${q.name}</button>`;
+        });
+        selectorHTML += '</div>';
+
+        detailContent.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">📜 Quest Details</h2>
+                <button onclick="game._heroDetailView='hero';game._renderHeroDetailContent();" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Back to Hero">×</button>
+            </div>
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
+                    <div class="hero-banner-name">📜 ${quest.name}</div>
+                </div>
+                <div style="padding:14px;">
+                    <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description || ''}</div>
+                    ${quest.reward ? `
+                    <div style="margin-top:8px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                    </div>` : ''}
+                    ${progressHTML}
+                    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${statusBg};border:1px solid ${statusBorder};color:${statusColor};">${statusLabel}</span>
+                    </div>
+                </div>
+            </div>
+            ${selectorHTML}
+        `;
+    },
+
+    _showCardDetailInHeroModal(cardIndex) {
+        const hero = this.heroes[this._heroDetailViewIndex];
+        const card = hero.cards[cardIndex];
+        if (card) {
+            this._heroDetailView = 'card';
+            this._heroDetailCardData = card;
+            this._renderHeroDetailContent();
+        }
+    },
+
+    _showQuestDetailInHeroModal(quest) {
+        if (quest) {
+            this._heroDetailView = 'quest';
+            this._heroDetailQuestData = quest;
+            this._renderHeroDetailContent();
+        }
+    },
+
     closeHeroDetail(event) {
         if (!event || event.target.id === 'hero-detail-modal') {
+            // If viewing card/quest detail, go back to hero view
+            if (this._heroDetailView !== 'hero') {
+                this._heroDetailView = 'hero';
+                this._renderHeroDetailContent();
+                return;
+            }
             document.getElementById('hero-detail-modal').classList.remove('active');
         }
     },

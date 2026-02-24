@@ -77,8 +77,7 @@ Object.assign(game, {
         let hlStyle = '';
         if (highlight) {
             const hc = highlightColor || this._generalColors[color] || '#7c3aed';
-            // Use box-shadow spread for the ring (follows border-radius unlike outline)
-            hlStyle = `box-shadow:0 0 0 4px ${hc},0 0 16px 2px ${hc}88,0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15);`;
+            hlStyle = `outline:3px solid ${hc};outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px ${hc}99;`;
         }
         return `<div class="location-ring" style="width:${s}px;height:${s}px;background:${gc};${hlStyle}">` +
             `<span class="location-ring-name" style="font-size:${s * 0.0082}em">${name}</span></div>`;
@@ -730,19 +729,22 @@ Object.assign(game, {
                     </div>
                 `;
             } else if (event.type === 'spawn') {
+                const fName = this._factionNames[event.color] || event.color;
+                const displayCount = event.wouldBeMinions != null ? event.wouldBeMinions : event.count;
                 html += `
                     <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${this.getGeneralColor(event.color)}; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                        <strong style="${colorStyle}">${event.general}:</strong> ${event.count} ${event.color} minion${event.count > 1 ? 's' : ''} → <strong>${event.location}</strong>
+                        <strong style="${colorStyle}">${event.general}:</strong> ${displayCount} ${fName} minion${displayCount > 1 ? 's' : ''} → <strong>${event.location}</strong>
                     </div>
                 `;
             } else if (event.type === 'taint') {
+                const fName = this._factionNames[event.color] || event.color;
                 const reasonText = event.reason ? `<br><span style="font-size: 0.85em; color: #fbbf24;">(${event.reason})</span>` : '';
                 const notPlaced = event.wouldBeMinions - event.minionsPlaced;
                 const placedText = event.minionsPlaced > 0 
-                    ? `${event.minionsPlaced} ${event.color} minion${event.minionsPlaced !== 1 ? 's' : ''} placed` 
+                    ? `${event.minionsPlaced} ${fName} minion${event.minionsPlaced !== 1 ? 's' : ''} placed` 
                     : '';
                 const notPlacedText = notPlaced > 0 
-                    ? `${notPlaced} ${event.color} minion${notPlaced !== 1 ? 's' : ''} <span style="color: #ef4444; font-weight: bold;">NOT placed</span>` 
+                    ? `${notPlaced} ${fName} minion${notPlaced !== 1 ? 's' : ''} <span style="color: #ef4444; font-weight: bold;">NOT placed</span>` 
                     : '';
                 const minionSummary = [placedText, notPlacedText].filter(Boolean).join(', ');
                 html += `
@@ -752,15 +754,17 @@ Object.assign(game, {
                     </div>
                 `;
             } else if (event.type === 'overrun') {
+                const fName = this._factionNames[event.color] || event.color;
                 let overrunInner = '';
                 if (event.sourceTaint) {
                     const st = event.sourceTaint;
+                    const stFName = this._factionNames[st.color] || st.color;
                     const notPlaced = st.wouldBeMinions - st.minionsPlaced;
                     const placedText = st.minionsPlaced > 0 
-                        ? `${st.minionsPlaced} ${st.color} minion${st.minionsPlaced !== 1 ? 's' : ''} placed` 
+                        ? `${st.minionsPlaced} ${stFName} minion${st.minionsPlaced !== 1 ? 's' : ''} placed` 
                         : '';
                     const notPlacedText = notPlaced > 0 
-                        ? `${notPlaced} ${st.color} minion${notPlaced !== 1 ? 's' : ''} <span style="color: #ef4444; font-weight: bold;">NOT placed</span>` 
+                        ? `${notPlaced} ${stFName} minion${notPlaced !== 1 ? 's' : ''} <span style="color: #ef4444; font-weight: bold;">NOT placed</span>` 
                         : '';
                     const minionSummary = [placedText, notPlacedText].filter(Boolean).join(', ');
                     const reasonText = st.reason ? `<br><span style="font-size: 0.85em; color: #fbbf24;">(${st.reason})</span>` : '';
@@ -772,14 +776,15 @@ Object.assign(game, {
                     `;
                 }
                 event.spread.forEach(s => {
+                    const sFName = this._factionNames[s.color] || s.color;
                     if (s.addedMinion && !s.addedTaint) {
                         overrunInner += `
                             <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${this.getGeneralColor(s.color)}; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                                <strong style="${colorStyle}">${event.general}:</strong> 1 ${s.color} minion → <strong>${s.location}</strong>
+                                <strong style="${colorStyle}">${event.general}:</strong> 1 ${sFName} minion → <strong>${s.location}</strong>
                             </div>
                         `;
                     } else if (s.addedTaint) {
-                        const notPlacedText = `1 ${s.color} minion <span style="color: #ef4444; font-weight: bold;">NOT placed</span>`;
+                        const notPlacedText = `1 ${sFName} minion <span style="color: #ef4444; font-weight: bold;">NOT placed</span>`;
                         overrunInner += `
                             <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #9333ea; background: rgba(147,51,234,0.2); border-radius: 3px;">
                                 <strong style="${colorStyle}">${event.general}:</strong> ${notPlacedText} → <strong>${s.location}</strong>

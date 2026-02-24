@@ -3,6 +3,104 @@
 // ═══════════════════════════════════════════════════════════════
 
 Object.assign(game, {
+    // ── SHARED MODAL HELPERS ──
+    _factionNames: { red: 'Demons', blue: 'Dragonkin', green: 'Orcs', black: 'Undead' },
+    _factionIcons: { green: '🪓', black: '💀', red: '🔥', blue: '🐉' },
+    _generalColors: { red: '#dc2626', blue: '#3b82f6', green: '#16a34a', black: '#374151', purple: '#7c3aed' },
+    _generalIcons: { red: '👹', blue: '🐉', green: '👺', black: '💀' },
+    _generalNames: { red: 'Balazarg', blue: 'Sapphire', green: 'Gorgutt', black: 'Varkolak' },
+    _heartIcons: { green: '💚', blue: '💙', black: '🖤', red: '❤️' },
+
+    _stepIndicatorHTML(currentStep) {
+        const steps = [{ num: 1, icon: '☀️', label: 'Daytime' }, { num: 2, icon: '🌅', label: 'Evening' }, { num: 3, icon: '🌙', label: 'Night' }];
+        let html = '<div class="step-indicator-bar">';
+        steps.forEach((s, i) => {
+            const cls = s.num === currentStep ? 'active' : s.num < currentStep ? 'past' : 'future';
+            const icon = s.num < currentStep ? '✓' : s.icon;
+            html += `<div class="step-item"><div class="step-badge ${cls}"><span style="font-size:0.9em">${icon}</span><span class="step-label ${cls}">${s.label}</span></div>`;
+            if (i < 2) html += `<span class="step-arrow ${cls}">→</span>`;
+            html += '</div>';
+        });
+        html += '</div>';
+        return html;
+    },
+
+    _parchmentBoxOpen(bannerText) {
+        return `<div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">${bannerText}</span></div>`;
+    },
+    _parchmentBoxClose() { return '</div>'; },
+
+    _phaseButtonHTML(label, disabled) {
+        return `<button class="phase-btn" ${disabled ? 'disabled' : ''} onclick="game.closeEndOfTurnModal()">${label}</button>`;
+    },
+
+    _locationRingHTML(name, color, size, highlight) {
+        const gc = this._generalColors[color] || '#888';
+        const s = size || 60;
+        const cls = highlight ? ' highlight' : '';
+        return `<div class="location-ring${cls}" style="width:${s}px;height:${s}px;background:${gc};">` +
+            `<span class="location-ring-name" style="font-size:${s * 0.0082}em">${name}</span></div>`;
+    },
+
+    _generalTokenHTML(color) {
+        const gc = this._generalColors[color] || '#888';
+        const icon = this._generalIcons[color] || '⚔️';
+        return `<div class="modal-general-token" style="background:${gc}">${icon}</div>`;
+    },
+
+    _minionDotsHTML(color, count) {
+        const gc = this._generalColors[color] || '#888';
+        let html = '<div style="display:flex;flex-direction:column;align-items:center;gap:3px">';
+        for (let i = 0; i < count; i++) html += `<span class="modal-minion-dot" style="background:${gc}"></span>`;
+        html += '</div>';
+        return html;
+    },
+
+    _warningStyleHTML(type) {
+        if (type === 'advance' || type === 'monarch') return { border: '#ef4444', bg: 'rgba(239,68,68,0.08)', color: '#b91c1c' };
+        if (type === 'overrun') return { border: '#ef4444', bg: 'rgba(239,68,68,0.08)', color: '#b91c1c' };
+        if (type === 'taint') return { border: '#9333ea', bg: 'rgba(147,51,234,0.08)', color: '#7e22ce' };
+        return { border: '#dc2626', bg: 'rgba(220,38,38,0.08)', color: '#b91c1c' };
+    },
+
+    _darknessLocationCardHTML(location, color, count, isGeneral, strikethrough, warnings, militiaCancelled) {
+        const gc = this._generalColors[color] || '#888';
+        const gn = this._generalNames[color] || 'Unknown';
+        const warningsHTML = (warnings || []).map(w => {
+            const ws = this._warningStyleHTML(w.type);
+            return `<div style="margin-top:4px;padding:2px 6px;border:1px solid ${ws.border};background:${ws.bg};border-radius:3px;font-size:0.75em;color:${ws.color};font-weight:bold;text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive">${w.text}</div>`;
+        }).join('');
+
+        if (isGeneral) {
+            return `<div class="darkness-loc-general" style="opacity:${strikethrough ? 0.4 : 1}">
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px">
+                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                        ${count > 0 ? this._minionDotsHTML(color, count) : ''}
+                        <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                            ${this._generalTokenHTML(color)}
+                            <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${gc}">${gn}</div>
+                        </div>
+                    </div>
+                    <div style="font-size:2.5em;color:#8b7355;font-weight:900;line-height:1;flex-shrink:0">→</div>
+                    ${this._locationRingHTML(location, color, 60)}
+                </div>
+                ${warningsHTML}
+            </div>`;
+        }
+
+        // Minion placement card
+        const skippedLabel = strikethrough && !militiaCancelled ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.6em;color:#a16207;margin-top:4px;text-align:center">(skipped)</div>` : '';
+        const militiaLabel = militiaCancelled ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.6em;color:#15803d;margin-top:4px;text-align:center">🛡️ cancelled</div>` : '';
+        return `<div class="darkness-loc-card" style="flex:1 1 120px;max-width:200px;min-width:130px;opacity:${strikethrough ? 0.4 : 1}">
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+                ${this._minionDotsHTML(color, count)}
+                ${this._locationRingHTML(location, color, 60)}
+            </div>
+            ${skippedLabel}${militiaLabel}
+            ${warningsHTML}
+        </div>`;
+    },
+
     // Clean up any dynamic buttons added to the end-of-turn button container
     _cleanupEndOfTurnButtons() {
         const ids = ['wisdom-discard-btn', 'militia-secures-btn', 'strong-defenses-btn', 'organize-militia-btn'];
@@ -26,182 +124,150 @@ Object.assign(game, {
     showDaytimeModal(hero, damageInfo) {
         const modal = document.getElementById('end-of-turn-modal');
         const content = document.getElementById('end-of-turn-content');
-        
+
         // Clean up any buttons from previous turn's darkness phase
         this._cleanupEndOfTurnButtons();
-        
-        let damageHTML = '';
-        const rawDamage = damageInfo.minionDamage + damageInfo.fearDamage;
-        const hadMinions = damageInfo.minionDamage > 0 || damageInfo.fearDamage > 0 || damageInfo.fearBlocked || damageInfo.shadowHidden || damageInfo.shapeshiftProtected;
-        
-        // Eagle Rider Sky Attack: Protected from all end-of-turn damage
-        if (damageInfo.skyAttackProtected) {
-            const minionCount = Object.values(damageInfo.minions).reduce((sum, n) => sum + n, 0);
-            damageHTML = `
-                <div style="margin: 15px 0; padding: 12px; background: rgba(96, 165, 250, 0.2); border: 2px solid #60a5fa; border-radius: 8px;">
-                    <div style="font-size: 1.1em; color: #60a5fa; font-weight: bold; margin-bottom: 5px;">
-                        ☁️ Sky Attack — No Penalties!
-                    </div>
-                    <div style="font-size: 0.9em; color: #d4af37;">
-                        ${minionCount > 0 ? `${minionCount} minion(s) present but Eagle Rider soars above, safe from harm!` : 'Eagle Rider soars safely above the battlefield.'}
-                    </div>
-                </div>
-            `;
-        } else if (damageInfo.shadowHidden && damageInfo.totalDamage <= 0) {
-            // Rogue: shadow hid and took zero total damage (no fear either, or fear was blocked)
-            const minionCount = Object.values(damageInfo.minions).reduce((sum, n) => sum + n, 0);
-            damageHTML = `
-                <div style="margin: 15px 0; padding: 12px; background: rgba(124, 58, 237, 0.2); border: 2px solid #7c3aed; border-radius: 8px;">
-                    <div style="font-size: 1.1em; color: #a78bfa; font-weight: bold; margin-bottom: 5px;">
-                        🗡️ Hide In The Shadows — No Minion Damage!
-                    </div>
-                    <div style="font-size: 0.9em; color: #d4af37;">
-                        ${minionCount} minion${minionCount !== 1 ? 's' : ''} present but Rogue hides in the shadows, avoiding ${damageInfo.minionDamageBlocked} wound${damageInfo.minionDamageBlocked !== 1 ? 's' : ''}!
-                    </div>
-                    ${damageInfo.fearBlocked ? '<div style="margin-top: 5px; font-style: italic; color: #fbbf24;">⚔️ Bravery: Immune to undead fear damage!</div>' : ''}
-                </div>
-            `;
-        } else if (damageInfo.shapeshiftProtected && damageInfo.totalDamage <= 0) {
-            // Sorceress: shapeshift protected all damage
-            const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-            const factionIcons = { green: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#16a34a;border:1.5px solid #000;vertical-align:middle;"></span>', black: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#1f2937;border:1.5px solid #000;vertical-align:middle;"></span>', red: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#dc2626;border:1.5px solid #000;vertical-align:middle;"></span>', blue: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#2563eb;border:1.5px solid #000;vertical-align:middle;"></span>' };
-            const fname = factionNames[damageInfo.shapeshiftForm] || damageInfo.shapeshiftForm;
-            const ficon = factionIcons[damageInfo.shapeshiftForm] || '⚡';
-            const minionCount = Object.values(damageInfo.minions).reduce((sum, n) => sum + n, 0);
-            damageHTML = `
-                <div style="margin: 15px 0; padding: 12px; background: rgba(236, 72, 153, 0.15); border: 2px solid #ec4899; border-radius: 8px;">
-                    <div style="font-size: 1.1em; color: #ec4899; font-weight: bold; margin-bottom: 5px;">
-                        ⚡ Shape Shifter — ${fname} Form ${ficon}
-                    </div>
-                    <div style="font-size: 0.9em; color: #d4af37;">
-                        ${minionCount} minion${minionCount !== 1 ? 's' : ''} present — immune to ${damageInfo.shapeshiftDamageBlocked} ${fname} wound${damageInfo.shapeshiftDamageBlocked !== 1 ? 's' : ''}!
-                    </div>
-                    ${damageInfo.fearBlocked ? '<div style="margin-top: 5px; font-style: italic; color: #fbbf24;">⚔️ Bravery: Immune to undead fear damage!</div>' : ''}
-                </div>
-            `;
-        } else if (hadMinions) {
-            let details = [];
+
+        const hadMinions = Object.keys(damageInfo.minions || {}).length > 0 || damageInfo.fearDamage > 0 || damageInfo.fearBlocked || damageInfo.shadowHidden || damageInfo.skyAttackProtected || damageInfo.shapeshiftProtected;
+        const borderColor = damageInfo.totalDamage > 0 ? '#dc2626' : '#16a34a';
+        const bgColor = damageInfo.totalDamage > 0 ? 'rgba(220,38,38,0.08)' : 'rgba(22,163,74,0.08)';
+        const titleColor = damageInfo.totalDamage > 0 ? '#b91c1c' : '#15803d';
+
+        // Build wounds title
+        let woundsTitle = 'No Wounds Inflicted';
+        if (hadMinions) {
+            woundsTitle = damageInfo.totalDamage > 0 ? `💔 Wounds Inflicted: ${damageInfo.totalDamage}` : 'Wounds Inflicted: 0';
+        }
+
+        // Build wound details
+        let woundDetails = '';
+        if (hadMinions) {
+            const fNames = this._factionNames;
             if (damageInfo.minionDamage > 0) {
-                details.push(`${damageInfo.minionDamage} from minions`);
+                const minionBreakdown = Object.entries(damageInfo.minions || {}).map(([c,n]) => `${n} ${fNames[c] || c}`).join(', ');
+                woundDetails += `<div class="hi-title" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">⚔️ ${damageInfo.minionDamage} from minions (${minionBreakdown})</div>`;
             }
             if (damageInfo.fearDamage > 0) {
-                details.push(`${damageInfo.fearDamage} from undead fear`);
+                woundDetails += `<div class="hi-title" style="margin-top:2px;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">💀 ${damageInfo.fearDamage} from Undead fear (1 additional wound is inflicted)</div>`;
             }
-            
-            // Build ability lines
-            let abilityLines = '';
-            if (damageInfo.shadowHidden) {
-                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: #f87171;">🗡️ Hide In The Shadows: Avoided ${damageInfo.minionDamageBlocked} minion wound${damageInfo.minionDamageBlocked !== 1 ? 's' : ''}!</div>`;
-            }
-            if (damageInfo.shapeshiftProtected) {
-                const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-                const fname = factionNames[damageInfo.shapeshiftForm] || damageInfo.shapeshiftForm;
-                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: #fbbf24;">⚡ Shape Shifter: Avoided ${damageInfo.shapeshiftDamageBlocked} ${fname} wound${damageInfo.shapeshiftDamageBlocked !== 1 ? 's' : ''}!</div>`;
+        }
+
+        // Build ability mitigation lines
+        let abilityLines = '';
+        if (hadMinions) {
+            if (damageInfo.auraReduction > 0) {
+                const abilityName = hero.name === 'Dwarf' ? 'Armor and Toughness' : 'Aura of Righteousness';
+                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">${abilityName}:</strong> Ignore ${damageInfo.auraReduction} wound from minions and Generals</div>`;
             }
             if (damageInfo.fearBlocked) {
-                abilityLines += '<div style="margin-top: 5px; font-style: italic; color: #a78bfa;">⚔️ Bravery: Immune to undead fear damage!</div>';
+                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Bravery:</strong> Does not suffer any penalties from fear</div>`;
             }
-            if (damageInfo.auraReduction > 0) {
-                const abilityName = hero.name === 'Dwarf' ? '⛏️ Armor and Toughness' : '✝️ Aura of Righteousness';
-                abilityLines += `<div style="margin-top: 5px; font-style: italic; color: ${hero.color};">${abilityName}: Reduced ${damageInfo.auraReduction} damage!</div>`;
+            if (damageInfo.shadowHidden) {
+                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Hide In The Shadows:</strong> Does not suffer life token loss when in a location with enemy minions</div>`;
             }
-            
-            if (damageInfo.totalDamage > 0) {
-                damageHTML = `
-                    <div style="margin: 15px 0; padding: 12px; background: rgba(220, 38, 38, 0.2); border: 2px solid #dc2626; border-radius: 8px;">
-                        <div style="font-size: 1.1em; color: #dc2626; font-weight: bold; margin-bottom: 5px;">
-                            💔 Damage Taken: ${damageInfo.totalDamage}
-                        </div>
-                        <div style="font-size: 0.9em;">
-                            ${details.join(' + ')}
-                        </div>
-                        ${abilityLines}
-                    </div>
-                `;
-            } else {
-                // Damage was fully absorbed by abilities
-                damageHTML = `
-                    <div style="margin: 15px 0; padding: 12px; background: rgba(251, 191, 36, 0.15); border: 2px solid #fbbf24; border-radius: 8px;">
-                        <div style="font-size: 1.1em; color: #fbbf24; font-weight: bold; margin-bottom: 5px;">
-                            🛡️ Damage Absorbed
-                        </div>
-                        <div style="font-size: 0.9em;">
-                            ${details.length > 0 ? details.join(' + ') : 'All incoming damage negated'}
-                        </div>
-                        ${abilityLines}
-                        <div style="margin-top: 5px; font-size: 0.9em; color: #4ade80; font-weight: bold;">Final damage: 0</div>
-                    </div>
-                `;
+            if (damageInfo.skyAttackProtected) {
+                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Sky Attack:</strong> No end-of-turn penalties (fear, damage, or card loss)</div>`;
             }
-        } else {
-            damageHTML = `
-                <div style="margin: 15px 0; padding: 12px; background: rgba(74, 222, 128, 0.2); border: 2px solid #4ade80; border-radius: 8px;">
-                    <div style="font-size: 1em; color: #4ade80; font-weight: bold;">
-                        ✓ No damage taken
-                    </div>
-                </div>
-            `;
+            if (damageInfo.shapeshiftProtected) {
+                const fname = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' }[damageInfo.shapeshiftForm] || damageInfo.shapeshiftForm;
+                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Shape Shifter (${fname} Form):</strong> Avoided ${damageInfo.shapeshiftDamageBlocked || 0} ${fname} wound${(damageInfo.shapeshiftDamageBlocked || 0) !== 1 ? 's' : ''}</div>`;
+            }
         }
-        
+
         // Fresh Mount display
-        let freshMountHTML = '';
+        let freshMountSection = '';
         if (damageInfo.freshMountTriggered) {
-            freshMountHTML = `
-                <div style="margin: 15px 0; padding: 12px; background: rgba(14, 165, 233, 0.2); border: 2px solid #0ea5e9; border-radius: 8px;">
-                    <div style="font-size: 1.1em; color: #0ea5e9; font-weight: bold; margin-bottom: 5px;">
-                        🦅 Fresh Mount!
+            freshMountSection = `
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3)">
+                    <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">🦅 Fresh Mount</div>
+                    <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px">
+                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">
+                            Ending turn at ${hero.location} grants <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#15803d">+1 action</strong> next turn.
+                        </div>
                     </div>
-                    <div style="font-size: 0.9em; color: #d4af37;">
-                        Ending turn at ${hero.location} grants <strong style="color: #4ade80;">+1 action</strong> next turn.
-                    </div>
-                </div>
-            `;
+                </div>`;
         }
-        
+
         // Process general healing at end of each player's turn (only once per turn)
         if (!this._daytimeHealingDone) {
             this._daytimeHealingResults = this._processGeneralHealing();
             this._daytimeHealingDone = true;
         }
         const healingResults = this._daytimeHealingResults;
-        const healingHTML = this._buildHealingHTML(healingResults);
         this.renderGenerals(); // Update panels with new health/wounds
-        
+
+        // Build healing HTML in parchment style
+        let healingSection = '';
+        if (healingResults && healingResults.filter(r => r.woundType !== null).length > 0) {
+            let healingRows = '';
+            healingResults.filter(r => r.woundType !== null).forEach(r => {
+                const gc = this._generalColors[r.color] || '#888';
+                const heartIcon = this._heartIcons[r.color] || '🖤';
+                healingRows += `
+                    <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;color:#2c1810;margin:4px 0">
+                        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.9em">
+                            <span style="display:flex;align-items:center;gap:6px">
+                                <span class="modal-general-token" style="background:${gc};width:24px;height:24px;font-size:0.7em">${r.icon || this._generalIcons[r.color] || '⚔️'}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${gc}">${r.general}</span>
+                            </span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${r.health <= 2 ? '#b91c1c' : '#2c1810'}">${heartIcon} ${r.health}/${r.maxHealth}</span>
+                        </div>
+                        <div class="hi-title" style="margin-top:4px;font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f">
+                            <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.15em;color:#1a0f0a">${r.woundType === 'major' ? 'Major Wound' : 'Minor Wound'}:</strong> ${r.description}
+                        </div>
+                    </div>`;
+            });
+            healingSection = `
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3)">
+                    <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">🖤 General Healing</div>
+                    ${healingRows}
+                </div>`;
+        }
+
         // Check if Spy In The Camp can be used
         let spyButtonHTML = '';
         const spyHolder = this._findSpyInCampCard();
         const woundedGenerals = this._getWoundedGeneralsForSpy();
         if (spyHolder && woundedGenerals.length > 0 && !this.spyBlockedGeneral) {
             spyButtonHTML = `
-                <div style="text-align: center; margin: 8px 0;">
-                    <button class="btn" onclick="game._spyInCampShowPicker()" style="background: rgba(185,28,28,0.3); border: 2px solid #b91c1c; color: #f87171; padding: 8px 16px; font-size: 0.95em;">
+                <div style="text-align:center;margin:8px 0">
+                    <button class="btn" onclick="game._spyInCampShowPicker()" style="background:rgba(185,28,28,0.3);border:2px solid #b91c1c;color:#f87171;padding:8px 16px;font-size:0.95em">
                         👤 Spy In The Camp (${spyHolder.hero.symbol} ${spyHolder.hero.name})
                     </button>
                 </div>`;
         }
-        
+
         content.innerHTML = `
-            <div class="modal-title" style="margin-bottom: 15px;">Step 1 - ☀️ Daytime</div>
-            
-            <div style="text-align: center; color: ${hero.color}; font-size: 1.1em; font-weight: bold; margin-bottom: 10px;">
-                ${hero.symbol} ${hero.name}
-            </div>
-            
-            ${damageHTML}
-            ${freshMountHTML}
-            ${healingHTML}
-            ${spyButtonHTML}
-            
-            <div style="text-align: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                <div style="font-size: 0.95em; color: #d4af37;">
-                    ❤️ Health: ${hero.health}/${hero.maxHealth}
+            ${this._stepIndicatorHTML(1)}
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">Step 1 — ☀️ Daytime</div>
+            ${this._parchmentBoxOpen('End of Turn')}
+                <div>
+                    <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">⚔️ Suffering Wounds</div>
+                    <div style="padding:8px 10px;background:${bgColor};border:1px solid ${borderColor};border-radius:6px">
+                        <span style="color:${titleColor};font-weight:900;font-family:'Cinzel',Georgia,serif;font-size:0.9em">${woundsTitle}</span>
+                        ${woundDetails ? `<div style="margin-top:5px">${woundDetails}</div>` : ''}
+                        ${abilityLines ? `<div style="margin-top:5px">${abilityLines}</div>` : ''}
+                    </div>
                 </div>
-            </div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3)">
+                    <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">❤️ Hero Life Tokens</div>
+                    <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;color:#2c1810;display:flex;justify-content:space-between;align-items:center;font-size:0.9em">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900">${hero.symbol} ${hero.name}</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${hero.health <= 2 ? '#b91c1c' : '#2c1810'}">❤️ ${hero.health}/${hero.maxHealth}</span>
+                    </div>
+                </div>
+                ${freshMountSection}
+                ${healingSection}
+                ${spyButtonHTML}
+            ${this._parchmentBoxClose()}
         `;
-        
+
         this._endOfTurnModalMode = 'daytime';
         const endBtn = document.getElementById('end-of-turn-btn');
-        if (endBtn) endBtn.textContent = 'End Daytime Phase';
+        if (endBtn) {
+            endBtn.textContent = 'End Daytime Phase';
+            endBtn.className = 'phase-btn';
+        }
         modal.classList.add('active');
     },
     
@@ -277,100 +343,65 @@ Object.assign(game, {
     showEveningModal(hero, drawnCards, thieveryBonus, questCardBonus = 0, questCardBonusName = '') {
         const modal = document.getElementById('end-of-turn-modal');
         const content = document.getElementById('end-of-turn-content');
-        
+
         // Clean up any lingering dynamic buttons
         this._cleanupEndOfTurnButtons();
-        
-        const cardColorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
+
+        const ccMap = {
+            blue: { bg: 'rgba(37,99,235,0.12)', border: '#3b82f6', text: '#2563eb' },
+            red: { bg: 'rgba(220,38,38,0.12)', border: '#dc2626', text: '#dc2626' },
+            green: { bg: 'rgba(22,163,74,0.12)', border: '#16a34a', text: '#16a34a' },
+            black: { bg: 'rgba(55,65,81,0.12)', border: '#374151', text: '#374151' },
+            any: { bg: 'rgba(109,40,168,0.12)', border: '#6d28a8', text: '#6d28a8' },
         };
-        
-        const colorToGeneralWithFaction = {
-            'red': 'Balazarg (Demons)',
-            'blue': 'Sapphire (Dragonkin)',
-            'green': 'Gorgutt (Orcs)',
-            'black': 'Varkolak (Undead)'
-        };
-        
+
         // Determine which cards are bonus cards
         const baseCount = 2;
         const thieveryCount = thieveryBonus ? 1 : 0;
         const questStart = baseCount + thieveryCount;
-        
+
         const cardsHTML = drawnCards.map((card, idx) => {
-            const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
-            const generalWithFaction = colorToGeneralWithFaction[card.color] || 'Any General';
-            const cardIcon = card.icon || '🎴';
+            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
             const isThieveryCard = thieveryBonus && idx === baseCount;
             const isQuestCard = questCardBonus > 0 && idx >= questStart;
             const isBonusCard = isThieveryCard || isQuestCard;
-            const bonusBorderColor = isThieveryCard ? '#7c3aed' : (isQuestCard ? '#dc2626' : borderColor);
-            const bonusBorder = isBonusCard ? `box-shadow: 0 0 8px rgba(${isQuestCard ? '220,38,38' : '124,58,237'},0.6);` : '';
+            const bc = isThieveryCard ? '#7c3aed' : isQuestCard ? '#dc2626' : cc.border;
+            const shadow = isBonusCard ? `box-shadow:0 0 10px ${isThieveryCard ? 'rgba(124,58,237,0.6)' : 'rgba(220,38,38,0.6)'};` : card.special ? 'box-shadow:0 0 10px rgba(109,40,168,0.5);' : 'box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+
             let bonusLabel = '';
-            if (isThieveryCard) bonusLabel = '<div style="text-align: center; font-size: 0.75em; color: #a78bfa; font-weight: bold; margin-bottom: 3px;">🗡️ THIEVERY</div>';
-            if (isQuestCard) bonusLabel = '<div style="text-align: center; font-size: 0.75em; color: #ef4444; font-weight: bold; margin-bottom: 3px;">📜 QUEST BONUS</div>';
-            return `
-                <div style="flex: 1; padding: 12px; margin: 5px; border: 3px solid ${isBonusCard ? bonusBorderColor : borderColor}; border-radius: 8px; background: rgba(0,0,0,0.5); ${bonusBorder}">
-                    ${bonusLabel}
-                    <div style="text-align: center; font-size: 1.3em; margin-bottom: 5px;">
-                        ${cardIcon}
-                    </div>
-                    <div style="font-size: 1em; font-weight: bold; color: ${borderColor}; margin-bottom: 5px; text-align: center;">
-                        ${card.name}
-                    </div>
-                    <div style="text-align: center; margin: 5px 0;">
-                        ${Array(card.dice).fill(0).map(() => 
-                            `<span style="display: inline-block; width: 22px; height: 22px; background: ${borderColor}; border-radius: 4px; margin: 1px; line-height: 22px; text-align: center; font-weight: bold;">🎲</span>`
-                        ).join('')}
-                    </div>
-                    <div style="font-size: 0.85em; color: #d4af37; text-align: center;">
-                        ${card.special ? "🌟 Special" : "vs " + generalWithFaction}
-                    </div>
-                </div>
-            `;
+            if (isThieveryCard) bonusLabel = `<div style="font-size:0.65em;color:#7c3aed;font-weight:bold;font-family:'Cinzel',Georgia,serif">🗡️ THIEVERY</div>`;
+            if (isQuestCard) bonusLabel = `<div style="font-size:0.65em;color:#dc2626;font-weight:bold;font-family:'Cinzel',Georgia,serif">📜 ${questCardBonusName || 'QUEST BONUS'}</div>`;
+
+            const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
+            const diceHTML = Array.from({ length: card.dice }).map((_, i) =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+
+            return `<div class="card-reveal-anim" style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${bc};border-radius:8px;padding:8px 10px;text-align:center;${shadow};animation-delay:${idx * 0.15}s">
+                ${bonusLabel}
+                <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${card.name}</div>
+                <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
+            </div>`;
         }).join('');
-        
-        const thieveryHTML = thieveryBonus ? `
-            <div style="margin-top: 10px; padding: 8px; background: rgba(124,58,237,0.15); border: 1px solid #7c3aed; border-radius: 6px; text-align: center;">
-                <span style="color: #a78bfa; font-weight: bold;">🗡️ Thievery:</span>
-                <span style="color: #d4af37;"> Drew 1 extra card from treasure chest at ${hero.location}!</span>
-            </div>
-        ` : '';
-        
-        const questBonusHTML = questCardBonus > 0 ? `
-            <div style="margin-top: 10px; padding: 8px; background: rgba(220,38,38,0.15); border: 1px solid #dc2626; border-radius: 6px; text-align: center;">
-                <span style="color: #ef4444; font-weight: bold;">📜 ${questCardBonusName}:</span>
-                <span style="color: #d4af37;"> Drew ${questCardBonus} extra card(s)!</span>
-            </div>
-        ` : '';
-        
+
         content.innerHTML = `
-            <div class="modal-title" style="margin-bottom: 5px;">Step 2 - 🌅 Evening</div>
-            <div style="text-align: center; font-size: 1.1em; color: #ffd700; font-weight: bold; margin-bottom: 15px;">Hero Cards</div>
-            
-            <div style="margin: 15px 0;">
-                <div style="font-size: 1em; color: #ffd700; font-weight: bold; margin-bottom: 8px;">
-                    🎴 Cards Drawn:
+            ${this._stepIndicatorHTML(2)}
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">Step 2 — 🌅 Evening</div>
+            ${this._parchmentBoxOpen('🎴 Hero Cards Drawn')}
+                <div style="display:flex;gap:8px;flex-wrap:wrap">${cardsHTML}</div>
+                <div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3)">
+                    <span style="font-size:0.9em;color:#2c1810;font-family:'Cinzel',Georgia,serif;font-weight:900">🎴 Total Cards: ${hero.cards.length}</span>
                 </div>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    ${cardsHTML}
-                </div>
-                ${thieveryHTML}
-                ${questBonusHTML}
-            </div>
-            <div style="text-align: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                <div style="font-size: 0.95em; color: #d4af37;">
-                    🎴 Total Cards: ${hero.cards.length}
-                </div>
-            </div>
+            ${this._parchmentBoxClose()}
         `;
-        
+
         this._endOfTurnModalMode = 'evening';
         const endBtn = document.getElementById('end-of-turn-btn');
-        if (endBtn) endBtn.textContent = 'End Evening Phase';
+        if (endBtn) {
+            endBtn.textContent = 'End Evening Phase';
+            endBtn.className = 'phase-btn';
+        }
         modal.classList.add('active');
     },
     
@@ -391,99 +422,104 @@ Object.assign(game, {
     showHandLimitModal(hero) {
         const modal = document.getElementById('hand-limit-modal');
         const content = document.getElementById('hand-limit-content');
-        
+
         const excessCards = hero.cards.length - 10;
-        
-        const cardColorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
+
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
         };
-        
+
         let cardsHTML = '';
         hero.cards.forEach((card, index) => {
-            const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
-            const cardIcon = card.icon || '🎴';
+            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
+            const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
+            const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: card.dice }).map((_, i) =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+
             cardsHTML += `
-                <div id="hand-limit-card-${index}" onclick="game.toggleHandLimitCard(${index})" 
-                     style="padding: 10px; margin: 4px; border: 3px solid ${borderColor}; border-radius: 8px; 
-                            background: rgba(0,0,0,0.5); cursor: pointer; text-align: center; min-width: 80px;
-                            transition: all 0.2s; position: relative;">
-                    <div style="font-size: 1.2em;">${cardIcon}</div>
-                    <div style="font-size: 0.85em; font-weight: bold; color: ${borderColor};">${card.name}</div>
-                    <div style="font-size: 0.75em; color: #999;">${card.dice} dice</div>
-                    <div id="hand-limit-check-${index}" style="display: none; position: absolute; top: -5px; right: -5px; 
-                         background: #dc2626; border-radius: 50%; width: 22px; height: 22px; line-height: 22px; 
-                         font-size: 14px; text-align: center;">✕</div>
-                </div>
-            `;
+                <div id="hand-limit-card-${index}" onclick="game.toggleHandLimitCard(${index})"
+                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;position:relative;transition:all 0.2s;${shadow}">
+                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                    <div id="hand-limit-check-${index}" style="display:none;position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:none;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4)">✕</div>
+                </div>`;
         });
-        
+
         content.innerHTML = `
-            <div style="text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 1.2em; color: #ffd700; font-weight: bold;">✋ Hand Limit Exceeded</div>
-            </div>
-            
-            <div style="text-align: center; color: ${hero.color}; font-weight: bold; margin-bottom: 10px;">
-                ${hero.symbol} ${hero.name} has ${hero.cards.length} cards (limit: 10)
-            </div>
-            
-            <div style="text-align: center; padding: 10px; background: rgba(220, 38, 38, 0.2); border: 2px solid #dc2626; border-radius: 8px; margin-bottom: 15px;">
-                <div style="color: #dc2626; font-weight: bold;">
-                    Select <span id="hand-limit-remaining">${excessCards}</span> card${excessCards > 1 ? 's' : ''} to discard
+            ${this._stepIndicatorHTML(2)}
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">✋ Hand Limit Exceeded</div>
+            ${this._parchmentBoxOpen(`Select ${excessCards} more card${excessCards !== 1 ? 's' : ''} to discard`)}
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                    ${cardsHTML}
                 </div>
-            </div>
-            
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; max-height: 300px; overflow-y: auto;">
-                ${cardsHTML}
-            </div>
+                <div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3)">
+                    <span style="font-size:0.82em;color:#2c1810;font-family:'Cinzel',Georgia,serif;font-weight:900">🎴 ${hero.cards.length} cards (limit: 10)</span>
+                </div>
+            ${this._parchmentBoxClose()}
         `;
-        
+
         this.handLimitSelectedCards = new Set();
         this.handLimitRequired = excessCards;
-        
+
         modal.classList.add('active');
     },
     
     toggleHandLimitCard(index) {
         const checkEl = document.getElementById(`hand-limit-check-${index}`);
         const cardEl = document.getElementById(`hand-limit-card-${index}`);
-        
+
         if (this.handLimitSelectedCards.has(index)) {
             this.handLimitSelectedCards.delete(index);
-            checkEl.style.display = 'none';
-            cardEl.style.opacity = '1';
-            cardEl.style.transform = '';
+            if (checkEl) { checkEl.style.display = 'none'; }
+            if (cardEl) {
+                cardEl.style.opacity = '1';
+                cardEl.style.transform = 'scale(1)';
+                cardEl.style.borderColor = '';
+            }
         } else {
             // Don't allow selecting more than required
             if (this.handLimitSelectedCards.size >= this.handLimitRequired) {
                 return;
             }
             this.handLimitSelectedCards.add(index);
-            checkEl.style.display = 'block';
-            cardEl.style.opacity = '0.6';
-            cardEl.style.transform = 'scale(0.95)';
+            if (checkEl) { checkEl.style.display = 'flex'; }
+            if (cardEl) {
+                cardEl.style.opacity = '0.45';
+                cardEl.style.transform = 'scale(0.93)';
+                cardEl.style.borderColor = '#dc2626';
+            }
         }
-        
-        // Update remaining count
+
+        // Update remaining count and banner
         const remaining = this.handLimitRequired - this.handLimitSelectedCards.size;
-        const remainingEl = document.getElementById('hand-limit-remaining');
-        if (remainingEl) {
-            remainingEl.textContent = Math.max(0, remaining);
+        const bannerEl = document.querySelector('.parchment-banner .hero-banner-name');
+        if (bannerEl) {
+            bannerEl.textContent = remaining > 0
+                ? `Select ${remaining} more card${remaining !== 1 ? 's' : ''} to discard`
+                : '✓ Ready to discard!';
         }
-        
+
         // Enable/disable confirm button - exactly the required number
         const confirmBtn = document.getElementById('hand-limit-confirm-btn');
         if (confirmBtn) {
-            if (this.handLimitSelectedCards.size === this.handLimitRequired) {
+            const excess = this.handLimitRequired;
+            if (this.handLimitSelectedCards.size === excess) {
                 confirmBtn.disabled = false;
-                confirmBtn.className = 'btn btn-primary';
+                confirmBtn.className = 'phase-btn';
                 confirmBtn.style.opacity = '1';
+                confirmBtn.textContent = `✓ Discard ${excess} Cards`;
             } else {
                 confirmBtn.disabled = true;
-                confirmBtn.className = 'btn';
+                confirmBtn.className = 'phase-btn';
                 confirmBtn.style.opacity = '0.5';
+                confirmBtn.textContent = `Discard ${this.handLimitSelectedCards.size}/${excess} Cards`;
             }
         }
     },
@@ -521,33 +557,38 @@ Object.assign(game, {
     
     proceedToNightPhase() {
         const state = this.endOfTurnState;
-        
+
         // Check if darkness is skipped by All Is Quiet card
         if (this.skipDarknessThisTurn) {
             this.skipDarknessThisTurn = false;
-            
+
             this.addLog(`🌅 All Is Quiet — No Darkness Spreads cards drawn this turn!`);
             this.lastDarknessEvents = [];
-            
+
             const modal = document.getElementById('end-of-turn-modal');
             const content = document.getElementById('end-of-turn-content');
             const btn = document.getElementById('end-of-turn-btn');
             this._endOfTurnModalMode = 'night';
             this.pendingPlayerChange = true;
             this.pendingLossCheck = false;
-            
+
             content.innerHTML = `
-                <div class="modal-title" style="margin-bottom: 5px;">Step 3 - 🌙 Night</div>
-                <div style="padding: 20px; text-align: center; border: 2px solid #4ade80; background: rgba(74,222,128,0.15); border-radius: 8px; margin: 15px 0;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">🌅</div>
-                    <div style="font-size: 1.3em; color: #4ade80; font-weight: bold;">All Is Quiet</div>
-                    <div style="color: #d4af37; margin-top: 8px;">No Darkness Spreads cards are drawn this turn.</div>
-                    <div style="color: #d4af37; margin-top: 5px;">The land rests easy tonight.</div>
-                </div>
+                ${this._stepIndicatorHTML(3)}
+                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">Step 3 — 🌙 Night</div>
+                ${this._parchmentBoxOpen('Darkness Spreads')}
+                    <div style="padding:15px;text-align:center">
+                        <div style="font-size:1.2em;color:#6d28a8;font-weight:bold;font-family:'Cinzel',Georgia,serif">🌅 All Is Quiet</div>
+                        <div style="color:#3d2b1f;margin-top:8px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">No Darkness Spreads cards drawn this turn.</div>
+                        <div style="color:#3d2b1f;margin-top:5px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">The land rests easy tonight.</div>
+                    </div>
+                ${this._parchmentBoxClose()}
             `;
-            
-            if (btn) btn.textContent = 'Continue';
-            
+
+            if (btn) {
+                btn.textContent = 'Continue';
+                btn.className = 'phase-btn';
+            }
+
             modal.classList.add('active');
             return;
         }

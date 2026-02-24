@@ -758,6 +758,125 @@
 
         .modal-heading {
           font-family: 'Cinzel', Georgia, serif;
+          font-weight: 700;
+        }
+
+        /* ── STEP INDICATOR (Daytime / Evening / Night) ── */
+        .step-indicator-bar {
+          display: flex; justify-content: center; gap: 4px; margin-bottom: 14px;
+        }
+        .step-indicator-bar .step-item {
+          display: flex; align-items: center; gap: 4px;
+        }
+        .step-indicator-bar .step-badge {
+          display: flex; align-items: center; gap: 5px;
+          padding: 4px 10px; border-radius: 6;
+        }
+        .step-indicator-bar .step-badge.active {
+          background: rgba(212,175,55,0.25); border: 2px solid #d4af37;
+        }
+        .step-indicator-bar .step-badge.past {
+          background: rgba(74,222,128,0.1); border: 1.5px solid rgba(74,222,128,0.3);
+        }
+        .step-indicator-bar .step-badge.future {
+          background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1);
+        }
+        .step-indicator-bar .step-label {
+          font-family: 'Cinzel', Georgia, serif; font-weight: 700;
+          font-size: 0.7em; letter-spacing: 0.5px;
+        }
+        .step-indicator-bar .step-label.active { color: #d4af37; }
+        .step-indicator-bar .step-label.past { color: #4ade80; }
+        .step-indicator-bar .step-label.future { color: #555; }
+        .step-indicator-bar .step-arrow { font-size: 0.8em; }
+        .step-indicator-bar .step-arrow.past { color: #4ade80; }
+        .step-indicator-bar .step-arrow.future { color: #333; }
+
+        /* ── PARCHMENT BOX ── */
+        .parchment-box {
+          padding: 10px; margin-top: 10px; border-radius: 8px;
+          background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%);
+          border: 2px solid #8b7355;
+        }
+        .parchment-banner {
+          background: linear-gradient(135deg, #5c3d2ecc 0%, #4a2f20cc 100%);
+          padding: 6px 14px; margin-bottom: 10px;
+          margin-left: -10px; margin-right: -10px; margin-top: -10px;
+          border-radius: 8px 8px 0 0; border-bottom: 2px solid #8b7355;
+          text-align: center;
+        }
+        .parchment-banner .hero-banner-name { font-size: 0.9em; letter-spacing: 1px; }
+
+        /* ── PHASE BUTTON ── */
+        .phase-btn {
+          width: 100%; margin-top: 14px; padding: 11px; border-radius: 8px;
+          cursor: pointer; font-weight: bold; font-size: 0.95em;
+          letter-spacing: 0.5px; font-family: 'Cinzel', Georgia, serif;
+          background: linear-gradient(135deg, #d4af37, #b8960c);
+          color: #1a0f0a; border: 2px solid #d4af37;
+          transition: opacity 0.2s;
+        }
+        .phase-btn:disabled {
+          background: #444; color: #888; border-color: #666;
+          opacity: 0.5; cursor: not-allowed;
+        }
+
+        /* ── LOCATION RING ── */
+        .location-ring {
+          display: inline-flex; align-items: center; justify-content: center;
+          border-radius: 50%; border: 3px solid rgba(0,0,0,0.4);
+          padding: 6px; flex-shrink: 0;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3), inset 0 0 8px rgba(255,255,255,0.15);
+        }
+        .location-ring.highlight {
+          outline: 3px solid #7c3aed; outline-offset: 2px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3), inset 0 0 8px rgba(255,255,255,0.15), 0 0 12px rgba(124,58,237,0.6);
+        }
+        .location-ring-name {
+          font-family: 'Cinzel', Georgia, serif; font-weight: 900;
+          color: #fff; line-height: 1.1; text-align: center;
+          overflow-wrap: normal; word-break: normal; hyphens: none;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* ── GENERAL/MINION TOKENS IN MODALS ── */
+        .modal-general-token {
+          display: inline-flex; align-items: center; justify-content: center;
+          width: 36px; height: 36px; border-radius: 50%;
+          border: 3px solid rgba(0,0,0,0.4);
+          box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 0 8px rgba(255,255,255,0.15);
+          font-size: 1.1em;
+        }
+        .modal-minion-dot {
+          display: inline-block; width: 16px; height: 16px;
+          border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.3);
+          box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* ── DARKNESS LOCATION CARD ── */
+        .darkness-loc-card { padding: 8px 10px; }
+        .darkness-loc-general { padding: 10px 10px 24px 10px; }
+
+        /* ── CARD REVEAL ANIMATION ── */
+        @keyframes cardReveal {
+          from { opacity: 0; transform: translateY(10px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .card-reveal-anim {
+          animation: cardReveal 0.4s ease-out forwards; opacity: 0;
+        }
+
+        /* ── HI-BLOCK (Hierarchical indentation for ability text) ── */
+        .hi-block > div { margin-bottom: 4px; }
+        .hi-block > div:last-child { margin-bottom: 0; }
+        .hi-block .hi-title, .hi-title { padding-left: 1.5em; text-indent: -1.5em; }
+        .hi-block .hi-cont, .hi-cont { padding-left: 1.5em; }
+        .hi-block .hi-sub, .hi-sub { padding-left: 3em; text-indent: -2.5em; }
+
+        /* ── FLAVOR / COMIC SANS TEXT ── */
+        .flavor-text {
+          font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+          font-size: 0.75em; color: #3d2b1f; line-height: 1.5;
         }
 
         /* ── SPLASH SCREEN ── */

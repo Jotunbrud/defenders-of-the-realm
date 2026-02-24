@@ -1022,30 +1022,32 @@ Object.assign(game, {
     showDarknessCardPreview(card, cardNum, totalCards, generalOnly) {
         const content = document.getElementById('end-of-turn-content');
         const btn = document.getElementById('end-of-turn-btn');
-        
-        let cardHeader = '';
+
+        // Card counter line
+        let cardCounterHTML = '';
         if (totalCards > 1) {
-            const modeText = generalOnly ? 'General Advance Only' : 'Full Card';
-            const modeColor = generalOnly ? '#fbbf24' : '#4ade80';
-            cardHeader = `<div style="text-align: center; margin-bottom: 10px;">
-                <strong style="color: #d4af37; font-size: 1.1em;">Card ${cardNum} of ${totalCards}</strong>
-                <span style="color: ${modeColor}; font-size: 0.95em; margin-left: 8px;">(${modeText})</span>
-            </div>`;
+            cardCounterHTML = `<div style="text-align:center;margin-bottom:10px"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#d4af37;font-size:0.85em">Draw Card ${cardNum} of ${totalCards}</strong>${generalOnly ? `<span style="color:#fbbf24;font-size:0.8em;margin-left:8px;font-family:'Comic Sans MS','Comic Sans',cursive">(General Advance Only)</span>` : ''}</div>`;
+        } else {
+            cardCounterHTML = `<div style="text-align:center;margin-bottom:10px"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#d4af37;font-size:0.85em">Draw Card</strong>${generalOnly ? `<span style="color:#fbbf24;font-size:0.8em;margin-left:8px;font-family:'Comic Sans MS','Comic Sans',cursive">(General Advance Only)</span>` : ''}</div>`;
         }
-        
+
+        const banner = this._parchmentBoxOpen('Darkness Spreads');
+        const boxClose = this._parchmentBoxClose();
+
         let cardContent = '';
-        
+
         if (card.type === 'all_quiet') {
-            cardContent = `
-                <div style="padding: 15px; text-align: center; border: 2px solid #4ade80; background: rgba(74,222,128,0.15); border-radius: 8px;">
-                    <div style="font-size: 1.3em; color: #4ade80; font-weight: bold;">🌅 All is Quiet</div>
-                    <div style="color: #d4af37; margin-top: 5px;">${card.description}</div>
-                </div>`;
+            cardContent = `${banner}
+                <div style="padding:15px;text-align:center">
+                    <div style="font-size:1.2em;color:#6d28a8;font-weight:bold;font-family:'Cinzel',Georgia,serif">🌅 All is Quiet</div>
+                    <div style="color:#3d2b1f;margin-top:5px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">${card.description}</div>
+                </div>
+            ${boxClose}`;
         } else if (card.type === 'patrol') {
             const generalName = this.generals.find(g => g.color === card.general)?.name || 'Unknown';
             const generalColor = this.getGeneralColor(card.general);
             const isWarParty = card.patrolType === 'orc_war_party';
-            
+
             // Predict patrol outcomes
             let patrolWarnings = '';
             if (!generalOnly) {
@@ -1054,7 +1056,6 @@ Object.assign(game, {
                 for (let locationName in this.locationCoords) {
                     const coords = this.locationCoords[locationName];
                     if (isWarParty) {
-                        // Orc War Party: locations with exactly 1 orc and no other minions
                         const minionsAtLocation = this.minions[locationName];
                         if (minionsAtLocation) {
                             const greenCount = minionsAtLocation['green'] || 0;
@@ -1065,7 +1066,6 @@ Object.assign(game, {
                             }
                         }
                     } else {
-                        // Standard Orc Patrols: empty green locations
                         if (coords.faction === 'green') {
                             const minionsAtLocation = this.minions[locationName];
                             if (!minionsAtLocation || !minionsAtLocation['green'] || minionsAtLocation['green'] === 0) {
@@ -1075,50 +1075,39 @@ Object.assign(game, {
                         }
                     }
                 }
-                if (overrunCount > 0) patrolWarnings += `<div style="margin-top: 4px; padding: 4px 8px; border: 1px solid #ef4444; background: rgba(239,68,68,0.15); border-radius: 3px; font-size: 0.85em;"><span style="color: #ef4444;">${overrunCount} location${overrunCount > 1 ? 's' : ''} will trigger Overrun</span></div>`;
-                if (taintCount > 0) patrolWarnings += `<div style="margin-top: 4px; padding: 4px 8px; border: 1px solid #9333ea; background: rgba(147,51,234,0.15); border-radius: 3px; font-size: 0.85em;"><span style="color: #9333ea;">${taintCount} Taint Crystal${taintCount > 1 ? 's' : ''} will be placed</span></div>`;
+                if (overrunCount > 0) patrolWarnings += `<div style="margin-top:4px;padding:3px 8px;border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:3px;font-size:0.75em;color:#b91c1c;font-weight:bold;font-family:'Comic Sans MS','Comic Sans',cursive">${overrunCount} location${overrunCount > 1 ? 's' : ''} will trigger Overrun</div>`;
+                if (taintCount > 0) patrolWarnings += `<div style="margin-top:4px;padding:3px 8px;border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:3px;font-size:0.75em;color:#7e22ce;font-weight:bold;font-family:'Comic Sans MS','Comic Sans',cursive">${taintCount} Taint Crystal${taintCount > 1 ? 's' : ''} will be placed</div>`;
             }
-            
+
             const patrolDesc = isWarParty
                 ? 'Add 1 orc to each location with exactly 1 orc and no other minions'
                 : 'Add 1 green minion to each empty green location';
-            const patrolIcon = isWarParty ? '⚔️' : '🥾';
-            const patrolBorderColor = isWarParty ? '#dc2626' : '#16a34a';
-            const patrolBgColor = isWarParty ? 'rgba(220,38,38,0.15)' : 'rgba(22,163,74,0.15)';
-            
-            const generalLine = card.minions3 === 0
-                ? `<strong style="color: ${generalColor};">General:</strong> <strong style="color: ${generalColor};">${generalName}</strong> advances → <strong>${card.location3}</strong> (no minions)`
-                : `<strong style="color: ${generalColor};">General:</strong> <strong style="color: ${generalColor};">${generalName}</strong> — ${card.minions3} minion${card.minions3 > 1 ? 's' : ''} → <strong>${card.location3}</strong>`;
-            
+
             const sdBlockedPatrol = this.strongDefensesActive || this.organizeMilitiaActive;
-            const sdStylePatrol = sdBlockedPatrol ? 'opacity: 0.4; text-decoration: line-through;' : '';
-            const sdLabelPatrol = this.strongDefensesActive ? '<div style="color: #f59e0b; font-size: 0.85em; margin-top: 4px;">🏰 Strong Defenses — General movement cancelled</div>' : 
-                                 this.organizeMilitiaActive ? '<div style="color: #4ade80; font-size: 0.85em; margin-top: 4px;">📜 Organize Militia — General movement cancelled</div>' : '';
+            const sdLabelPatrol = this.strongDefensesActive ? '<div style="color:#a16207;font-size:0.75em;margin-top:4px;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive">🏰 Strong Defenses — General movement cancelled</div>' :
+                                 this.organizeMilitiaActive ? '<div style="color:#15803d;font-size:0.75em;margin-top:4px;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive">📜 Organize Militia — General movement cancelled</div>' : '';
             const generalWarnings = sdBlockedPatrol ? [] : this.predictGeneralOutcome(card.general, card.minions3, card.location3);
-            
-            cardContent = `
-                <div style="padding: 12px; border: 2px solid ${patrolBorderColor}; background: ${patrolBgColor}; border-radius: 8px;">
-                    <div style="text-align: center; font-size: 1.1em; color: ${patrolBorderColor}; font-weight: bold; margin-bottom: 8px;">${patrolIcon} ${card.patrolName}</div>
-                    ${!generalOnly ? `<div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${patrolBorderColor}; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                        <strong style="color: ${patrolBorderColor};">Patrol:</strong> ${patrolDesc}
-                        ${patrolWarnings}
-                    </div>` : `<div style="padding: 8px; margin: 5px 0; border-left: 3px solid #fbbf24; background: rgba(251,191,36,0.1); border-radius: 3px;">
-                        <span style="color: #fbbf24;">⏭️ Patrol skipped (General Advance Only)</span>
-                    </div>`}
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${sdBlockedPatrol ? '#f59e0b' : generalColor}; background: rgba(0,0,0,0.3); border-radius: 3px; ${sdStylePatrol}">
-                        ${generalLine}
-                        ${!sdBlockedPatrol ? this.renderPredictionTags(generalWarnings) : ''}
-                        ${sdLabelPatrol}
-                    </div>
-                </div>`;
+
+            // Build general location visual
+            const generalLocVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, sdBlockedPatrol, generalWarnings);
+
+            cardContent = `${banner}
+                <div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">${card.patrolName}</div>
+                ${!generalOnly
+                    ? `<div style="margin-bottom:4px"><div style="font-size:0.75em;color:#3d2b1f;font-family:'Comic Sans MS','Comic Sans',cursive;margin-bottom:8px">${patrolDesc}</div>${patrolWarnings}</div>`
+                    : `<div class="hi-title" style="font-size:0.75em;margin-bottom:6px"><strong style="color:#1a0f0a;font-family:'Cinzel',Georgia,serif;font-weight:900">⏭️ Skipped:</strong> <span style="color:#3d2b1f;font-family:'Comic Sans MS','Comic Sans',cursive">Patrol skipped (General Only)</span></div>`
+                }
+                <div style="display:flex;justify-content:center">${generalLocVisual}</div>
+                ${sdLabelPatrol}
+            ${boxClose}`;
         } else if (card.type === 'monarch_city_special') {
             // Predict which colors will place minions
             const monarchConnected = this.locationConnections['Monarch City'] || [];
             const colorsPresent = new Set();
-            const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
             const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
+            const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
             const factionIcons = { green: '🪓', black: '💀', red: '🔥', blue: '🐉' };
-            
+
             monarchConnected.forEach(loc => {
                 const minionsObj = this.minions[loc];
                 if (!minionsObj) return;
@@ -1126,36 +1115,33 @@ Object.assign(game, {
                     if (count > 0) colorsPresent.add(color);
                 }
             });
-            
+
             let minionLines = '';
             if (colorsPresent.size === 0) {
-                minionLines = '<div style="color: #4ade80; padding: 4px 0;">No minions adjacent — nothing placed</div>';
+                minionLines = '<div style="color:#15803d;padding:4px 0;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive;font-size:0.75em">No minions adjacent — nothing placed</div>';
             } else {
                 ['green', 'red', 'black', 'blue'].forEach(color => {
                     if (!colorsPresent.has(color)) return;
-                    const fname = factionNames[color];
-                    const fcolor = factionColors[color];
-                    const ficon = factionIcons[color];
-                    minionLines += `<div style="color: ${fcolor}; padding: 2px 0;">${ficon} +1 ${fname} minion → Monarch City</div>`;
+                    minionLines += `<div style="color:${factionColors[color]};padding:2px 0;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em">${factionIcons[color]} +1 ${factionNames[color]} minion → Monarch City</div>`;
                 });
             }
-            
-            cardContent = `
-                <div style="padding: 12px; border: 2px solid #fbbf24; background: rgba(251,191,36,0.15); border-radius: 8px;">
-                    <div style="text-align: center; font-size: 1.1em; color: #fbbf24; font-weight: bold; margin-bottom: 8px;">🏰 Monarch City</div>
-                    <div style="text-align: center; color: #ef4444; font-weight: bold; font-size: 0.9em; margin-bottom: 8px;">⚠️ SPECIAL</div>
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #fbbf24; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                        <strong style="color: #fbbf24;">Minions:</strong> Place 1 minion of each color adjacent to Monarch City
-                        <div style="margin-top: 6px; padding-left: 8px;">${minionLines}</div>
-                        <div style="margin-top: 4px; color: #ef4444; font-size: 0.85em; font-weight: bold;">No Overruns can occur</div>
+
+            cardContent = `${banner}
+                <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
+                <div style="display:flex;align-items:center;margin-bottom:8px">
+                    <div style="flex:1;display:flex;justify-content:center">
+                        ${this._locationRingHTML('Monarch City', 'purple', 80)}
                     </div>
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #a78bfa; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                        <strong style="color: #a78bfa;">🔄 Reshuffle All Decks</strong>
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:4px">Special</div>
+                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px">Place 1 minion of each color that has minions adjacent to Monarch City</div>
+                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;line-height:1.4">No Overrun Can Occur</div>
                     </div>
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #ef4444; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                        <span style="color: #ef4444; font-weight: bold;">🚫 No Generals Move</span>
-                    </div>
-                </div>`;
+                </div>
+                <div style="padding-left:8px">${minionLines}</div>
+                <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.2em;color:#7c3aed;margin-top:8px">Reshuffle All Decks</div>
+                <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
+            ${boxClose}`;
         } else {
             // Regular card
             const generalName = this.generals.find(g => g.color === card.general)?.name || 'Unknown';
@@ -1164,53 +1150,45 @@ Object.assign(game, {
             const color1 = this.getGeneralColor(card.faction1);
             const color2 = this.getGeneralColor(card.faction2);
             const generalColor = this.getGeneralColor(card.general);
-            
-            const skippedStyle = generalOnly ? 'opacity: 0.4; text-decoration: line-through;' : '';
-            const skipLabel = generalOnly ? '<span style="color: #fbbf24; font-size: 0.8em; margin-left: 5px;">(skipped)</span>' : '';
-            
+
             // Militia Secures Area: mark secured slot
             const militia1 = this.militiaSecuredSlot === 1;
             const militia2 = this.militiaSecuredSlot === 2;
-            const m1Style = militia1 ? 'opacity: 0.4; text-decoration: line-through;' : skippedStyle;
-            const m1Label = militia1 ? '<div style="color: #4ade80; font-size: 0.85em; margin-top: 4px;">🛡️ Militia Secures Area — Placement cancelled</div>' : '';
-            const m2Style = militia2 ? 'opacity: 0.4; text-decoration: line-through;' : skippedStyle;
-            const m2Label = militia2 ? '<div style="color: #4ade80; font-size: 0.85em; margin-top: 4px;">🛡️ Militia Secures Area — Placement cancelled</div>' : '';
-            
+
             // Predict outcomes
             const minion1Warnings = !generalOnly && !militia1 ? this.predictMinionOutcome(card.faction1, card.minions1, card.location1) : [];
             const minion2Warnings = !generalOnly && !militia2 ? this.predictMinionOutcome(card.faction2, card.minions2, card.location2) : [];
-            
+
             // Strong Defenses: mark blocked general
             const sdBlocked = this.strongDefensesActive || this.organizeMilitiaActive;
-            const sdStyle = sdBlocked ? 'opacity: 0.4; text-decoration: line-through;' : '';
-            const sdLabel = this.strongDefensesActive ? '<div style="color: #f59e0b; font-size: 0.85em; margin-top: 4px;">🏰 Strong Defenses — General movement cancelled</div>' : 
-                           this.organizeMilitiaActive ? '<div style="color: #4ade80; font-size: 0.85em; margin-top: 4px;">📜 Organize Militia — General movement cancelled</div>' : '';
             const generalWarnings = sdBlocked ? [] : this.predictGeneralOutcome(card.general, card.minions3, card.location3);
-            
-            cardContent = `
-                <div style="padding: 12px; border: 2px solid #7c3aed; background: rgba(124,58,237,0.1); border-radius: 8px;">
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${militia1 ? '#16a34a' : color1}; background: rgba(0,0,0,0.3); border-radius: 3px; ${m1Style}">
-                        <strong style="color: ${color1};">Minion 1:</strong> <strong style="color: ${color1};">${faction1Name}</strong> — ${card.minions1} minion${card.minions1 > 1 ? 's' : ''} → <strong>${card.location1}</strong>${skipLabel}
-                        ${!generalOnly && !militia1 ? this.renderPredictionTags(minion1Warnings) : ''}
-                        ${m1Label}
-                    </div>
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${militia2 ? '#16a34a' : color2}; background: rgba(0,0,0,0.3); border-radius: 3px; ${m2Style}">
-                        <strong style="color: ${color2};">Minion 2:</strong> <strong style="color: ${color2};">${faction2Name}</strong> — ${card.minions2} minion${card.minions2 > 1 ? 's' : ''} → <strong>${card.location2}</strong>${skipLabel}
-                        ${!generalOnly && !militia2 ? this.renderPredictionTags(minion2Warnings) : ''}
-                        ${m2Label}
-                    </div>
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${sdBlocked ? '#f59e0b' : generalColor}; background: rgba(0,0,0,0.3); border-radius: 3px; ${sdStyle}">
-                        <strong style="color: ${generalColor};">General:</strong> <strong style="color: ${generalColor};">${generalName}</strong> — ${card.minions3} minion${card.minions3 > 1 ? 's' : ''} → <strong>${card.location3}</strong>
-                        ${!sdBlocked ? this.renderPredictionTags(generalWarnings) : ''}
-                        ${sdLabel}
-                    </div>
-                </div>`;
+
+            // Build location card visuals
+            const minion1Visual = this._darknessLocationCardHTML(card.location1, card.faction1, card.minions1, false, generalOnly || militia1, minion1Warnings, militia1);
+            const minion2Visual = this._darknessLocationCardHTML(card.location2, card.faction2, card.minions2, false, generalOnly || militia2, minion2Warnings, militia2);
+            const generalVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, sdBlocked, generalWarnings);
+
+            let militiaLabels = '';
+            if (militia1) militiaLabels += '<div style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive">🛡️ Militia Secures Area — Placement 1 cancelled</div>';
+            if (militia2) militiaLabels += '<div style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive">🛡️ Militia Secures Area — Placement 2 cancelled</div>';
+            let sdLabel = '';
+            if (this.strongDefensesActive) sdLabel = '<div style="text-align:center;color:#a16207;font-size:0.75em;margin-top:4px;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive">🏰 Strong Defenses — General movement cancelled</div>';
+            else if (this.organizeMilitiaActive) sdLabel = '<div style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive">📜 Organize Militia — General movement cancelled</div>';
+
+            cardContent = `${banner}
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                    ${minion1Visual}
+                    ${minion2Visual}
+                </div>
+                <div style="display:flex;justify-content:center">${generalVisual}</div>
+                ${militiaLabels}${sdLabel}
+            ${boxClose}`;
         }
-        
+
         content.innerHTML = `
-            <div class="modal-title" style="margin-bottom: 5px;">Step 3 - 🌙 Night</div>
-            <div style="text-align: center; font-size: 1.1em; color: #a78bfa; font-weight: bold; margin-bottom: 15px;">Darkness Spreads — Draw Card</div>
-            ${cardHeader}
+            ${this._stepIndicatorHTML(3)}
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">Step 3 — 🌙 Night</div>
+            ${cardCounterHTML}
             ${cardContent}
         `;
         
@@ -1245,9 +1223,9 @@ Object.assign(game, {
                 
                 const wisdomBtn = document.createElement('button');
                 wisdomBtn.id = 'wisdom-discard-btn';
-                wisdomBtn.className = 'btn btn-primary';
-                wisdomBtn.style.cssText = 'flex: 1; background: linear-gradient(135deg, #c2410c, #a83808); border-color: #e87040;';
-                wisdomBtn.textContent = '🔮 Discard (Wisdom)';
+                wisdomBtn.className = 'phase-btn';
+                wisdomBtn.style.cssText = 'flex:1;background:linear-gradient(135deg,#c2410c,#a83808);color:#fff;border:2px solid #e87040;';
+                wisdomBtn.textContent = '🔮 Wisdom';
                 wisdomBtn.onclick = () => game.wizardWisdomDiscard();
                 btnContainer.appendChild(wisdomBtn);
             }
@@ -1653,43 +1631,55 @@ Object.assign(game, {
     showDarknessCardResults(events) {
         const content = document.getElementById('end-of-turn-content');
         const btn = document.getElementById('end-of-turn-btn');
-        
+
         const cardNum = this.darknessCardsDrawn;
         const totalCards = this.darknessCardsToDraw;
         const generalOnly = this.darknessCurrentGeneralOnly;
-        
-        let cardHeader = '';
+
+        // Card counter line
+        let cardCounterHTML = '';
         if (totalCards > 1) {
-            const modeText = generalOnly ? 'General Advance Only' : 'Full Card';
-            const modeColor = generalOnly ? '#fbbf24' : '#4ade80';
-            cardHeader = `<div style="text-align: center; margin-bottom: 10px;">
-                <strong style="color: #d4af37; font-size: 1.1em;">Card ${cardNum} of ${totalCards}</strong>
-                <span style="color: ${modeColor}; font-size: 0.95em; margin-left: 8px;">(${modeText})</span>
+            cardCounterHTML = `<div style="text-align:center;margin-bottom:10px"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#d4af37;font-size:0.85em">Draw Card ${cardNum} of ${totalCards}</strong>${generalOnly ? `<span style="color:#fbbf24;font-size:0.8em;margin-left:8px;font-family:'Comic Sans MS','Comic Sans',cursive">(General Advance Only)</span>` : ''}</div>`;
+        } else {
+            cardCounterHTML = `<div style="text-align:center;margin-bottom:10px"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#d4af37;font-size:0.85em">Draw Card</strong></div>`;
+        }
+
+        // Build results using parchment style
+        const banner = this._parchmentBoxOpen('Darkness Spreads');
+        const boxClose = this._parchmentBoxClose();
+
+        let resultsHTML = '';
+        if (events && events.length > 0) {
+            // Separate minion events and general events
+            const minionEvents = events.filter(e => e.type === 'minion_placement' || e.type === 'minion_place');
+            const generalEvents = events.filter(e => e.type === 'general_advance' || e.type === 'general_movement');
+            const otherEvents = events.filter(e => !['minion_placement', 'minion_place', 'general_advance', 'general_movement'].includes(e.type));
+
+            // Render using existing renderDarknessEvents for compatibility
+            resultsHTML = `<div style="margin-top:12px;padding-top:12px;border-top:2px solid rgba(139,115,85,0.4)">
+                <div style="max-height:350px;overflow-y:auto">${this.renderDarknessEvents(events)}</div>
+            </div>`;
+        } else {
+            resultsHTML = `<div style="padding:15px;text-align:center">
+                <div style="font-size:1.2em;color:#6d28a8;font-weight:bold;font-family:'Cinzel',Georgia,serif">🌅 All is Quiet</div>
+                <div style="color:#3d2b1f;margin-top:5px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">No darkness events</div>
             </div>`;
         }
-        
-        // Render events using the reusable rendering logic
-        let darknessHTML = '<div style="max-height: 350px; overflow-y: auto;">';
-        if (events && events.length > 0) {
-            darknessHTML += this.renderDarknessEvents(events);
-        } else {
-            darknessHTML += '<div style="text-align: center; color: #4ade80; font-size: 1.1em; font-weight: bold; padding: 15px;">🌅 All is Quiet - No darkness events</div>';
-        }
-        darknessHTML += '</div>';
-        
+
         content.innerHTML = `
-            <div class="modal-title" style="margin-bottom: 5px;">Step 3 - 🌙 Night</div>
-            <div style="text-align: center; font-size: 1.1em; color: #a78bfa; font-weight: bold; margin-bottom: 15px;">Darkness Spreads — Results</div>
-            ${cardHeader}
-            <div style="padding: 15px; background: rgba(0, 0, 0, 0.4); border: 2px solid #c2410c; border-radius: 8px;">
-                ${darknessHTML}
-            </div>
+            ${this._stepIndicatorHTML(3)}
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">Step 3 — 🌙 Night</div>
+            ${cardCounterHTML}
+            ${banner}
+                ${resultsHTML}
+            ${boxClose}
         `;
-        
+
         // Update button text
         if (btn) {
             btn.textContent = cardNum < totalCards ? 'Draw Next Card' : 'End Night Phase';
-            
+            btn.className = 'phase-btn';
+
             // Remove all dynamic buttons from preview phase
             this._cleanupEndOfTurnButtons();
         }

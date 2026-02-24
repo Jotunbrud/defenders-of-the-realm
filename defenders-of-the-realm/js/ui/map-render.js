@@ -1448,12 +1448,12 @@ Object.assign(game, {
                     <div style="font-size: 0.85em; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5); font-weight: bold;">❤️ ${hero.health}/${hero.maxHealth}</div>
                 </div>
                 <div style="padding: 10px 14px;">
-                    <div style="display: flex; gap: 12px; margin-bottom: 8px;">
-                        <span class="heroes-card-stat" data-hero-index="${viewIdx}" style="cursor: pointer; text-decoration: underline; color: #2c1810; font-weight: bold; font-size: 0.85em;">🎴 ${hero.cards.length}</span>
-                        <span class="heroes-quest-stat" data-hero-index="${viewIdx}" style="cursor: pointer; text-decoration: underline; color: #8b0000; font-weight: bold; font-size: 0.85em;">📜 ${activeQuests.length}</span>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 0.8em; margin-bottom: 8px;">
+                        <span class="heroes-card-stat" data-hero-index="${viewIdx}" style="background: rgba(139,115,85,0.15); border: 1px solid rgba(139,115,85,0.3); padding: 2px 7px; border-radius: 4px; color: #3d2b1f; cursor: pointer; text-decoration: underline;">🎴 ${hero.cards.length}</span>
+                        <span class="heroes-quest-stat" data-hero-index="${viewIdx}" style="background: rgba(139,115,85,0.15); border: 1px solid rgba(139,115,85,0.3); padding: 2px 7px; border-radius: 4px; color: #8b0000; cursor: pointer; text-decoration: underline;">📜 ${activeQuests.length}</span>
                     </div>
                     ${completedQuestBadges}
-                    <div class="hero-ability-text" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5; margin-top: 8px; border-top: 1px solid rgba(139,115,85,0.3); padding-top: 8px;">${hero.ability}</div>
+                    <div class="hero-ability-text hi-block" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5; margin-top: 8px; border-top: 1px solid rgba(139,115,85,0.3); padding-top: 8px;">${hero.ability}</div>
                 </div>
             </div>`;
 

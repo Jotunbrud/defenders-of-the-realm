@@ -71,7 +71,8 @@ Object.assign(game, {
         }
         
         // Always push spawn event showing original attempted count (unless suppressSpawn for general movement)
-        if (!suppressSpawn) {
+        // BUT skip if a taint or overrun event will follow for the same location — those already show placement details
+        if (!suppressSpawn && !willTaint && !isOverrun) {
             const generalName = this.generals.find(g => g.color === faction)?.name || 'Unknown';
             
             darknessEvents.push({

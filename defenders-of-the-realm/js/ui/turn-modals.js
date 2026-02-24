@@ -729,8 +729,10 @@ Object.assign(game, {
                     </div>
                 `;
             } else if (event.type === 'spawn') {
+                // Skip zero-count spawns — the taint/overrun event that follows explains what happened
+                if (event.count === 0) return;
                 const fName = this._factionNames[event.color] || event.color;
-                const displayCount = event.wouldBeMinions != null ? event.wouldBeMinions : event.count;
+                const displayCount = event.count;
                 html += `
                     <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${this.getGeneralColor(event.color)}; background: rgba(0,0,0,0.3); border-radius: 3px;">
                         <strong style="${colorStyle}">${event.general}:</strong> ${displayCount} ${fName} minion${displayCount > 1 ? 's' : ''} → <strong>${event.location}</strong>

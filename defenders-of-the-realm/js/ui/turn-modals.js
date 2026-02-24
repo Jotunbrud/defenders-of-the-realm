@@ -11,6 +11,24 @@ Object.assign(game, {
     _generalNames: { red: 'Balazarg', blue: 'Sapphire', green: 'Gorgutt', black: 'Varkolak' },
     _heartIcons: { green: '💚', blue: '💙', black: '🖤', red: '❤️' },
 
+    _locationFaction: {
+        "Monarch City": "purple", "Dark Woods": "black", "Scorpion Canyon": "red", "Thorny Woods": "green", "Blizzard Mountains": "blue",
+        "Father Oak Forest": "green", "Wolf Pass": "blue", "Bounty Bay": "blue", "Orc Valley": "red", "Dancing Stone": "black", "Greenleaf Village": "green",
+        "Golden Oak Forest": "green", "Windy Pass": "red", "Sea Bird Port": "black", "Mountains of Mist": "blue",
+        "Blood Flats": "red", "Raven Forest": "green", "Pleasant Hill": "red", "Unicorn Forest": "green", "Brookdale Village": "black",
+        "Dragon's Teeth Range": "blue", "Amarak Peak": "blue", "Eagle Peak Pass": "blue", "Ghost Marsh": "red",
+        "Heaven's Glade": "green", "Ancient Ruins": "red", "Whispering Woods": "green", "McCorm Highlands": "black", "Serpent Swamp": "red",
+        "Cursed Plateau": "red", "Rock Bridge Pass": "blue", "Enchanted Glade": "black", "Angel Tear Falls": "black",
+        "Fire River": "black", "Mermaid Harbor": "black", "Land of Amazons": "black", "Wyvern Forest": "green", "Crystal Hills": "blue",
+        "Minotaur Forest": "green", "Seagaul Lagoon": "blue", "Gryphon Forest": "green", "Withered Hills": "red",
+    },
+    _generalPaths: {
+        black: ["Dark Woods", "Windy Pass", "Sea Bird Port", "Father Oak Forest", "Monarch City"],
+        red: ["Scorpion Canyon", "Raven Forest", "Angel Tear Falls", "Bounty Bay", "Monarch City"],
+        green: ["Thorny Woods", "Amarak Peak", "Eagle Peak Pass", "Orc Valley", "Monarch City"],
+        blue: ["Blizzard Mountains", "Heaven's Glade", "Ancient Ruins", "Greenleaf Village", "Monarch City"],
+    },
+
     _stepIndicatorHTML(currentStep) {
         const steps = [{ num: 1, icon: '☀️', label: 'Daytime' }, { num: 2, icon: '🌅', label: 'Evening' }, { num: 3, icon: '🌙', label: 'Night' }];
         let html = '<div class="step-indicator-bar">';
@@ -35,7 +53,9 @@ Object.assign(game, {
     },
 
     _locationRingHTML(name, color, size, highlight) {
-        const gc = this._generalColors[color] || '#888';
+        // Use location's own faction color, falling back to passed color
+        const locColor = this._locationFaction[name] || color;
+        const gc = this._generalColors[locColor] || '#888';
         const s = size || 60;
         const cls = highlight ? ' highlight' : '';
         return `<div class="location-ring${cls}" style="width:${s}px;height:${s}px;background:${gc};">` +
@@ -63,7 +83,7 @@ Object.assign(game, {
         return { border: '#dc2626', bg: 'rgba(220,38,38,0.08)', color: '#b91c1c' };
     },
 
-    _darknessLocationCardHTML(location, color, count, isGeneral, strikethrough, warnings, militiaCancelled) {
+    _darknessLocationCardHTML(location, color, count, isGeneral, strikethrough, warnings, militiaCancelled, generalPosition) {
         const gc = this._generalColors[color] || '#888';
         const gn = this._generalNames[color] || 'Unknown';
         const warningsHTML = (warnings || []).map(w => {
@@ -72,6 +92,27 @@ Object.assign(game, {
         }).join('');
 
         if (isGeneral) {
+            const isNextLoc = location === 'Next Location';
+            let destinationHTML = '';
+
+            if (isNextLoc) {
+                const path = this._generalPaths[color] || [];
+                const nextIdx = Math.min((generalPosition || 0) + 1, path.length - 1);
+                let pathCircles = '';
+                path.forEach((loc, li) => {
+                    const isTarget = li === nextIdx;
+                    const zIdx = isTarget ? path.length + 1 : path.length - li;
+                    const ml = li === 0 ? 0 : -12;
+                    pathCircles += `<div style="margin-left:${ml}px;z-index:${zIdx};position:relative">${this._locationRingHTML(loc, color, 60, isTarget)}</div>`;
+                });
+                destinationHTML = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                    <div style="display:flex;align-items:center;padding:6px">${pathCircles}</div>
+                    <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7c3aed">Next Location</div>
+                </div>`;
+            } else {
+                destinationHTML = this._locationRingHTML(location, color, 60);
+            }
+
             return `<div class="darkness-loc-general" style="opacity:${strikethrough ? 0.4 : 1}">
                 <div style="display:flex;align-items:center;justify-content:center;gap:8px">
                     <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
@@ -81,8 +122,8 @@ Object.assign(game, {
                             <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${gc}">${gn}</div>
                         </div>
                     </div>
-                    <div style="font-size:2.5em;color:#8b7355;font-weight:900;line-height:1;flex-shrink:0">→</div>
-                    ${this._locationRingHTML(location, color, 60)}
+                    <div style="font-size:2.5em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+                    ${destinationHTML}
                 </div>
                 ${warningsHTML}
             </div>`;

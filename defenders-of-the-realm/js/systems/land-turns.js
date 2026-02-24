@@ -1454,6 +1454,7 @@ Object.assign(game, {
             } else if (isWarParty) {
                 this.addLog(`Card: ${card.patrolName} - Add 1 orc to each location with exactly 1 orc and no other minions`);
                 let patrolCount = 0;
+                const patrolSpawnLocs = [];
                 for (let locationName in this.locationCoords) {
                     const minionsAtLocation = this.minions[locationName];
                     if (minionsAtLocation) {
@@ -1461,38 +1462,48 @@ Object.assign(game, {
                         const otherCount = Object.entries(minionsAtLocation).filter(([c]) => c !== 'green').reduce((s, [, n]) => s + n, 0);
                         if (greenCount === 1 && otherCount === 0) {
                             this.processMinionPlacement('green', 1, locationName, events);
+                            patrolSpawnLocs.push(locationName);
                             patrolCount++;
                         }
                     }
                 }
                 const generalName = this.generals.find(g => g.color === card.general)?.name || 'Unknown';
+                events.forEach(ev => { if (ev.type === 'spawn' && ev.color === 'green' && patrolSpawnLocs.includes(ev.location)) ev._patrolSpawn = true; });
+                events.forEach(ev => { if (ev.type === 'taint' && ev.color === 'green' && patrolSpawnLocs.includes(ev.location)) ev._patrolSpawn = true; });
                 events.unshift({
                     type: 'patrol',
                     patrolName: card.patrolName,
                     general: generalName,
                     generalColor: card.general,
-                    locationsPatrolled: patrolCount
+                    locationsPatrolled: patrolCount,
+                    spawnLocations: patrolSpawnLocs
                 });
             } else {
                 this.addLog(`Card: ${card.patrolName} - Add 1 green minion to each empty green location`);
                 let patrolCount = 0;
+                const patrolSpawnLocs = [];
                 for (let locationName in this.locationCoords) {
                     const coords = this.locationCoords[locationName];
                     if (coords.faction === 'green') {
                         const minionsAtLocation = this.minions[locationName];
                         if (!minionsAtLocation || !minionsAtLocation['green'] || minionsAtLocation['green'] === 0) {
                             this.processMinionPlacement('green', 1, locationName, events);
+                            patrolSpawnLocs.push(locationName);
                             patrolCount++;
                         }
                     }
                 }
                 const generalName = this.generals.find(g => g.color === card.general)?.name || 'Unknown';
+                // Mark all spawn events from this patrol
+                events.forEach(ev => { if (ev.type === 'spawn' && ev.color === 'green' && patrolSpawnLocs.includes(ev.location)) ev._patrolSpawn = true; });
+                events.forEach(ev => { if (ev.type === 'taint' && ev.color === 'green' && patrolSpawnLocs.includes(ev.location)) ev._patrolSpawn = true; });
                 events.unshift({
                     type: 'patrol',
                     patrolName: card.patrolName,
                     general: generalName,
                     generalColor: card.general,
-                    locationsPatrolled: patrolCount
+                    locationsPatrolled: patrolCount,
+                    spawnLocations: patrolSpawnLocs
                 });
             }
             // Strong Defenses / Organize Militia: skip general movement
@@ -1686,10 +1697,8 @@ Object.assign(game, {
                 cardPreviewHTML = `<div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.4em;color:#7c3aed;margin-bottom:4px">Monarch City</div>
                     <div style="text-align:center"><div style="display:inline-block">${this._locationRingHTML('Monarch City', 'purple', 80)}</div></div>`;
             } else if (card.type === 'patrol') {
-                const _generalPatrol = this.generals.find(g => g.color === card.general);
-                const _genPathPatrol = this._generalPaths ? this._generalPaths[card.general] : null;
-                const _genPosPatrol = (_generalPatrol && _genPathPatrol) ? _genPathPatrol.indexOf(_generalPatrol.location) : -1;
-                const generalLocVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, false, [], false, _genPosPatrol);
+                // On results, general has already moved — don't show path overlay (results section shows movement)
+                const generalLocVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, false, [], false, -2);
                 const isWarParty = card.patrolType === 'orc_war_party';
                 const patrolDescResults = isWarParty
                     ? 'Add 1 orc to each location with exactly 1 orc and no other minions'
@@ -1701,7 +1710,9 @@ Object.assign(game, {
                 // Regular card
                 const _general = this.generals.find(g => g.color === card.general);
                 const _genPath = this._generalPaths ? this._generalPaths[card.general] : null;
-                const _genPosition = (_general && _genPath) ? _genPath.indexOf(_general.location) : -1;
+                // On results, general has already moved — use -2 to suppress highlight for Next Location cards
+                const _genPosition = (card.location3 === 'Next Location') ? -2
+                    : ((_general && _genPath) ? _genPath.indexOf(_general.location) : -1);
 
                 const minion1Visual = this._darknessLocationCardHTML(card.location1, card.faction1, card.minions1, false, generalOnly);
                 const minion2Visual = this._darknessLocationCardHTML(card.location2, card.faction2, card.minions2, false, generalOnly);
@@ -1745,6 +1756,10 @@ Object.assign(game, {
                 minionHTML += `<div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>`;
                 minionEvents.forEach(e => {
                     if (e.type === 'spawn') {
+                        // Skip patrol-tagged spawns — they're shown inside the patrol box
+                        if (e._patrolSpawn) return;
+                        // Skip zero-count spawns — taint/overrun explains it
+                        if (e.count === 0) return;
                         const mc = gColors[e.color] || '#888';
                         const fn = fNames[e.color] || e.color;
                         minionHTML += `<div style="background:rgba(139,115,85,0.1);border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin:4px 0">
@@ -1754,6 +1769,7 @@ Object.assign(game, {
                             </div>
                         </div>`;
                     } else if (e.type === 'taint') {
+                        if (e._patrolSpawn) return;
                         const mc = gColors[e.color] || '#888';
                         const fn = fNames[e.color] || e.color;
                         const gn = e.general || '';
@@ -1761,9 +1777,9 @@ Object.assign(game, {
                         const placed = e.minionsPlaced || 0;
                         const notPlaced = wouldBe - placed;
                         let descParts = [];
-                        if (placed > 0) descParts.push(`${placed} ${e.color} minion${placed !== 1 ? 's' : ''} placed`);
-                        if (notPlaced > 0) descParts.push(`<span style="color:#b91c1c;font-weight:bold">${notPlaced} ${e.color} minion${notPlaced !== 1 ? 's' : ''} NOT placed</span>`);
-                        const descText = descParts.length > 0 ? descParts.join(', ') : `0 ${e.color} minions placed`;
+                        if (placed > 0) descParts.push(`${placed} ${fn} minion${placed !== 1 ? 's' : ''} placed`);
+                        if (notPlaced > 0) descParts.push(`<span style="color:#b91c1c;font-weight:bold">${notPlaced} ${fn} minion${notPlaced !== 1 ? 's' : ''} NOT placed</span>`);
+                        const descText = descParts.length > 0 ? descParts.join(', ') : `0 ${fn} minions placed`;
                         minionHTML += `<div style="background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:5px;padding:5px 10px;margin:4px 0">
                             <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${gn ? `${gn}: ` : ''}${descText} → ${e.location}${e.reason ? ` (${e.reason})` : ''}</div>
                             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:4px">Taint Crystal placed!</div>
@@ -1776,11 +1792,12 @@ Object.assign(game, {
                         // Source taint sub-box
                         if (e.sourceTaint) {
                             const st = e.sourceTaint;
+                            const stFn = fNames[st.color || e.color] || st.color || e.color;
                             const stPlaced = st.minionsPlaced || 0;
                             const stNotPlaced = (st.wouldBeMinions || 0) - stPlaced;
                             let stParts = [];
-                            if (stPlaced > 0) stParts.push(`${stPlaced} ${st.color || e.color} minion${stPlaced !== 1 ? 's' : ''} placed`);
-                            if (stNotPlaced > 0) stParts.push(`<span style="color:#b91c1c;font-weight:bold">${stNotPlaced} ${st.color || e.color} minion${stNotPlaced !== 1 ? 's' : ''} NOT placed</span>`);
+                            if (stPlaced > 0) stParts.push(`${stPlaced} ${stFn} minion${stPlaced !== 1 ? 's' : ''} placed`);
+                            if (stNotPlaced > 0) stParts.push(`<span style="color:#b91c1c;font-weight:bold">${stNotPlaced} ${stFn} minion${stNotPlaced !== 1 ? 's' : ''} NOT placed</span>`);
                             const stDesc = stParts.length > 0 ? stParts.join(', ') : '';
                             overrunInner += `<div style="margin-top:6px;padding:5px 8px;background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:4px">
                                 <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${gn ? `${gn}: ` : ''}${stDesc} → ${st.location || e.sourceLocation}${st.reason ? ` (${st.reason})` : ''}</div>
@@ -1792,15 +1809,16 @@ Object.assign(game, {
                         if (e.spread) {
                             e.spread.forEach(s => {
                                 const sMc = gColors[s.color] || mc;
+                                const sFn = fNames[s.color] || s.color;
                                 if (s.addedMinion && !s.addedTaint) {
                                     spreadItems += `<div style="display:flex;align-items:center;gap:6px;margin-left:8px;margin-top:2px">
                                         <span class="modal-minion-dot" style="background:${sMc}"></span>
-                                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${gn ? `${gn}: ` : ''}1 ${s.color} minion → ${s.location}</span>
+                                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${gn ? `${gn}: ` : ''}1 ${sFn} minion → ${s.location}</span>
                                     </div>`;
                                 } else if (s.addedTaint) {
                                     spreadItems += `<div style="display:flex;align-items:center;gap:6px;margin-left:8px;margin-top:2px">
                                         <span class="modal-minion-dot" style="background:${sMc}"></span>
-                                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${gn ? `${gn}: ` : ''}1 ${s.color} minion <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max'})</span>
+                                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${gn ? `${gn}: ` : ''}1 ${sFn} minion <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max'})</span>
                                     </div>
                                     <div style="margin-top:2px;margin-left:24px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7e22ce">Taint Crystal placed!</div>`;
                                 }
@@ -1819,13 +1837,23 @@ Object.assign(game, {
                             </div>
                         </div>`;
                     } else if (e.type === 'patrol') {
-                        const mc = gColors[e.generalColor] || '#888';
-                        minionHTML += `<div style="background:rgba(139,115,85,0.1);border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin:4px 0">
+                        const patrolColor = '#16a34a';
+                        let spawnLines = '';
+                        if (e.spawnLocations && e.spawnLocations.length > 0) {
+                            e.spawnLocations.forEach(loc => {
+                                spawnLines += `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 8px;margin:2px 0;background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.2);border-radius:3px">
+                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:${patrolColor}">+1 Orcs</span>
+                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#2c1810">→ ${loc}</span>
+                                </div>`;
+                            });
+                        }
+                        minionHTML += `<div style="background:rgba(22,163,74,0.08);border:1px solid ${patrolColor};border-radius:5px;padding:5px 10px;margin:4px 0">
                             <div style="display:flex;justify-content:space-between;align-items:center">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${e.patrolName}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${patrolColor}">${e.patrolName}</span>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">${e.locationsPatrolled} location${e.locationsPatrolled !== 1 ? 's' : ''}</span>
                             </div>
-                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;margin-top:3px">1 orc added to each eligible green location</div>
+                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;margin-top:3px;margin-bottom:6px">1 orc added to each eligible green location</div>
+                            ${spawnLines}
                         </div>`;
                     } else if (e.type === 'militia_secured') {
                         const mc = gColors[e.color] || '#888';

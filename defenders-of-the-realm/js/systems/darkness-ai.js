@@ -186,6 +186,7 @@ Object.assign(game, {
                     sourceLocation: location,
                     color: faction,
                     general: generalName,
+                    count: count,
                     sourceTaint: sourceTaintData,
                     spread: overrunSpread
                 });

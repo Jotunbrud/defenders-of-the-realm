@@ -1674,7 +1674,12 @@ Object.assign(game, {
                 const _genPathPatrol = this._generalPaths ? this._generalPaths[card.general] : null;
                 const _genPosPatrol = (_generalPatrol && _genPathPatrol) ? _genPathPatrol.indexOf(_generalPatrol.location) : -1;
                 const generalLocVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, false, [], false, _genPosPatrol);
+                const isWarParty = card.patrolType === 'orc_war_party';
+                const patrolDescResults = isWarParty
+                    ? 'Add 1 orc to each location with exactly 1 orc and no other minions'
+                    : 'Add 1 green minion to each empty green location';
                 cardPreviewHTML = `<div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">${card.patrolName}</div>
+                    <div style="font-size:0.75em;color:#3d2b1f;font-family:'Comic Sans MS','Comic Sans',cursive;margin-bottom:8px">${patrolDescResults}</div>
                     <div style="display:flex;justify-content:center">${generalLocVisual}</div>`;
             } else {
                 // Regular card
@@ -1801,7 +1806,7 @@ Object.assign(game, {
                         const mc = gColors[e.generalColor] || '#888';
                         minionHTML += `<div style="background:rgba(139,115,85,0.1);border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin:4px 0">
                             <div style="display:flex;justify-content:space-between;align-items:center">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">🥾 ${e.patrolName}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${e.patrolName}</span>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">${e.locationsPatrolled} location${e.locationsPatrolled !== 1 ? 's' : ''}</span>
                             </div>
                             <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;margin-top:3px">1 orc added to each eligible green location</div>

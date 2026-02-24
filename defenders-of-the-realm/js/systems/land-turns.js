@@ -1131,11 +1131,28 @@ Object.assign(game, {
                 });
             }
 
+            // Build corner minion tokens on the ring
+            const minionPositions = [
+                { color: 'black', pos: 'top:-6px;left:-6px' },
+                { color: 'green', pos: 'top:-6px;right:-6px' },
+                { color: 'red', pos: 'bottom:-6px;left:-6px' },
+                { color: 'blue', pos: 'bottom:-6px;right:-6px' }
+            ];
+            let cornerTokens = '';
+            minionPositions.forEach(p => {
+                if (colorsPresent.has(p.color)) {
+                    cornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:16px;height:16px;background:${factionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
+                }
+            });
+
             cardContent = `${banner}
                 <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
                 <div style="display:flex;align-items:center;margin-bottom:8px">
                     <div style="flex:1;display:flex;justify-content:center">
-                        ${this._locationRingHTML('Monarch City', 'purple', 80)}
+                        <div style="position:relative;display:inline-block">
+                            ${this._locationRingHTML('Monarch City', 'purple', 80)}
+                            ${cornerTokens}
+                        </div>
                     </div>
                     <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center">
                         <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:4px">Special</div>
@@ -1143,8 +1160,7 @@ Object.assign(game, {
                         <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;line-height:1.4">No Overrun Can Occur</div>
                     </div>
                 </div>
-                <div style="padding-left:8px">${minionLines}</div>
-                <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.2em;color:#7c3aed;margin-top:8px">Reshuffle All Decks</div>
+                <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-bottom:2px">Reshuffle All Decks</div>
                 <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
             ${boxClose}`;
         } else {

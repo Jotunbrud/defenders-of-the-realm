@@ -850,35 +850,60 @@ Object.assign(game, {
                 const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
                 const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
                 const factionIcons = { green: '🪓', black: '💀', red: '🔥', blue: '🐉' };
+
+                // Build corner minion tokens for placed colors
+                const minionPositions = [
+                    { color: 'black', pos: 'top:-6px;left:-6px' },
+                    { color: 'green', pos: 'top:-6px;right:-6px' },
+                    { color: 'red', pos: 'bottom:-6px;left:-6px' },
+                    { color: 'blue', pos: 'bottom:-6px;right:-6px' }
+                ];
+                let cornerTokens = '';
+                minionPositions.forEach(p => {
+                    if ((event.colorsPlaced || []).includes(p.color)) {
+                        cornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:16px;height:16px;background:${factionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
+                    }
+                });
+
+                // Build minion placement lines
                 let colorLines = '';
                 if (event.colorsPlaced.length === 0) {
-                    colorLines = '<div style="color: #4ade80;">No minions adjacent — nothing placed</div>';
+                    colorLines = `<div style="color:#15803d;padding:4px 0;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em">No minions adjacent — nothing placed</div>`;
                 } else {
                     event.colorsPlaced.forEach(color => {
-                        colorLines += `<div style="color: ${factionColors[color]}; padding: 2px 0;">${factionIcons[color]} +1 ${factionNames[color]} minion → Monarch City</div>`;
+                        colorLines += `<div style="color:${factionColors[color]};padding:2px 0;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em">${factionIcons[color]} +1 ${factionNames[color]} minion → Monarch City</div>`;
                     });
                 }
+
                 html += `
-                    <div style="padding: 12px; margin: 5px 0; border: 2px solid #fbbf24; background: rgba(251,191,36,0.15); border-radius: 5px;">
-                        <div style="font-size: 1.1em; color: #fbbf24; font-weight: bold; margin-bottom: 5px; text-align: center;">🏰 Monarch City</div>
-                        <div style="text-align: center; color: #ef4444; font-weight: bold; font-size: 0.9em; margin-bottom: 8px;">⚠️ SPECIAL</div>
-                        <div style="padding: 8px; background: rgba(0,0,0,0.3); border-radius: 4px; margin-bottom: 6px;">
+                    <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
+                    <div style="display:flex;align-items:center;margin-bottom:8px">
+                        <div style="flex:1;display:flex;justify-content:center">
+                            <div style="position:relative;display:inline-block">
+                                ${this._locationRingHTML('Monarch City', 'purple', 80)}
+                                ${cornerTokens}
+                            </div>
+                        </div>
+                        <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center">
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:4px">Special</div>
+                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px">Place 1 minion of each color that has minions adjacent to Monarch City</div>
+                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;line-height:1.4">No Overrun Can Occur</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px;padding-top:12px;border-top:2px solid rgba(139,115,85,0.4)">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Placement</div>
+                        <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px">
                             ${colorLines}
-                            <div style="margin-top: 4px; color: #ef4444; font-size: 0.85em; font-weight: bold;">No Overruns occurred</div>
                         </div>
                     </div>
                 `;
             } else if (event.type === 'deck_reshuffle') {
                 html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #a78bfa; background: rgba(167,139,250,0.15); border-radius: 3px;">
-                        <strong style="color: #a78bfa;">🔄 ${event.description}</strong>
-                    </div>
+                    <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-top:8px;margin-bottom:2px">Reshuffle All Decks</div>
                 `;
             } else if (event.type === 'no_generals') {
                 html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #ef4444; background: rgba(239,68,68,0.1); border-radius: 3px;">
-                        <strong style="color: #ef4444;">🚫 ${event.description}</strong>
-                    </div>
+                    <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
                 `;
             } else if (event.type === 'militia_secured') {
                 html += `

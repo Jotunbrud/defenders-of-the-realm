@@ -29,6 +29,23 @@ Object.assign(game, {
         blue: ["Blizzard Mountains", "Heaven's Glade", "Ancient Ruins", "Greenleaf Village", "Monarch City"],
     },
 
+    _abilityToHiBlock(abilityHTML) {
+        if (!abilityHTML) return '';
+        const lines = abilityHTML.split(/<br\s*\/?>/i);
+        const wrapped = lines.map(line => {
+            const trimmed = line.trim();
+            if (!trimmed) return '';
+            if (/^[•\-]\s*<strong/i.test(trimmed)) {
+                return `<div class="hi-sub">${trimmed}</div>`;
+            } else if (/^<strong/i.test(trimmed)) {
+                return `<div class="hi-title">${trimmed}</div>`;
+            } else {
+                return `<div class="hi-cont">${trimmed}</div>`;
+            }
+        }).filter(l => l).join('');
+        return wrapped;
+    },
+
     _stepIndicatorHTML(currentStep) {
         const steps = [{ num: 1, icon: '☀️', label: 'Daytime' }, { num: 2, icon: '🌅', label: 'Evening' }, { num: 3, icon: '🌙', label: 'Night' }];
         let html = '<div class="step-indicator-bar">';
@@ -430,7 +447,7 @@ Object.assign(game, {
             ${this._stepIndicatorHTML(2)}
             <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">Step 2 — 🌅 Evening</div>
             ${this._parchmentBoxOpen('🎴 Hero Cards Drawn')}
-                <div style="display:flex;gap:8px;flex-wrap:wrap">${cardsHTML}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
                 <div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3)">
                     <span style="font-size:0.9em;color:#2c1810;font-family:'Cinzel',Georgia,serif;font-weight:900">🎴 Total Cards: ${hero.cards.length}</span>
                 </div>
@@ -726,7 +743,7 @@ Object.assign(game, {
                 html += `
                     <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #9333ea; background: rgba(147,51,234,0.2); border-radius: 3px;">
                         <strong style="${colorStyle}">${event.general}:</strong> ${minionSummary} → <strong>${event.location}</strong>${reasonText}<br>
-                        <strong style="color: #9333ea;">💎 Taint Crystal placed!</strong>
+                        <strong style="color: #9333ea;">Taint Crystal placed!</strong>
                     </div>
                 `;
             } else if (event.type === 'overrun') {
@@ -745,7 +762,7 @@ Object.assign(game, {
                     overrunInner += `
                         <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #9333ea; background: rgba(147,51,234,0.2); border-radius: 3px;">
                             <strong style="${colorStyle}">${st.general}:</strong> ${minionSummary} → <strong>${st.location}</strong>${reasonText}<br>
-                            <strong style="color: #9333ea;">💎 Taint Crystal placed!</strong>
+                            <strong style="color: #9333ea;">Taint Crystal placed!</strong>
                         </div>
                     `;
                 }
@@ -762,14 +779,14 @@ Object.assign(game, {
                             <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #9333ea; background: rgba(147,51,234,0.2); border-radius: 3px;">
                                 <strong style="${colorStyle}">${event.general}:</strong> ${notPlacedText} → <strong>${s.location}</strong>
                                 <br><span style="font-size: 0.85em; color: #fbbf24;">(location at max (3 minions))</span><br>
-                                <strong style="color: #9333ea;">💎 Taint Crystal placed!</strong>
+                                <strong style="color: #9333ea;">Taint Crystal placed!</strong>
                             </div>
                         `;
                     }
                 });
                 html += `
                     <div style="padding: 10px; margin: 5px 0; border: 2px solid #ef4444; background: rgba(239,68,68,0.1); border-radius: 5px;">
-                        <strong style="color: #ef4444; font-size: 1em;">⚠️ OVERRUN at ${event.sourceLocation}!</strong>
+                        <strong style="color: #ef4444; font-size: 1em;">OVERRUN at ${event.sourceLocation}!</strong>
                         <div style="font-size: 0.85em; color: #fbbf24; margin: 3px 0 8px 0;">${event.general} minions spread to connected locations</div>
                         ${overrunInner}
                     </div>
@@ -779,14 +796,14 @@ Object.assign(game, {
                 const wildCardNote = event.isWildCard ? '<br><span style="font-size: 0.85em; color: #fbbf24;">(advances along colored path)</span>' : '';
                 html += `
                     <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${this.getGeneralColor(event.color)}; background: rgba(220,38,38,0.2); border-radius: 3px;">
-                        <strong style="${colorStyle}; font-size: 1em;">⚠️ ${event.general}:</strong> ${event.minionCount || 0} minion${(event.minionCount || 0) !== 1 ? 's' : ''} → <strong>${cardText}</strong>${wildCardNote}<br>
+                        <strong style="${colorStyle}; font-size: 1em;">${event.general}:</strong> ${event.minionCount || 0} minion${(event.minionCount || 0) !== 1 ? 's' : ''} → <strong>${cardText}</strong>${wildCardNote}<br>
                         <strong style="color: #4ade80; font-size: 1em;">✓ GENERAL ADVANCES</strong> (${event.from} → ${event.to})
                     </div>
                 `;
             } else if (event.type === 'monarch_city_reached') {
                 html += `
                     <div style="padding: 8px; margin: 5px 0; border: 3px solid #dc2626; background: rgba(220,38,38,0.4); border-radius: 3px;">
-                        <strong style="${colorStyle}; font-size: 1em;">⚠️ ${event.general}:</strong> ${event.minionCount || 0} minion${(event.minionCount || 0) !== 1 ? 's' : ''} → <strong>Monarch City</strong><br>
+                        <strong style="${colorStyle}; font-size: 1em;">${event.general}:</strong> ${event.minionCount || 0} minion${(event.minionCount || 0) !== 1 ? 's' : ''} → <strong>Monarch City</strong><br>
                         <strong style="color: #4ade80; font-size: 1em;">✓ GENERAL ADVANCES</strong> (${event.from} → Monarch City)<br>
                         <strong style="color: #dc2626; font-size: 1.1em; margin-top: 5px; display: inline-block;">💀 ${event.general} REACHED MONARCH CITY! 💀</strong>
                     </div>

@@ -153,7 +153,7 @@ Object.assign(game, {
                     <div style="font-size: 0.85em; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5); font-weight: bold;">❤️ ${hero.maxHealth}</div>
                 </div>
                 <div style="padding: 10px 14px;">
-                    <div class="hero-ability-text-select" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5;">${hero.ability}</div>
+                    <div class="hero-ability-text-select hi-block" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5;">${game._abilityToHiBlock(hero.ability)}</div>
                 </div>
             </div>
         `).join('');
@@ -302,7 +302,7 @@ Object.assign(game, {
                         </div>
                     </div>${hasTaint ? `
                     <div style="margin-top: 5px; padding: 5px 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 4px;">
-                        <strong style="color: #9333ea; font-size: 0.85em;">💎 Taint Crystal placed!</strong>
+                        <strong style="color: #9333ea; font-size: 0.85em;">Taint Crystal placed!</strong>
                     </div>` : ''}
                 </div>`;
         });
@@ -437,12 +437,12 @@ Object.assign(game, {
             let taintHTML = '';
             if (entry.taint1) {
                 taintHTML += `<div style="margin-top: 5px; padding: 5px 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 4px;">
-                    <strong style="color: #9333ea; font-size: 0.85em;">💎 Taint Crystal placed!</strong>
+                    <strong style="color: #9333ea; font-size: 0.85em;">Taint Crystal placed!</strong>
                 </div>`;
             }
             if (entry.taint2) {
                 taintHTML += `<div style="margin-top: 5px; padding: 5px 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 4px;">
-                    <strong style="color: #9333ea; font-size: 0.85em;">💎 Taint Crystal placed!</strong>
+                    <strong style="color: #9333ea; font-size: 0.85em;">Taint Crystal placed!</strong>
                 </div>`;
             }
             

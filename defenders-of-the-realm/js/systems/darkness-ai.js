@@ -175,10 +175,10 @@ Object.assign(game, {
             
             if (overrunSpread.length > 0) {
                 const generalName = this.generals.find(g => g.color === faction)?.name || 'Unknown';
-                this.addLog(`⚠️ OVERRUN at ${location}! ${faction} minions spread to ${overrunSpread.length} connected locations`);
+                this.addLog(`OVERRUN at ${location}! ${faction} minions spread to ${overrunSpread.length} connected locations`);
                 overrunSpread.forEach(s => {
                     if (s.addedMinion) this.addLog(`  → +1 ${s.color} minion at ${s.location}`);
-                    if (s.addedTaint) this.addLog(`  → 💎 Taint Crystal placed at ${s.location} (overrun spillover)`);
+                    if (s.addedTaint) this.addLog(`  → Taint Crystal placed at ${s.location} (overrun spillover)`);
                 });
                 darknessEvents.push({
                     type: 'overrun',
@@ -591,7 +591,7 @@ Object.assign(game, {
             } else if (event.type === 'taint') {
                 html += `<div class="combat-log-entry" style="border-color: #9333ea; background: rgba(147,51,234,0.2);">
                     <strong style="${colorStyle}">${event.general}'s</strong> forces would spawn <strong>${event.wouldBeMinions}</strong> ${event.color} minion${event.wouldBeMinions > 1 ? 's' : ''} at <strong>${event.location}</strong><br>
-                    <strong style="color: #9333ea; font-size: 1.1em;">💎 BUT THE LAND IS CORRUPTED!</strong><br>
+                    <strong style="color: #9333ea; font-size: 1.1em;">BUT THE LAND IS CORRUPTED!</strong><br>
                     <strong>Taint Crystal placed instead</strong>
                 </div>`;
                 this.addLog(`Darkness: ${event.wouldBeMinions} ${event.color} minion(s) would spawn at ${event.location} BUT taint crystal placed instead! (${event.remaining} remaining)`);
@@ -602,22 +602,22 @@ Object.assign(game, {
                     const st = event.sourceTaint;
                     const notPlaced = st.wouldBeMinions - st.minionsPlaced;
                     const notPlacedText = notPlaced > 0 ? `${notPlaced} ${st.color} minion(s) <span style="color: #ef4444; font-weight: bold;">NOT placed</span>` : '';
-                    overrunDetails += `${st.general}: ${notPlacedText} at ${st.location} - 💎 Taint Crystal placed<br>`;
+                    overrunDetails += `${st.general}: ${notPlacedText} at ${st.location} - Taint Crystal placed<br>`;
                 }
                 // Spread
                 event.spread.forEach(s => {
                     if (s.addedMinion && !s.addedTaint) {
                         overrunDetails += `${event.general}: 1 ${s.color} minion → ${s.location}<br>`;
                     } else if (s.addedTaint) {
-                        overrunDetails += `${event.general}: 1 ${s.color} minion <span style="color: #ef4444; font-weight: bold;">NOT placed</span> → ${s.location} - 💎 Taint Crystal placed<br>`;
+                        overrunDetails += `${event.general}: 1 ${s.color} minion <span style="color: #ef4444; font-weight: bold;">NOT placed</span> → ${s.location} - Taint Crystal placed<br>`;
                     }
                 });
                 html += `<div class="combat-log-entry" style="border-color: #ef4444; background: rgba(239,68,68,0.2); border-width: 2px;">
-                    <strong style="color: #ef4444; font-size: 1.1em;">⚠️ OVERRUN at ${event.sourceLocation}!</strong><br>
+                    <strong style="color: #ef4444; font-size: 1.1em;">OVERRUN at ${event.sourceLocation}!</strong><br>
                     <span style="color: #fbbf24;">${event.general} minions spread to connected locations:</span><br>
                     <div style="margin-top: 5px;">${overrunDetails}</div>
                 </div>`;
-                if (event.sourceTaint) this.addLog(`Overrun: 💎 Taint Crystal placed at ${event.sourceLocation}`);
+                if (event.sourceTaint) this.addLog(`Overrun: Taint Crystal placed at ${event.sourceLocation}`);
                 event.spread.forEach(s => {
                     if (s.addedMinion) this.addLog(`Overrun: +1 ${s.color} minion at ${s.location}`);
                     if (s.addedTaint) this.addLog(`Overrun: Taint Crystal placed at ${s.location}`);
@@ -625,13 +625,13 @@ Object.assign(game, {
             } else if (event.type === 'advance') {
                 const wildCardNote = event.isWildCard ? '<br><span style="color: #fbbf24; font-size: 0.9em;">(Card: Next Location)</span>' : '';
                 html += `<div class="combat-log-entry" style="border-color: ${this.getGeneralColor(event.color)}; background: rgba(220,38,38,0.2);">
-                    <strong style="${colorStyle}; font-size: 1.1em;">⚠️ ${event.general} ADVANCES!</strong><br>From <strong>${event.from}</strong> to <strong>${event.to}</strong>${wildCardNote}
+                    <strong style="${colorStyle}; font-size: 1.1em;">${event.general} ADVANCES!</strong><br>From <strong>${event.from}</strong> to <strong>${event.to}</strong>${wildCardNote}
                 </div>`;
                 this.addLog(`Darkness: ${event.general} advances from ${event.from} to ${event.to}${event.isWildCard ? ' (Next Location)' : ''}`);
             } else if (event.type === 'general_move') {
                 const wildCardNote = event.isWildCard ? '<br><span style="color: #fbbf24; font-size: 0.9em;">(Card: Next Location)</span>' : '';
                 html += `<div class="combat-log-entry" style="border-color: ${this.getGeneralColor(event.color)}; background: rgba(220,38,38,0.2);">
-                    <strong style="${colorStyle}; font-size: 1.1em;">⚠️ ${event.general} MOVES!</strong><br>From <strong>${event.from}</strong> to <strong>${event.to}</strong>${wildCardNote}
+                    <strong style="${colorStyle}; font-size: 1.1em;">${event.general} MOVES!</strong><br>From <strong>${event.from}</strong> to <strong>${event.to}</strong>${wildCardNote}
                 </div>`;
                 this.addLog(`Darkness: ${event.general} moves from ${event.from} to ${event.to}${event.isWildCard ? ' (Next Location)' : ''}`);
             } else if (event.type === 'monarch_city_reached') {

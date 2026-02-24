@@ -855,7 +855,7 @@
 
         /* ── DARKNESS LOCATION CARD ── */
         .darkness-loc-card { padding: 8px 10px; }
-        .darkness-loc-general { padding: 10px 10px 24px 10px; }
+        .darkness-loc-general { padding: 10px 10px 40px 10px; }
 
         /* ── CARD REVEAL ANIMATION ── */
         @keyframes cardReveal {

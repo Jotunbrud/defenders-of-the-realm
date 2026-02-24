@@ -1113,7 +1113,10 @@ Object.assign(game, {
                     <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin-bottom:4px;">Special</div>
                     <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;">${card.description || 'Special ability'}</div>
                 </div>
-                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${diceColorObj.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
+                <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <div class="modal-general-token" style="background:${diceColorObj.dice}">${general.icon}</div>
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${diceColorObj.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.name}</span>
+                </div>
                 <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center;">${dicePool}</div>
             `;
         } else {
@@ -1121,7 +1124,10 @@ Object.assign(game, {
                 <div class="hero-banner-name">${card.icon || '🎴'} ${card.name}</div>
             </div>`;
             bodyHTML = `
-                <div style="text-align:center;margin-top:10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${cColor.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.icon} ${general.name}</div>
+                <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <div class="modal-general-token" style="background:${cColor.dice}">${general.icon}</div>
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${cColor.text};text-shadow:0 1px 2px rgba(0,0,0,0.2);">${general.name}</span>
+                </div>
                 <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center;">${dicePool}</div>
             `;
         }

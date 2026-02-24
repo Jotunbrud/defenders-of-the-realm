@@ -77,7 +77,8 @@ Object.assign(game, {
         let hlStyle = '';
         if (highlight) {
             const hc = highlightColor || this._generalColors[color] || '#7c3aed';
-            hlStyle = `outline:3px solid ${hc};outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px ${hc}99;`;
+            // Use box-shadow spread for the ring (follows border-radius unlike outline)
+            hlStyle = `box-shadow:0 0 0 4px ${hc},0 0 16px 2px ${hc}88,0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15);`;
         }
         return `<div class="location-ring" style="width:${s}px;height:${s}px;background:${gc};${hlStyle}">` +
             `<span class="location-ring-name" style="font-size:${s * 0.0082}em">${name}</span></div>`;

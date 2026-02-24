@@ -860,6 +860,10 @@ Object.assign(game, {
         this.darknessCurrentCard = card;
         this.darknessCurrentEvents = [];
         this.darknessCardPhase = 'preview';
+        // Store general's pre-resolution path index for results modal rendering
+        const _drawGeneral = card.general ? this.generals.find(g => g.color === card.general) : null;
+        const _drawGenPath = card.general && this._generalPaths ? this._generalPaths[card.general] : null;
+        this.darknessCurrentGenPosition = (_drawGeneral && _drawGenPath) ? _drawGenPath.indexOf(_drawGeneral.location) : -1;
         this.updateDeckCounts();
         
         // Check if any hero can interact with the darkness preview
@@ -1686,9 +1690,8 @@ Object.assign(game, {
                 cardPreviewHTML = `<div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.4em;color:#7c3aed;margin-bottom:4px">Monarch City</div>
                     <div style="text-align:center"><div style="display:inline-block">${this._locationRingHTML('Monarch City', 'purple', 80)}</div></div>`;
             } else if (card.type === 'patrol') {
-                const _generalPatrol = this.generals.find(g => g.color === card.general);
-                const _genPathPatrol = this._generalPaths ? this._generalPaths[card.general] : null;
-                const _genPosPatrol = (_generalPatrol && _genPathPatrol) ? _genPathPatrol.indexOf(_generalPatrol.location) : -1;
+                // Use pre-resolution general position (general may have already moved)
+                const _genPosPatrol = this.darknessCurrentGenPosition != null ? this.darknessCurrentGenPosition : -1;
                 const generalLocVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, false, [], false, _genPosPatrol);
                 const isWarParty = card.patrolType === 'orc_war_party';
                 const patrolDescResults = isWarParty
@@ -1698,10 +1701,8 @@ Object.assign(game, {
                     <div style="font-size:0.75em;color:#3d2b1f;font-family:'Comic Sans MS','Comic Sans',cursive;margin-bottom:8px">${patrolDescResults}</div>
                     <div style="display:flex;justify-content:center">${generalLocVisual}</div>`;
             } else {
-                // Regular card
-                const _general = this.generals.find(g => g.color === card.general);
-                const _genPath = this._generalPaths ? this._generalPaths[card.general] : null;
-                const _genPosition = (_general && _genPath) ? _genPath.indexOf(_general.location) : -1;
+                // Regular card — use pre-resolution general position (general may have already moved)
+                const _genPosition = this.darknessCurrentGenPosition != null ? this.darknessCurrentGenPosition : -1;
 
                 const minion1Visual = this._darknessLocationCardHTML(card.location1, card.faction1, card.minions1, false, generalOnly);
                 const minion2Visual = this._darknessLocationCardHTML(card.location2, card.faction2, card.minions2, false, generalOnly);

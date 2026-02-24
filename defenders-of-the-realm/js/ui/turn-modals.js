@@ -69,13 +69,17 @@ Object.assign(game, {
         return `<button class="phase-btn" ${disabled ? 'disabled' : ''} onclick="game.closeEndOfTurnModal()">${label}</button>`;
     },
 
-    _locationRingHTML(name, color, size, highlight) {
+    _locationRingHTML(name, color, size, highlight, highlightColor) {
         // Use location's own faction color, falling back to passed color
         const locColor = this._locationFaction[name] || color;
         const gc = this._generalColors[locColor] || '#888';
         const s = size || 60;
-        const cls = highlight ? ' highlight' : '';
-        return `<div class="location-ring${cls}" style="width:${s}px;height:${s}px;background:${gc};">` +
+        let hlStyle = '';
+        if (highlight) {
+            const hc = highlightColor || this._generalColors[color] || '#7c3aed';
+            hlStyle = `outline:3px solid ${hc};outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px ${hc}99;`;
+        }
+        return `<div class="location-ring" style="width:${s}px;height:${s}px;background:${gc};${hlStyle}">` +
             `<span class="location-ring-name" style="font-size:${s * 0.0082}em">${name}</span></div>`;
     },
 
@@ -124,7 +128,7 @@ Object.assign(game, {
                 });
                 destinationHTML = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
                     <div style="display:flex;align-items:center;padding:6px">${pathCircles}</div>
-                    <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7c3aed">Next Location</div>
+                    <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${gc}">Next Location</div>
                 </div>`;
             } else {
                 destinationHTML = this._locationRingHTML(location, color, 60);

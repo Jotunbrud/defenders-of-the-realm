@@ -83,16 +83,18 @@ Object.assign(game, {
             `<span class="location-ring-name" style="font-size:${s * 0.0082}em">${name}</span></div>`;
     },
 
-    _generalTokenHTML(color) {
+    _generalTokenHTML(color, size) {
         const gc = this._generalColors[color] || '#888';
         const icon = this._generalIcons[color] || '⚔️';
-        return `<div class="modal-general-token" style="background:${gc}">${icon}</div>`;
+        const sizeStyle = size ? `width:${size}px;height:${size}px;font-size:${size * 0.031}em;` : '';
+        return `<div class="modal-general-token" style="background:${gc};${sizeStyle}">${icon}</div>`;
     },
 
-    _minionDotsHTML(color, count) {
+    _minionDotsHTML(color, count, dotSize) {
         const gc = this._generalColors[color] || '#888';
-        let html = '<div style="display:flex;flex-direction:column;align-items:center;gap:3px">';
-        for (let i = 0; i < count; i++) html += `<span class="modal-minion-dot" style="background:${gc}"></span>`;
+        const ds = dotSize || 16;
+        let html = `<div style="display:flex;flex-direction:column;align-items:center;gap:${ds > 18 ? 4 : 3}px">`;
+        for (let i = 0; i < count; i++) html += `<span class="modal-minion-dot" style="background:${gc};width:${ds}px;height:${ds}px"></span>`;
         html += '</div>';
         return html;
     },
@@ -109,7 +111,7 @@ Object.assign(game, {
         const gn = this._generalNames[color] || 'Unknown';
         const warningsHTML = (warnings || []).map(w => {
             const ws = this._warningStyleHTML(w.type);
-            return `<div style="margin-top:4px;padding:2px 6px;border:1px solid ${ws.border};background:${ws.bg};border-radius:3px;font-size:0.75em;color:${ws.color};font-weight:bold;text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive">${w.text}</div>`;
+            return `<div style="margin-top:6px;padding:3px 8px;border:1px solid ${ws.border};background:${ws.bg};border-radius:3px;font-size:0.75em;color:${ws.color};font-weight:bold;text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive">${w.text}</div>`;
         }).join('');
 
         if (isGeneral) {
@@ -123,27 +125,27 @@ Object.assign(game, {
                 path.forEach((loc, li) => {
                     const isTarget = li === nextIdx;
                     const zIdx = isTarget ? path.length + 1 : path.length - li;
-                    const ml = li === 0 ? 0 : -12;
-                    pathCircles += `<div style="margin-left:${ml}px;z-index:${zIdx};position:relative">${this._locationRingHTML(loc, color, 60, isTarget)}</div>`;
+                    const ml = li === 0 ? 0 : -18;
+                    pathCircles += `<div style="margin-left:${ml}px;z-index:${zIdx};position:relative">${this._locationRingHTML(loc, color, 90, isTarget)}</div>`;
                 });
                 destinationHTML = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
                     <div style="display:flex;align-items:center;padding:6px">${pathCircles}</div>
-                    <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${gc}">Next Location</div>
+                    <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${gc}">Next Location</div>
                 </div>`;
             } else {
-                destinationHTML = this._locationRingHTML(location, color, 60);
+                destinationHTML = this._locationRingHTML(location, color, 90);
             }
 
             return `<div class="darkness-loc-general" style="opacity:${strikethrough ? 0.4 : 1}">
-                <div style="display:flex;align-items:center;justify-content:center;gap:8px">
-                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-                        ${count > 0 ? this._minionDotsHTML(color, count) : ''}
+                <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+                    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                        ${count > 0 ? this._minionDotsHTML(color, count, 22) : ''}
                         <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                            ${this._generalTokenHTML(color)}
-                            <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${gc}">${gn}</div>
+                            ${this._generalTokenHTML(color, 48)}
+                            <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${gc}">${gn}</div>
                         </div>
                     </div>
-                    <div style="font-size:2.5em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+                    <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
                     ${destinationHTML}
                 </div>
                 ${warningsHTML}
@@ -151,12 +153,12 @@ Object.assign(game, {
         }
 
         // Minion placement card
-        const skippedLabel = strikethrough && !militiaCancelled ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.6em;color:#a16207;margin-top:4px;text-align:center">(skipped)</div>` : '';
-        const militiaLabel = militiaCancelled ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.6em;color:#15803d;margin-top:4px;text-align:center">🛡️ cancelled</div>` : '';
-        return `<div class="darkness-loc-card" style="flex:1 1 120px;max-width:200px;min-width:130px;opacity:${strikethrough ? 0.4 : 1}">
-            <div style="display:flex;align-items:center;justify-content:center;gap:10px">
-                ${this._minionDotsHTML(color, count)}
-                ${this._locationRingHTML(location, color, 60)}
+        const skippedLabel = strikethrough && !militiaCancelled ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.65em;color:#a16207;margin-top:6px;text-align:center">(skipped)</div>` : '';
+        const militiaLabel = militiaCancelled ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.65em;color:#15803d;margin-top:6px;text-align:center">🛡️ cancelled</div>` : '';
+        return `<div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px;opacity:${strikethrough ? 0.4 : 1}">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+                ${this._minionDotsHTML(color, count, 22)}
+                ${this._locationRingHTML(location, color, 90)}
             </div>
             ${skippedLabel}${militiaLabel}
             ${warningsHTML}
@@ -869,7 +871,7 @@ Object.assign(game, {
                 let cornerTokens = '';
                 minionPositions.forEach(p => {
                     if ((event.colorsPlaced || []).includes(p.color)) {
-                        cornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:16px;height:16px;background:${factionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
+                        cornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:22px;height:22px;background:${factionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
                     }
                 });
 
@@ -888,7 +890,7 @@ Object.assign(game, {
                     <div style="display:flex;align-items:center;margin-bottom:8px">
                         <div style="flex:1;display:flex;justify-content:center">
                             <div style="position:relative;display:inline-block">
-                                ${this._locationRingHTML('Monarch City', 'purple', 80)}
+                                ${this._locationRingHTML('Monarch City', 'purple', 90)}
                                 ${cornerTokens}
                             </div>
                         </div>

@@ -1141,7 +1141,7 @@ Object.assign(game, {
             let cornerTokens = '';
             minionPositions.forEach(p => {
                 if (colorsPresent.has(p.color)) {
-                    cornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:16px;height:16px;background:${factionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
+                    cornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:22px;height:22px;background:${factionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
                 }
             });
 
@@ -1150,7 +1150,7 @@ Object.assign(game, {
                 <div style="display:flex;align-items:center;margin-bottom:8px">
                     <div style="flex:1;display:flex;justify-content:center">
                         <div style="position:relative;display:inline-block">
-                            ${this._locationRingHTML('Monarch City', 'purple', 80)}
+                            ${this._locationRingHTML('Monarch City', 'purple', 90)}
                             ${cornerTokens}
                         </div>
                     </div>
@@ -1695,7 +1695,7 @@ Object.assign(game, {
                 </div>`;
             } else if (card.type === 'monarch_city_special') {
                 cardPreviewHTML = `<div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.4em;color:#7c3aed;margin-bottom:4px">Monarch City</div>
-                    <div style="text-align:center"><div style="display:inline-block">${this._locationRingHTML('Monarch City', 'purple', 80)}</div></div>`;
+                    <div style="text-align:center"><div style="display:inline-block">${this._locationRingHTML('Monarch City', 'purple', 90)}</div></div>`;
             } else if (card.type === 'patrol') {
                 // On results, general has already moved — don't show path overlay (results section shows movement)
                 const generalLocVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, false, [], false, -2);

@@ -1473,6 +1473,7 @@ Object.assign(game, {
                 events.unshift({
                     type: 'patrol',
                     patrolName: card.patrolName,
+                    patrolType: card.patrolType,
                     general: generalName,
                     generalColor: card.general,
                     locationsPatrolled: patrolCount,
@@ -1500,6 +1501,7 @@ Object.assign(game, {
                 events.unshift({
                     type: 'patrol',
                     patrolName: card.patrolName,
+                    patrolType: card.patrolType,
                     general: generalName,
                     generalColor: card.general,
                     locationsPatrolled: patrolCount,
@@ -1817,7 +1819,7 @@ Object.assign(game, {
                                     </div>`;
                                 } else if (s.addedTaint) {
                                     spreadItems += `<div style="margin-top:4px;padding:5px 8px;background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:4px">
-                                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${gn ? `${gn}: ` : ''}1 ${sFn} minion <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max'})</div>
+                                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${gn ? `${gn}: ` : ''}1 ${sFn} minion <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max minions'})</div>
                                         <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:2px">Taint Crystal placed!</div>
                                     </div>`;
                                 }
@@ -1846,12 +1848,16 @@ Object.assign(game, {
                                 </div>`;
                             });
                         }
+                        const isWarParty = e.patrolType === 'orc_war_party';
+                        const patrolDesc = isWarParty
+                            ? '1 orc added to each location with exactly 1 orc and no other minions'
+                            : '1 orc added to each eligible green location';
                         minionHTML += `<div style="background:rgba(22,163,74,0.08);border:1px solid ${patrolColor};border-radius:5px;padding:5px 10px;margin:4px 0">
                             <div style="display:flex;justify-content:space-between;align-items:center">
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${patrolColor}">${e.patrolName}</span>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">${e.locationsPatrolled} location${e.locationsPatrolled !== 1 ? 's' : ''}</span>
                             </div>
-                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;margin-top:3px;margin-bottom:6px">1 orc added to each eligible green location</div>
+                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;margin-top:3px;margin-bottom:6px">${patrolDesc}</div>
                             ${spawnLines}
                         </div>`;
                     } else if (e.type === 'militia_secured') {

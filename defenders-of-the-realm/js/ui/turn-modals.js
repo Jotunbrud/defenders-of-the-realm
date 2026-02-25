@@ -703,16 +703,20 @@ Object.assign(game, {
                 `;
             } else if (event.type === 'patrol') {
                 const generalColorStyle = event.generalColor ? `color: ${this.getGeneralColor(event.generalColor)};` : '';
+                const isWarParty = event.patrolType === 'orc_war_party';
+                const patrolDesc = isWarParty
+                    ? '1 orc added to each location with exactly 1 orc and no other minions'
+                    : '1 orc added to each empty green location';
                 html += `
                     <div style="padding: 12px; margin: 5px 0; border: 2px solid #16a34a; background: rgba(22,163,74,0.2); border-radius: 5px;">
                         <div style="font-size: 1.1em; color: #16a34a; font-weight: bold; margin-bottom: 5px; text-align: center;">
                             🥾 ${event.patrolName}
                         </div>
                         <div style="font-size: 0.95em; color: #d4af37; text-align: center;">
-                            ${event.locationsPatrolled} green location${event.locationsPatrolled !== 1 ? 's' : ''} patrolled
+                            ${event.locationsPatrolled} location${event.locationsPatrolled !== 1 ? 's' : ''} patrolled
                         </div>
                         <div style="font-size: 0.85em; color: #999; text-align: center; margin-top: 3px;">
-                            1 orc added to each empty green location
+                            ${patrolDesc}
                         </div>
                         <div style="font-size: 0.85em; ${generalColorStyle} text-align: center; margin-top: 5px; font-weight: bold;">
                             General: ${event.general}
@@ -792,7 +796,7 @@ Object.assign(game, {
                         overrunInner += `
                             <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #9333ea; background: rgba(147,51,234,0.2); border-radius: 3px;">
                                 <strong style="${colorStyle}">${event.general}:</strong> ${notPlacedText} → <strong>${s.location}</strong>
-                                <br><span style="font-size: 0.85em; color: #fbbf24;">(location at max (3 minions))</span><br>
+                                <br><span style="font-size: 0.85em; color: #fbbf24;">(location at max minions)</span><br>
                                 <strong style="color: #9333ea;">Taint Crystal placed!</strong>
                             </div>
                         `;

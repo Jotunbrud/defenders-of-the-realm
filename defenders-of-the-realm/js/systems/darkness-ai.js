@@ -107,7 +107,7 @@ Object.assign(game, {
                 color: faction,
                 wouldBeMinions: count,
                 minionsPlaced: minionsToPlace,
-                reason: wouldBe3rdRedMinion ? '3rd red minion' : 'location at max (3 minions)'
+                reason: wouldBe3rdRedMinion ? '3rd red minion' : 'location at max minions'
             };
             
             // Only push standalone taint if NOT an overrun (overrun will embed it)

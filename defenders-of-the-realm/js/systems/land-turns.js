@@ -1816,11 +1816,10 @@ Object.assign(game, {
                                         <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${gn ? `${gn}: ` : ''}1 ${sFn} minion → ${s.location}</span>
                                     </div>`;
                                 } else if (s.addedTaint) {
-                                    spreadItems += `<div style="display:flex;align-items:center;gap:6px;margin-left:8px;margin-top:2px">
-                                        <span class="modal-minion-dot" style="background:${sMc}"></span>
-                                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${gn ? `${gn}: ` : ''}1 ${sFn} minion <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max'})</span>
-                                    </div>
-                                    <div style="margin-top:2px;margin-left:24px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7e22ce">Taint Crystal placed!</div>`;
+                                    spreadItems += `<div style="margin-top:4px;padding:5px 8px;background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:4px">
+                                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${gn ? `${gn}: ` : ''}1 ${sFn} minion <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max'})</div>
+                                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:2px">Taint Crystal placed!</div>
+                                    </div>`;
                                 }
                             });
                         }

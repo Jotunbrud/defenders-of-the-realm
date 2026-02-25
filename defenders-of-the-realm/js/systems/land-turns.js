@@ -1127,7 +1127,7 @@ Object.assign(game, {
             } else {
                 ['green', 'red', 'black', 'blue'].forEach(color => {
                     if (!colorsPresent.has(color)) return;
-                    minionLines += `<div style="color:${factionColors[color]};padding:2px 0;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em">${factionIcons[color]} +1 ${factionNames[color]} minion → Monarch City</div>`;
+                    minionLines += `<div style="color:${factionColors[color]};padding:2px 0;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em">${this._inlineDotsHTML(color, 1)} ${factionNames[color]} → Monarch City</div>`;
                 });
             }
 
@@ -1766,7 +1766,7 @@ Object.assign(game, {
                         const fn = fNames[e.color] || e.color;
                         minionHTML += `<div style="background:rgba(139,115,85,0.1);border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin:4px 0">
                             <div style="display:flex;justify-content:space-between;align-items:center">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">+${e.count} ${fn}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${this._inlineDotsHTML(e.color, e.count)} ${fn}</span>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${e.location}</span>
                             </div>
                         </div>`;
@@ -1778,12 +1778,12 @@ Object.assign(game, {
                         const wouldBe = e.wouldBeMinions || 0;
                         const placed = e.minionsPlaced || 0;
                         const notPlaced = wouldBe - placed;
-                        let descParts = [];
-                        if (placed > 0) descParts.push(`${placed} ${fn} minion${placed !== 1 ? 's' : ''} placed`);
-                        if (notPlaced > 0) descParts.push(`<span style="color:#b91c1c;font-weight:bold">${notPlaced} ${fn} minion${notPlaced !== 1 ? 's' : ''} NOT placed</span>`);
-                        const descText = descParts.length > 0 ? descParts.join(', ') : `0 ${fn} minions placed`;
+                        const dots = this._inlineDotsHTML(e.color, wouldBe);
+                        let statusText = '';
+                        if (placed > 0 && notPlaced > 0) statusText = ` <span style="color:#b91c1c;font-weight:bold">(${notPlaced} NOT placed)</span>`;
+                        else if (notPlaced > 0) statusText = ` <span style="color:#b91c1c;font-weight:bold">NOT placed</span>`;
                         minionHTML += `<div style="background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:5px;padding:5px 10px;margin:4px 0">
-                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${gn ? `${gn}: ` : ''}${descText} → ${e.location}${e.reason ? ` (${e.reason})` : ''}</div>
+                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${dots} ${fn}${statusText} → ${e.location}${e.reason ? ` (${e.reason})` : ''}</div>
                             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:4px">Taint Crystal placed!</div>
                         </div>`;
                     } else if (e.type === 'overrun') {
@@ -1795,14 +1795,15 @@ Object.assign(game, {
                         if (e.sourceTaint) {
                             const st = e.sourceTaint;
                             const stFn = fNames[st.color || e.color] || st.color || e.color;
+                            const stWouldBe = st.wouldBeMinions || 0;
                             const stPlaced = st.minionsPlaced || 0;
-                            const stNotPlaced = (st.wouldBeMinions || 0) - stPlaced;
-                            let stParts = [];
-                            if (stPlaced > 0) stParts.push(`${stPlaced} ${stFn} minion${stPlaced !== 1 ? 's' : ''} placed`);
-                            if (stNotPlaced > 0) stParts.push(`<span style="color:#b91c1c;font-weight:bold">${stNotPlaced} ${stFn} minion${stNotPlaced !== 1 ? 's' : ''} NOT placed</span>`);
-                            const stDesc = stParts.length > 0 ? stParts.join(', ') : '';
+                            const stNotPlaced = stWouldBe - stPlaced;
+                            const stDots = this._inlineDotsHTML(st.color || e.color, stWouldBe);
+                            let stStatus = '';
+                            if (stPlaced > 0 && stNotPlaced > 0) stStatus = ` <span style="color:#b91c1c;font-weight:bold">(${stNotPlaced} NOT placed)</span>`;
+                            else if (stNotPlaced > 0) stStatus = ` <span style="color:#b91c1c;font-weight:bold">NOT placed</span>`;
                             overrunInner += `<div style="margin-top:6px;padding:5px 8px;background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:4px">
-                                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${gn ? `${gn}: ` : ''}${stDesc} → ${st.location || e.sourceLocation}${st.reason ? ` (${st.reason})` : ''}</div>
+                                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${stDots} ${stFn}${stStatus} → ${st.location || e.sourceLocation}${st.reason ? ` (${st.reason})` : ''}</div>
                                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:2px">Taint Crystal placed!</div>
                             </div>`;
                         }
@@ -1812,22 +1813,23 @@ Object.assign(game, {
                             e.spread.forEach(s => {
                                 const sMc = gColors[s.color] || mc;
                                 const sFn = fNames[s.color] || s.color;
+                                const sDot = this._inlineDotsHTML(s.color, 1);
                                 if (s.addedMinion && !s.addedTaint) {
-                                    spreadItems += `<div style="display:flex;align-items:center;gap:6px;margin-left:8px;margin-top:2px">
-                                        <span class="modal-minion-dot" style="background:${sMc}"></span>
-                                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${gn ? `${gn}: ` : ''}1 ${sFn} minion → ${s.location}</span>
+                                    spreadItems += `<div style="display:flex;align-items:center;gap:4px;margin-left:8px;margin-top:2px">
+                                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${sDot} ${sFn} → ${s.location}</span>
                                     </div>`;
                                 } else if (s.addedTaint) {
                                     spreadItems += `<div style="margin-top:4px;padding:5px 8px;background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:4px">
-                                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${gn ? `${gn}: ` : ''}1 ${sFn} minion <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max minions'})</div>
+                                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${sDot} ${sFn} <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max minions'})</div>
                                         <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:2px">Taint Crystal placed!</div>
                                     </div>`;
                                 }
                             });
                         }
+                        const overrunDots = this._inlineDotsHTML(e.color, e.count || 0);
                         minionHTML += `<div style="background:rgba(220,38,38,0.08);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
                             <div style="display:flex;justify-content:space-between;align-items:center">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">+${e.count || 0} ${fn}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${overrunDots} ${fn}</span>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${e.sourceLocation}</span>
                             </div>
                             ${overrunInner}
@@ -1843,7 +1845,7 @@ Object.assign(game, {
                         if (e.spawnLocations && e.spawnLocations.length > 0) {
                             e.spawnLocations.forEach(loc => {
                                 spawnLines += `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 8px;margin:2px 0;background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.2);border-radius:3px">
-                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:${patrolColor}">+1 Orcs</span>
+                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:${patrolColor}">${this._inlineDotsHTML('green', 1)} Orcs</span>
                                     <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#2c1810">→ ${loc}</span>
                                 </div>`;
                             });
@@ -1883,9 +1885,8 @@ Object.assign(game, {
                         } else {
                             e.colorsPlaced.forEach(color => {
                                 const fc = gColors[color] || '#888';
-                                colorLines += `<div style="display:flex;align-items:center;gap:6px;padding:2px 0">
-                                    <span class="modal-minion-dot" style="background:${fc}"></span>
-                                    <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:${fc}">${factionIcons2[color]} +1 ${factionNames2[color]} → Monarch City</span>
+                                colorLines += `<div style="display:flex;align-items:center;gap:4px;padding:2px 0">
+                                    <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:${fc}">${this._inlineDotsHTML(color, 1)} ${factionNames2[color]} → Monarch City</span>
                                 </div>`;
                             });
                         }
@@ -1917,7 +1918,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">${e.from} → ${e.to}</span>
                             </div>
                             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#dc2626;margin-top:4px">✓ GENERAL ADVANCES</div>
-                            ${e.minionCount > 0 ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:2px">+${e.minionCount} minions placed at ${e.to}</div>` : ''}
+                            ${e.minionCount > 0 ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-top:2px">${this._inlineDotsHTML(e.color, e.minionCount)} ${fNames[e.color] || e.color} placed at ${e.to}</div>` : ''}
                         </div>`;
                     } else if (e.type === 'general_defeated') {
                         generalHTML += `<div style="background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.3);border-radius:5px;padding:5px 10px;margin:4px 0">

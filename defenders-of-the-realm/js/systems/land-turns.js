@@ -1110,8 +1110,7 @@ Object.assign(game, {
             const monarchConnected = this.locationConnections['Monarch City'] || [];
             const colorsPresent = new Set();
             const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
-            const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-            const factionIcons = { green: '🪓', black: '💀', red: '🔥', blue: '🐉' };
+            const factionNames = { green: 'Orcs', black: 'Undead', red: 'Demons', blue: 'Dragonkin' };
 
             monarchConnected.forEach(loc => {
                 const minionsObj = this.minions[loc];
@@ -1121,17 +1120,7 @@ Object.assign(game, {
                 }
             });
 
-            let minionLines = '';
-            if (colorsPresent.size === 0) {
-                minionLines = '<div style="color:#15803d;padding:4px 0;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive;font-size:0.75em">No minions adjacent — nothing placed</div>';
-            } else {
-                ['green', 'red', 'black', 'blue'].forEach(color => {
-                    if (!colorsPresent.has(color)) return;
-                    minionLines += `<div style="color:${factionColors[color]};padding:2px 0;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em">${this._inlineDotsHTML(color, 1)} ${factionNames[color]} → Monarch City</div>`;
-                });
-            }
-
-            // Build corner minion tokens on the ring
+            // Build corner minion tokens — draw card shows only adjacent factions
             const minionPositions = [
                 { color: 'black', pos: 'top:-6px;left:-6px' },
                 { color: 'green', pos: 'top:-6px;right:-6px' },
@@ -1145,12 +1134,26 @@ Object.assign(game, {
                 }
             });
 
+            // Minion movement lines
+            let minionLines = '';
+            if (colorsPresent.size === 0) {
+                minionLines = '<div style="font-family:\'Comic Sans MS\',\'Comic Sans\',cursive;font-size:0.75em;color:#15803d;padding:2px 0">No minions adjacent — nothing placed</div>';
+            } else {
+                ['green', 'red', 'black', 'blue'].forEach(color => {
+                    if (!colorsPresent.has(color)) return;
+                    minionLines += `<div style="display:flex;align-items:center;gap:4px;padding:2px 0"><span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:${factionColors[color]}">${this._inlineDotsHTML(color, 1)} ${factionNames[color]} → Monarch City</span></div>`;
+                });
+            }
+
+            // Filled purple circle
+            const filledCircle = `<div style="width:90px;height:90px;border-radius:50%;background:#7c3aed;border:3px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.3)"><span style="padding:4px">Monarch<br>City</span></div>`;
+
             cardContent = `${banner}
                 <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
                 <div style="display:flex;align-items:center;margin-bottom:8px">
                     <div style="flex:1;display:flex;justify-content:center">
                         <div style="position:relative;display:inline-block">
-                            ${this._locationRingHTML('Monarch City', 'purple', 90)}
+                            ${filledCircle}
                             ${cornerTokens}
                         </div>
                     </div>
@@ -1162,6 +1165,17 @@ Object.assign(game, {
                 </div>
                 <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-bottom:2px">Reshuffle All Decks</div>
                 <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
+                <div style="border-top:1px solid rgba(139,115,85,0.3);margin:10px 0"></div>
+                <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
+                <div style="background:rgba(124,58,237,0.08);border:1px solid #7c3aed;border-radius:5px;padding:5px 10px;margin:4px 0">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed;margin-bottom:4px">Monarch City Special</div>
+                    ${minionLines}
+                </div>
+                <div style="border-top:1px solid rgba(139,115,85,0.3);margin:10px 0"></div>
+                <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+                <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;margin:4px 0">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">✗ No Generals Advance</div>
+                </div>
             ${boxClose}`;
         } else {
             // Regular card
@@ -1696,8 +1710,35 @@ Object.assign(game, {
                     <div style="color:#3d2b1f;margin-top:5px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">${card.description || 'No darkness events'}</div>
                 </div>`;
             } else if (card.type === 'monarch_city_special') {
-                cardPreviewHTML = `<div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.4em;color:#7c3aed;margin-bottom:4px">Monarch City</div>
-                    <div style="text-align:center"><div style="display:inline-block">${this._locationRingHTML('Monarch City', 'purple', 90)}</div></div>`;
+                const mcFactionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
+                const mcPositions = [
+                    { color: 'black', pos: 'top:-6px;left:-6px' },
+                    { color: 'green', pos: 'top:-6px;right:-6px' },
+                    { color: 'red', pos: 'bottom:-6px;left:-6px' },
+                    { color: 'blue', pos: 'bottom:-6px;right:-6px' }
+                ];
+                let mcCornerTokens = '';
+                mcPositions.forEach(p => {
+                    mcCornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:22px;height:22px;background:${mcFactionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
+                });
+                const mcFilledCircle = `<div style="width:90px;height:90px;border-radius:50%;background:#7c3aed;border:3px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.3)"><span style="padding:4px">Monarch<br>City</span></div>`;
+                cardPreviewHTML = `
+                    <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
+                    <div style="display:flex;align-items:center;margin-bottom:8px">
+                        <div style="flex:1;display:flex;justify-content:center">
+                            <div style="position:relative;display:inline-block">
+                                ${mcFilledCircle}
+                                ${mcCornerTokens}
+                            </div>
+                        </div>
+                        <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center">
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:4px">Special</div>
+                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px">Place 1 minion of each color that has minions adjacent to Monarch City</div>
+                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;line-height:1.4">No Overrun Can Occur</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-bottom:2px">Reshuffle All Decks</div>
+                    <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>`;
             } else if (card.type === 'patrol') {
                 // On results, general has already moved — don't show path overlay (results section shows movement)
                 const generalLocVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, false, [], false, -2);
@@ -1745,7 +1786,8 @@ Object.assign(game, {
                 } else if (e.type === 'advance' || e.type === 'general_move' ||
                            e.type === 'general_defeated' || e.type === 'advance_failed' ||
                            e.type === 'movement_blocked' || e.type === 'major_wound_blocked' ||
-                           e.type === 'strong_defenses' || e.type === 'organize_militia') {
+                           e.type === 'strong_defenses' || e.type === 'organize_militia' ||
+                           e.type === 'no_generals') {
                     generalEvents.push(e);
                 } else {
                     otherEvents.push(e);
@@ -1877,8 +1919,7 @@ Object.assign(game, {
                             <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;text-decoration:line-through">${e.skippedFaction1}: ${e.skippedMinions1} → ${e.skippedLocation1} | ${e.skippedFaction2}: ${e.skippedMinions2} → ${e.skippedLocation2}</div>
                         </div>`;
                     } else if (e.type === 'monarch_city_special') {
-                        const factionNames2 = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-                        const factionIcons2 = { green: '🪓', black: '💀', red: '🔥', blue: '🐉' };
+                        const factionNames2 = { green: 'Orcs', black: 'Undead', red: 'Demons', blue: 'Dragonkin' };
                         let colorLines = '';
                         if (e.colorsPlaced.length === 0) {
                             colorLines = `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#15803d;padding:2px 0">No minions adjacent — nothing placed</div>`;
@@ -1891,9 +1932,8 @@ Object.assign(game, {
                             });
                         }
                         minionHTML += `<div style="background:rgba(124,58,237,0.08);border:1px solid #7c3aed;border-radius:5px;padding:5px 10px;margin:4px 0">
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed;margin-bottom:4px">🏰 Monarch City Special</div>
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed;margin-bottom:4px">Monarch City Special</div>
                             ${colorLines}
-                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.7em;color:#dc2626;margin-top:4px">No Overruns occurred</div>
                         </div>`;
                     }
                 });
@@ -1981,6 +2021,10 @@ Object.assign(game, {
                             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:${blockColor};margin-top:4px">✗ GENERAL DOES NOT ADVANCE</div>
                             <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:${blockColor};line-height:1.5;margin-top:2px">${blockLabel} — movement BLOCKED</div>
                         </div>`;
+                    } else if (e.type === 'no_generals') {
+                        generalHTML += `<div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;margin:4px 0">
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">✗ No Generals Advance</div>
+                        </div>`;
                     }
                 });
                 generalHTML += '</div>';
@@ -1995,13 +2039,9 @@ Object.assign(game, {
                         <div style="color:#3d2b1f;margin-top:4px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">${e.description}</div>
                     </div>`;
                 } else if (e.type === 'deck_reshuffle') {
-                    otherHTML += `<div style="margin:4px 0;padding:4px 10px;background:rgba(167,139,250,0.08);border:1px solid #a78bfa;border-radius:5px">
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7c3aed">🔄 ${e.description}</div>
-                    </div>`;
+                    // Already shown in monarch city card preview — skip duplicate
                 } else if (e.type === 'no_generals') {
-                    otherHTML += `<div style="margin:4px 0;padding:4px 10px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.3);border-radius:5px">
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#dc2626">🚫 ${e.description}</div>
-                    </div>`;
+                    // Routed to generalEvents — handled in General Movement section
                 }
             });
 

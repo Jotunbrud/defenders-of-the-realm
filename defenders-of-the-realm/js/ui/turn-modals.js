@@ -803,166 +803,162 @@ Object.assign(game, {
                     </div>
                 `;
             } else if (event.type === 'spawn') {
-                // Skip zero-count spawns — the taint/overrun event that follows explains what happened
                 if (event.count === 0) return;
                 if (event._patrolSpawn) return;
                 const fName = this._factionNames[event.color] || event.color;
-                const dots = this._inlineDotsHTML(event.color, event.count);
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${this.getGeneralColor(event.color)}; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                        ${dots} ${fName} → <strong>${event.location}</strong>
+                const mc = this._generalColors[event.color] || '#888';
+                const fBg = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
+                html += `<div style="background:${fBg[event.color]};border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin:4px 0">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${this._inlineDotsHTML(event.color, event.count)} ${fName}</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${event.location}</span>
                     </div>
-                `;
+                </div>`;
             } else if (event.type === 'taint') {
                 if (event._patrolSpawn) return;
                 const fName = this._factionNames[event.color] || event.color;
-                const reasonText = event.reason ? `<br><span style="font-size: 0.85em; color: #fbbf24;">(${event.reason})</span>` : '';
-                const wouldBe = event.wouldBeMinions || 0;
-                const notPlaced = wouldBe - (event.minionsPlaced || 0);
-                const dots = this._inlineDotsHTML(event.color, wouldBe);
-                let statusText = '';
-                if (event.minionsPlaced > 0 && notPlaced > 0) statusText = ` <span style="color: #ef4444; font-weight: bold;">(${notPlaced} NOT placed)</span>`;
-                else if (notPlaced > 0) statusText = ` <span style="color: #ef4444; font-weight: bold;">NOT placed</span>`;
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #9333ea; background: rgba(147,51,234,0.2); border-radius: 3px;">
-                        ${dots} ${fName}${statusText} → <strong>${event.location}</strong>${reasonText}<br>
-                        <strong style="color: #9333ea;">Taint Crystal placed!</strong>
+                const mc = this._generalColors[event.color] || '#888';
+                const fBg = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
+                const slC = { green: 'green', blue: 'blue', red: 'red', black: 'gray' };
+                const cC = { green: 'cg', blue: 'cb', red: 'cr', black: 'ck' };
+                const placed = event.minionsPlaced || 0;
+                const notPlaced = (event.wouldBeMinions || 0) - placed;
+                html += `<div style="background:${fBg[event.color]};border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin:4px 0">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${this._inlineDotsHTML(event.color, placed)} ${fName}</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${event.location}</span>
                     </div>
-                `;
+                    ${notPlaced > 0 ? `<div class="sl ${slC[event.color] || 'gray'}"><span class="left ${cC[event.color] || 'ck'}">${this._inlineDotsHTML(event.color, 1)} ${fName}</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ ${event.location}</span></div>` : ''}
+                    <div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${event.location}</span></div></div>
+                </div>`;
             } else if (event.type === 'overrun') {
                 const fName = this._factionNames[event.color] || event.color;
-                let overrunInner = '';
+                const mc = this._generalColors[event.color] || '#888';
+                const fBg = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
+                const sl = { green: 'green', blue: 'blue', red: 'red', black: 'gray' }[event.color] || 'gray';
+                const cc = { green: 'cg', blue: 'cb', red: 'cr', black: 'ck' }[event.color] || 'ck';
+                let headerDots = event.count || 0;
+                let notPlacedLine = '';
+                let srcTaintHTML = '';
                 if (event.sourceTaint) {
                     const st = event.sourceTaint;
-                    const stFName = this._factionNames[st.color] || st.color;
-                    const stWouldBe = st.wouldBeMinions || 0;
-                    const stNotPlaced = stWouldBe - (st.minionsPlaced || 0);
-                    const stDots = this._inlineDotsHTML(st.color, stWouldBe);
-                    let stStatus = '';
-                    if (st.minionsPlaced > 0 && stNotPlaced > 0) stStatus = ` <span style="color: #ef4444; font-weight: bold;">(${stNotPlaced} NOT placed)</span>`;
-                    else if (stNotPlaced > 0) stStatus = ` <span style="color: #ef4444; font-weight: bold;">NOT placed</span>`;
-                    const reasonText = st.reason ? `<br><span style="font-size: 0.85em; color: #fbbf24;">(${st.reason})</span>` : '';
-                    overrunInner += `
-                        <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #9333ea; background: rgba(147,51,234,0.2); border-radius: 3px;">
-                            ${stDots} ${stFName}${stStatus} → <strong>${st.location}</strong>${reasonText}<br>
-                            <strong style="color: #9333ea;">Taint Crystal placed!</strong>
-                        </div>
-                    `;
-                }
-                event.spread.forEach(s => {
-                    const sFName = this._factionNames[s.color] || s.color;
-                    const sDot = this._inlineDotsHTML(s.color, 1);
-                    if (s.addedMinion && !s.addedTaint) {
-                        overrunInner += `
-                            <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${this.getGeneralColor(s.color)}; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                                ${sDot} ${sFName} → <strong>${s.location}</strong>
-                            </div>
-                        `;
-                    } else if (s.addedTaint) {
-                        overrunInner += `
-                            <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #9333ea; background: rgba(147,51,234,0.2); border-radius: 3px;">
-                                ${sDot} ${sFName} <span style="color: #ef4444; font-weight: bold;">NOT placed</span> → <strong>${s.location}</strong>
-                                <br><span style="font-size: 0.85em; color: #fbbf24;">(location at max minions)</span><br>
-                                <strong style="color: #9333ea;">Taint Crystal placed!</strong>
-                            </div>
-                        `;
+                    const placed = st.minionsPlaced || 0;
+                    const np = (st.wouldBeMinions || 0) - placed;
+                    headerDots = placed;
+                    if (np > 0) {
+                        notPlacedLine = `<div class="sl ${sl}"><span class="left ${cc}">${this._inlineDotsHTML(event.color, 1)} ${fName}</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ ${event.sourceLocation}</span></div>`;
                     }
-                });
-                html += `
-                    <div style="padding: 10px; margin: 5px 0; border: 2px solid #ef4444; background: rgba(239,68,68,0.1); border-radius: 5px;">
-                        <strong style="color: #ef4444; font-size: 1em;">OVERRUN at ${event.sourceLocation}!</strong>
-                        <div style="font-size: 0.85em; color: #fbbf24; margin: 3px 0 8px 0;">${event.general} minions spread to connected locations</div>
-                        ${overrunInner}
+                    srcTaintHTML = `<div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${st.location || event.sourceLocation}</span></div></div>`;
+                }
+                let spreadHTML = '';
+                if (event.spread) {
+                    event.spread.forEach(s => {
+                        const sFn = this._factionNames[s.color] || s.color;
+                        if (s.addedTaint) {
+                            spreadHTML += `<div class="sl ${sl}"><span class="left ${cc}">${this._inlineDotsHTML(s.color || event.color, 1)} ${sFn}</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ ${s.location}</span></div>`;
+                            spreadHTML += `<div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${s.location}</span></div></div>`;
+                        } else if (s.addedMinion) {
+                            spreadHTML += `<div class="sl ${sl}"><span class="left ${cc}">${this._inlineDotsHTML(s.color || event.color, 1)} ${sFn}</span><span class="right">→ ${s.location}</span></div>`;
+                        }
+                    });
+                }
+                html += `<div style="background:${fBg[event.color]};border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin:4px 0">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${this._inlineDotsHTML(event.color, headerDots)} ${fName}</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${event.sourceLocation}</span>
                     </div>
-                `;
+                    ${notPlacedLine}
+                    ${srcTaintHTML}
+                    <div class="overrun-box" style="margin-top:6px">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#dc2626">Overrun Triggered</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${event.sourceLocation}</span></div>
+                        ${spreadHTML}
+                    </div>
+                </div>`;
             } else if (event.type === 'advance' || event.type === 'general_move') {
-                const cardText = event.isWildCard ? 'Next Location' : event.to;
-                const wildCardNote = event.isWildCard ? '<br><span style="font-size: 0.85em; color: #fbbf24;">(advances along colored path)</span>' : '';
-                const advDots = (event.minionCount || 0) > 0 ? this._inlineDotsHTML(event.color, event.minionCount) + ' ' : '';
-                const advFn = this._factionNames[event.color] || event.color;
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid ${this.getGeneralColor(event.color)}; background: rgba(220,38,38,0.2); border-radius: 3px;">
-                        <strong style="${colorStyle}; font-size: 1em;">${event.general}:</strong> ${advDots}${advFn} → <strong>${cardText}</strong>${wildCardNote}<br>
-                        <strong style="color: #4ade80; font-size: 1em;">✓ GENERAL ADVANCES</strong> (${event.from} → ${event.to})
+                const mc = this._generalColors[event.color] || '#888';
+                const icon = this._generalIcons[event.color] || '⚔️';
+                const fBg = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
+                let nestedMinionHTML = '';
+                if (event.minionCount > 0) {
+                    const fn = this._factionNames[event.color] || event.color;
+                    nestedMinionHTML = `<div style="background:${fBg[event.color]};border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin-top:8px">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${this._inlineDotsHTML(event.color, event.minionCount)} ${fn}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${event.to}</span>
+                        </div>
+                    </div>`;
+                }
+                html += `<div style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.3);border-radius:5px;padding:8px 10px;margin:4px 0">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="display:flex;align-items:center;gap:6px">
+                            <span class="modal-general-token" style="background:${mc};width:24px;height:24px;font-size:0.7em">${icon}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${mc}">${event.general}</span>
+                        </span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${event.to}</span>
                     </div>
-                `;
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#dc2626;margin-top:4px">GENERAL ADVANCES</div>
+                    ${nestedMinionHTML}
+                </div>`;
             } else if (event.type === 'monarch_city_reached') {
-                const mcDots = (event.minionCount || 0) > 0 ? this._inlineDotsHTML(event.color, event.minionCount) + ' ' : '';
-                const mcFn = this._factionNames[event.color] || event.color;
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border: 3px solid #dc2626; background: rgba(220,38,38,0.4); border-radius: 3px;">
-                        <strong style="${colorStyle}; font-size: 1em;">${event.general}:</strong> ${mcDots}${mcFn} → <strong>Monarch City</strong><br>
-                        <strong style="color: #4ade80; font-size: 1em;">✓ GENERAL ADVANCES</strong> (${event.from} → Monarch City)<br>
-                        <strong style="color: #dc2626; font-size: 1.1em; margin-top: 5px; display: inline-block;">💀 ${event.general} REACHED MONARCH CITY! 💀</strong>
+                const mc = this._generalColors[event.color] || '#888';
+                const icon = this._generalIcons[event.color] || '⚔️';
+                html += `<div style="background:rgba(220,38,38,0.15);border:2px solid #dc2626;border-radius:5px;padding:8px 10px;margin:4px 0">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="display:flex;align-items:center;gap:6px">
+                            <span class="modal-general-token" style="background:${mc};width:24px;height:24px;font-size:0.7em">${icon}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${mc}">${event.general}</span>
+                        </span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</span>
                     </div>
-                `;
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#dc2626;margin-top:4px">GENERAL ADVANCES</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#dc2626;margin-top:6px;text-align:center">${event.general} REACHED MONARCH CITY!</div>
+                </div>`;
             } else if (event.type === 'advance_failed') {
-                const afDots = (event.minionCount || 0) > 0 ? this._inlineDotsHTML(event.color, event.minionCount) + ' ' : '';
-                const afFn = this._factionNames[event.color] || event.color;
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #666; background: rgba(100,100,100,0.2); border-radius: 3px;">
-                        <strong style="${colorStyle}">⛔ ${event.general}:</strong> ${afDots}${afFn} → ${event.attemptedLocation || event.location}<br>
-                        <strong style="color: #ef4444;">✗ GENERAL DOES NOT ADVANCE</strong> (${event.reason || 'No valid path'})<br>
-                        <span style="font-size: 0.9em; color: #999;">No minions placed</span>
-                    </div>
-                `;
+                const loc = event.attemptedLocation || event.location || '';
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ ${loc}</span></div>`;
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions placed</span><span style="color:#2c1810">→ ${loc}</span></div>`;
             } else if (event.type === 'general_defeated') {
-                const gdDots = (event.minionCount || 0) > 0 ? this._inlineDotsHTML(event.color, event.minionCount) + ' ' : '';
-                const gdFn = this._factionNames[event.color] || event.color;
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #4ade80; background: rgba(74,222,128,0.2); border-radius: 3px;">
-                        <strong style="${colorStyle}">✓ ${event.general}:</strong> ${gdDots}${gdFn} → ${event.targetLocation}<br>
-                        <strong style="color: #4ade80; font-size: 1em;">✓ ${event.general.toUpperCase()} DEFEATED</strong><br>
-                        <span style="font-size: 0.9em; color: #4ade80;">No generals advance - general already defeated!</span><br>
-                        <span style="font-size: 0.9em; color: #999;">No minions placed</span>
-                    </div>
-                `;
+                const loc = event.targetLocation || event.location || '';
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ ${loc}</span></div>`;
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions placed</span><span style="color:#2c1810">→ ${loc}</span></div>`;
             } else if (event.type === 'major_wound_blocked') {
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #ef4444; background: rgba(239,68,68,0.15); border-radius: 3px;">
-                        <strong style="${colorStyle}">🚫 ${event.general}:</strong> Major Wounds<br>
-                        <span style="color: #ef4444; font-weight: bold;">Cannot advance — stays at ${event.currentLocation}</span><br>
-                        <span style="font-size: 0.9em; color: #999;">Minions still placed at ${event.currentLocation}</span>
-                    </div>
-                `;
+                const loc = event.currentLocation || '';
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ ${loc}</span></div>`;
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions placed</span><span style="color:#2c1810">→ ${loc}</span></div>`;
             } else if (event.type === 'movement_blocked') {
-                const mbDots = (event.minionCount || 0) > 0 ? this._inlineDotsHTML(event.color, event.minionCount) + ' ' : '';
-                const mbFn = this._factionNames[event.color] || event.color;
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #fbbf24; background: rgba(251,191,36,0.2); border-radius: 3px;">
-                        <strong style="${colorStyle}">🚫 ${event.general}:</strong> ${mbDots}${mbFn} → <strong>${event.attemptedLocation}</strong><br>
-                        <strong style="color: #ef4444;">✗ GENERAL DOES NOT ADVANCE</strong> (not next on path)<br>
-                        <span style="font-size: 0.9em; color: #d4af37;">Next required: ${event.nextOnPath || 'none'}</span><br>
-                        <span style="font-size: 0.9em; color: #999;">No minions placed</span>
-                    </div>
-                `;
+                const loc = event.attemptedLocation || event.location || '';
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ ${loc}</span></div>`;
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions placed</span><span style="color:#2c1810">→ ${loc}</span></div>`;
             } else if (event.type === 'monarch_city_special') {
                 const factionNames = { green: 'Orcs', black: 'Undead', red: 'Demons', blue: 'Dragonkin' };
                 const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
+                const cC = { green: 'cg', blue: 'cb', red: 'cr', black: 'ck' };
 
-                // Always show all 4 corner tokens on results
                 const minionPositions = [
-                    { color: 'black', pos: 'top:-6px;left:-6px' },
-                    { color: 'green', pos: 'top:-6px;right:-6px' },
-                    { color: 'red', pos: 'bottom:-6px;left:-6px' },
-                    { color: 'blue', pos: 'bottom:-6px;right:-6px' }
+                    { color: 'black', pos: 'tl' },
+                    { color: 'green', pos: 'tr' },
+                    { color: 'red', pos: 'bl' },
+                    { color: 'blue', pos: 'br' }
                 ];
                 let cornerTokens = '';
                 minionPositions.forEach(p => {
-                    const ctCls = p.pos.includes('top') ? (p.pos.includes('left') ? 'tl' : 'tr') : (p.pos.includes('left') ? 'bl' : 'br');
-                    cornerTokens += `<div class="ct ${ctCls}" style="background:${factionColors[p.color]}"></div>`;
+                    cornerTokens += `<div class="ct ${p.pos}" style="background:${factionColors[p.color]}"></div>`;
                 });
 
                 const filledCircle = `<div style="width:90px;height:90px;border-radius:50%;background:#7c3aed;border:3px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.3)"><span style="padding:4px">Monarch<br>City</span></div>`;
 
-                // Build minion placement lines
-                let colorLines = '';
+                let minionSection = '';
                 if (event.colorsPlaced.length === 0) {
-                    colorLines = `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#15803d;padding:2px 0">No minions adjacent — nothing placed</div>`;
+                    minionSection = `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions adjacent</span><span style="color:#2c1810">→ Monarch City</span></div>`;
                 } else {
+                    let colorLines = '';
                     event.colorsPlaced.forEach(color => {
-                        colorLines += `<div style="display:flex;align-items:center;gap:4px;padding:2px 0"><span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:${factionColors[color]}">${this._inlineDotsHTML(color, 1)} ${factionNames[color]} → Monarch City</span></div>`;
+                        colorLines += `<div class="sl purple"><span class="left ${cC[color]}">${this._inlineDotsHTML(color, 1)} ${factionNames[color]}</span><span class="right">→ Monarch City</span></div>`;
                     });
+                    minionSection = `<div style="background:rgba(124,58,237,0.08);border:1px solid #7c3aed;border-radius:5px;padding:5px 10px">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed;margin-bottom:4px">Monarch City Special</div>
+                        ${colorLines}
+                    </div>`;
                 }
 
                 html += `
@@ -984,10 +980,10 @@ Object.assign(game, {
                     <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
                     <div class="results-divider">
                         <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
-                        <div style="background:rgba(124,58,237,0.08);border:1px solid #7c3aed;border-radius:5px;padding:5px 10px">
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed;margin-bottom:4px">Monarch City Special</div>
-                            ${colorLines}
-                        </div>
+                        ${minionSection}
+                        <div class="sep"></div>
+                        <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+                        <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No Generals Will Advance</span></div>
                     </div>
                 `;
             } else if (event.type === 'deck_reshuffle') {
@@ -996,25 +992,22 @@ Object.assign(game, {
                 html += `
                     <div class="results-divider">
                         <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
-                        <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">✗ No Generals Advance</span></div>
+                        <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No Generals Will Advance</span></div>
                     </div>
                 `;
             } else if (event.type === 'militia_secured') {
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #16a34a; background: rgba(22,163,74,0.2); border-radius: 3px;">
-                        <strong style="color: #16a34a;">🛡️ Militia Secures Area:</strong> 
-                        <span style="color: ${this.getGeneralColor(event.color)}; text-decoration: line-through;">${event.faction}: ${event.count} minion${event.count > 1 ? 's' : ''} → ${event.location}</span>
-                        <span style="color: #4ade80; font-weight: bold; margin-left: 6px;">CANCELLED</span>
+                const mc = this._generalColors[event.color] || '#888';
+                html += `<div style="background:rgba(22,163,74,0.08);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc};text-decoration:line-through">+${event.count} ${event.faction}</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#15803d">CANCELLED</span>
                     </div>
-                `;
+                    <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#15803d;margin-top:2px">Militia Secures Area — ${event.location}</div>
+                </div>`;
             } else if (event.type === 'strong_defenses') {
-                html += `
-                    <div style="padding: 8px; margin: 5px 0; border-left: 3px solid #f59e0b; background: rgba(245,158,11,0.2); border-radius: 3px;">
-                        <strong style="color: #f59e0b;">🏰 Strong Defenses:</strong> 
-                        <span style="color: ${this.getGeneralColor(event.color)}; text-decoration: line-through;">${event.general}: ${event.minions} minion${event.minions !== 1 ? 's' : ''} → ${event.location}</span>
-                        <span style="color: #fbbf24; font-weight: bold; margin-left: 6px;">BLOCKED</span>
-                    </div>
-                `;
+                const loc = event.location || '';
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ ${loc}</span></div>`;
+                html += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions placed</span><span style="color:#2c1810">→ ${loc}</span></div>`;
             }
         });
         

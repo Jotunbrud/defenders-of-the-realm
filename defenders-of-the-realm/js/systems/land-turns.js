@@ -915,39 +915,39 @@ Object.assign(game, {
         const warnings = [];
         const currentMinions = this.minions[locationName] || {};
         const sameColorCount = currentMinions[faction] || 0;
-        
+
         // Monarch City never triggers overruns or taint
         const isMonarchCity = locationName === 'Monarch City';
-        
+
         // Check 25-token exhaustion
         let totalFactionOnBoard = 0;
         for (let loc in this.minions) {
             totalFactionOnBoard += (this.minions[loc][faction] || 0);
         }
         if (totalFactionOnBoard >= 25) {
-            warnings.push({ type: 'exhausted', text: 'No minions remaining — lose condition', color: '#ef4444' });
+            warnings.push({ type: 'exhausted', text: 'No minions remaining — lose condition', color: '#ef4444', location: locationName });
             return warnings;
         }
-        
+
         if (!isMonarchCity) {
             const spaceAvailable = 3 - sameColorCount;
             if (spaceAvailable <= 0) {
                 if (this.overrunsDisabled) {
-                    warnings.push({ type: 'capped', text: 'Minions capped at 3 (overruns off)', color: '#f59e0b' });
+                    warnings.push({ type: 'capped', text: 'Minions capped at 3 (overruns off)', color: '#f59e0b', location: locationName });
                 } else {
-                    warnings.push({ type: 'overrun', text: 'Overrun will be triggered', color: '#ef4444' });
+                    warnings.push({ type: 'overrun', text: 'Overrun will be triggered', color: '#ef4444', location: locationName });
                 }
-                warnings.push({ type: 'taint', text: 'Taint Crystal will be placed', color: '#9333ea' });
+                warnings.push({ type: 'taint', text: 'Taint Crystal will be placed', color: '#9333ea', location: locationName });
             } else if (count > spaceAvailable) {
                 if (this.overrunsDisabled) {
-                    warnings.push({ type: 'capped', text: 'Minions capped at 3 (overruns off)', color: '#f59e0b' });
+                    warnings.push({ type: 'capped', text: 'Minions capped at 3 (overruns off)', color: '#f59e0b', location: locationName });
                 } else {
-                    warnings.push({ type: 'overrun', text: 'Overrun will be triggered', color: '#ef4444' });
+                    warnings.push({ type: 'overrun', text: 'Overrun will be triggered', color: '#ef4444', location: locationName });
                 }
-                warnings.push({ type: 'taint', text: 'Taint Crystal will be placed', color: '#9333ea' });
+                warnings.push({ type: 'taint', text: 'Taint Crystal will be placed', color: '#9333ea', location: locationName });
             }
         }
-        
+
         return warnings;
     },
     
@@ -1075,8 +1075,8 @@ Object.assign(game, {
                         }
                     }
                 }
-                if (overrunCount > 0) patrolWarnings += `<div style="margin-top:4px;padding:3px 8px;border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:3px;font-size:0.75em;color:#b91c1c;font-weight:bold;font-family:'Comic Sans MS','Comic Sans',cursive">${overrunCount} location${overrunCount > 1 ? 's' : ''} will trigger Overrun</div>`;
-                if (taintCount > 0) patrolWarnings += `<div style="margin-top:4px;padding:3px 8px;border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:3px;font-size:0.75em;color:#7e22ce;font-weight:bold;font-family:'Comic Sans MS','Comic Sans',cursive">${taintCount} Taint Crystal${taintCount > 1 ? 's' : ''} will be placed</div>`;
+                if (overrunCount > 0) patrolWarnings += `<div class="warn-badge warn-overrun" style="margin-top:4px;font-family:'Comic Sans MS','Comic Sans',cursive">${overrunCount} location${overrunCount > 1 ? 's' : ''} will trigger Overrun</div>`;
+                if (taintCount > 0) patrolWarnings += `<div class="warn-badge warn-taint" style="margin-top:4px;font-family:'Comic Sans MS','Comic Sans',cursive">${taintCount} Taint Crystal${taintCount > 1 ? 's' : ''} will be placed</div>`;
             }
 
             const patrolDesc = isWarParty
@@ -1093,8 +1093,17 @@ Object.assign(game, {
             const _genPathPatrol = this._generalPaths ? this._generalPaths[card.general] : null;
             const _genPositionPatrol = (_generalPatrol && _genPathPatrol) ? _genPathPatrol.indexOf(_generalPatrol.location) : -1;
 
+            // Compute general destination for effects display
+            let generalDestPatrol = card.location3;
+            if (card.location3 === 'Next Location' && _generalPatrol && !_generalPatrol.defeated) {
+                try { generalDestPatrol = this.getColoredPathTowardMonarchCity(_generalPatrol) || card.location3; } catch(e) {}
+            }
+
             // Build general location visual
             const generalLocVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, sdBlockedPatrol, generalWarnings, false, _genPositionPatrol);
+
+            // Patrol effects section — patrol minion warnings + general warnings
+            const patrolEffectsHTML = this._darknessEffectsHTML(card, generalOnly, [], [], generalWarnings, generalDestPatrol);
 
             cardContent = `${banner}
                 <div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">${card.patrolName}</div>
@@ -1103,6 +1112,7 @@ Object.assign(game, {
                     : `<div class="hi-title" style="font-size:0.75em;margin-bottom:6px"><strong style="color:#1a0f0a;font-family:'Cinzel',Georgia,serif;font-weight:900">⏭️ Skipped:</strong> <span style="color:#3d2b1f;font-family:'Comic Sans MS','Comic Sans',cursive">Patrol skipped (General Only)</span></div>`
                 }
                 <div style="display:flex;justify-content:center">${generalLocVisual}</div>
+                ${patrolEffectsHTML}
                 ${sdLabelPatrol}
             ${boxClose}`;
         } else if (card.type === 'monarch_city_special') {
@@ -1130,29 +1140,39 @@ Object.assign(game, {
             let cornerTokens = '';
             minionPositions.forEach(p => {
                 if (colorsPresent.has(p.color)) {
-                    cornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:22px;height:22px;background:${factionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
+                    const ctCls = p.pos.includes('top') ? (p.pos.includes('left') ? 'tl' : 'tr') : (p.pos.includes('left') ? 'bl' : 'br');
+                    cornerTokens += `<div class="ct ${ctCls}" style="background:${factionColors[p.color]}"></div>`;
                 }
             });
 
             // Minion movement lines
             let minionLines = '';
             if (colorsPresent.size === 0) {
-                minionLines = '<div style="font-family:\'Comic Sans MS\',\'Comic Sans\',cursive;font-size:0.75em;color:#15803d;padding:2px 0">No minions adjacent — nothing placed</div>';
+                minionLines = '<div class="no-minion-note">No minions adjacent — nothing placed</div>';
             } else {
+                const slColorMap = { green: 'green', blue: 'blue', red: 'red', black: 'gray' };
+                const cColorMap = { green: 'cg', blue: 'cb', red: 'cr', black: 'ck' };
                 ['green', 'red', 'black', 'blue'].forEach(color => {
                     if (!colorsPresent.has(color)) return;
-                    minionLines += `<div style="display:flex;align-items:center;gap:4px;padding:2px 0"><span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:${factionColors[color]}">${this._inlineDotsHTML(color, 1)} ${factionNames[color]} → Monarch City</span></div>`;
+                    minionLines += `<div class="sl ${slColorMap[color]}"><span class="left ${cColorMap[color]}">${this._inlineDotsHTML(color, 1)} ${factionNames[color]}</span><span class="right">→ Monarch City</span></div>`;
                 });
             }
 
             // Filled purple circle
             const filledCircle = `<div style="width:90px;height:90px;border-radius:50%;background:#7c3aed;border:3px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.3)"><span style="padding:4px">Monarch<br>City</span></div>`;
 
+            // Monarch effects: no minions adjacent note + no generals
+            let monarchEffects = '';
+            if (colorsPresent.size === 0) {
+                monarchEffects += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions adjacent</span><span style="color:#2c1810">→ Monarch City</span></div>`;
+            }
+            monarchEffects += `<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No Generals Will Advance</span></div>`;
+
             cardContent = `${banner}
                 <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
                 <div style="display:flex;align-items:center;margin-bottom:8px">
                     <div style="flex:1;display:flex;justify-content:center">
-                        <div style="position:relative;display:inline-block">
+                        <div class="corner-wrap">
                             ${filledCircle}
                             ${cornerTokens}
                         </div>
@@ -1165,16 +1185,19 @@ Object.assign(game, {
                 </div>
                 <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-bottom:2px">Reshuffle All Decks</div>
                 <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
-                <div style="border-top:1px solid rgba(139,115,85,0.3);margin:10px 0"></div>
+                <div class="results-divider">
+                    <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Darkness Spreads Effects</div>
+                    ${monarchEffects}
+                </div>
+                <div class="sep"></div>
                 <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
                 <div style="background:rgba(124,58,237,0.08);border:1px solid #7c3aed;border-radius:5px;padding:5px 10px;margin:4px 0">
                     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed;margin-bottom:4px">Monarch City Special</div>
                     ${minionLines}
                 </div>
-                <div style="border-top:1px solid rgba(139,115,85,0.3);margin:10px 0"></div>
+                <div class="sep"></div>
                 <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
-                <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;margin:4px 0">
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">✗ No Generals Advance</div>
+                <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No Generals Will Advance</span>
                 </div>
             ${boxClose}`;
         } else {
@@ -1203,10 +1226,19 @@ Object.assign(game, {
             const _genPath = this._generalPaths ? this._generalPaths[card.general] : null;
             const _genPosition = (_general && _genPath) ? _genPath.indexOf(_general.location) : -1;
 
+            // Compute general destination for effects display
+            let generalDest = card.location3;
+            if (card.location3 === 'Next Location' && _general && !_general.defeated) {
+                try { generalDest = this.getColoredPathTowardMonarchCity(_general) || card.location3; } catch(e) {}
+            }
+
             // Build location card visuals
             const minion1Visual = this._darknessLocationCardHTML(card.location1, card.faction1, card.minions1, false, generalOnly || militia1, minion1Warnings, militia1);
             const minion2Visual = this._darknessLocationCardHTML(card.location2, card.faction2, card.minions2, false, generalOnly || militia2, minion2Warnings, militia2);
             const generalVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, sdBlocked, generalWarnings, false, _genPosition);
+
+            // Darkness Spreads Effects section (fx-note bars)
+            const effectsHTML = this._darknessEffectsHTML(card, generalOnly, minion1Warnings, minion2Warnings, generalWarnings, generalDest);
 
             let militiaLabels = '';
             if (militia1) militiaLabels += '<div style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive">🛡️ Militia Secures Area — Placement 1 cancelled</div>';
@@ -1221,6 +1253,7 @@ Object.assign(game, {
                     ${minion2Visual}
                 </div>
                 <div style="display:flex;justify-content:center">${generalVisual}</div>
+                ${effectsHTML}
                 ${militiaLabels}${sdLabel}
             ${boxClose}`;
         }
@@ -1719,14 +1752,15 @@ Object.assign(game, {
                 ];
                 let mcCornerTokens = '';
                 mcPositions.forEach(p => {
-                    mcCornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:22px;height:22px;background:${mcFactionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
+                    const ctCls = p.pos.includes('top') ? (p.pos.includes('left') ? 'tl' : 'tr') : (p.pos.includes('left') ? 'bl' : 'br');
+                    mcCornerTokens += `<div class="ct ${ctCls}" style="background:${mcFactionColors[p.color]}"></div>`;
                 });
                 const mcFilledCircle = `<div style="width:90px;height:90px;border-radius:50%;background:#7c3aed;border:3px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.3)"><span style="padding:4px">Monarch<br>City</span></div>`;
                 cardPreviewHTML = `
                     <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
                     <div style="display:flex;align-items:center;margin-bottom:8px">
                         <div style="flex:1;display:flex;justify-content:center">
-                            <div style="position:relative;display:inline-block">
+                            <div class="corner-wrap">
                                 ${mcFilledCircle}
                                 ${mcCornerTokens}
                             </div>
@@ -1806,11 +1840,11 @@ Object.assign(game, {
                         if (e.count === 0) return;
                         const mc = gColors[e.color] || '#888';
                         const fn = fNames[e.color] || e.color;
-                        minionHTML += `<div style="background:rgba(139,115,85,0.1);border:1px solid ${mc};border-radius:5px;padding:5px 10px;margin:4px 0">
-                            <div style="display:flex;justify-content:space-between;align-items:center">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${this._inlineDotsHTML(e.color, e.count)} ${fn}</span>
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${e.location}</span>
-                            </div>
+                        const slColor = { green: 'green', blue: 'blue', red: 'red', black: 'gray' }[e.color] || 'gray';
+                        const cColor = { green: 'cg', blue: 'cb', red: 'cr', black: 'ck' }[e.color] || 'ck';
+                        minionHTML += `<div class="sl ${slColor}">
+                            <span class="left ${cColor}">${this._inlineDotsHTML(e.color, e.count)} ${fn}</span>
+                            <span class="right">→ ${e.location}</span>
                         </div>`;
                     } else if (e.type === 'taint') {
                         if (e._patrolSpawn) return;
@@ -1822,11 +1856,11 @@ Object.assign(game, {
                         const notPlaced = wouldBe - placed;
                         const dots = this._inlineDotsHTML(e.color, wouldBe);
                         let statusText = '';
-                        if (placed > 0 && notPlaced > 0) statusText = ` <span style="color:#b91c1c;font-weight:bold">(${notPlaced} NOT placed)</span>`;
-                        else if (notPlaced > 0) statusText = ` <span style="color:#b91c1c;font-weight:bold">NOT placed</span>`;
-                        minionHTML += `<div style="background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:5px;padding:5px 10px;margin:4px 0">
+                        if (placed > 0 && notPlaced > 0) statusText = ` <span class="not-placed-label">(${notPlaced} NOT placed)</span>`;
+                        else if (notPlaced > 0) statusText = ` <span class="not-placed-label">NOT placed</span>`;
+                        minionHTML += `<div class="taint-box">
                             <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${dots} ${fn}${statusText} → ${e.location}${e.reason ? ` (${e.reason})` : ''}</div>
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:4px">Taint Crystal placed!</div>
+                            <div class="taint-title" style="margin-top:4px">Taint Crystal placed!</div>
                         </div>`;
                     } else if (e.type === 'overrun') {
                         const mc = gColors[e.color] || '#888';
@@ -1842,11 +1876,11 @@ Object.assign(game, {
                             const stNotPlaced = stWouldBe - stPlaced;
                             const stDots = this._inlineDotsHTML(st.color || e.color, stWouldBe);
                             let stStatus = '';
-                            if (stPlaced > 0 && stNotPlaced > 0) stStatus = ` <span style="color:#b91c1c;font-weight:bold">(${stNotPlaced} NOT placed)</span>`;
-                            else if (stNotPlaced > 0) stStatus = ` <span style="color:#b91c1c;font-weight:bold">NOT placed</span>`;
-                            overrunInner += `<div style="margin-top:6px;padding:5px 8px;background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:4px">
+                            if (stPlaced > 0 && stNotPlaced > 0) stStatus = ` <span class="not-placed-label">(${stNotPlaced} NOT placed)</span>`;
+                            else if (stNotPlaced > 0) stStatus = ` <span class="not-placed-label">NOT placed</span>`;
+                            overrunInner += `<div class="taint-box" style="margin-top:6px">
                                 <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${stDots} ${stFn}${stStatus} → ${st.location || e.sourceLocation}${st.reason ? ` (${st.reason})` : ''}</div>
-                                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:2px">Taint Crystal placed!</div>
+                                <div class="taint-title" style="margin-top:2px">Taint Crystal placed!</div>
                             </div>`;
                         }
                         // Overrun spread sub-box
@@ -1861,23 +1895,23 @@ Object.assign(game, {
                                         <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f">${sDot} ${sFn} → ${s.location}</span>
                                     </div>`;
                                 } else if (s.addedTaint) {
-                                    spreadItems += `<div style="margin-top:4px;padding:5px 8px;background:rgba(147,51,234,0.08);border:1px solid #7e22ce;border-radius:4px">
-                                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${sDot} ${sFn} <span style="color:#b91c1c;font-weight:bold">NOT placed</span> → ${s.location} (${s.reason || 'location at max minions'})</div>
-                                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce;margin-top:2px">Taint Crystal placed!</div>
+                                    spreadItems += `<div class="taint-box" style="margin-top:4px">
+                                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">${sDot} ${sFn} <span class="not-placed-label">NOT placed</span> → ${s.location} (${s.reason || 'location at max minions'})</div>
+                                        <div class="taint-title" style="margin-top:2px">Taint Crystal placed!</div>
                                     </div>`;
                                 }
                             });
                         }
                         const overrunDots = this._inlineDotsHTML(e.color, e.count || 0);
-                        minionHTML += `<div style="background:rgba(220,38,38,0.08);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
+                        minionHTML += `<div class="overrun-box">
                             <div style="display:flex;justify-content:space-between;align-items:center">
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc}">${overrunDots} ${fn}</span>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${e.sourceLocation}</span>
                             </div>
                             ${overrunInner}
                             <div style="margin-top:6px;padding:6px 8px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.3);border-radius:4px">
-                                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#b91c1c;margin-bottom:4px">Overrun at ${e.sourceLocation}</div>
-                                <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:4px">Minions spread to adjacent locations:</div>
+                                <div class="overrun-title">Overrun at ${e.sourceLocation}</div>
+                                <div class="overrun-sub">Minions spread to adjacent locations:</div>
                                 ${spreadItems}
                             </div>
                         </div>`;
@@ -1886,9 +1920,9 @@ Object.assign(game, {
                         let spawnLines = '';
                         if (e.spawnLocations && e.spawnLocations.length > 0) {
                             e.spawnLocations.forEach(loc => {
-                                spawnLines += `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 8px;margin:2px 0;background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.2);border-radius:3px">
-                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:${patrolColor}">${this._inlineDotsHTML('green', 1)} Orcs</span>
-                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#2c1810">→ ${loc}</span>
+                                spawnLines += `<div class="sl green">
+                                    <span class="left cg">${this._inlineDotsHTML('green', 1)} Orcs</span>
+                                    <span class="right">→ ${loc}</span>
                                 </div>`;
                             });
                         }
@@ -1922,7 +1956,7 @@ Object.assign(game, {
                         const factionNames2 = { green: 'Orcs', black: 'Undead', red: 'Demons', blue: 'Dragonkin' };
                         let colorLines = '';
                         if (e.colorsPlaced.length === 0) {
-                            colorLines = `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#15803d;padding:2px 0">No minions adjacent — nothing placed</div>`;
+                            colorLines = `<div class="no-minion-note">No minions adjacent — nothing placed</div>`;
                         } else {
                             e.colorsPlaced.forEach(color => {
                                 const fc = gColors[color] || '#888';
@@ -1942,7 +1976,7 @@ Object.assign(game, {
             // ── General Movement section ──
             let generalHTML = '';
             if (generalEvents.length > 0) {
-                generalHTML += `<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3)">
+                generalHTML += `<div class="sep"></div><div>
                     <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>`;
                 generalEvents.forEach(e => {
                     const mc = gColors[e.color] || '#888';
@@ -2045,7 +2079,7 @@ Object.assign(game, {
                 }
             });
 
-            resultsHTML = `<div style="margin-top:12px;padding-top:12px;border-top:2px solid rgba(139,115,85,0.4)">
+            resultsHTML = `<div class="results-divider">
                 ${minionHTML}${generalHTML}${otherHTML}
             </div>`;
         } else if (!card || card.type !== 'all_quiet') {

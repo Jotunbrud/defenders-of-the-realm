@@ -280,7 +280,6 @@ Object.assign(game, {
                     <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
                     ${destinationHTML}
                 </div>
-                ${warningsHTML}
             </div>`;
         }
 
@@ -293,7 +292,6 @@ Object.assign(game, {
                 ${this._locationRingHTML(location, color, 90)}
             </div>
             ${skippedLabel}${militiaLabel}
-            ${warningsHTML}
         </div>`;
     },
 

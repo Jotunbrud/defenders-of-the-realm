@@ -1110,7 +1110,7 @@ Object.assign(game, {
             cardContent = `${banner}
                 <div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">${card.patrolName}</div>
                 ${!generalOnly
-                    ? `<div style="margin-bottom:4px"><div style="font-size:0.75em;color:#3d2b1f;font-family:'Comic Sans MS','Comic Sans',cursive;margin-bottom:8px">${patrolDesc}</div>${patrolWarnings}</div>`
+                    ? `<div style="margin-bottom:4px"><div style="font-size:0.75em;color:#3d2b1f;font-family:'Comic Sans MS','Comic Sans',cursive;margin-bottom:8px">${patrolDesc}</div></div>`
                     : `<div class="hi-title" style="font-size:0.75em;margin-bottom:6px"><strong style="color:#1a0f0a;font-family:'Cinzel',Georgia,serif;font-weight:900">⏭️ Skipped:</strong> <span style="color:#3d2b1f;font-family:'Comic Sans MS','Comic Sans',cursive">Patrol skipped (General Only)</span></div>`
                 }
                 <div style="display:flex;justify-content:center">${generalLocVisual}</div>

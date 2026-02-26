@@ -857,6 +857,124 @@
         .darkness-loc-card { padding: 10px 12px; }
         .darkness-loc-general { padding: 12px 12px 44px 12px; }
 
+        /* ── INLINE DOTS ── */
+        .mdot {
+          display: inline-block; border-radius: 50%;
+          border: 1.5px solid rgba(0,0,0,0.3); box-shadow: 0 1px 2px rgba(0,0,0,0.3); vertical-align: middle;
+        }
+
+        /* ── SPAWN LINES ── */
+        .sl {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 3px 8px; margin: 2px 0; border-radius: 3px;
+        }
+        .sl.green { background: rgba(22,163,74,0.06); border: 1px solid rgba(22,163,74,0.2); }
+        .sl.blue { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2); }
+        .sl.purple { background: rgba(124,58,237,0.06); border: 1px solid rgba(124,58,237,0.2); }
+        .sl.red { background: rgba(220,38,38,0.04); border: 1px solid rgba(220,38,38,0.2); }
+        .sl.gray { background: rgba(107,114,128,0.06); border: 1px solid rgba(107,114,128,0.2); }
+        .sl .left { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.85em; }
+        .sl .right { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.8em; color: #2c1810; }
+        .sl .left.cg { color: #16a34a; } .sl .left.cb { color: #3b82f6; }
+        .sl .left.cr { color: #ef4444; } .sl .left.ck { color: #6b7280; }
+        .not-placed { opacity: 0.7; }
+        .not-placed-label { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.75em; color: #b91c1c; margin-left: 6px; }
+
+        /* ── INTERVENTION BUTTONS (Draw Phase) ── */
+        .intervene-area { display: flex; flex-direction: column; gap: 6px; padding: 0 8px; margin-top: 8px; }
+        .intervene-btn {
+          display: flex; align-items: center; gap: 10px;
+          padding: 10px 14px; border-radius: 8px;
+          cursor: pointer; border: none; width: 100%;
+          font-family: 'Cinzel', Georgia, serif;
+          transition: filter 0.15s, transform 0.1s;
+          text-align: left;
+        }
+        .intervene-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+        .intervene-btn:active { transform: translateY(0); }
+        .intervene-btn.selected {
+          outline: 3px solid #d4af37; outline-offset: 1px;
+          box-shadow: 0 0 12px rgba(212,175,55,0.6), 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .intervene-btn .iv-icon { font-size: 1.2em; flex-shrink: 0; }
+        .intervene-btn .iv-text { display: flex; flex-direction: column; }
+        .intervene-btn .iv-name { font-weight: 900; font-size: 0.85em; }
+        .intervene-btn .iv-desc { font-size: 0.65em; opacity: 0.85; font-family: 'Comic Sans MS', cursive; margin-top: 2px; }
+        .intervene-btn.hero-skill {
+          background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%); color: white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .intervene-btn.hero-skill .iv-name, .intervene-btn.hero-skill .iv-desc { color: white; }
+        .intervene-btn.special-card {
+          background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%); color: white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .intervene-btn.special-card .iv-name, .intervene-btn.special-card .iv-desc { color: white; }
+        .intervene-btn.quest {
+          background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%); color: white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .intervene-btn.quest .iv-name, .intervene-btn.quest .iv-desc { color: white; }
+
+        /* ── INTERVENTION EFFECTS (Resolve Phase) ── */
+        .iv-effect { display: none; }
+        .iv-effect.active { display: block; }
+
+        /* ── OVERRUN / TAINT / WARNINGS ── */
+        .overrun-box { background: rgba(239,68,68,0.08); border: 1px solid #ef4444; border-radius: 5px; padding: 5px 10px; margin: 4px 0; }
+        .overrun-title { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.85em; color: #dc2626; margin-bottom: 4px; }
+        .overrun-sub { font-size: 0.75em; color: #3d2b1f; margin-bottom: 4px; }
+        .taint-box { background: rgba(147,51,234,0.08); border: 1px solid #9333ea; border-radius: 5px; padding: 5px 10px; margin: 4px 0; }
+        .taint-title { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.85em; color: #7e22ce; }
+        .warn-badge { padding: 3px 8px; border-radius: 3px; font-size: 0.72em; font-weight: bold; margin-bottom: 3px; }
+        .warn-overrun { border: 1px solid #ef4444; background: rgba(239,68,68,0.08); color: #b91c1c; }
+        .warn-taint { border: 1px solid #9333ea; background: rgba(147,51,234,0.08); color: #7e22ce; }
+
+        .no-minion-note {
+          text-align: center; padding: 12px; font-family: 'Cinzel', Georgia, serif;
+          font-weight: 900; font-size: 0.85em; color: #15803d; font-style: italic;
+        }
+
+        /* ── EFFECT NOTIFICATIONS (Draw Phase) ── */
+        .fx-note {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 5px 10px; margin: 3px 0; border-radius: 5px;
+          font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.78em;
+        }
+        .fx-note.advance { background: rgba(220,38,38,0.06); border: 1px solid rgba(220,38,38,0.3); }
+        .fx-note.overrun { background: rgba(239,68,68,0.08); border: 1px solid #ef4444; }
+        .fx-note.taint { background: rgba(147,51,234,0.08); border: 1px solid #9333ea; }
+        .fx-note.blocked { background: rgba(139,115,85,0.1); border: 1px solid rgba(139,115,85,0.3); }
+        .fx-note .fx-label { display: flex; align-items: center; }
+
+        /* ── SECTION SEPARATOR ── */
+        .sep { border-top: 1px solid rgba(139,115,85,0.3); margin: 10px 0; }
+
+        /* ── TOGGLE SECTIONS ── */
+        .toggle-section { display: none; }
+        .toggle-section.visible { display: block; }
+
+        /* ── CORNER TOKENS (Monarch City) ── */
+        .corner-wrap { position: relative; display: inline-block; }
+        .ct {
+          position: absolute; width: 22px; height: 22px; border-radius: 50%;
+          border: 1.5px solid rgba(0,0,0,0.3); box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .ct.tl { top: -6px; left: -6px; }
+        .ct.tr { top: -6px; right: -6px; }
+        .ct.bl { bottom: -6px; left: -6px; }
+        .ct.br { bottom: -6px; right: -6px; }
+
+        /* ── RESULTS DIVIDER ── */
+        .results-divider {
+          margin-top: 12px; padding-top: 12px;
+          border-top: 2px solid rgba(139,115,85,0.4);
+        }
+
+        /* ── CARD VIEW SWITCHING ── */
+        .card-view { display: none; }
+        .card-view.active { display: block; }
+
         /* ── CARD REVEAL ANIMATION ── */
         @keyframes cardReveal {
           from { opacity: 0; transform: translateY(10px) scale(0.95); }

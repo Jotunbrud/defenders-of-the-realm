@@ -94,17 +94,14 @@ Object.assign(game, {
             let woundHTML = '';
             const wound = this.generalWounds[general.color];
             if (wound && !general.defeated) {
-                const wColor = wound.type === 'major' ? '#ef4444' : '#f59e0b';
-                const wLabel = wound.type === 'major' ? '⚠️ MAJOR WOUNDS' : '⚔️ Minor Wounds';
+                const wLabel = wound.type === 'major' ? '⚠️ Major Wounds' : '⚔️ Minor Wounds';
                 const healingStatus = wound.healingCountdown > 0 
                     ? `Not healing (${wound.healingCountdown} turn${wound.healingCountdown !== 1 ? 's' : ''} remaining)`
                     : 'Healing (+1 HP/turn)';
-                const statusColor = wound.healingCountdown > 0 ? '#999' : '#4ade80';
-                const movementNote = wound.type === 'major' ? '<div style="color: #ef4444; font-size: 0.8em; margin-top: 2px;">🚫 Cannot advance</div>' : '';
-                woundHTML = `<div style="margin-top: 6px; padding: 6px; background: rgba(0,0,0,0.2); border: 1px solid ${wColor}; border-radius: 4px; font-size: 0.85em;">
-                    <span style="color: ${wColor}; font-weight: bold;">${wLabel}</span>
-                    <span style="color: ${statusColor}; margin-left: 6px;">${healingStatus}</span>
-                    ${movementNote}
+                const healColor = wound.healingCountdown > 0 ? '#8b7355' : '#16a34a';
+                const movementNote = wound.type === 'major' ? '<div style="margin-top:2px"><strong>🚫 Cannot advance</strong></div>' : '';
+                woundHTML = `<div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(139,115,85,0.25);">
+                    <div class="g-hi-title" style="font-size:0.72em;"><strong>${wLabel}:</strong> <span style="color:${healColor}">${healingStatus}</span>${movementNote}</div>
                 </div>`;
             }
 
@@ -142,11 +139,11 @@ Object.assign(game, {
                         <div class="g-hi-block">
                             <div class="g-hi-title"><strong>Hero Defeated:</strong> ${meta.heroDefeatedDesc}</div>
                         </div>
-                        ${woundHTML}
                         <div class="life-tracker-wrap">
                             <div class="lt-hit-req">${meta.hitReq}</div>
                             <div class="life-tracker">${trackerBoxes}</div>
                         </div>
+                        ${woundHTML}
                     </div>
                 </div>`;
         }).join('');

@@ -392,22 +392,34 @@ Object.assign(game, {
 
         // Build healing HTML in parchment style
         let healingSection = '';
-        if (healingResults && healingResults.filter(r => r.woundType !== null).length > 0) {
+        if (healingResults && healingResults.filter(r => r.wound).length > 0) {
             let healingRows = '';
-            healingResults.filter(r => r.woundType !== null).forEach(r => {
-                const gc = this._generalColors[r.color] || '#888';
-                const heartIcon = this._heartIcons[r.color] || '🖤';
+            healingResults.filter(r => r.wound).forEach(r => {
+                const g = r.general;
+                const gc = this._generalColors[g.color] || '#888';
+                const heartIcon = this._heartIcons[g.color] || '🖤';
+                const wType = r.wound.type;
+                let description = '';
+                if (r.waiting) {
+                    description = `Waiting to heal (${r.wound.healingCountdown} turn${r.wound.healingCountdown !== 1 ? 's' : ''} remaining)`;
+                } else if (r.fullyHealed) {
+                    description = `Healed ${r.healedAmount || 0} HP — Fully healed!`;
+                } else if (r.healed) {
+                    description = `Healed ${r.healedAmount || 0} HP → ${g.health}/${g.maxHealth}`;
+                } else if (r.spyBlocked) {
+                    description = 'Healing blocked by Spy In The Camp';
+                }
                 healingRows += `
                     <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;color:#2c1810;margin:4px 0">
                         <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.9em">
                             <span style="display:flex;align-items:center;gap:6px">
-                                <span class="modal-general-token" style="background:${gc};width:24px;height:24px;font-size:0.7em">${r.icon || this._generalIcons[r.color] || '⚔️'}</span>
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${gc}">${r.general}</span>
+                                <span class="modal-general-token" style="background:${gc};width:24px;height:24px;font-size:0.7em">${g.symbol || this._generalIcons[g.color] || '⚔️'}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${gc}">${g.name}</span>
                             </span>
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${r.health <= 2 ? '#b91c1c' : '#2c1810'}">${heartIcon} ${r.health}/${r.maxHealth}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${g.health <= 2 ? '#b91c1c' : '#2c1810'}">${heartIcon} ${g.health}/${g.maxHealth}</span>
                         </div>
                         <div class="hi-title" style="margin-top:4px;font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f">
-                            <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.15em;color:#1a0f0a">${r.woundType === 'major' ? 'Major Wound' : 'Minor Wound'}:</strong> ${r.description}
+                            <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.15em;color:#1a0f0a">${wType === 'major' ? 'Major Wound' : 'Minor Wound'}:</strong> ${description}
                         </div>
                     </div>`;
             });

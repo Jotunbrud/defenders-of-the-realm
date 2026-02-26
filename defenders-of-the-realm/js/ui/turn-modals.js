@@ -151,25 +151,89 @@ Object.assign(game, {
         </div>`;
     },
 
+    // Scan all heroes for available darkness-phase interventions.
+    // Returns array of { id, type, name, desc, heroSymbol }.
+    // Intervention types:
+    //   hero-skill  — hero ability (specialAction on hero or hero-specific check)
+    //   special-card — card in hand with matching specialAction
+    //   quest       — completed quest with matching rewardValue
+    _getAvailableInterventions(card, generalOnly) {
+        const interventions = [];
+        if (!this.heroes) return interventions;
+
+        // Deduplicate by id — only show each intervention once
+        const seen = new Set();
+        const add = (iv) => { if (!seen.has(iv.id)) { seen.add(iv.id); interventions.push(iv); } };
+
+        this.heroes.forEach(hero => {
+            if (hero.health <= 0) return;
+
+            // ── Hero Skills ──
+            // Eagle Eye: available if hero has the ability (e.g. Ranger)
+            (hero.cards || []).forEach(c => {
+                if (c.specialAction === 'eagle_eye') {
+                    add({ id: 'eagle-eye', type: 'hero-skill', name: 'Eagle Eye', desc: 'Scout the top card of the Darkness Spreads deck', heroSymbol: hero.symbol });
+                }
+                if (c.specialAction === 'holy_shield') {
+                    add({ id: 'holy-shield', type: 'hero-skill', name: 'Holy Shield', desc: 'Prevent 1 minion placement at Paladin\u2019s current location', heroSymbol: hero.symbol });
+                }
+            });
+
+            // ── Special Cards ──
+            (hero.cards || []).forEach(c => {
+                if (c.specialAction === 'divine_intervention') {
+                    add({ id: 'divine-intervention', type: 'special-card', name: 'Divine Intervention', desc: 'Cancel the General\u2019s advance this turn', heroSymbol: hero.symbol });
+                }
+                if (c.specialAction === 'elven_foresight') {
+                    add({ id: 'elven-foresight', type: 'special-card', name: 'Elven Foresight', desc: 'Remove 1 Darkness Spreads card from the deck', heroSymbol: hero.symbol });
+                }
+            });
+
+            // ── Quest Rewards ──
+            (hero.questCards || []).forEach(q => {
+                if (q.completed && !q.discarded && q.mechanic && q.mechanic.rewardValue === 'sanctified_ground') {
+                    add({ id: 'sanctified-ground', type: 'quest', name: 'Sanctified Ground', desc: 'Prevent Taint Crystal placement this turn', heroSymbol: hero.symbol });
+                }
+            });
+        });
+
+        return interventions;
+    },
+
     // Build the intervention buttons area for draw phase.
-    // Returns HTML string for the intervene-area section.
+    // Returns HTML string placed between the parchment box and the Resolve button.
     _interventionButtonsHTML(card, generalOnly) {
-        const hero = this.heroes[this.currentPlayerIndex];
-        if (!hero) return '';
         if (card.type === 'all_quiet' || card.type === 'monarch_city_special') return '';
 
-        const buttons = [];
+        const interventions = this._getAvailableInterventions(card, generalOnly);
+        if (interventions.length === 0) return '';
 
-        // Wizard's Wisdom — already handled via DOM button, not intervention style
-        // Militia Secures Area — already handled via DOM button
-        // Strong Defenses — already handled via DOM button
+        const selected = this.darknessSelectedInterventions || new Set();
+        const icons = { 'hero-skill': '⚔️', 'special-card': '✨', 'quest': '📜' };
 
-        // For now, generate empty container — actual intervention buttons will be
-        // wired up in a later JS integration step when special cards / quest system
-        // feeds available interventions into this area.
-        if (buttons.length === 0) return '';
+        let html = '<div class="intervene-area">';
+        interventions.forEach(iv => {
+            const sel = selected.has(iv.id) ? ' selected' : '';
+            html += `<button onclick="game.toggleDarknessIntervention(this)" class="intervene-btn ${iv.type}${sel}" data-iv="${iv.id}">
+                <span class="iv-icon">${icons[iv.type] || '⚔️'}</span>
+                <div class="iv-text"><span class="iv-name">${iv.name}</span><span class="iv-desc">${iv.desc}</span></div>
+            </button>`;
+        });
+        html += '</div>';
+        return html;
+    },
 
-        return `<div class="intervene-area">${buttons.join('')}</div>`;
+    // Toggle an intervention button's selection state (draw phase).
+    toggleDarknessIntervention(btnEl) {
+        if (!this.darknessSelectedInterventions) this.darknessSelectedInterventions = new Set();
+        const iv = btnEl.dataset.iv;
+        if (btnEl.classList.contains('selected')) {
+            btnEl.classList.remove('selected');
+            this.darknessSelectedInterventions.delete(iv);
+        } else {
+            btnEl.classList.add('selected');
+            this.darknessSelectedInterventions.add(iv);
+        }
     },
 
     _darknessLocationCardHTML(location, color, count, isGeneral, strikethrough, warnings, militiaCancelled, generalPosition) {

@@ -832,6 +832,8 @@ Object.assign(game, {
         this.strongDefensesActive = false;
         // Clear organize militia state for new card
         this.organizeMilitiaActive = false;
+        // Clear intervention selections for new card
+        this.darknessSelectedInterventions = new Set();
         
         this.darknessCardsDrawn++;
         const cardNum = this.darknessCardsDrawn;
@@ -1258,13 +1260,17 @@ Object.assign(game, {
             ${boxClose}`;
         }
 
+        // Intervention buttons (draw phase only, between card and resolve button)
+        const interventionHTML = this._interventionButtonsHTML(card, generalOnly);
+
         content.innerHTML = `
             ${this._stepIndicatorHTML(3)}
             <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">Step 3 — 🌙 Night</div>
             ${cardCounterHTML}
             ${cardContent}
+            ${interventionHTML}
         `;
-        
+
         // Change button to "Resolve Card"
         if (btn) {
             if (card.type === 'all_quiet') {
@@ -2036,8 +2042,17 @@ Object.assign(game, {
                 }
             });
 
+            // Intervention effects (visible only when selected during draw phase)
+            const ivSel = this.darknessSelectedInterventions || new Set();
+            const ivAct = (id) => ivSel.has(id) ? ' active' : '';
+            const ivAfterMinion = `<div class="iv-effect${ivAct('holy-shield')}" data-iv="holy-shield"><div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Holy Shield</span><span style="color:#2c1810">→ 1 minion placement prevented</span></div></div>` +
+                `<div class="iv-effect${ivAct('sanctified-ground')}" data-iv="sanctified-ground"><div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Sanctified Ground</span><span style="color:#2c1810">→ Taint Crystal placement prevented</span></div></div>`;
+            const ivAfterGeneral = `<div class="iv-effect${ivAct('divine-intervention')}" data-iv="divine-intervention"><div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Divine Intervention</span><span style="color:#2c1810">→ General advance cancelled</span></div></div>` +
+                `<div class="iv-effect${ivAct('eagle-eye')}" data-iv="eagle-eye"><div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Eagle Eye</span><span style="color:#2c1810">→ Next card scouted</span></div></div>` +
+                `<div class="iv-effect${ivAct('elven-foresight')}" data-iv="elven-foresight"><div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Elven Foresight</span><span style="color:#2c1810">→ 1 card removed from deck</span></div></div>`;
+
             resultsHTML = `<div class="results-divider">
-                ${minionHTML}${generalHTML}${otherHTML}
+                ${minionHTML}${ivAfterMinion}${generalHTML}${ivAfterGeneral}${otherHTML}
             </div>`;
         } else if (!card || card.type !== 'all_quiet') {
             resultsHTML = `<div style="padding:15px;text-align:center">

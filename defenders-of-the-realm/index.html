@@ -49,78 +49,124 @@
         </div>
 
         <div class="controls-panel">
-            <h3 style="color: #ffd700; margin-bottom: 10px;">Play Area</h3>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="game.showMap()">🗺️ Game Board</button>
-                <button class="btn btn-primary" onclick="game.showHeroesModal()">👥 View Heroes</button>
-            </div>
-
-            <h3 style="color: #ffd700; margin-bottom: 10px; margin-top: 20px;">Card Decks</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px;">
-                <!-- Hero Deck -->
-                <div style="background: rgba(0,0,0,0.3); border: 2px solid #d4af37; border-radius: 8px; padding: 8px; text-align: center;">
-                    <div style="font-size: 1.5em; margin-bottom: 2px;">🎴</div>
-                    <div style="font-weight: bold; color: #ffd700; margin-bottom: 4px; font-size: 0.9em;">Hero Cards</div>
-                    <div style="font-size: 1.8em; margin: 6px 0;" id="hero-deck-count">81</div>
-                    <div style="font-size: 0.75em; color: #999;">Remaining</div>
-                </div>
-                
-                <!-- Quest Deck -->
-                <div style="background: rgba(0,0,0,0.3); border: 2px solid #dc2626; border-radius: 8px; padding: 8px; text-align: center;">
-                    <div style="font-size: 1.5em; margin-bottom: 2px;">📜</div>
-                    <div style="font-weight: bold; color: #ef4444; margin-bottom: 4px; font-size: 0.9em;">Quest Cards</div>
-                    <div style="font-size: 1.8em; margin: 6px 0;" id="quest-deck-count">24</div>
-                    <div style="font-size: 0.75em; color: #999;">Remaining</div>
-                </div>
-                
-                <!-- Darkness Deck -->
-                <div style="background: rgba(0,0,0,0.3); border: 2px solid #7c3aed; border-radius: 8px; padding: 8px; text-align: center;">
-                    <div style="font-size: 1.5em; margin-bottom: 2px;">☠️</div>
-                    <div style="font-weight: bold; color: #a78bfa; margin-bottom: 4px; font-size: 0.9em;">Darkness Spreads</div>
-                    <div style="font-size: 1.8em; margin: 6px 0;" id="darkness-deck-count">49</div>
-                    <div style="font-size: 0.75em; color: #999;">Remaining</div>
-                </div>
-            </div>
-            
-            <!-- Discard Piles -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px;">
-                <!-- Hero Cards Discard -->
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid #8B7355; border-radius: 8px; padding: 6px; text-align: center;">
-                    <div style="font-weight: bold; color: #8B7355; margin-bottom: 2px; font-size: 0.8em;">Hero Discard</div>
-                    <div style="font-size: 1.3em;" id="hero-discard-count">0</div>
-                </div>
-                
-                <!-- Quest Discard -->
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid #991b1b; border-radius: 8px; padding: 6px; text-align: center;">
-                    <div style="font-weight: bold; color: #991b1b; margin-bottom: 2px; font-size: 0.8em;">Quest Discard</div>
-                    <div style="font-size: 1.3em;" id="quest-discard-count">0</div>
-                </div>
-                
-                <!-- Darkness Discard -->
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid #666; border-radius: 8px; padding: 6px; text-align: center;">
-                    <div style="font-weight: bold; color: #666; margin-bottom: 2px; font-size: 0.8em;">Darkness Discard</div>
-                    <div style="font-size: 1.3em;" id="darkness-discard-count">0</div>
+            <div class="section-tray">
+                <div class="tray-title">Play Area</div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="game.showMap()">🗺️ Game Board</button>
+                    <button class="btn btn-primary" onclick="game.showHeroesModal()">👥 View Heroes</button>
                 </div>
             </div>
 
-            <h3 style="color: #ffd700; margin-bottom: 10px; margin-top: 15px;">Enemy Generals</h3>
-            <div class="generals-panel" id="generals-panel"></div>
-            
-            <h3 style="color: #ffd700; margin-bottom: 10px; margin-top: 15px;">⚔️ War Status</h3>
-            <div id="war-status-tracker" style="background: rgba(0,0,0,0.3); border: 2px solid #d4af37; border-radius: 8px; padding: 12px;">
-                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-                    <div id="war-early" style="flex: 1; padding: 8px 4px; border-radius: 5px; text-align: center; background: rgba(74,222,128,0.3); border: 2px solid #4ade80; cursor: default;">
-                        <div style="font-weight: bold; font-size: 0.95em; color: #4ade80;">Early War</div>
+            <div class="section-tray">
+                <div class="tray-title">Card Decks</div>
+                <div class="deck-placard-grid">
+                    <!-- Hero Cards Deck -->
+                    <div class="general-placard">
+                        <div class="general-banner" style="background: linear-gradient(135deg, #8b6914cc 0%, #6b500faa 100%);">
+                            <div>
+                                <div class="general-banner-name">🎴 Hero Cards</div>
+                            </div>
+                        </div>
+                        <div class="general-body deck-body">
+                            <div class="deck-stat-row">
+                                <div class="deck-stat">
+                                    <div class="deck-stat-number" id="hero-deck-count">81</div>
+                                    <div class="deck-stat-label">Remaining</div>
+                                </div>
+                                <div class="deck-stat-divider"></div>
+                                <div class="deck-stat">
+                                    <div class="deck-stat-number muted" id="hero-discard-count">0</div>
+                                    <div class="deck-stat-label">Discard</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="war-mid" style="flex: 1; padding: 8px 4px; border-radius: 5px; text-align: center; background: rgba(251,191,36,0.1); border: 2px solid #555; cursor: default;">
-                        <div style="font-weight: bold; font-size: 0.95em; color: #888;">Mid War</div>
+
+                    <!-- Quest Cards Deck -->
+                    <div class="general-placard">
+                        <div class="general-banner" style="background: linear-gradient(135deg, #b91c1ccc 0%, #991b1baa 100%);">
+                            <div>
+                                <div class="general-banner-name">📜 Quest Cards</div>
+                            </div>
+                        </div>
+                        <div class="general-body deck-body">
+                            <div class="deck-stat-row">
+                                <div class="deck-stat">
+                                    <div class="deck-stat-number" id="quest-deck-count">24</div>
+                                    <div class="deck-stat-label">Remaining</div>
+                                </div>
+                                <div class="deck-stat-divider"></div>
+                                <div class="deck-stat">
+                                    <div class="deck-stat-number muted" id="quest-discard-count">0</div>
+                                    <div class="deck-stat-label">Discard</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="war-late" style="flex: 1; padding: 8px 4px; border-radius: 5px; text-align: center; background: rgba(239,68,68,0.1); border: 2px solid #555; cursor: default;">
-                        <div style="font-weight: bold; font-size: 0.95em; color: #888;">Late War</div>
+
+                    <!-- Darkness Spreads Deck -->
+                    <div class="general-placard">
+                        <div class="general-banner" style="background: linear-gradient(135deg, #6d28d9cc 0%, #5b21b6aa 100%);">
+                            <div>
+                                <div class="general-banner-name">☠️ Darkness Spreads</div>
+                            </div>
+                        </div>
+                        <div class="general-body deck-body">
+                            <div class="deck-stat-row">
+                                <div class="deck-stat">
+                                    <div class="deck-stat-number" id="darkness-deck-count">49</div>
+                                    <div class="deck-stat-label">Remaining</div>
+                                </div>
+                                <div class="deck-stat-divider"></div>
+                                <div class="deck-stat">
+                                    <div class="deck-stat-number muted" id="darkness-discard-count">0</div>
+                                    <div class="deck-stat-label">Discard</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div id="war-status-desc" style="font-size: 0.82em; color: #d4af37; text-align: center; line-height: 1.4;">
-                    Draw 1 Darkness Spreads card per Night Phase
+            </div>
+
+            <div class="section-tray">
+                <div class="tray-title">Enemy Generals</div>
+                <div class="generals-panel" id="generals-panel"></div>
+            </div>
+            
+            <div class="general-placard" id="war-status-tracker">
+                <div class="general-banner" style="background: linear-gradient(135deg, #8b6914cc 0%, #6b500faa 100%);">
+                    <div>
+                        <div class="general-banner-name">⚔️ War Status</div>
+                    </div>
+                </div>
+                <div class="general-body">
+                    <div class="war-advance-text">Advance 1 space for each General defeated</div>
+                    <div style="display: flex; gap: 12px;">
+                    <!-- Vertical tracker -->
+                    <div class="war-tracker-col">
+                        <div class="war-box"><span class="war-icon">⚔️</span><span class="war-label">Early</span></div>
+                        <div class="war-arrow">▼</div>
+                        <div class="war-box"><span class="war-icon"></span><span class="war-label">Mid</span></div>
+                        <div class="war-box"><span class="war-icon"></span><span class="war-label">Mid</span></div>
+                        <div class="war-arrow">▼</div>
+                        <div class="war-box"><span class="war-icon"></span><span class="war-label">Late</span></div>
+                    </div>
+                    <!-- Descriptions -->
+                    <div style="flex: 1; min-width: 0;">
+                        <div class="g-section">
+                            <div class="g-section-label"><strong>Early War</strong></div>
+                            <div class="g-section-text">Each player draws 1 Darkness Spreads card at the end of their turn, placing minions and moving Generals as noted.</div>
+                        </div>
+                        <div class="g-section">
+                            <div class="g-section-label"><strong>Mid War</strong></div>
+                            <div class="g-section-text">Each player draws 2 Darkness Spreads cards at the end of their turn. The 1st card is used to place minions and move a General, and the 2nd card is used for General movement only.</div>
+                        </div>
+                        <div class="g-section">
+                            <div class="g-section-label"><strong>Late War</strong></div>
+                            <div class="g-section-text">Each player draws 3 Darkness Spreads cards at the end of their turn. The first 2 cards are used to place minions and move Generals, and the 3rd card is used for General movement only.</div>
+                        </div>
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -10,69 +10,87 @@ Object.assign(game, {
     },
     
     renderGenerals() {
-        const generalsPanel = document.getElementById('generals-panel');
-        
-        // Count minions by color
-        const minionCounts = { red: 0, blue: 0, green: 0, black: 0 };
-        for (const location in this.minions) {
-            const minionsHere = this.minions[location];
-            for (const color in minionsHere) {
-                minionCounts[color] = (minionCounts[color] || 0) + minionsHere[color];
+        const panel = document.getElementById('generals-panel');
+        if (!panel) return;
+
+        // General display metadata
+        const GENERAL_META = {
+            'Balazarg': {
+                bannerGradient: 'linear-gradient(135deg, #dc2626cc 0%, #dc262699 100%)',
+                tokenColor: '#dc2626',
+                hitReq: '4+ to Hit',
+                majorWoundThreshold: 1,
+                combatSkillName: 'Demonic Curse',
+                combatSkillDesc: 'Players must roll a die for each card to be played prior to the Battle. Discard a card for each 1 rolled.',
+                heroDefeatedDesc: 'Hero loses D3 life tokens & ALL hero cards.'
+            },
+            'Gorgutt': {
+                bannerGradient: 'linear-gradient(135deg, #16a34acc 0%, #16a34a99 100%)',
+                tokenColor: '#16a34a',
+                hitReq: '3+ to Hit',
+                majorWoundThreshold: 2,
+                combatSkillName: 'Parry',
+                combatSkillDesc: 'Gorgutt parries successful attacks for each 1 rolled. Eliminate 1 hit for each die with a 1 at the end of re-rolls.',
+                heroDefeatedDesc: 'Hero loses 2 life tokens & 2 hero cards.'
+            },
+            'Varkolak': {
+                bannerGradient: 'linear-gradient(135deg, #1f2937cc 0%, #1f293799 100%)',
+                tokenColor: '#1f2937',
+                hitReq: '4+ to Hit',
+                majorWoundThreshold: 0,
+                combatSkillName: 'No Rerolls',
+                combatSkillDesc: 'Player may not use any re-rolls or special skills against Varkolak.',
+                heroDefeatedDesc: 'Hero loses D6 life tokens & D6 hero cards.'
+            },
+            'Sapphire': {
+                bannerGradient: 'linear-gradient(135deg, #2563ebcc 0%, #2563eb99 100%)',
+                tokenColor: '#2563eb',
+                hitReq: '5+ to Hit',
+                majorWoundThreshold: 0,
+                combatSkillName: 'Regeneration',
+                combatSkillDesc: 'Returns to full health if not defeated in a single combat.',
+                heroDefeatedDesc: 'Hero loses 3 life tokens & D6 hero cards.'
+            },
+            'White Rabbit': {
+                bannerGradient: 'linear-gradient(135deg, #ffffffcc 0%, #cccccc99 100%)',
+                tokenColor: '#ffffff',
+                hitReq: '3+ to Hit',
+                majorWoundThreshold: 0,
+                combatSkillName: 'Test',
+                combatSkillDesc: 'Test general for development.',
+                heroDefeatedDesc: 'Hero loses 2 life tokens & 2 hero cards.'
             }
-        }
-        
-        // Combat skill descriptions - EXACT USER-PROVIDED TEXT
-        const combatSkills = {
-            'demonic_curse': '<strong>Combat Skill:</strong> Players must roll a die for each card to be played prior to the Battle. Discard a card for each 1 rolled.',
-            'parry': '<strong>Combat Skill:</strong> Gorgutt parries successful attacks for each 1 rolled. Eliminate 1 hit for each die with a 1 at the end of re-rolls.',
-            'no_rerolls': '<strong>Combat Skill:</strong> Player may not use any re-rolls or special skills against Varkolak.',
-            'regeneration': '<strong>Combat Skill:</strong> Returns to full health if not defeated in a single combat.'
         };
-        
-        // Hero defeated penalty descriptions - EXACT USER-PROVIDED TEXT
-        const defeatPenalties = {
-            'Balazarg': '<strong>Hero Defeated:</strong> Hero loses D3 life tokens & ALL hero cards',
-            'Gorgutt': '<strong>Hero Defeated:</strong> Hero loses 2 life tokens & 2 hero cards',
-            'Varkolak': '<strong>Hero Defeated:</strong> Hero loses D6 life tokens & D6 hero cards',
-            'Sapphire': '<strong>Hero Defeated:</strong> Hero loses 3 life tokens & D6 hero cards',
-            'White Rabbit': '<strong>Hero Defeated:</strong> Hero loses 2 life tokens & 2 hero cards'
-        };
-        
-        // Faction-specific minion icons
-        const minionIcons = {
-            'red': '🔴',    // Demons
-            'green': '🟢',  // Orcs
-            'black': '⚫',  // Undead
-            'blue': '🔵'    // Dragons
-        };
-        
-        generalsPanel.innerHTML = this.generals.map(general => {
-            const healthPips = Array(general.maxHealth).fill(0).map((_, i) => 
-                `<div class="health-pip ${i >= general.health ? 'damaged' : ''}"></div>`
-            ).join('');
-            
-            const minionCount = minionCounts[general.color] || 0;
-            const minionMax = 25;
-            const minionIcon = minionIcons[general.color] || '👹';
-            
-            const nameColor = this.getGeneralTooltipNameColor(general);
-            
-            const minionHTML = general.isTestGeneral ? '' : 
-                `<span style="font-size: 0.9em; color: ${nameColor};">
-                    ${minionIcon} ${minionCount}/${minionMax}
-                </span>`;
-            
-            const combatSkillHTML = general.combatSkill ? 
-                `<div style="margin-top: 6px; padding: 6px; background: rgba(255,215,0,0.1); border-radius: 4px; font-size: 0.85em; color: #ffd700;">
-                    ${combatSkills[general.combatSkill] || ''}
-                </div>` : '';
-            
-            const defeatPenaltyHTML = defeatPenalties[general.name] ? 
-                `<div style="margin-top: 6px; padding: 6px; background: rgba(239,68,68,0.1); border-radius: 4px; font-size: 0.85em; color: #ef4444;">
-                    ${defeatPenalties[general.name]}
-                </div>` : '';
-            
-            // Wound status display
+
+        panel.innerHTML = this.generals.map(general => {
+            const meta = GENERAL_META[general.name];
+            if (!meta) return '';
+
+            // Build life tracker boxes
+            let trackerBoxes = '';
+            for (let i = general.maxHealth; i >= 1; i--) {
+                const isLost = i > general.health;
+                const isMajor = meta.majorWoundThreshold > 0 && i <= meta.majorWoundThreshold;
+                const isCurrent = i === general.health && !general.defeated;
+
+                let classes = 'lt-box';
+                if (isLost) classes += ' lost';
+                if (isMajor) classes += ' major';
+
+                const marker = isCurrent
+                    ? `<span class="lt-marker" style="background:${meta.tokenColor}">${general.symbol}</span>`
+                    : '';
+
+                trackerBoxes += `<div class="${classes}">${marker}${i}</div>`;
+            }
+
+            // Skull box
+            const skullMarker = general.defeated
+                ? `<span class="lt-marker" style="background:${meta.tokenColor}">${general.symbol}</span>`
+                : '';
+            trackerBoxes += `<div class="lt-box skull">${skullMarker}☠️</div>`;
+
+            // Wound status line
             let woundHTML = '';
             const wound = this.generalWounds[general.color];
             if (wound && !general.defeated) {
@@ -89,24 +107,48 @@ Object.assign(game, {
                     ${movementNote}
                 </div>`;
             }
-            
+
+            // Defeated state
+            if (general.defeated) {
+                return `
+                    <div class="general-placard defeated">
+                        <div class="general-banner" style="background: ${meta.bannerGradient};">
+                            <div>
+                                <div class="general-banner-name">${general.symbol} ${general.name}</div>
+                            </div>
+                        </div>
+                        <div class="general-body">
+                            <div class="g-defeated-badge">✅ DEFEATED</div>
+                            <div class="life-tracker-wrap">
+                                <div class="lt-hit-req">${meta.hitReq}</div>
+                                <div class="life-tracker">${trackerBoxes}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // Active general
             return `
-                <div class="general-card">
-                    <div class="general-info" style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: bold; color: ${nameColor};">
-                            ${general.symbol} ${general.name}
-                            ${general.defeated ? '<span style="color: #4ade80; margin-left: 8px;">✓ DEFEATED</span>' : ''}
-                        </span>
-                        ${minionHTML}
+                <div class="general-placard">
+                    <div class="general-banner" style="background: ${meta.bannerGradient};">
+                        <div>
+                            <div class="general-banner-name">${general.symbol} ${general.name}</div>
+                        </div>
                     </div>
-                    <div class="health-track">
-                        ${healthPips}
+                    <div class="general-body">
+                        <div class="g-hi-block">
+                            <div class="g-hi-title"><strong>Combat Skill:</strong> ${meta.combatSkillName} — ${meta.combatSkillDesc}</div>
+                        </div>
+                        <div class="g-hi-block">
+                            <div class="g-hi-title"><strong>Hero Defeated:</strong> ${meta.heroDefeatedDesc}</div>
+                        </div>
+                        ${woundHTML}
+                        <div class="life-tracker-wrap">
+                            <div class="lt-hit-req">${meta.hitReq}</div>
+                            <div class="life-tracker">${trackerBoxes}</div>
+                        </div>
                     </div>
-                    ${woundHTML}
-                    ${combatSkillHTML}
-                    ${defeatPenaltyHTML}
-                </div>
-            `;
+                </div>`;
         }).join('');
     },
     

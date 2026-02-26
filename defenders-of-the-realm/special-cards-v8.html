@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Darkness Spreads — Full Modal Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap');
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: #0a0a14;
+    color: #e8d5b7;
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    margin: 0;
+  }
+
+  /* ══════════════════════════════════════════════
+     CONTROL PANEL (outside the modal)
+     ══════════════════════════════════════════════ */
+  .control-panel {
+    width: 100%; max-width: 520px;
+    margin-bottom: 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+  }
+  .type-bar {
+    display: flex; gap: 0; width: 100%; justify-content: center;
+  }
+  .type-btn {
+    flex: 1; padding: 8px 4px; cursor: pointer;
+    font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.7em;
+    background: #2a2a3e; color: #666; border: 2px solid #444;
+    transition: all 0.2s; user-select: none; text-align: center; white-space: nowrap;
+  }
+  .type-btn:first-child { border-radius: 10px 0 0 0; }
+  .type-btn:last-child { border-radius: 0 10px 0 0; }
+  .type-btn:not(:first-child) { border-left: none; }
+  .type-btn.active { background: #d4af37; color: #1a1a2e; border-color: #d4af37; }
+  .type-btn:hover:not(.active) { background: #3a3a4e; color: #d4af37; }
+  .type-btn .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+
+  /* Draw / Resolve sub-bar */
+  .phase-bar {
+    display: flex; gap: 0; width: 100%; justify-content: center;
+  }
+  .phase-sel-btn {
+    flex: 1; padding: 6px 4px; cursor: pointer;
+    font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.72em;
+    background: #222236; color: #777; border: 2px solid #444; border-top: none;
+    transition: all 0.2s; user-select: none; text-align: center;
+  }
+  .phase-sel-btn:last-child { border-left: none; }
+  .phase-sel-btn.active { background: #8b7355; color: #fff; border-color: #8b7355; }
+  .phase-sel-btn:hover:not(.active) { background: #333348; color: #aaa; }
+
+  .mech-bar {
+    display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+    padding: 6px 8px; width: 100%; box-sizing: border-box;
+    background: #1e1e30; border: 2px solid #444; border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+  .mech-btn {
+    padding: 3px 12px; border-radius: 12px; font-size: 0.68em; font-weight: bold;
+    cursor: pointer; border: 1.5px solid #555; background: #2a2a3e; color: #666;
+    transition: all 0.2s; user-select: none;
+  }
+  .mech-btn.active { border-color: #d4af37; background: #3d3520; color: #d4af37; }
+  .mech-btn:hover { border-color: #aaa; }
+
+  /* ══════════════════════════════════════════════
+     GAME MODAL FRAME (matches actual game)
+     ══════════════════════════════════════════════ */
+  .modal-frame {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #d4af37;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+
+  /* ── STEP INDICATOR ── */
+  .step-indicator-bar {
+    display: flex; justify-content: center; gap: 4px; margin-bottom: 14px;
+  }
+  .step-indicator-bar .step-item {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .step-indicator-bar .step-badge {
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 6px;
+  }
+  .step-indicator-bar .step-badge.active {
+    background: rgba(212,175,55,0.25); border: 2px solid #d4af37;
+  }
+  .step-indicator-bar .step-badge.past {
+    background: rgba(74,222,128,0.1); border: 1.5px solid rgba(74,222,128,0.3);
+  }
+  .step-indicator-bar .step-label {
+    font-family: 'Cinzel', Georgia, serif; font-weight: 700;
+    font-size: 0.7em; letter-spacing: 0.5px;
+  }
+  .step-indicator-bar .step-label.active { color: #d4af37; }
+  .step-indicator-bar .step-label.past { color: #4ade80; }
+  .step-indicator-bar .step-arrow { font-size: 0.8em; }
+  .step-indicator-bar .step-arrow.past { color: #4ade80; }
+
+  .modal-heading {
+    font-family: 'Cinzel', Georgia, serif; font-weight: 700;
+  }
+
+  .hero-section-label {
+    font-family: 'Cinzel', Georgia, serif; font-weight: 900;
+  }
+
+  /* ── PARCHMENT BOX ── */
+  .parchment-box {
+    padding: 10px; margin-top: 10px; border-radius: 8px;
+    background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%);
+    border: 2px solid #8b7355;
+  }
+  .parchment-banner {
+    background: linear-gradient(135deg, #5c3d2ecc 0%, #4a2f20cc 100%);
+    padding: 6px 14px; margin-bottom: 10px;
+    margin-left: -10px; margin-right: -10px; margin-top: -10px;
+    border-radius: 8px 8px 0 0; border-bottom: 2px solid #8b7355;
+    text-align: center;
+  }
+  .hero-banner-name {
+    font-family: 'Cinzel', Georgia, serif; font-weight: 900;
+    font-size: 0.9em; letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5);
+  }
+
+  /* ── PHASE BUTTON ── */
+  .phase-btn {
+    width: 100%; margin-top: 14px; padding: 11px; border-radius: 8px;
+    cursor: pointer; font-weight: bold; font-size: 0.95em;
+    letter-spacing: 0.5px; font-family: 'Cinzel', Georgia, serif;
+    background: linear-gradient(135deg, #d4af37, #b8960c);
+    color: #1a0f0a; border: 2px solid #d4af37;
+    transition: opacity 0.2s;
+  }
+  .phase-btn:hover { opacity: 0.9; }
+
+  /* ── LOCATION RING ── */
+  .location-ring {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%; border: 3px solid rgba(0,0,0,0.4);
+    padding: 6px; flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3), inset 0 0 8px rgba(255,255,255,0.15);
+  }
+  .location-ring-name {
+    font-family: 'Cinzel', Georgia, serif; font-weight: 900;
+    color: #fff; line-height: 1.1; text-align: center;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  /* ── TOKENS ── */
+  .modal-general-token {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 3px solid rgba(0,0,0,0.4);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 0 8px rgba(255,255,255,0.15);
+    font-size: 1.1em;
+  }
+  .modal-minion-dot {
+    display: inline-block; width: 16px; height: 16px;
+    border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.3);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  /* ── DARKNESS LOC CARD ── */
+  .darkness-loc-card { padding: 10px 12px; }
+  .darkness-loc-general { padding: 12px 12px 44px 12px; }
+
+  /* ── INLINE DOTS ── */
+  .mdot {
+    display: inline-block; border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.3); box-shadow: 0 1px 2px rgba(0,0,0,0.3); vertical-align: middle;
+  }
+
+  /* ── SPAWN LINES ── */
+  .sl {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 3px 8px; margin: 2px 0; border-radius: 3px;
+  }
+  .sl.green { background: rgba(22,163,74,0.06); border: 1px solid rgba(22,163,74,0.2); }
+  .sl.blue { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2); }
+  .sl.purple { background: rgba(124,58,237,0.06); border: 1px solid rgba(124,58,237,0.2); }
+  .sl.red { background: rgba(220,38,38,0.04); border: 1px solid rgba(220,38,38,0.2); }
+  .sl.gray { background: rgba(107,114,128,0.06); border: 1px solid rgba(107,114,128,0.2); }
+  .sl .left { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.85em; }
+  .sl .right { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.8em; color: #2c1810; }
+  .sl .left.cg { color: #16a34a; } .sl .left.cb { color: #3b82f6; }
+  .sl .left.cr { color: #ef4444; } .sl .left.ck { color: #6b7280; }
+  .not-placed { opacity: 0.7; }
+  .not-placed-label { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.75em; color: #b91c1c; margin-left: 6px; }
+
+  /* Intervention buttons */
+  .intervene-area { display: flex; flex-direction: column; gap: 6px; padding: 0 8px; margin-top: 8px; }
+  .intervene-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 8px;
+    cursor: pointer; border: none; width: 100%;
+    font-family: 'Cinzel', Georgia, serif;
+    transition: filter 0.15s, transform 0.1s;
+    text-align: left;
+  }
+  .intervene-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .intervene-btn:active { transform: translateY(0); }
+  .intervene-btn.selected {
+    outline: 3px solid #d4af37; outline-offset: 1px;
+    box-shadow: 0 0 12px rgba(212,175,55,0.6), 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .intervene-btn .iv-icon { font-size: 1.2em; flex-shrink: 0; }
+  .intervene-btn .iv-text { display: flex; flex-direction: column; }
+  .intervene-btn .iv-name { font-weight: 900; font-size: 0.85em; }
+  .intervene-btn .iv-desc { font-size: 0.65em; opacity: 0.85; font-family: 'Comic Sans MS', cursive; margin-top: 2px; }
+  .intervene-btn.hero-skill {
+    background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%); color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .intervene-btn.hero-skill .iv-name, .intervene-btn.hero-skill .iv-desc { color: white; }
+  .intervene-btn.special-card {
+    background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%); color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .intervene-btn.special-card .iv-name, .intervene-btn.special-card .iv-desc { color: white; }
+  .intervene-btn.quest {
+    background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%); color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .intervene-btn.quest .iv-name, .intervene-btn.quest .iv-desc { color: white; }
+
+  /* Intervention effects on resolve cards */
+  .iv-effect { display: none; }
+  .iv-effect.active { display: block; }
+
+  /* ── OVERRUN / TAINT / WARNINGS ── */
+  .overrun-box { background: rgba(239,68,68,0.08); border: 1px solid #ef4444; border-radius: 5px; padding: 5px 10px; margin: 4px 0; }
+  .overrun-title { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.85em; color: #dc2626; margin-bottom: 4px; }
+  .overrun-sub { font-size: 0.75em; color: #3d2b1f; margin-bottom: 4px; }
+  .taint-box { background: rgba(147,51,234,0.08); border: 1px solid #9333ea; border-radius: 5px; padding: 5px 10px; margin: 4px 0; }
+  .taint-title { font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.85em; color: #7e22ce; }
+  .warn-badge { padding: 3px 8px; border-radius: 3px; font-size: 0.72em; font-weight: bold; margin-bottom: 3px; }
+  .warn-overrun { border: 1px solid #ef4444; background: rgba(239,68,68,0.08); color: #b91c1c; }
+  .warn-taint { border: 1px solid #9333ea; background: rgba(147,51,234,0.08); color: #7e22ce; }
+
+  .no-minion-note {
+    text-align: center; padding: 12px; font-family: 'Cinzel', Georgia, serif;
+    font-weight: 900; font-size: 0.85em; color: #15803d; font-style: italic;
+  }
+
+  /* ── EFFECT NOTIFICATIONS (draw cards) ── */
+  .fx-note {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 10px; margin: 3px 0; border-radius: 5px;
+    font-family: 'Cinzel', Georgia, serif; font-weight: 900; font-size: 0.78em;
+  }
+  .fx-note.advance { background: rgba(220,38,38,0.06); border: 1px solid rgba(220,38,38,0.3); }
+  .fx-note.overrun { background: rgba(239,68,68,0.08); border: 1px solid #ef4444; }
+  .fx-note.taint { background: rgba(147,51,234,0.08); border: 1px solid #9333ea; }
+  .fx-note.blocked { background: rgba(139,115,85,0.1); border: 1px solid rgba(139,115,85,0.3); }
+  .fx-note .fx-label { display: flex; align-items: center; }
+
+  /* ── SECTION SEPARATORS ── */
+  .sep { border-top: 1px solid rgba(139,115,85,0.3); margin: 10px 0; }
+
+  /* ── TOGGLE SECTIONS ── */
+  .toggle-section { display: none; }
+  .toggle-section.visible { display: block; }
+
+  /* ── CARD REVEAL ANIMATION ── */
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .card-reveal-anim {
+    animation: cardReveal 0.4s ease-out forwards; opacity: 0;
+  }
+
+  /* ── CORNER TOKENS (Monarch City) ── */
+  .corner-wrap { position: relative; display: inline-block; }
+  .ct {
+    position: absolute; width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.3); box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  .ct.tl { top: -6px; left: -6px; }
+  .ct.tr { top: -6px; right: -6px; }
+  .ct.bl { bottom: -6px; left: -6px; }
+  .ct.br { bottom: -6px; right: -6px; }
+
+  /* ── RESULTS DIVIDER ── */
+  .results-divider {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 2px solid rgba(139,115,85,0.4);
+  }
+
+  /* ── CARD VIEW SWITCHING ── */
+  .card-view { display: none; }
+  .card-view.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     CONTROL PANEL
+     ═══════════════════════════════════════ -->
+<div class="control-panel">
+  <div class="type-bar">
+    <div class="type-btn active" onclick="selectType('standard')"><span class="dot" style="background:#3b82f6"></span>Next Loc</div>
+    <div class="type-btn" onclick="selectType('patrols')"><span class="dot" style="background:#16a34a"></span>Patrols</div>
+    <div class="type-btn" onclick="selectType('warparty')"><span class="dot" style="background:#16a34a"></span>War Party</div>
+    <div class="type-btn" onclick="selectType('general')"><span class="dot" style="background:#6b7280"></span>Standard</div>
+    <div class="type-btn" onclick="selectType('monarch')"><span class="dot" style="background:#7c3aed"></span>Monarch</div>
+  </div>
+  <div class="phase-bar">
+    <div class="phase-sel-btn active" onclick="selectPhase('draw')">Draw Card</div>
+    <div class="phase-sel-btn" onclick="selectPhase('resolve')">Resolve Card</div>
+  </div>
+  <div class="mech-bar" id="mechBar">
+    <div class="mech-btn" data-mech="overrun" onclick="toggleMech(this)">Overrun</div>
+    <div class="mech-btn" data-mech="taint" onclick="toggleMech(this)">Taint</div>
+    <div class="mech-btn active" data-mech="minion" onclick="toggleMech(this)">Minions</div>
+    <div class="mech-btn active" data-mech="gen-advance" onclick="toggleMech(this)">Gen. Advances</div>
+    <div class="mech-btn" data-mech="gen-blocked" onclick="toggleMech(this)">Gen. Blocked</div>
+    <div class="mech-btn" data-mech="nominion" onclick="toggleMech(this)">No Minions</div>
+    <div class="mech-btn" data-mech="hero-skill" onclick="toggleMech(this)">Hero Skills</div>
+    <div class="mech-btn" data-mech="special-card" onclick="toggleMech(this)">Special Cards</div>
+    <div class="mech-btn" data-mech="quest" onclick="toggleMech(this)">Quests</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     THE ACTUAL GAME MODAL
+     ═══════════════════════════════════════ -->
+<div class="modal-frame">
+
+  <!-- Step Indicator -->
+  <div class="step-indicator-bar">
+    <div class="step-item">
+      <div class="step-badge past"><span style="font-size:0.9em">✓</span><span class="step-label past">Daytime</span></div>
+      <span class="step-arrow past">→</span>
+    </div>
+    <div class="step-item">
+      <div class="step-badge past"><span style="font-size:0.9em">✓</span><span class="step-label past">Evening</span></div>
+      <span class="step-arrow past">→</span>
+    </div>
+    <div class="step-item">
+      <div class="step-badge active"><span style="font-size:0.9em">🌙</span><span class="step-label active">Night</span></div>
+    </div>
+  </div>
+
+  <!-- Heading -->
+  <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">Step 3 — 🌙 Night</div>
+
+  <!-- Card Counter -->
+  <div id="cardCounter" style="text-align:center;margin-bottom:10px">
+    <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#d4af37;font-size:0.85em">Draw Card 1 of 2</strong>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       CARD CONTENT AREA
+       ═══════════════════════════════════════ -->
+  <div id="cardArea">
+
+    <!-- ════════════════════════════════════
+         NEXT LOCATION — DRAW
+         ════════════════════════════════════ -->
+    <div class="card-view active" data-type="standard" data-phase="draw">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <!-- Minion 1 & 2 visual -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <!-- Minion 1 -->
+          <div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span>
+              </div>
+              <div class="location-ring" style="width:90px;height:90px;background:#16a34a">
+                <span class="location-ring-name" style="font-size:0.74em">Raven<br>Forest</span>
+              </div>
+            </div>
+          </div>
+          <!-- Minion 2 -->
+          <div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+              </div>
+              <div class="location-ring" style="width:90px;height:90px;background:#6b7280">
+                <span class="location-ring-name" style="font-size:0.74em">Dark<br>Woods</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- General visual with path chain -->
+        <div class="darkness-loc-general">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span>
+              </div>
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                <div class="modal-general-token" style="background:#3b82f6;width:48px;height:48px;font-size:1.4em">🐉</div>
+                <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Sapphire</div>
+              </div>
+            </div>
+            <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+              <div style="display:flex;align-items:center;padding:6px">
+                <div style="z-index:7;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.5em">Bounty<br>Bay</span></div></div>
+                <div style="margin-left:-14px;z-index:6;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.5em">Crystal<br>Hills</span></div></div>
+                <div style="margin-left:-14px;z-index:8;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.5em">Amarak<br>Peak</span></div></div>
+                <div style="margin-left:-14px;z-index:4;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#ef4444"><span class="location-ring-name" style="font-size:0.5em">Eagle<br>Peak</span></div></div>
+                <div style="margin-left:-14px;z-index:3;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.5em">Monarch<br>City</span></div></div>
+              </div>
+              <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div>
+            </div>
+          </div>
+          <!-- Draw-phase warnings -->
+        </div>
+        <!-- ── DARKNESS SPREADS EFFECTS ── -->
+        <div class="results-divider">
+          <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Darkness Spreads Effects</div>
+          <div class="toggle-section" data-mech="overrun">
+            <div class="fx-note overrun"><span class="fx-label" style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Amarak Peak</span></div>
+          </div>
+          <div class="toggle-section" data-mech="taint">
+            <div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Thorny Woods</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-advance">
+            <div class="fx-note advance"><span class="fx-label" style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Amarak Peak</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-blocked">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ Amarak Peak</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         NEXT LOCATION — RESOLVE
+         ════════════════════════════════════ -->
+    <div class="card-view" data-type="standard" data-phase="resolve">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <!-- Same card preview but simplified (no path chain) -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span>
+              </div>
+              <div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Raven<br>Forest</span></div>
+            </div>
+          </div>
+          <div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+              </div>
+              <div class="location-ring" style="width:90px;height:90px;background:#6b7280"><span class="location-ring-name" style="font-size:0.74em">Dark<br>Woods</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="darkness-loc-general">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span>
+              </div>
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                <div class="modal-general-token" style="background:#3b82f6;width:48px;height:48px;font-size:1.4em">🐉</div>
+                <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Sapphire</div>
+              </div>
+            </div>
+            <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+              <div style="display:flex;align-items:center;padding:6px">
+                <div style="z-index:7;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.5em">Bounty<br>Bay</span></div></div>
+                <div style="margin-left:-14px;z-index:6;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.5em">Crystal<br>Hills</span></div></div>
+                <div style="margin-left:-14px;z-index:8;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px rgba(59,130,246,0.6)"><span class="location-ring-name" style="font-size:0.5em">Amarak<br>Peak</span></div></div>
+                <div style="margin-left:-14px;z-index:4;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#ef4444"><span class="location-ring-name" style="font-size:0.5em">Eagle<br>Peak</span></div></div>
+                <div style="margin-left:-14px;z-index:3;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.5em">Monarch<br>City</span></div></div>
+              </div>
+              <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── RESOLVE RESULTS ── -->
+        <div class="results-divider">
+          <!-- Minion Movement -->
+          <div class="toggle-section" data-mech="minion">
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
+            <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Raven Forest</span>
+              </div>
+            </div>
+            <div style="background:rgba(107,114,128,0.1);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="iv-effect" data-iv="holy-shield">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Holy Shield</span><span style="color:#2c1810">→ 1 minion placement prevented</span></div>
+          </div>
+          <div class="iv-effect" data-iv="sanctified-ground">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Sanctified Ground</span><span style="color:#2c1810">→ Taint Crystal placement prevented</span></div>
+          </div>
+          <!-- General Movement -->
+          <div class="toggle-section" data-mech="gen-advance">
+            <div class="sep"></div>
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+            <div style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.3);border-radius:5px;padding:8px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="display:flex;align-items:center;gap:6px">
+                  <span class="modal-general-token" style="background:#3b82f6;width:24px;height:24px;font-size:0.7em">🐉</span>
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#3b82f6">Sapphire</span>
+                </span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Amarak Peak</span>
+              </div>
+              <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#dc2626;margin-top:4px">GENERAL ADVANCES</div>
+              <!-- Nested Minion Placement -->
+              <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin-top:8px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span>
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Amarak Peak</span>
+                </div>
+                <div class="sl blue"><span class="left cb"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ Amarak Peak</span></div>
+                <div class="toggle-section" data-mech="taint">
+                  <div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Amarak Peak</span></div></div>
+                </div>
+                <!-- Nested Overrun -->
+                <div class="toggle-section" data-mech="overrun">
+                  <div class="overrun-box" style="margin-top:6px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#dc2626">Overrun Triggered</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Amarak Peak</span></div>
+                    <div class="sl blue"><span class="left cb"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span><span class="right">→ Eagle Peak Pass</span></div>
+                    <div class="sl blue"><span class="left cb"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span><span class="right">→ McCorm Highlands</span></div>
+                    <div class="sl blue"><span class="left cb"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span><span class="right">→ Ghost Marsh</span></div>
+                    <div class="sl blue"><span class="left cb"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ Thorny Woods</span></div>
+                    <div class="toggle-section" data-mech="taint">
+                      <div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="toggle-section" data-mech="gen-blocked">
+            <div class="sep"></div>
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ Amarak Peak</span></div>
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions placed</span><span style="color:#2c1810">→ Amarak Peak</span></div>
+
+          <div class="iv-effect" data-iv="divine-intervention">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Divine Intervention</span><span style="color:#2c1810">→ General advance cancelled</span></div>
+          </div>
+
+          <div class="iv-effect" data-iv="eagle-eye">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Eagle Eye</span><span style="color:#2c1810">→ Next card scouted</span></div>
+          </div>
+          <div class="iv-effect" data-iv="elven-foresight">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Elven Foresight</span><span style="color:#2c1810">→ 1 card removed from deck</span></div>
+          </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         ORC PATROLS — DRAW
+         ════════════════════════════════════ -->
+    <div class="card-view" data-type="patrols" data-phase="draw">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">Orc Patrols</div>
+        <div style="margin-bottom:4px">
+          <div style="font-size:0.75em;color:#3d2b1f;margin-bottom:8px">Add 1 green minion to each empty green location</div>
+        </div>
+        <!-- General path visual -->
+        <div class="darkness-loc-general">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+              </div>
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                <div class="modal-general-token" style="background:#6b7280;width:48px;height:48px;font-size:1.4em">💀</div>
+                <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280">Varkolak</div>
+              </div>
+            </div>
+            <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+              <div style="display:flex;align-items:center;padding:6px">
+                <div style="z-index:7;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#6b7280"><span class="location-ring-name" style="font-size:0.5em">Crypt<br>Keep</span></div></div>
+                <div style="margin-left:-14px;z-index:8;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#6b7280"><span class="location-ring-name" style="font-size:0.5em">Dark<br>Woods</span></div></div>
+                <div style="margin-left:-14px;z-index:5;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#ef4444"><span class="location-ring-name" style="font-size:0.5em">Windy<br>Pass</span></div></div>
+                <div style="margin-left:-14px;z-index:4;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#6b7280"><span class="location-ring-name" style="font-size:0.5em">Sea Bird<br>Port</span></div></div>
+                <div style="margin-left:-14px;z-index:3;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.5em">Monarch<br>City</span></div></div>
+              </div>
+              <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280">Next Location</div>
+            </div>
+          </div>
+        </div>
+        <!-- ── DARKNESS SPREADS EFFECTS ── -->
+        <div class="results-divider">
+          <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Darkness Spreads Effects</div>
+          <div class="toggle-section" data-mech="gen-advance">
+            <div class="fx-note advance"><span class="fx-label" style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Dark Woods</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-blocked">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ Dark Woods</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORC PATROLS — RESOLVE -->
+    <div class="card-view" data-type="patrols" data-phase="resolve">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">Orc Patrols</div>
+        <div style="font-size:0.75em;color:#3d2b1f;margin-bottom:10px">Add 1 green minion to each empty green location</div>
+        <!-- General visual with path chain -->
+        <div class="darkness-loc-general">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+              </div>
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                <div class="modal-general-token" style="background:#6b7280;width:48px;height:48px;font-size:1.4em">💀</div>
+                <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280">Varkolak</div>
+              </div>
+            </div>
+            <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+              <div style="display:flex;align-items:center;padding:6px">
+                <div style="z-index:7;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#6b7280"><span class="location-ring-name" style="font-size:0.5em">Crypt<br>Keep</span></div></div>
+                <div style="margin-left:-14px;z-index:6;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#6b7280"><span class="location-ring-name" style="font-size:0.5em">Dark<br>Woods</span></div></div>
+                <div style="margin-left:-14px;z-index:8;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#16a34a;outline:3px solid #16a34a;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px rgba(22,163,74,0.6)"><span class="location-ring-name" style="font-size:0.5em">Father<br>Oak</span></div></div>
+                <div style="margin-left:-14px;z-index:4;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#16a34a"><span class="location-ring-name" style="font-size:0.5em">Dancing<br>Stone</span></div></div>
+                <div style="margin-left:-14px;z-index:3;position:relative"><div class="location-ring" style="width:60px;height:60px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.5em">Monarch<br>City</span></div></div>
+              </div>
+              <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280">Next Location</div>
+            </div>
+          </div>
+        </div>
+        <!-- Results -->
+        <div class="results-divider">
+          <div class="toggle-section" data-mech="minion">
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
+            <div style="background:rgba(22,163,74,0.08);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Orc Patrols</span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">8 locations</span>
+              </div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Father Oak Forest</span></div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Greenleaf Village</span></div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Raven Forest</span></div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Unicorn Forest</span></div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Whispering Woods</span></div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Wyvern Forest</span></div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Minotaur Forest</span></div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Gryphon Forest</span></div>
+            </div>
+          </div>
+          <div class="iv-effect" data-iv="holy-shield">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Holy Shield</span><span style="color:#2c1810">→ 1 minion placement prevented</span></div>
+          </div>
+          <div class="iv-effect" data-iv="sanctified-ground">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Sanctified Ground</span><span style="color:#2c1810">→ Taint Crystal placement prevented</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-advance">
+            <div class="sep"></div>
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+            <div style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.3);border-radius:5px;padding:8px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="display:flex;align-items:center;gap:6px">
+                  <span class="modal-general-token" style="background:#6b7280;width:24px;height:24px;font-size:0.7em">💀</span>
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#6b7280">Varkolak</span>
+                </span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Father Oak Forest</span>
+              </div>
+              <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#dc2626;margin-top:4px">GENERAL ADVANCES</div>
+              <!-- Nested Minion Placement -->
+              <div style="background:rgba(107,114,128,0.1);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin-top:8px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span>
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Father Oak Forest</span>
+                </div>
+                <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ Father Oak Forest</span></div>
+                <div class="toggle-section" data-mech="taint">
+                  <div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Father Oak Forest</span></div></div>
+                </div>
+                <!-- Nested Overrun -->
+                <div class="toggle-section" data-mech="overrun">
+                  <div class="overrun-box" style="margin-top:6px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#dc2626">Overrun Triggered</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Father Oak Forest</span></div>
+                    <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="right">→ Dancing Stone</span></div>
+                    <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="right">→ Raven Forest</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="toggle-section" data-mech="gen-blocked">
+            <div class="sep"></div>
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ Father Oak Forest</span></div>
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions placed</span><span style="color:#2c1810">→ Father Oak Forest</span></div>
+          <div class="iv-effect" data-iv="divine-intervention">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Divine Intervention</span><span style="color:#2c1810">→ General advance cancelled</span></div>
+          </div>
+          <div class="iv-effect" data-iv="eagle-eye">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Eagle Eye</span><span style="color:#2c1810">→ Next card scouted</span></div>
+          </div>
+          <div class="iv-effect" data-iv="elven-foresight">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Elven Foresight</span><span style="color:#2c1810">→ 1 card removed from deck</span></div>
+          </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         ORC WAR PARTY — DRAW
+         ════════════════════════════════════ -->
+    <div class="card-view" data-type="warparty" data-phase="draw">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">Orc War Party</div>
+        <div style="font-size:0.75em;color:#3d2b1f;margin-bottom:6px">Add 1 orc to each location with exactly 1 orc and no other minions</div>
+        <div style="display:flex;justify-content:center;margin-top:8px">
+          <div class="darkness-loc-general" style="padding-bottom:20px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                <div class="modal-general-token" style="background:#3b82f6;width:48px;height:48px;font-size:1.4em">🐉</div>
+                <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Sapphire</div>
+              </div>
+              <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+              <div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch<br>City</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- ── DARKNESS SPREADS EFFECTS ── -->
+        <div class="results-divider">
+          <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Darkness Spreads Effects</div>
+          <div class="toggle-section" data-mech="overrun">
+            <div class="fx-note overrun"><span class="fx-label" style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Dancing Stone</span></div>
+          </div>
+          <div class="toggle-section" data-mech="taint">
+            <div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Father Oak Forest</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-advance">
+            <div class="fx-note advance"><span class="fx-label" style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Monarch City</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-blocked">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ Monarch City</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORC WAR PARTY — RESOLVE -->
+    <div class="card-view" data-type="warparty" data-phase="resolve">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">Orc War Party</div>
+        <div style="font-size:0.75em;color:#3d2b1f;margin-bottom:10px">Add 1 orc to each location with exactly 1 orc and no other minions</div>
+        <div style="display:flex;justify-content:center">
+          <div class="darkness-loc-general" style="padding-bottom:20px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                <div class="modal-general-token" style="background:#3b82f6;width:48px;height:48px;font-size:1.4em">🐉</div>
+                <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Sapphire</div>
+              </div>
+              <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+              <div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch<br>City</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="results-divider">
+          <div class="toggle-section" data-mech="minion">
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
+            <div style="background:rgba(22,163,74,0.08);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Orc War Party</span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">3 locations</span>
+              </div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Raven Forest</span></div>
+              <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Father Oak Forest</span></div>
+              <!-- Dancing Stone triggers overrun -->
+              <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin-top:4px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dancing Stone</span>
+                </div>
+                <div class="toggle-section" data-mech="overrun">
+                  <div class="overrun-box" style="margin-top:6px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#dc2626">Overrun Triggered</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dancing Stone</span></div>
+                    <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Enchanted Glade</span></div>
+                    <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Mermaid Harbor</span></div>
+                    <div class="sl green"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ Whispering Woods</span></div>
+                    <div class="toggle-section" data-mech="taint">
+                      <div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Whispering Woods</span></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="iv-effect" data-iv="holy-shield">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Holy Shield</span><span style="color:#2c1810">→ 1 minion placement prevented</span></div>
+          </div>
+          <div class="iv-effect" data-iv="sanctified-ground">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Sanctified Ground</span><span style="color:#2c1810">→ Taint Crystal placement prevented</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-blocked">
+            <div class="sep"></div>
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ Monarch City</span></div>
+          <div class="iv-effect" data-iv="divine-intervention">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Divine Intervention</span><span style="color:#2c1810">→ General advance cancelled</span></div>
+          </div>
+          <div class="iv-effect" data-iv="eagle-eye">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Eagle Eye</span><span style="color:#2c1810">→ Next card scouted</span></div>
+          </div>
+          <div class="iv-effect" data-iv="elven-foresight">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Elven Foresight</span><span style="color:#2c1810">→ 1 card removed from deck</span></div>
+          </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         GENERAL NEXT LOCATION — DRAW
+         ════════════════════════════════════ -->
+    <div class="card-view" data-type="general" data-phase="draw">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#ef4444;width:22px;height:22px"></span>
+              </div>
+              <div class="location-ring" style="width:90px;height:90px;background:#ef4444"><span class="location-ring-name" style="font-size:0.74em">Windy<br>Pass</span></div>
+            </div>
+          </div>
+          <div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+              </div>
+              <div class="location-ring" style="width:90px;height:90px;background:#6b7280"><span class="location-ring-name" style="font-size:0.74em">Dark<br>Woods</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="darkness-loc-general" style="padding-bottom:24px">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+              </div>
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                <div class="modal-general-token" style="background:#6b7280;width:48px;height:48px;font-size:1.4em">💀</div>
+                <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280">Varkolak</div>
+              </div>
+            </div>
+            <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+            <div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Father<br>Oak</span></div>
+          </div>
+          <!-- close general visual path -->
+        </div>
+        <!-- ── DARKNESS SPREADS EFFECTS ── -->
+        <div class="results-divider">
+          <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Darkness Spreads Effects</div>
+          <div class="toggle-section" data-mech="overrun">
+            <div class="fx-note overrun"><span class="fx-label" style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Dark Woods</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-advance">
+            <div class="fx-note advance"><span class="fx-label" style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Father Oak Forest</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-blocked">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ Father Oak Forest</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERAL NEXT LOCATION — RESOLVE -->
+    <div class="card-view" data-type="general" data-phase="resolve">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#ef4444;width:22px;height:22px"></span>
+              </div>
+              <div class="location-ring" style="width:90px;height:90px;background:#ef4444"><span class="location-ring-name" style="font-size:0.74em">Windy<br>Pass</span></div>
+            </div>
+          </div>
+          <div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+              </div>
+              <div class="location-ring" style="width:90px;height:90px;background:#6b7280"><span class="location-ring-name" style="font-size:0.74em">Dark<br>Woods</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="darkness-loc-general" style="padding-bottom:20px">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+                <span class="modal-minion-dot" style="background:#6b7280;width:22px;height:22px"></span>
+              </div>
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                <div class="modal-general-token" style="background:#6b7280;width:48px;height:48px;font-size:1.4em">💀</div>
+                <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280">Varkolak</div>
+              </div>
+            </div>
+            <div style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6);line-height:1;flex-shrink:0">→</div>
+            <div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Father<br>Oak</span></div>
+          </div>
+        </div>
+        <div class="results-divider">
+          <div class="toggle-section" data-mech="minion">
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
+            <div style="background:rgba(239,68,68,0.1);border:1px solid #ef4444;border-radius:5px;padding:5px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#ef4444"><span class="mdot" style="width:14px;height:14px;background:#ef4444;margin-right:3px"></span> Demons</span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Windy Pass</span>
+              </div>
+            </div>
+            <div style="background:rgba(107,114,128,0.1);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span>
+              </div>
+              <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ Dark Woods</span></div>
+              <div class="toggle-section" data-mech="taint">
+                <div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span></div></div>
+              </div>
+              <!-- Nested Overrun -->
+              <div class="toggle-section" data-mech="overrun">
+                <div class="overrun-box" style="margin-top:6px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#dc2626">Overrun Triggered</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span></div>
+                  <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="right">→ Crypt Keep</span></div>
+                  <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="right">→ Raven Forest</span></div>
+                  <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="right">→ Windy Pass</span></div>
+                  <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ Ghost Marsh</span></div>
+                  <div class="toggle-section" data-mech="taint">
+                    <div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Ghost Marsh</span></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="iv-effect" data-iv="holy-shield">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Holy Shield</span><span style="color:#2c1810">→ 1 minion placement prevented</span></div>
+          </div>
+          <div class="iv-effect" data-iv="sanctified-ground">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Sanctified Ground</span><span style="color:#2c1810">→ Taint Crystal placement prevented</span></div>
+          </div>
+          <div class="toggle-section" data-mech="gen-advance">
+            <div class="sep"></div>
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+            <div style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.3);border-radius:5px;padding:8px 10px;margin:4px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="display:flex;align-items:center;gap:6px">
+                  <span class="modal-general-token" style="background:#6b7280;width:24px;height:24px;font-size:0.7em">💀</span>
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#6b7280">Varkolak</span>
+                </span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Father Oak Forest</span>
+              </div>
+              <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#dc2626;margin-top:4px">GENERAL ADVANCES</div>
+              <!-- Nested Minion Placement -->
+              <div style="background:rgba(107,114,128,0.1);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin-top:8px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span>
+                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Father Oak Forest</span>
+                </div>
+                <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="not-placed-label">NOT PLACED</span><span class="right">→ Father Oak Forest</span></div>
+                <div class="toggle-section" data-mech="taint">
+                  <div class="taint-box" style="margin-top:6px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#7e22ce">Taint Crystal Placed</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Father Oak Forest</span></div></div>
+                </div>
+                <!-- Nested Overrun -->
+                <div class="toggle-section" data-mech="overrun">
+                  <div class="overrun-box" style="margin-top:6px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#dc2626">Overrun Triggered</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Father Oak Forest</span></div>
+                    <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="right">→ Dancing Stone</span></div>
+                    <div class="sl gray"><span class="left ck"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span><span class="right">→ Raven Forest</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="toggle-section" data-mech="gen-blocked">
+            <div class="sep"></div>
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ Father Oak Forest</span></div>
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions placed</span><span style="color:#2c1810">→ Father Oak Forest</span></div>
+          <div class="iv-effect" data-iv="divine-intervention">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Divine Intervention</span><span style="color:#2c1810">→ General advance cancelled</span></div>
+          </div>
+          <div class="iv-effect" data-iv="eagle-eye">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Eagle Eye</span><span style="color:#2c1810">→ Next card scouted</span></div>
+          </div>
+          <div class="iv-effect" data-iv="elven-foresight">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Elven Foresight</span><span style="color:#2c1810">→ 1 card removed from deck</span></div>
+          </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         MONARCH CITY — DRAW
+         ════════════════════════════════════ -->
+    <div class="card-view" data-type="monarch" data-phase="draw">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
+        <div style="display:flex;align-items:center;margin-bottom:8px">
+          <div style="flex:1;display:flex;justify-content:center">
+            <div class="corner-wrap">
+              <div style="width:90px;height:90px;border-radius:50%;background:#7c3aed;border:3px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.3)"><span style="padding:4px">Monarch<br>City</span></div>
+              <div class="ct tl" style="background:#6b7280"></div>
+              <div class="ct tr" style="background:#16a34a"></div>
+              <div class="ct bl" style="background:#ef4444"></div>
+              <div class="ct br" style="background:#3b82f6"></div>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center">
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:4px">Special</div>
+            <div style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px">Place 1 minion of each color that has minions adjacent to Monarch City</div>
+            <div style="font-size:0.75em;color:#dc2626;line-height:1.4">No Overrun Can Occur</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-bottom:2px">Reshuffle All Decks</div>
+        <div style="text-align:center;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
+        <!-- ── DARKNESS SPREADS EFFECTS ── -->
+        <div class="results-divider">
+          <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Darkness Spreads Effects</div>
+          <div class="toggle-section" data-mech="minion">
+            <div class="fx-note overrun"><span class="fx-label" style="color:#b91c1c">5th minion will be placed</span><span style="color:#2c1810">→ Monarch City</span></div>
+          </div>
+          <div class="toggle-section" data-mech="nominion">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions adjacent</span><span style="color:#2c1810">→ Monarch City</span></div>
+          </div>
+          <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No Generals Will Advance</span><span style="color:#2c1810"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONARCH CITY — RESOLVE -->
+    <div class="card-view" data-type="monarch" data-phase="resolve">
+      <div class="parchment-box card-reveal-anim">
+        <div class="parchment-banner"><span class="hero-banner-name">Darkness Spreads</span></div>
+        <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
+        <div style="display:flex;align-items:center;margin-bottom:8px">
+          <div style="flex:1;display:flex;justify-content:center">
+            <div class="corner-wrap">
+              <div style="width:90px;height:90px;border-radius:50%;background:#7c3aed;border:3px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.3)"><span style="padding:4px">Monarch<br>City</span></div>
+              <div class="ct tl" style="background:#6b7280"></div>
+              <div class="ct tr" style="background:#16a34a"></div>
+              <div class="ct bl" style="background:#ef4444"></div>
+              <div class="ct br" style="background:#3b82f6"></div>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center">
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:4px">Special</div>
+            <div style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px">Place 1 minion of each color that has minions adjacent to Monarch City</div>
+            <div style="font-size:0.75em;color:#dc2626;line-height:1.4">No Overrun Can Occur</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-bottom:2px">Reshuffle All Decks</div>
+        <div style="text-align:center;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
+        <!-- ── RESOLVE RESULTS ── -->
+        <div class="results-divider">
+          <div class="toggle-section" data-mech="minion">
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
+            <div style="background:rgba(124,58,237,0.08);border:1px solid #7c3aed;border-radius:5px;padding:5px 10px;margin:4px 0">
+              <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed;margin-bottom:4px">Monarch City Special</div>
+              <div class="sl purple"><span class="left cg"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span><span class="right">→ Monarch City</span></div>
+              <div class="sl purple"><span class="left cr"><span class="mdot" style="width:14px;height:14px;background:#ef4444;margin-right:3px"></span> Demons</span><span class="right">→ Monarch City</span></div>
+            </div>
+          </div>
+          <div class="toggle-section" data-mech="nominion">
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No minions adjacent</span><span style="color:#2c1810">→ Monarch City</span></div>
+          </div>
+          <div class="iv-effect" data-iv="holy-shield">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Holy Shield</span><span style="color:#2c1810">→ 1 minion placement prevented</span></div>
+          </div>
+          <div class="iv-effect" data-iv="sanctified-ground">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Sanctified Ground</span><span style="color:#2c1810">→ Taint Crystal placement prevented</span></div>
+          </div>
+          <div class="sep"></div>
+          <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+          <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">No Generals Will Advance</span><span style="color:#2c1810"></span></div>
+          <div class="iv-effect" data-iv="divine-intervention">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Divine Intervention</span><span style="color:#2c1810">→ General advance cancelled</span></div>
+          </div>
+          <div class="iv-effect" data-iv="eagle-eye">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Eagle Eye</span><span style="color:#2c1810">→ Next card scouted</span></div>
+          </div>
+          <div class="iv-effect" data-iv="elven-foresight">
+            <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">Elven Foresight</span><span style="color:#2c1810">→ 1 card removed from deck</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cardArea -->
+
+  <!-- ═══════════════════════════════════════
+       INTERVENTION BUTTONS (draw phase only)
+       ═══════════════════════════════════════ -->
+  <div id="interveneArea" class="intervene-area">
+    <div class="toggle-section" data-mech="hero-skill">
+      <button onclick="toggleIntervene(this)" class="intervene-btn hero-skill" data-iv="eagle-eye">
+        <span class="iv-icon">⚔️</span>
+        <div class="iv-text"><span class="iv-name">Eagle Eye</span><span class="iv-desc">Scout the top card of the Darkness Spreads deck</span></div>
+      </button>
+    </div>
+    <div class="toggle-section" data-mech="hero-skill">
+      <button onclick="toggleIntervene(this)" class="intervene-btn hero-skill" data-iv="holy-shield">
+        <span class="iv-icon">⚔️</span>
+        <div class="iv-text"><span class="iv-name">Holy Shield</span><span class="iv-desc">Prevent 1 minion placement at Paladin's current location</span></div>
+      </button>
+    </div>
+    <div class="toggle-section" data-mech="special-card">
+      <button onclick="toggleIntervene(this)" class="intervene-btn special-card" data-iv="divine-intervention">
+        <span class="iv-icon">✨</span>
+        <div class="iv-text"><span class="iv-name">Divine Intervention</span><span class="iv-desc">Cancel the General's advance this turn</span></div>
+      </button>
+    </div>
+    <div class="toggle-section" data-mech="special-card">
+      <button onclick="toggleIntervene(this)" class="intervene-btn special-card" data-iv="elven-foresight">
+        <span class="iv-icon">✨</span>
+        <div class="iv-text"><span class="iv-name">Elven Foresight</span><span class="iv-desc">Remove 1 Darkness Spreads card from the deck</span></div>
+      </button>
+    </div>
+    <div class="toggle-section" data-mech="quest">
+      <button onclick="toggleIntervene(this)" class="intervene-btn quest" data-iv="sanctified-ground">
+        <span class="iv-icon">📜</span>
+        <div class="iv-text"><span class="iv-name">Sanctified Ground</span><span class="iv-desc">Prevent Taint Crystal placement this turn</span></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       ACTION BUTTON
+       ═══════════════════════════════════════ -->
+  <button id="actionBtn" class="phase-btn" onclick="handleAction()">Resolve Card</button>
+
+</div><!-- /modal-frame -->
+
+<script>
+let currentType = 'standard';
+let currentPhase = 'draw';
+const activeMechs = new Set(['minion', 'gen-advance']);
+
+function selectType(type) {
+  currentType = type;
+  currentPhase = 'draw';
+  document.querySelectorAll('.intervene-btn.selected').forEach(b => b.classList.remove('selected'));
+  activeInterventions.clear();
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.onclick.toString().includes("'" + type + "'")));
+  syncPhaseBar();
+  updateCard();
+  updateButton();
+  updateCounter();
+}
+
+function selectPhase(phase) {
+  currentPhase = phase;
+  syncPhaseBar();
+  updateCard();
+  updateButton();
+  updateCounter();
+}
+
+function syncPhaseBar() {
+  document.querySelectorAll('.phase-sel-btn').forEach(b => {
+    b.classList.toggle('active', b.onclick.toString().includes("'" + currentPhase + "'"));
+  });
+}
+
+function toggleMech(btn) {
+  const mech = btn.dataset.mech;
+  if (activeMechs.has(mech)) { activeMechs.delete(mech); btn.classList.remove('active'); }
+  else { activeMechs.add(mech); btn.classList.add('active'); }
+  updateToggles();
+}
+
+function handleAction() {
+  if (currentPhase === 'draw') {
+    currentPhase = 'resolve';
+  } else {
+    // Going back to draw — clear selections
+    activeInterventions.clear();
+    document.querySelectorAll('.intervene-btn.selected').forEach(b => b.classList.remove('selected'));
+    currentPhase = 'draw';
+  }
+  syncPhaseBar();
+  updateCard();
+  updateButton();
+  updateCounter();
+}
+
+function updateCard() {
+  document.querySelectorAll('.card-view').forEach(v => {
+    const match = v.dataset.type === currentType && v.dataset.phase === currentPhase;
+    v.classList.toggle('active', match);
+    // Re-trigger animation
+    if (match) {
+      const anim = v.querySelector('.card-reveal-anim');
+      if (anim) {
+        anim.style.animation = 'none';
+        anim.offsetHeight; // force reflow
+        anim.style.animation = '';
+      }
+    }
+  });
+  updateToggles();
+}
+
+function updateToggles() {
+  document.querySelectorAll('.card-view.active .toggle-section').forEach(s => {
+    s.classList.toggle('visible', activeMechs.has(s.dataset.mech));
+  });
+  // Intervention buttons: show on draw phase only
+  const area = document.getElementById('interveneArea');
+  if (currentPhase === 'draw') {
+    area.style.display = '';
+    area.querySelectorAll('.toggle-section').forEach(s => {
+      s.classList.toggle('visible', activeMechs.has(s.dataset.mech));
+    });
+  } else {
+    area.style.display = 'none';
+  }
+  // Intervention effects on resolve cards
+  document.querySelectorAll('.card-view.active .iv-effect').forEach(el => {
+    el.classList.toggle('active', activeInterventions.has(el.dataset.iv));
+  });
+}
+
+function updateButton() {
+  const btn = document.getElementById('actionBtn');
+  if (currentPhase === 'draw') {
+    btn.textContent = 'Resolve Card';
+  } else {
+    btn.textContent = 'Draw Next Card';
+  }
+}
+
+function updateCounter() {
+  const counter = document.getElementById('cardCounter');
+  if (currentPhase === 'draw') {
+    counter.innerHTML = '<strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#d4af37;font-size:0.85em">Draw Card 1 of 2</strong>';
+  } else {
+    counter.innerHTML = '<strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#d4af37;font-size:0.85em">Resolve Card 1 of 2</strong>';
+  }
+}
+
+const activeInterventions = new Set();
+
+function toggleIntervene(btn) {
+  btn.classList.toggle('selected');
+  const iv = btn.dataset.iv;
+  if (btn.classList.contains('selected')) {
+    activeInterventions.add(iv);
+  } else {
+    activeInterventions.delete(iv);
+  }
+}
+
+// Init mech buttons
+document.querySelectorAll('.mech-btn').forEach(b => {
+  b.classList.toggle('active', activeMechs.has(b.dataset.mech));
+});
+updateToggles();
+</script>
+
+</body>
+</html>

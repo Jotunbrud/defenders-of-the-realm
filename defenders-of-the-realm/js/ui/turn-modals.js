@@ -103,7 +103,7 @@ Object.assign(game, {
         const gc = this._generalColors[color] || '#888';
         const s = size || 14;
         let html = '';
-        for (let i = 0; i < count; i++) html += `<span style="display:inline-block;width:${s}px;height:${s}px;background:${gc};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3);vertical-align:middle;margin-right:3px"></span>`;
+        for (let i = 0; i < count; i++) html += `<span class="mdot" style="width:${s}px;height:${s}px;background:${gc};margin-right:3px"></span>`;
         return html;
     },
 
@@ -114,12 +114,72 @@ Object.assign(game, {
         return { border: '#dc2626', bg: 'rgba(220,38,38,0.08)', color: '#b91c1c' };
     },
 
+    // Build the "Darkness Spreads Effects" fx-note section for draw phase cards.
+    // Takes card, generalOnly flag, minion warnings arrays, general warnings array,
+    // and the resolved general destination location name.
+    _darknessEffectsHTML(card, generalOnly, minion1Warnings, minion2Warnings, generalWarnings, generalDestination) {
+        const notes = [];
+
+        // Minion overrun/taint warnings
+        if (!generalOnly) {
+            const mw = [].concat(minion1Warnings || [], minion2Warnings || []);
+            mw.forEach(w => {
+                if (w.type === 'overrun') {
+                    notes.push(`<div class="fx-note overrun"><span class="fx-label" style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ ${w.location || ''}</span></div>`);
+                } else if (w.type === 'taint') {
+                    notes.push(`<div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ ${w.location || ''}</span></div>`);
+                }
+            });
+        }
+
+        // General advance / blocked
+        if (generalWarnings && generalWarnings.length > 0) {
+            generalWarnings.forEach(w => {
+                if (w.type === 'advance' || w.type === 'monarch') {
+                    notes.push(`<div class="fx-note advance"><span class="fx-label" style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ ${generalDestination || ''}</span></div>`);
+                } else if (w.type === 'blocked' || w.type === 'major_wound' || w.type === 'defeated') {
+                    notes.push(`<div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">General Will Not Advance</span><span style="color:#2c1810">→ ${generalDestination || ''}</span></div>`);
+                }
+            });
+        }
+
+        if (notes.length === 0) return '';
+
+        return `<div class="results-divider">
+            <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Darkness Spreads Effects</div>
+            ${notes.join('')}
+        </div>`;
+    },
+
+    // Build the intervention buttons area for draw phase.
+    // Returns HTML string for the intervene-area section.
+    _interventionButtonsHTML(card, generalOnly) {
+        const hero = this.heroes[this.currentPlayerIndex];
+        if (!hero) return '';
+        if (card.type === 'all_quiet' || card.type === 'monarch_city_special') return '';
+
+        const buttons = [];
+
+        // Wizard's Wisdom — already handled via DOM button, not intervention style
+        // Militia Secures Area — already handled via DOM button
+        // Strong Defenses — already handled via DOM button
+
+        // For now, generate empty container — actual intervention buttons will be
+        // wired up in a later JS integration step when special cards / quest system
+        // feeds available interventions into this area.
+        if (buttons.length === 0) return '';
+
+        return `<div class="intervene-area">${buttons.join('')}</div>`;
+    },
+
     _darknessLocationCardHTML(location, color, count, isGeneral, strikethrough, warnings, militiaCancelled, generalPosition) {
         const gc = this._generalColors[color] || '#888';
         const gn = this._generalNames[color] || 'Unknown';
         const warningsHTML = (warnings || []).map(w => {
-            const ws = this._warningStyleHTML(w.type);
-            return `<div style="margin-top:6px;padding:3px 8px;border:1px solid ${ws.border};background:${ws.bg};border-radius:3px;font-size:0.75em;color:${ws.color};font-weight:bold;text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive">${w.text}</div>`;
+            const cls = w.type === 'overrun' || w.type === 'monarch' || w.type === 'exhausted' ? 'warn-badge warn-overrun'
+                      : w.type === 'taint' ? 'warn-badge warn-taint'
+                      : 'warn-badge warn-overrun';
+            return `<div class="${cls}" style="margin-top:6px;text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive">${w.text}</div>`;
         }).join('');
 
         if (isGeneral) {
@@ -889,7 +949,8 @@ Object.assign(game, {
                 ];
                 let cornerTokens = '';
                 minionPositions.forEach(p => {
-                    cornerTokens += `<div style="position:absolute;${p.pos}"><span style="display:inline-block;width:22px;height:22px;background:${factionColors[p.color]};border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3)"></span></div>`;
+                    const ctCls = p.pos.includes('top') ? (p.pos.includes('left') ? 'tl' : 'tr') : (p.pos.includes('left') ? 'bl' : 'br');
+                    cornerTokens += `<div class="ct ${ctCls}" style="background:${factionColors[p.color]}"></div>`;
                 });
 
                 const filledCircle = `<div style="width:90px;height:90px;border-radius:50%;background:#7c3aed;border:3px solid #5b21b6;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:white;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.5);box-shadow:0 2px 6px rgba(0,0,0,0.3)"><span style="padding:4px">Monarch<br>City</span></div>`;
@@ -908,7 +969,7 @@ Object.assign(game, {
                     <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:2.2em;color:#7c3aed;margin-bottom:8px">Monarch City</div>
                     <div style="display:flex;align-items:center;margin-bottom:8px">
                         <div style="flex:1;display:flex;justify-content:center">
-                            <div style="position:relative;display:inline-block">
+                            <div class="corner-wrap">
                                 ${filledCircle}
                                 ${cornerTokens}
                             </div>
@@ -921,8 +982,8 @@ Object.assign(game, {
                     </div>
                     <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-bottom:2px">Reshuffle All Decks</div>
                     <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
-                    <div style="margin-top:12px;padding-top:12px;border-top:2px solid rgba(139,115,85,0.4)">
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
+                    <div class="results-divider">
+                        <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
                         <div style="background:rgba(124,58,237,0.08);border:1px solid #7c3aed;border-radius:5px;padding:5px 10px">
                             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed;margin-bottom:4px">Monarch City Special</div>
                             ${colorLines}
@@ -933,11 +994,9 @@ Object.assign(game, {
                 // Already shown in monarch city card section above
             } else if (event.type === 'no_generals') {
                 html += `
-                    <div style="margin-top:12px;padding-top:12px;border-top:2px solid rgba(139,115,85,0.4)">
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
-                        <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px">
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">✗ No Generals Advance</div>
-                        </div>
+                    <div class="results-divider">
+                        <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">General Movement</div>
+                        <div class="fx-note blocked"><span class="fx-label" style="color:#8b7355">✗ No Generals Advance</span></div>
                     </div>
                 `;
             } else if (event.type === 'militia_secured') {

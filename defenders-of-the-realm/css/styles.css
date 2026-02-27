@@ -1364,4 +1364,9 @@
             .next-loc-path > div > div + div {
                 margin-left: -10px !important;
             }
+            /* Shrink minion cards so both fit side-by-side */
+            .darkness-loc-card {
+                min-width: 90px !important;
+                max-width: 160px !important;
+            }
         }

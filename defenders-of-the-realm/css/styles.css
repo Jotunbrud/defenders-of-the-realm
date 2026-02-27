@@ -1320,3 +1320,16 @@
             #splash-screen .ornament { font-size: 22px; }
             #splash-screen .version-badge { font-size: 9px; }
         }
+
+        /* ── MOBILE: Override Comic Sans body/description text to Cinzel ── */
+        @media (max-width: 768px) {
+            .modal-desc-text,
+            .deck-stat-label,
+            .g-hi-title,
+            .war-advance-text,
+            .g-section-text,
+            .intervene-btn .iv-desc,
+            .flavor-text {
+                font-family: 'Cinzel', Georgia, serif !important;
+            }
+        }

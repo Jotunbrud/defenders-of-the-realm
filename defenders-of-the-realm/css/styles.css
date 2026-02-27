@@ -1348,7 +1348,16 @@
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                zoom: 0.55;
                 margin-top: 4px;
+            }
+            .next-loc-path .location-ring {
+                width: 52px !important;
+                height: 52px !important;
+            }
+            .next-loc-path .location-ring-name {
+                font-size: 0.42em !important;
+            }
+            .next-loc-path > div > div + div {
+                margin-left: -10px !important;
             }
         }

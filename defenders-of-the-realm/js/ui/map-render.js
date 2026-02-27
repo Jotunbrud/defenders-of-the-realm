@@ -807,7 +807,7 @@ Object.assign(game, {
             bodyHTML = `
                 <div style="margin:8px 0;padding:8px 10px;background:rgba(109,40,168,0.1);border:1.5px solid #6d28a8;border-radius:6px;">
                     <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin-bottom:4px;">Special</div>
-                    <div class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;">${card.description || 'Special ability'}</div>
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;">${card.description || 'Special ability'}</div>
                 </div>
                 <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
                     <div class="modal-general-token" style="background:${diceColorObj.dice}">${general.icon}</div>
@@ -1459,7 +1459,7 @@ Object.assign(game, {
                         <span class="heroes-quest-stat" data-hero-index="${viewIdx}" style="background: rgba(139,115,85,0.15); border: 1px solid rgba(139,115,85,0.3); padding: 2px 7px; border-radius: 4px; color: #8b0000; cursor: pointer; text-decoration: underline;">📜 ${activeQuests.length}</span>
                     </div>
                     ${completedQuestBadges}
-                    <div class="hero-ability-text hi-block modal-desc-text" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5; margin-top: 8px; border-top: 1px solid rgba(139,115,85,0.3); padding-top: 8px;">${this._abilityToHiBlock(hero.ability)}</div>
+                    <div class="hero-ability-text hi-block modal-desc-text" style=" font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5; margin-top: 8px; border-top: 1px solid rgba(139,115,85,0.3); padding-top: 8px;">${this._abilityToHiBlock(hero.ability)}</div>
                 </div>
             </div>`;
 

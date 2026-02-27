@@ -153,7 +153,7 @@ Object.assign(game, {
                     <div style="font-size: 0.85em; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.5); font-weight: bold;">❤️ ${hero.maxHealth}</div>
                 </div>
                 <div style="padding: 10px 14px;">
-                    <div class="hero-ability-text-select hi-block" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5;">${game._abilityToHiBlock(hero.ability)}</div>
+                    <div class="hero-ability-text-select hi-block modal-desc-text" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 0.75em; color: #3d2b1f; font-weight: normal; line-height: 1.5;">${game._abilityToHiBlock(hero.ability)}</div>
                 </div>
             </div>
         `).join('');

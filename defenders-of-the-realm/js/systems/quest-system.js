@@ -1275,11 +1275,11 @@ Object.assign(game, {
                     <div class="hero-banner-name">📜 ${quest.name}</div>
                 </div>
                 <div style="padding:14px;">
-                    <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description || ''}</div>
+                    <div class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description || ''}</div>
                     ${quest.reward ? `
                     <div style="margin-top:8px;">
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
-                        <span style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                        <span class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                     </div>` : ''}
                     ${progressHTML}
                     <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">

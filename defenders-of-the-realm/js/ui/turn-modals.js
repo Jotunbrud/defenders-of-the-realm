@@ -243,7 +243,7 @@ Object.assign(game, {
             const cls = w.type === 'overrun' || w.type === 'monarch' || w.type === 'exhausted' ? 'warn-badge warn-overrun'
                       : w.type === 'taint' ? 'warn-badge warn-taint'
                       : 'warn-badge warn-overrun';
-            return `<div class="${cls}" style="margin-top:6px;text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive">${w.text}</div>`;
+            return `<div class="${cls} modal-desc-text" style="margin-top:6px;text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive">${w.text}</div>`;
         }).join('');
 
         if (isGeneral) {
@@ -284,8 +284,8 @@ Object.assign(game, {
         }
 
         // Minion placement card
-        const skippedLabel = strikethrough && !militiaCancelled ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.65em;color:#a16207;margin-top:6px;text-align:center">(skipped)</div>` : '';
-        const militiaLabel = militiaCancelled ? `<div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.65em;color:#15803d;margin-top:6px;text-align:center">🛡️ cancelled</div>` : '';
+        const skippedLabel = strikethrough && !militiaCancelled ? `<div class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.65em;color:#a16207;margin-top:6px;text-align:center">(skipped)</div>` : '';
+        const militiaLabel = militiaCancelled ? `<div class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.65em;color:#15803d;margin-top:6px;text-align:center">🛡️ cancelled</div>` : '';
         return `<div class="darkness-loc-card" style="flex:1 1 140px;max-width:220px;min-width:140px;opacity:${strikethrough ? 0.4 : 1}">
             <div style="display:flex;align-items:center;justify-content:center;gap:12px">
                 ${this._minionDotsHTML(color, count, 22)}
@@ -339,10 +339,10 @@ Object.assign(game, {
             const fNames = this._factionNames;
             if (damageInfo.minionDamage > 0) {
                 const minionBreakdown = Object.entries(damageInfo.minions || {}).map(([c,n]) => `${n} ${fNames[c] || c}`).join(', ');
-                woundDetails += `<div class="hi-title" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">⚔️ ${damageInfo.minionDamage} from minions (${minionBreakdown})</div>`;
+                woundDetails += `<div class="hi-title modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">⚔️ ${damageInfo.minionDamage} from minions (${minionBreakdown})</div>`;
             }
             if (damageInfo.fearDamage > 0) {
-                woundDetails += `<div class="hi-title" style="margin-top:2px;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">💀 ${damageInfo.fearDamage} from Undead fear (1 additional wound is inflicted)</div>`;
+                woundDetails += `<div class="hi-title modal-desc-text" style="margin-top:2px;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">💀 ${damageInfo.fearDamage} from Undead fear (1 additional wound is inflicted)</div>`;
             }
         }
 
@@ -351,20 +351,20 @@ Object.assign(game, {
         if (hadMinions) {
             if (damageInfo.auraReduction > 0) {
                 const abilityName = hero.name === 'Dwarf' ? 'Armor and Toughness' : 'Aura of Righteousness';
-                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">${abilityName}:</strong> Ignore ${damageInfo.auraReduction} wound from minions and Generals</div>`;
+                abilityLines += `<div class="hi-sub modal-desc-text" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">${abilityName}:</strong> Ignore ${damageInfo.auraReduction} wound from minions and Generals</div>`;
             }
             if (damageInfo.fearBlocked) {
-                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Bravery:</strong> Does not suffer any penalties from fear</div>`;
+                abilityLines += `<div class="hi-sub modal-desc-text" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Bravery:</strong> Does not suffer any penalties from fear</div>`;
             }
             if (damageInfo.shadowHidden) {
-                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Hide In The Shadows:</strong> Does not suffer life token loss when in a location with enemy minions</div>`;
+                abilityLines += `<div class="hi-sub modal-desc-text" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Hide In The Shadows:</strong> Does not suffer life token loss when in a location with enemy minions</div>`;
             }
             if (damageInfo.skyAttackProtected) {
-                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Sky Attack:</strong> No end-of-turn penalties (fear, damage, or card loss)</div>`;
+                abilityLines += `<div class="hi-sub modal-desc-text" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Sky Attack:</strong> No end-of-turn penalties (fear, damage, or card loss)</div>`;
             }
             if (damageInfo.shapeshiftProtected) {
                 const fname = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' }[damageInfo.shapeshiftForm] || damageInfo.shapeshiftForm;
-                abilityLines += `<div class="hi-sub" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Shape Shifter (${fname} Form):</strong> Avoided ${damageInfo.shapeshiftDamageBlocked || 0} ${fname} wound${(damageInfo.shapeshiftDamageBlocked || 0) !== 1 ? 's' : ''}</div>`;
+                abilityLines += `<div class="hi-sub modal-desc-text" style="margin-top:3px;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f;font-size:0.75em;line-height:1.5">${hero.symbol} <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a">Shape Shifter (${fname} Form):</strong> Avoided ${damageInfo.shapeshiftDamageBlocked || 0} ${fname} wound${(damageInfo.shapeshiftDamageBlocked || 0) !== 1 ? 's' : ''}</div>`;
             }
         }
 
@@ -375,7 +375,7 @@ Object.assign(game, {
                 <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3)">
                     <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">🦅 Fresh Mount</div>
                     <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px">
-                        <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">
+                        <div class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5">
                             Ending turn at ${hero.location} grants <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#15803d">+1 action</strong> next turn.
                         </div>
                     </div>
@@ -418,7 +418,7 @@ Object.assign(game, {
                             </span>
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${g.health <= 2 ? '#b91c1c' : '#2c1810'}">${heartIcon} ${g.health}/${g.maxHealth}</span>
                         </div>
-                        <div class="hi-title" style="margin-top:4px;font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f">
+                        <div class="hi-title modal-desc-text" style="margin-top:4px;font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS','Comic Sans',cursive;color:#3d2b1f">
                             <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.15em;color:#1a0f0a">${wType === 'major' ? 'Major Wound' : 'Minor Wound'}:</strong> ${description}
                         </div>
                     </div>`;
@@ -784,8 +784,8 @@ Object.assign(game, {
                 ${this._parchmentBoxOpen('Darkness Spreads')}
                     <div style="padding:15px;text-align:center">
                         <div style="font-size:1.2em;color:#6d28a8;font-weight:bold;font-family:'Cinzel',Georgia,serif">🌅 All Is Quiet</div>
-                        <div style="color:#3d2b1f;margin-top:8px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">No Darkness Spreads cards drawn this turn.</div>
-                        <div style="color:#3d2b1f;margin-top:5px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">The land rests easy tonight.</div>
+                        <div class="modal-desc-text" style="color:#3d2b1f;margin-top:8px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">No Darkness Spreads cards drawn this turn.</div>
+                        <div class="modal-desc-text" style="color:#3d2b1f;margin-top:5px;font-size:0.75em;font-family:'Comic Sans MS','Comic Sans',cursive">The land rests easy tonight.</div>
                     </div>
                 ${this._parchmentBoxClose()}
             `;
@@ -1046,12 +1046,12 @@ Object.assign(game, {
                         </div>
                         <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center">
                             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:4px">Special</div>
-                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px">Place 1 minion of each color that has minions adjacent to Monarch City</div>
-                            <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;line-height:1.4">No Overrun Can Occur</div>
+                            <div class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px">Place 1 minion of each color that has minions adjacent to Monarch City</div>
+                            <div class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;line-height:1.4">No Overrun Can Occur</div>
                         </div>
                     </div>
                     <div style="text-align:center;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.9em;color:#7c3aed;margin-bottom:2px">Reshuffle All Decks</div>
-                    <div style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
+                    <div class="modal-desc-text" style="text-align:center;font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#dc2626;margin-bottom:6px">No Generals Move</div>
                     <div class="results-divider">
                         <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Minion Movement</div>
                         ${minionSection}
@@ -1076,7 +1076,7 @@ Object.assign(game, {
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc};text-decoration:line-through">+${event.count} ${event.faction}</span>
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#15803d">CANCELLED</span>
                     </div>
-                    <div style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#15803d;margin-top:2px">Militia Secures Area — ${event.location}</div>
+                    <div class="modal-desc-text" style="font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#15803d;margin-top:2px">Militia Secures Area — ${event.location}</div>
                 </div>`;
             } else if (event.type === 'strong_defenses') {
                 const loc = event.location || '';

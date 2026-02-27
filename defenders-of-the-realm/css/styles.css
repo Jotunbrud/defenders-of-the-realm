@@ -1366,7 +1366,8 @@
             }
             /* Shrink minion cards so both fit side-by-side */
             .darkness-loc-card {
-                min-width: 90px !important;
+                flex: 1 1 80px !important;
+                min-width: 80px !important;
                 max-width: 160px !important;
             }
         }

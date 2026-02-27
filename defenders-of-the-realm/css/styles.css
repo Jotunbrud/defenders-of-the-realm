@@ -1324,7 +1324,7 @@
             #splash-screen .version-badge { font-size: 9px; }
         }
 
-        /* ── MOBILE: Override Comic Sans body/description text to Cinzel ── */
+        /* ── MOBILE: Override Comic Sans body/description text to Crimson Text ── */
         @media (max-width: 768px) {
             .modal-desc-text,
             .deck-stat-label,
@@ -1333,6 +1333,7 @@
             .g-section-text,
             .intervene-btn .iv-desc,
             .flavor-text {
-                font-family: 'Cinzel', Georgia, serif !important;
+                font-family: 'Crimson Text', Georgia, serif !important;
+                font-size: 0.7em !important;
             }
         }

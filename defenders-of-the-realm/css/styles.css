@@ -1339,7 +1339,16 @@
             .parchment-box {
                 overflow: hidden;
             }
+            .darkness-general-flex {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+            }
             .next-loc-path {
-                zoom: 0.6;
+                flex-basis: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                zoom: 0.55;
+                margin-top: 4px;
             }
         }

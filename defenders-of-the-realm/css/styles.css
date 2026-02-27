@@ -1019,7 +1019,7 @@
 
         /* ── DARKNESS LOCATION CARD ── */
         .darkness-loc-card { padding: 10px 12px; }
-        .darkness-loc-general { padding: 12px 12px 44px 12px; }
+        .darkness-loc-general { padding: 12px 12px 24px 12px; }
 
         /* ── INLINE DOTS ── */
         .mdot {
@@ -1131,7 +1131,7 @@
 
         /* ── RESULTS DIVIDER ── */
         .results-divider {
-          margin-top: 12px; padding-top: 12px;
+          margin-top: 4px; padding-top: 6px;
           border-top: 2px solid rgba(139,115,85,0.4);
         }
 

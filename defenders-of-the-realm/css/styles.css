@@ -1339,7 +1339,8 @@
             .parchment-box {
                 overflow: hidden;
             }
-            .darkness-general-flex {
+            /* Only wrap the general row when Next Location path is present */
+            .darkness-general-flex:has(.next-loc-path) {
                 flex-wrap: wrap !important;
                 justify-content: center !important;
             }
@@ -1348,13 +1349,16 @@
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                margin-top: 4px;
+                margin-top: 12px;
             }
-            .next-loc-path .location-ring {
+            /* Shrink all location rings on darkness spreads cards */
+            .darkness-loc-general .location-ring,
+            .darkness-loc-card .location-ring {
                 width: 52px !important;
                 height: 52px !important;
             }
-            .next-loc-path .location-ring-name {
+            .darkness-loc-general .location-ring-name,
+            .darkness-loc-card .location-ring-name {
                 font-size: 0.42em !important;
             }
             .next-loc-path > div > div + div {

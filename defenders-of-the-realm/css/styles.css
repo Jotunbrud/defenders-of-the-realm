@@ -1156,6 +1156,9 @@
         .hi-block .hi-sub, .hi-sub { padding-left: 3em; text-indent: -2.5em; }
 
         /* ── FLAVOR / COMIC SANS TEXT ── */
+        .modal-desc-text {
+          font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+        }
         .flavor-text {
           font-family: 'Comic Sans MS', 'Comic Sans', cursive;
           font-size: 0.75em; color: #3d2b1f; line-height: 1.5;
@@ -1332,5 +1335,10 @@
             .flavor-text {
                 font-family: 'Crimson Text', Georgia, serif !important;
                 font-size: 0.7em !important;
+            }
+            .next-loc-path {
+                transform: scale(0.65);
+                transform-origin: center center;
+                margin: -10px 0;
             }
         }

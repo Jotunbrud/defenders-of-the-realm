@@ -260,7 +260,7 @@ Object.assign(game, {
                     const ml = li === 0 ? 0 : -18;
                     pathCircles += `<div style="margin-left:${ml}px;z-index:${zIdx};position:relative">${this._locationRingHTML(loc, color, 90, isTarget)}</div>`;
                 });
-                destinationHTML = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
+                destinationHTML = `<div class="next-loc-path" style="position:relative;display:flex;flex-direction:column;align-items:center">
                     <div style="display:flex;align-items:center;padding:6px">${pathCircles}</div>
                     <div style="position:absolute;top:100%;margin-top:-2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${gc}">Next Location</div>
                 </div>`;

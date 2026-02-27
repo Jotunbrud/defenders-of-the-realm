@@ -1339,18 +1339,6 @@
             .parchment-box {
                 overflow: hidden;
             }
-            /* Only wrap the general row when Next Location path is present */
-            .darkness-general-flex:has(.next-loc-path) {
-                flex-wrap: wrap !important;
-                justify-content: center !important;
-            }
-            .next-loc-path {
-                flex-basis: 100% !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                margin-top: 12px;
-            }
             /* Shrink all location rings on darkness spreads cards */
             .darkness-loc-general .location-ring,
             .darkness-loc-card .location-ring {
@@ -1360,6 +1348,18 @@
             .darkness-loc-general .location-ring-name,
             .darkness-loc-card .location-ring-name {
                 font-size: 0.42em !important;
+            }
+            /* Allow general row to wrap — only triggers for Next Location (too wide) */
+            .darkness-loc-general > div:first-child {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+            }
+            .next-loc-path {
+                flex-basis: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                margin-top: 12px;
             }
             .next-loc-path > div > div + div {
                 margin-left: -10px !important;

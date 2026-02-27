@@ -269,7 +269,7 @@ Object.assign(game, {
             }
 
             return `<div class="darkness-loc-general" style="opacity:${strikethrough ? 0.4 : 1}">
-                <div class="darkness-general-flex" style="display:flex;align-items:center;justify-content:center;gap:12px">
+                <div style="display:flex;align-items:center;justify-content:center;gap:12px">
                     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
                         ${count > 0 ? this._minionDotsHTML(color, count, 22) : ''}
                         <div style="position:relative;display:flex;flex-direction:column;align-items:center">

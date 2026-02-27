@@ -1364,10 +1364,13 @@
             .next-loc-path > div > div + div {
                 margin-left: -10px !important;
             }
-            /* Shrink minion cards so both fit side-by-side */
+            /* Keep both minion cards on same line */
+            .darkness-minion-row {
+                flex-wrap: nowrap !important;
+            }
             .darkness-loc-card {
-                flex: 1 1 80px !important;
-                min-width: 80px !important;
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
                 max-width: 160px !important;
             }
         }

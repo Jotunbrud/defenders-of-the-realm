@@ -1250,7 +1250,7 @@ Object.assign(game, {
             else if (this.organizeMilitiaActive) sdLabel = '<div class="modal-desc-text" style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;">📜 Organize Militia — General movement cancelled</div>';
 
             cardContent = `${banner}
-                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                <div class="darkness-minion-row" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
                     ${minion1Visual}
                     ${minion2Visual}
                 </div>
@@ -1801,7 +1801,7 @@ Object.assign(game, {
                 const minion2Visual = this._darknessLocationCardHTML(card.location2, card.faction2, card.minions2, false, generalOnly);
                 const generalVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, false, [], false, _genPosition);
 
-                cardPreviewHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${minion1Visual}${minion2Visual}</div>
+                cardPreviewHTML = `<div class="darkness-minion-row" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${minion1Visual}${minion2Visual}</div>
                     <div style="display:flex;justify-content:center">${generalVisual}</div>`;
             }
         }

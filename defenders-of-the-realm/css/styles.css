@@ -485,13 +485,17 @@
             border: 2px solid #d4af37;
             border-radius: 12px;
             padding: 20px;
-            padding-top: 60px; /* Extra space for X button */
+            padding-top: 20px;
             max-width: 600px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            position: relative; /* For absolute positioning of X button */
+            position: relative;
             box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+        /* Modals with absolute-positioned close button need extra top space */
+        .modal-content:has(.modal-close-btn) {
+            padding-top: 50px;
         }
         
         .modal-close-btn {

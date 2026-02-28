@@ -932,7 +932,12 @@
             padding: 2px 7px; border-radius: 4px;
             font-weight: 700; font-size: 0.63em;
             color: rgba(244,228,193,0.35); border: 1px solid transparent;
-            white-space: nowrap; cursor: default;
+            white-space: nowrap; cursor: pointer;
+            transition: color 0.15s, background 0.15s;
+        }
+        .turn-hero:hover {
+            color: rgba(244,228,193,0.7);
+            background: rgba(212,175,55,0.08);
         }
         .turn-hero.active {
             color: #f4e4c1;

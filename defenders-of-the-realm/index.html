@@ -39,7 +39,7 @@
         <div class="game-header">
             <h1 class="modal-heading" style="font-size: 1.5em;">⚔️ Defenders of the Realm ⚔️</h1>
             <div class="modal-desc-text" style="font-size: 0.85em; color: #d4af37; margin-top: 5px;">Version 5.3.11 - Beta</div>
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
+            <div class="game-header-btns">
                 <button class="phase-btn phase-btn-inline" onclick="game.showRules()">📜 Rules</button>
                 <button class="phase-btn phase-btn-inline" onclick="game.showTips()">💡 Tips</button>
                 <button class="phase-btn phase-btn-inline" onclick="game.showReleaseNotes()">📋 Release Notes</button>
@@ -51,9 +51,9 @@
         <div class="controls-panel">
             <div class="section-tray">
                 <div class="tray-title">Play Area</div>
-                <div class="action-buttons" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="phase-btn phase-btn-inline" onclick="game.showMap()" style="padding: 8px 14px !important; font-size: 0.85em !important;">Game Board</button>
-                    <button class="phase-btn phase-btn-inline" onclick="game.showHeroesModal()" style="padding: 8px 14px !important; font-size: 0.85em !important;">👥 View Heroes</button>
+                <div class="play-area-btns">
+                    <button class="phase-btn" onclick="game.showMap()">Game Board</button>
+                    <button class="phase-btn" onclick="game.showHeroesModal()">👥 View Heroes</button>
                 </div>
             </div>
 

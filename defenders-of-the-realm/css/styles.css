@@ -37,6 +37,18 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
             margin-bottom: 8px;
         }
+        .game-header-btns {
+            display: flex; gap: 8px; justify-content: center;
+            margin-top: 10px; flex-wrap: wrap;
+        }
+        @media (max-width: 700px) {
+            .game-header-btns {
+                gap: 4px; flex-wrap: nowrap;
+            }
+            .game-header-btns .phase-btn-inline {
+                padding: 4px 5px !important; font-size: 0.55em !important;
+            }
+        }
 
         .game-status {
             display: flex;
@@ -970,11 +982,10 @@
             #map-modal { padding: 0 !important; }
             #map-modal .modal-content,
             #map-modal .map-modal-content {
-                max-width: 100vw !important; max-height: 100vh !important;
-                width: 100vw !important; height: 100vh !important;
+                max-width: 96vw !important; max-height: 100vh !important;
+                width: 96vw !important; height: 100vh !important;
                 border-radius: 0 !important; border: none !important;
                 padding: 0 !important; padding-top: 0 !important;
-                overflow: hidden !important;
                 box-shadow: none !important;
             }
             .map-top-bar { padding: 4px 8px; }
@@ -1190,6 +1201,21 @@
         .phase-btn-inline {
           width: auto !important; margin-top: 0 !important;
           padding: 5px 10px !important; font-size: 0.75em !important;
+        }
+        @media (max-width: 700px) {
+            .phase-btn-inline {
+              padding: 4px 6px !important; font-size: 0.6em !important;
+            }
+        }
+
+        /* Play Area buttons — fill row equally */
+        .play-area-btns {
+          display: flex; gap: 8px; flex-wrap: nowrap;
+        }
+        .play-area-btns .phase-btn {
+          flex: 1; width: auto !important; margin-top: 0 !important;
+          padding: 8px 14px !important; font-size: 0.85em !important;
+          text-align: center;
         }
 
         /* ── LOCATION RING ── */

@@ -637,8 +637,12 @@
             margin-bottom: 15px;
         }
 
-        #map-modal .modal-content {
-            padding: 15px;
+        #map-modal .modal-content,
+        .map-modal-content {
+            max-width: 95vw; max-height: 95vh;
+            padding: 10px;
+            display: flex; flex-direction: column;
+            padding-top: 10px;
         }
 
         #heroes-modal .hero-card {
@@ -959,12 +963,15 @@
 
         @media (max-width: 700px) {
             /* Map modal fullscreen on mobile */
-            #map-modal { padding: 0; }
-            #map-modal .modal-content {
+            #map-modal { padding: 0 !important; }
+            #map-modal .modal-content,
+            #map-modal .map-modal-content {
                 max-width: 100vw !important; max-height: 100vh !important;
-                width: 100vw; height: 100vh;
-                border-radius: 0; border: none;
-                padding: 0 !important;
+                width: 100vw !important; height: 100vh !important;
+                border-radius: 0 !important; border: none !important;
+                padding: 0 !important; padding-top: 0 !important;
+                overflow: hidden !important;
+                box-shadow: none !important;
             }
             .map-top-bar { padding: 4px 8px; }
             .action-tray { padding: 3px 6px; gap: 3px; }

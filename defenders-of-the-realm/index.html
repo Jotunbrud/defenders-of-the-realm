@@ -37,28 +37,28 @@
     <!-- ── END SPLASH SCREEN ── -->
     <div class="game-container">
         <div class="game-header">
-            <h1>⚔️ Defenders of the Realm ⚔️</h1>
-            <div style="font-size: 0.85em; color: #d4af37; margin-top: 5px;">Version 5.3.11 - Beta</div>
+            <h1 class="modal-heading" style="font-size:1.5em;color:#ffd700;margin-bottom:8px;">⚔️ Defenders of the Realm ⚔️</h1>
+            <div class="modal-desc-text" style="font-size: 0.75em; color: #d4af37; margin-top: 5px;">Version 5.3.11 - Beta</div>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="game.showRules()">📜 Rules</button>
-                <button class="btn btn-primary" onclick="game.showTips()">💡 Tips</button>
-                <button class="btn btn-primary" onclick="game.showReleaseNotes()">📋 Release Notes</button>
-                <button class="btn btn-primary" onclick="game.showSettings()">⚙️ Settings</button>
-                <button class="btn" onclick="if(confirm('Quit game and return to setup?')) window.close()" style="background: #dc2626;">🚪 Quit Game</button>
+                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showRules()">📜 Rules</button>
+                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showTips()">💡 Tips</button>
+                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showReleaseNotes()">📋 Release Notes</button>
+                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showSettings()">⚙️ Settings</button>
+                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;background:linear-gradient(135deg,#dc2626,#991b1b);border-color:#dc2626;color:#fff;" onclick="if(confirm('Quit game and return to setup?')) window.close()">🚪 Quit Game</button>
             </div>
         </div>
 
         <div class="controls-panel">
             <div class="section-tray">
-                <div class="tray-title">Play Area</div>
+                <div class="tray-title modal-heading" style="font-size:1.1em;color:#ffd700;">Play Area</div>
                 <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="game.showMap()">🗺️ Game Board</button>
-                    <button class="btn btn-primary" onclick="game.showHeroesModal()">👥 View Heroes</button>
+                    <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showMap()">🗺️ Game Board</button>
+                    <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showHeroesModal()">👥 View Heroes</button>
                 </div>
             </div>
 
             <div class="section-tray">
-                <div class="tray-title">Card Decks</div>
+                <div class="tray-title modal-heading" style="font-size:1.1em;color:#ffd700;">Card Decks</div>
                 <div class="deck-placard-grid">
                     <!-- Hero Cards Deck -->
                     <div class="general-placard">
@@ -129,7 +129,7 @@
             </div>
 
             <div class="section-tray">
-                <div class="tray-title">Enemy Generals</div>
+                <div class="tray-title modal-heading" style="font-size:1.1em;color:#ffd700;">Enemy Generals</div>
                 <div class="generals-panel" id="generals-panel"></div>
             </div>
             

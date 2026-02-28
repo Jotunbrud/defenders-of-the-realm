@@ -255,6 +255,7 @@ Object.assign(game, {
         });
         
         const contentHTML = `
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">📜 Quest Cards Drawn</div>
             ${this._parchmentBoxOpen('Starting Quests')}
                 <div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:10px;">
                     Each hero has been assigned a quest to complete!<br>Quests may not be discarded. Complete them to earn rewards and draw new quests.
@@ -262,11 +263,15 @@ Object.assign(game, {
                 <div class="sep"></div>
                 ${questsHTML}
             ${this._parchmentBoxClose()}
+            <button class="phase-btn" onclick="game.closeInfoModal(); game._showGeneralSetupModal();">Continue</button>
         `;
         
-        this.showInfoModal('📜 Quest Cards Drawn', contentHTML, () => {
-            this._showGeneralSetupModal();
-        });
+        this.showInfoModal('', contentHTML);
+        // Hide default title and continue button — we use our own modal-heading + phase-btn
+        const titleEl = document.querySelector('#info-modal .modal-title');
+        if (titleEl) titleEl.style.display = 'none';
+        const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-of-type > .btn');
+        if (defaultBtn) defaultBtn.parentElement.style.display = 'none';
     },
     
     _showGeneralSetupModal() {
@@ -299,6 +304,7 @@ Object.assign(game, {
         });
         
         const contentHTML = `
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">⚔️ Generals Take Position</div>
             ${this._parchmentBoxOpen('Enemy Forces')}
                 <div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:10px;">
                     Each General begins with 3 minions at their starting location.
@@ -306,11 +312,14 @@ Object.assign(game, {
                 <div class="sep"></div>
                 ${generalsHTML}
             ${this._parchmentBoxClose()}
+            <button class="phase-btn" onclick="game.closeInfoModal(); game._runSetupDarkness();">Continue</button>
         `;
         
-        this.showInfoModal('⚔️ Generals Take Position', contentHTML, () => {
-            this._runSetupDarkness();
-        });
+        this.showInfoModal('', contentHTML);
+        const titleEl = document.querySelector('#info-modal .modal-title');
+        if (titleEl) titleEl.style.display = 'none';
+        const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-of-type > .btn');
+        if (defaultBtn) defaultBtn.parentElement.style.display = 'none';
     },
     
     _drawValidSetupCard() {
@@ -464,6 +473,7 @@ Object.assign(game, {
         const phase2Count = setupCards.filter(e => e.phase === 2).length;
         
         const summaryHTML = `
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">🌑 Initial Darkness Spreads</div>
             ${this._parchmentBoxOpen('Darkness Spreads Setup')}
                 <div>
                     <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Phase 1 — 2 minions per location (${phase1Count} cards)</div>
@@ -479,19 +489,27 @@ Object.assign(game, {
                     <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#2c1810;">${totalMinions} minions placed across ${setupCards.length} cards</span>
                 </div>
             ${this._parchmentBoxClose()}
+            <button class="phase-btn" onclick="game._completeSetupDarkness()">Defend the Realm!</button>
         `;
         
-        this.showInfoModal('🌑 Initial Darkness Spreads', summaryHTML, () => {
-            // Reshuffle all darkness cards (deck + discard) as final setup step
-            this.darknessDeck = this.createDarknessDeck();
-            this.darknessDiscardPile = 0;
-            this.updateDeckCounts();
-            this.addLog('🔄 Darkness Spreads deck reshuffled after setup.');
-            this.addLog('--- Darkness setup complete. Defend the realm! ---');
-            this._checkEagleRiderTurnStart();
-            this._applyMountainLoreBonus(this.heroes[0]);
-            this._applyElfSupportBonus(this.heroes[0]);
-        });
+        this.showInfoModal('', summaryHTML);
+        const titleEl = document.querySelector('#info-modal .modal-title');
+        if (titleEl) titleEl.style.display = 'none';
+        const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-of-type > .btn');
+        if (defaultBtn) defaultBtn.parentElement.style.display = 'none';
+    },
+    
+    _completeSetupDarkness() {
+        this.closeInfoModal();
+        // Reshuffle all darkness cards (deck + discard) as final setup step
+        this.darknessDeck = this.createDarknessDeck();
+        this.darknessDiscardPile = 0;
+        this.updateDeckCounts();
+        this.addLog('🔄 Darkness Spreads deck reshuffled after setup.');
+        this.addLog('--- Darkness setup complete. Defend the realm! ---');
+        this._checkEagleRiderTurnStart();
+        this._applyMountainLoreBonus(this.heroes[0]);
+        this._applyElfSupportBonus(this.heroes[0]);
     },
     
     setupDragAndDrop() {

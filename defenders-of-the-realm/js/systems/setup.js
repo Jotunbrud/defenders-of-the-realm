@@ -286,14 +286,10 @@ Object.assign(game, {
                         <span class="hero-banner-name" style="font-size:0.85em">${fn}</span>
                     </div>
                     <div style="padding:12px 14px;">
-                        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:8px;">
+                        <div style="display:flex;align-items:center;justify-content:center;gap:16px;">
                             ${this._minionDotsHTML(g.color, 3, 20)}
                             ${this._generalTokenHTML(g.color, 44)}
                             ${this._locationRingHTML(g.location, g.color, 80)}
-                        </div>
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${gc};">●●● 3 minions</span>
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${g.health <= 2 ? '#b91c1c' : '#2c1810'};">❤️ ${g.health}/${g.maxHealth}</span>
                         </div>${hasTaint ? `
                         <div class="taint-box" style="margin-top:8px;">
                             <div class="taint-title">💎 Taint Crystal Placed</div>

@@ -5,6 +5,7 @@
 Object.assign(game, {
     showMap() {
         document.getElementById('map-modal').classList.add('active');
+        this._fixMobileViewportHeight();
         this.renderMap();
         this.renderTokens();
         this.updateMapStatus();
@@ -18,6 +19,24 @@ Object.assign(game, {
         if (!this.mapPanZoomInitialized) {
             this.initializeMapPanZoom();
             this.mapPanZoomInitialized = true;
+        }
+    },
+    
+    _fixMobileViewportHeight() {
+        // Mobile browsers: window.innerHeight = actual visible height
+        const setVh = () => {
+            const modal = document.querySelector('#map-modal .modal-content');
+            if (modal && window.innerWidth <= 700) {
+                modal.style.height = window.innerHeight + 'px';
+                modal.style.maxHeight = window.innerHeight + 'px';
+            }
+        };
+        setVh();
+        // Update on resize/orientation change (debounced)
+        if (!this._vhListenerAdded) {
+            window.addEventListener('resize', setVh);
+            window.addEventListener('orientationchange', () => setTimeout(setVh, 100));
+            this._vhListenerAdded = true;
         }
     },
     

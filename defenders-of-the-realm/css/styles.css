@@ -865,6 +865,9 @@
         .tray-icons { display: flex; gap: 2px; align-items: center; }
         .tray-text-counter { display: none; color: #f4e4c1; font-weight: 900; font-size: 0.95em; font-family: 'Cinzel', Georgia, serif; }
 
+        .map-header-btn-text { }
+        .map-header-btn-icon { display: none; }
+
         .threat-tray {
             background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 5px; margin-bottom: 8px; border: 1px solid rgba(212,175,55,0.3);
         }
@@ -885,6 +888,8 @@
             .tray-icons { display: none; }
             .tray-text-counter { display: inline; }
             .action-btn-icon { display: none; }
+            .map-header-btn-text { display: none; }
+            .map-header-btn-icon { display: inline; }
             .tray-label-text { display: none; }
             .tray-label-icon { display: inline; font-size: 1.1em; }
             .hero-tray-row { justify-content: space-between; }

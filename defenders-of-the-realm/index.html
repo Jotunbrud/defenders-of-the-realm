@@ -239,7 +239,12 @@
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                 <h2 class="modal-heading" style="margin: 0; font-size: 1.15em; color: #d4af37;">🗺️ Game Board</h2>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button onclick="game.showTips()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #d4af37; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Show gameplay tips">💡</button>
+                    <button id="game-log-btn" onclick="game.showGameLogModal()" class="phase-btn" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="View Game Log">
+                        <span class="map-header-btn-text">📜 Game Log</span><span class="map-header-btn-icon">📜</span>
+                    </button>
+                    <button onclick="game.showTips()" class="phase-btn" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Show gameplay tips">
+                        <span class="map-header-btn-text">💡 Game Tips</span><span class="map-header-btn-icon">💡</span>
+                    </button>
                     <button onclick="game.closeMap()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Close map">×</button>
                 </div>
             </div>
@@ -301,10 +306,7 @@
                     <button class="phase-btn" id="special-cards-btn" onclick="game.showSpecialCardsModal()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Play a Special Card">
                         <span class="action-btn-icon">🌟 </span>Special Cards
                     </button>
-                    <button class="phase-btn" id="game-log-btn" onclick="game.showGameLogModal()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="View Game Log">
-                        <span class="action-btn-icon">📜 </span>Game Log
-                    </button>
-                    <button class="phase-btn" id="map-end-turn-btn" onclick="game.endTurnFromMap()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;background:linear-gradient(135deg,#dc2626,#991b1b);border-color:#dc2626;color:#fff;"><span class="action-btn-icon">⏭️ </span>End Turn</button>
+                    <button class="phase-btn" id="map-end-turn-btn" onclick="game.endTurnFromMap()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;background:linear-gradient(135deg,#dc2626,#991b1b);border-color:#dc2626;color:#fff;">End Turn</button>
                 </div>
             </div>
             

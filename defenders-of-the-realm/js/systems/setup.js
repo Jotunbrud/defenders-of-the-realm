@@ -256,7 +256,6 @@ Object.assign(game, {
         });
         
         const contentHTML = `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">📜 Quest Cards Drawn</div>
             ${this._parchmentBoxOpen('Starting Quests')}
                 <div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:10px;">
                     Each hero has been assigned a quest to complete!<br>Quests may not be discarded. Complete them to earn rewards and draw new quests.
@@ -305,7 +304,6 @@ Object.assign(game, {
         });
         
         const contentHTML = `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">⚔️ Generals Take Position</div>
             ${this._parchmentBoxOpen('Enemy Forces')}
                 <div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:10px;">
                     Each General begins with 3 minions at their starting location.
@@ -471,7 +469,6 @@ Object.assign(game, {
         const phase2Count = setupCards.filter(e => e.phase === 2).length;
         
         const summaryHTML = `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">🌑 Initial Darkness Spreads</div>
             ${this._parchmentBoxOpen('Darkness Spreads Setup')}
                 <div>
                     <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Phase 1 — 2 minions per location (${phase1Count} cards)</div>

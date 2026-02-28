@@ -865,7 +865,7 @@
         .action-tray {
             padding: 6px 10px; border-bottom: 1px solid rgba(212,175,55,0.15);
             flex-shrink: 0; display: flex; gap: 4px; flex-wrap: wrap;
-            align-items: center; justify-content: space-between;
+            align-items: center;
         }
         .action-tray-title {
             font-family: 'Cinzel', Georgia, serif;
@@ -875,7 +875,9 @@
         .action-btns { display: contents; }
         .action-btns .phase-btn {
             width: auto; margin-top: 0; padding: 4px 8px;
-            font-size: 0.7em; flex: 1 1 auto; text-align: center;
+            font-size: 0.7em; text-align: center;
+            white-space: nowrap;
+            flex: 1 1 10%;
         }
         .map-top-bar .phase-btn {
             width: auto; margin-top: 0; padding: 5px 10px;
@@ -925,7 +927,11 @@
             margin-bottom: 3px; white-space: nowrap; cursor: pointer;
         }
         .hero-label-name { }
-        .hero-stats { }
+        .overlay-bar .hero-stats,
+        .overlay-stack .hero-stats {
+            display: flex !important; flex-direction: column !important;
+            gap: 0 !important; flex-wrap: nowrap !important;
+        }
         .stat-row { display: flex; align-items: center; gap: 2px; margin-bottom: 1px; white-space: nowrap; }
         .stat-icons { display: flex; gap: 1px; font-size: 0.75em; }
         .stat-compact { display: none; font-weight: 900; font-size: 0.62em; color: #f4e4c1; }
@@ -953,6 +959,10 @@
 
         @media (max-width: 700px) {
             .action-btn-icon { display: none; }
+            .action-btns .phase-btn {
+                font-size: 0.62em; padding: 3px 6px;
+                flex: 1 1 20%;
+            }
 
             /* Header buttons: icon only on mobile */
             .hdr-btn-text { display: none; }
@@ -1012,9 +1022,13 @@
                 flex-shrink: 0;
             }
             .hero-bar .hero-label-name { display: inline; }
+            .overlay-bar .hero-stats,
+            .overlay-stack .hero-stats,
             .hero-stats {
-                display: flex; align-items: center;
-                flex: 1; min-width: 0;
+                display: flex !important; flex-direction: row !important;
+                align-items: center;
+                flex: 1; min-width: 0; gap: 0 !important;
+                flex-wrap: nowrap !important;
             }
             .stat-row { margin-bottom: 0; }
             .stat-icons { display: none; }

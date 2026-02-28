@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Board Mockup — Slim Overlays v17</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a14; font-family: 'Cinzel', Georgia, serif; overflow-y: auto; }
+
+  .mockup-label {
+    text-align: center; padding: 18px 0 8px;
+    font-size: 0.85em; color: #d4af37;
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+
+  .modal-shell {
+    background: #12121e; border: 2px solid #d4af37; border-radius: 10px;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8); margin: 0 auto 30px;
+  }
+  .modal-shell.desktop { width: 96vw; height: 72vh; }
+  .modal-shell.mobile { width: 375px; height: 720px; }
+
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 10px; border-bottom: 1px solid rgba(212,175,55,0.25); flex-shrink: 0;
+  }
+  .top-bar h2 { font-weight: 700; font-size: 1.05em; color: #d4af37; }
+  .top-bar-btns { display: flex; gap: 6px; align-items: center; }
+  .phase-btn {
+    padding: 5px 10px; border-radius: 6px; cursor: pointer;
+    font-weight: bold; font-size: 0.75em;
+    font-family: 'Cinzel', Georgia, serif;
+    background: linear-gradient(135deg, #d4af37, #b8960c);
+    color: #1a0f0a; border: 2px solid #d4af37; white-space: nowrap;
+  }
+  .phase-btn:disabled { background: #444; color: #888; border-color: #666; opacity: 0.5; cursor: not-allowed; }
+  .phase-btn.danger { background: linear-gradient(135deg, #dc2626, #991b1b); border-color: #dc2626; color: #fff; }
+  .close-circle {
+    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px; color: #fff;
+    background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%;
+  }
+
+  /* Header button text/icon toggle */
+  .hdr-btn-text { }
+  .hdr-btn-icon { display: none; }
+
+  /* Actions: title inline with buttons, all one wrapping row */
+  .action-tray { padding: 6px 10px; border-bottom: 1px solid rgba(212,175,55,0.15); flex-shrink: 0; display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+  .action-tray-title { font-weight: 700; color: #d4af37; font-size: 0.85em; white-space: nowrap; flex-shrink: 0; margin-right: 2px; }
+  .action-btns { display: contents; }
+  .action-btns .phase-btn { font-size: 0.7em; padding: 4px 8px; flex: 1 1 10%; text-align: center; white-space: nowrap; }
+
+  .map-area { flex: 1; position: relative; overflow: hidden; background: #000; }
+  .map-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(34,80,34,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 55%, rgba(60,40,20,0.5) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 80%, rgba(20,40,80,0.3) 0%, transparent 50%),
+      linear-gradient(180deg, #1a2a1a 0%, #2a1f14 40%, #14182a 100%);
+  }
+  .map-dot {
+    position: absolute; width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+  }
+  .map-dot.city { border-color: rgba(255,215,0,0.4); background: rgba(255,215,0,0.1); width: 28px; height: 28px; }
+
+  /* ═══════════════════════════════════════
+     OVERLAY — DESKTOP DEFAULT
+     ═══════════════════════════════════════ */
+  .overlay-stack {
+    position: absolute; top: 0; left: 0; z-index: 10;
+    display: flex; flex-direction: column;
+  }
+  .overlay-bar {
+    background: rgba(8, 8, 16, 0.88);
+    border-right: 1px solid rgba(212,175,55,0.35);
+    border-bottom: 1px solid rgba(212,175,55,0.35);
+    backdrop-filter: blur(6px);
+    padding: 5px 10px 5px 8px;
+  }
+  .overlay-stack > .overlay-bar:last-child { border-radius: 0 0 6px 0; }
+  .overlay-title { font-size: 0.58em; color: #d4af37; font-weight: 700; margin-bottom: 2px; }
+
+  /* Turn */
+  .turn-inner { display: flex; flex-direction: column; gap: 1px; }
+  .turn-hero {
+    padding: 2px 7px; border-radius: 4px;
+    font-weight: 700; font-size: 0.63em;
+    color: rgba(244,228,193,0.35); border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .turn-hero.active {
+    color: #f4e4c1;
+    background: rgba(212,175,55,0.15);
+    border-color: rgba(212,175,55,0.45);
+  }
+
+  /* Hero */
+  .hero-name { font-weight: 900; font-size: 0.75em; color: #f4e4c1; margin-bottom: 3px; white-space: nowrap; }
+  .hero-label-name { }
+  .stat-row { display: flex; align-items: center; gap: 2px; margin-bottom: 1px; white-space: nowrap; }
+  .stat-icons { display: flex; gap: 1px; font-size: 0.75em; }
+  .stat-compact { display: none; font-weight: 900; font-size: 0.62em; color: #f4e4c1; }
+  .ic-off { opacity: 0.2; filter: grayscale(100%); }
+
+  /* Threat */
+  .threat-items { display: flex; flex-direction: column; }
+  .t-row { display: flex; align-items: center; padding: 1px 0; }
+  .t-faction { font-weight: 900; font-size: 0.62em; white-space: nowrap; flex: 1; }
+  .t-faction.taint-label { white-space: normal; line-height: 1.15; }
+  .t-faction-icon { display: none; }
+  .t-count { font-weight: 900; font-size: 0.62em; color: #f4e4c1; white-space: nowrap; text-align: right; margin-left: auto; }
+
+  .turn-hero-row { display: contents; }
+
+  .bottom-hint {
+    position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+    font-size: 0.6em; color: rgba(212,175,55,0.4); z-index: 10; white-space: nowrap;
+  }
+
+  /* ═══════════════════════════════════════
+     MOBILE
+     ═══════════════════════════════════════ */
+  .mobile .top-bar h2 { font-size: 0.9em; }
+  .mobile .action-btns .phase-btn { font-size: 0.62em; padding: 3px 6px; flex: 1 1 20%; }
+  .mobile .action-tray-title { font-size: 0.75em; }
+  .mobile .action-btn-icon { display: none; }
+
+  /* Header buttons: icon only on mobile */
+  .mobile .hdr-btn-text { display: none; }
+  .mobile .hdr-btn-icon { display: inline; }
+
+  .mobile .overlay-stack { left: 0; right: 0; }
+  .mobile .overlay-bar {
+    border-right: none; border-radius: 0 !important;
+    padding: 3px 10px;
+    background: rgba(8, 8, 16, 0.88);
+    backdrop-filter: blur(6px);
+  }
+  .mobile .overlay-title {
+    margin-bottom: 0; font-size: 0.5em;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  /* ROW 1: Turn | Hero */
+  .mobile .turn-hero-row {
+    display: flex;
+    background: rgba(8, 8, 16, 0.88);
+    border-bottom: 1px solid rgba(212,175,55,0.35);
+    backdrop-filter: blur(6px);
+    padding: 3px 10px;
+    align-items: center;
+  }
+  .mobile .turn-hero-row > .overlay-bar {
+    background: none; backdrop-filter: none;
+    border: none; border-radius: 0 !important; padding: 0;
+  }
+
+  .mobile .turn-bar {
+    display: flex; align-items: center; gap: 4px;
+    padding-right: 8px !important;
+    margin-right: 8px;
+    border-right: 1px solid rgba(212,175,55,0.25) !important;
+    flex-shrink: 0;
+  }
+  .mobile .turn-inner { flex-direction: row; gap: 2px; }
+  .mobile .turn-hero { font-size: 0.56em; padding: 2px 4px; }
+  .mobile .turn-bar .hero-label-name { display: none; }
+
+  .mobile .hero-bar {
+    display: flex; align-items: center; gap: 4px;
+    flex: 1; min-width: 0;
+  }
+  .mobile .hero-inner {
+    display: flex; align-items: center;
+    flex: 1; min-width: 0;
+  }
+  .mobile .hero-name {
+    font-size: 0.62em; margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  .mobile .hero-bar .hero-label-name { display: inline; }
+  .mobile .hero-stats {
+    display: flex; align-items: center;
+    flex: 1; min-width: 0;
+  }
+  .mobile .stat-row { margin-bottom: 0; }
+  .mobile .stat-icons { display: none; }
+  .mobile .stat-compact { display: inline; }
+  .mobile .health-row { flex: 1; justify-content: center; }
+  .mobile .actions-row { flex-shrink: 0; }
+
+  /* ROW 2: Threat */
+  .mobile .threat-bar {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .mobile .threat-inner { flex: 1; }
+  .mobile .threat-items {
+    flex-direction: row; justify-content: space-between;
+  }
+  .mobile .t-row {
+    flex-direction: row; align-items: center;
+    gap: 2px; padding: 0;
+  }
+  .mobile .t-faction { display: none; }
+  .mobile .t-faction-icon {
+    display: inline; font-weight: 900; font-size: 0.62em;
+  }
+  .mobile .t-count { font-size: 0.62em; margin-left: 0; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ DESKTOP ═══════ -->
+<div class="mockup-label">Desktop</div>
+<div class="modal-shell desktop">
+  <div class="top-bar">
+    <h2>Game Board</h2>
+    <div class="top-bar-btns">
+      <button class="phase-btn"><span class="hdr-btn-text">Game Log</span><span class="hdr-btn-icon">📜</span></button>
+      <button class="phase-btn"><span class="hdr-btn-text">Game Tips</span><span class="hdr-btn-icon">❓</span></button>
+      <button class="close-circle">×</button>
+    </div>
+  </div>
+  <div class="action-tray">
+    <div class="action-tray-title">Actions</div>
+    <div class="action-btns">
+      <button class="phase-btn">🥾 Foot</button>
+      <button class="phase-btn">🐎 Horse</button>
+      <button class="phase-btn">🦅 Eagle</button>
+      <button class="phase-btn" disabled>🌀 Magic Gate</button>
+      <button class="phase-btn">✝️ Sanctify Land</button>
+      <button class="phase-btn" disabled>💫 Build Gate</button>
+      <button class="phase-btn" disabled>🍺 Rumors</button>
+      <button class="phase-btn" disabled>🌳 Heal Land</button>
+      <button class="phase-btn" disabled>❤️ Heal Wounds</button>
+      <button class="phase-btn">⚔️ Engage Minions</button>
+      <button class="phase-btn" disabled>👹 Attack General</button>
+      <button class="phase-btn">📜 Quests</button>
+      <button class="phase-btn" disabled>🎯 Complete Quest</button>
+      <button class="phase-btn">🌟 Special Cards</button>
+      <button class="phase-btn danger">End Turn</button>
+    </div>
+  </div>
+  <div class="map-area">
+    <div class="map-bg">
+      <div class="map-dot" style="top:20%;left:28%"></div>
+      <div class="map-dot" style="top:30%;left:40%"></div>
+      <div class="map-dot" style="top:42%;left:25%"></div>
+      <div class="map-dot city" style="top:48%;left:48%"></div>
+      <div class="map-dot" style="top:35%;left:62%"></div>
+      <div class="map-dot" style="top:58%;left:35%"></div>
+      <div class="map-dot" style="top:62%;left:58%"></div>
+      <div class="map-dot" style="top:25%;left:72%"></div>
+      <div class="map-dot" style="top:70%;left:45%"></div>
+      <div class="map-dot" style="top:44%;left:78%"></div>
+    </div>
+
+    <div class="overlay-stack">
+      <div class="turn-hero-row">
+        <div class="overlay-bar turn-bar">
+          <div class="overlay-title">Turn</div>
+          <div class="turn-inner">
+            <div class="turn-hero active">✝️ <span class="hero-label-name">Cleric</span></div>
+            <div class="turn-hero">🔮 <span class="hero-label-name">Wizard</span></div>
+            <div class="turn-hero">🛡️ <span class="hero-label-name">Paladin</span></div>
+            <div class="turn-hero">🏹 <span class="hero-label-name">Ranger</span></div>
+          </div>
+        </div>
+        <div class="overlay-bar hero-bar">
+          <div class="overlay-title">Hero</div>
+          <div class="hero-inner">
+            <div class="hero-name">✝️ <span class="hero-label-name">Cleric</span></div>
+            <div class="hero-stats">
+              <div class="stat-row health-row">
+                <div class="stat-icons"><span>❤️</span><span>❤️</span><span>❤️</span><span>❤️</span><span>❤️</span><span class="ic-off">❤️</span></div>
+                <span class="stat-compact">❤️ 5/6</span>
+              </div>
+              <div class="stat-row actions-row">
+                <div class="stat-icons"><span>⚡</span><span>⚡</span><span>⚡</span><span>⚡</span><span class="ic-off">⚡</span></div>
+                <span class="stat-compact">⚡ 4/5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="overlay-bar threat-bar">
+        <div class="overlay-title">Threat</div>
+        <div class="threat-inner">
+          <div class="threat-items">
+            <div class="t-row"><span class="t-faction" style="color:#dc2626;">Demons</span><span class="t-faction-icon">👹</span><span class="t-count">7/25</span></div>
+            <div class="t-row"><span class="t-faction" style="color:#16a34a;">Orcs</span><span class="t-faction-icon">👺</span><span class="t-count">10/25</span></div>
+            <div class="t-row"><span class="t-faction" style="color:#a0a0a0;">Undead</span><span class="t-faction-icon">💀</span><span class="t-count">6/25</span></div>
+            <div class="t-row"><span class="t-faction" style="color:#2563eb;">Dragonkin</span><span class="t-faction-icon">🐉</span><span class="t-count">7/25</span></div>
+            <div class="t-row"><span class="t-faction taint-label" style="color:#9333ea;">Taint Crystals</span><span class="t-faction-icon">💎</span><span class="t-count">1/12</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-hint">📱 Pinch to zoom · Drag to pan &nbsp; 🔄 Reset View</div>
+  </div>
+</div>
+
+<!-- ═══════ MOBILE (375px) ═══════ -->
+<div class="mockup-label">Mobile (375px)</div>
+<div class="modal-shell mobile">
+  <div class="top-bar">
+    <h2>Game Board</h2>
+    <div class="top-bar-btns">
+      <button class="phase-btn"><span class="hdr-btn-text">Game Log</span><span class="hdr-btn-icon">📜</span></button>
+      <button class="phase-btn"><span class="hdr-btn-text">Game Tips</span><span class="hdr-btn-icon">❓</span></button>
+      <button class="close-circle">×</button>
+    </div>
+  </div>
+  <div class="action-tray">
+    <div class="action-tray-title">Actions</div>
+    <div class="action-btns">
+      <button class="phase-btn"><span class="action-btn-icon">🥾 </span>Foot</button>
+      <button class="phase-btn"><span class="action-btn-icon">🐎 </span>Horse</button>
+      <button class="phase-btn"><span class="action-btn-icon">🦅 </span>Eagle</button>
+      <button class="phase-btn" disabled><span class="action-btn-icon">🌀 </span>Magic Gate</button>
+      <button class="phase-btn"><span class="action-btn-icon">✝️ </span>Sanctify Land</button>
+      <button class="phase-btn" disabled><span class="action-btn-icon">💫 </span>Build Gate</button>
+      <button class="phase-btn" disabled><span class="action-btn-icon">🍺 </span>Rumors</button>
+      <button class="phase-btn" disabled><span class="action-btn-icon">🌳 </span>Heal Land</button>
+      <button class="phase-btn" disabled><span class="action-btn-icon">❤️ </span>Heal Wounds</button>
+      <button class="phase-btn"><span class="action-btn-icon">⚔️ </span>Engage Minions</button>
+      <button class="phase-btn" disabled><span class="action-btn-icon">👹 </span>Attack General</button>
+      <button class="phase-btn"><span class="action-btn-icon">📜 </span>Quests</button>
+      <button class="phase-btn" disabled><span class="action-btn-icon">🎯 </span>Complete Quest</button>
+      <button class="phase-btn"><span class="action-btn-icon">🌟 </span>Special Cards</button>
+      <button class="phase-btn danger">End Turn</button>
+    </div>
+  </div>
+  <div class="map-area">
+    <div class="map-bg">
+      <div class="map-dot" style="top:22%;left:25%"></div>
+      <div class="map-dot" style="top:32%;left:45%"></div>
+      <div class="map-dot city" style="top:48%;left:40%"></div>
+      <div class="map-dot" style="top:38%;left:65%"></div>
+      <div class="map-dot" style="top:60%;left:30%"></div>
+      <div class="map-dot" style="top:65%;left:60%"></div>
+      <div class="map-dot" style="top:28%;left:72%"></div>
+    </div>
+
+    <div class="overlay-stack">
+      <div class="turn-hero-row">
+        <div class="overlay-bar turn-bar">
+          <div class="overlay-title">Turn</div>
+          <div class="turn-inner">
+            <div class="turn-hero active">✝️ <span class="hero-label-name">Cleric</span></div>
+            <div class="turn-hero">🔮 <span class="hero-label-name">Wizard</span></div>
+            <div class="turn-hero">🛡️ <span class="hero-label-name">Paladin</span></div>
+            <div class="turn-hero">🏹 <span class="hero-label-name">Ranger</span></div>
+          </div>
+        </div>
+        <div class="overlay-bar hero-bar">
+          <div class="overlay-title">Hero</div>
+          <div class="hero-inner">
+            <div class="hero-name">✝️ <span class="hero-label-name">Cleric</span></div>
+            <div class="hero-stats">
+              <div class="stat-row health-row">
+                <div class="stat-icons"><span>❤️</span><span>❤️</span><span>❤️</span><span>❤️</span><span>❤️</span><span class="ic-off">❤️</span></div>
+                <span class="stat-compact">❤️ 5/6</span>
+              </div>
+              <div class="stat-row actions-row">
+                <div class="stat-icons"><span>⚡</span><span>⚡</span><span>⚡</span><span>⚡</span><span class="ic-off">⚡</span></div>
+                <span class="stat-compact">⚡ 4/5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="overlay-bar threat-bar">
+        <div class="overlay-title">Threat</div>
+        <div class="threat-inner">
+          <div class="threat-items">
+            <div class="t-row"><span class="t-faction" style="color:#dc2626;">Demons</span><span class="t-faction-icon">👹</span><span class="t-count">7/25</span></div>
+            <div class="t-row"><span class="t-faction" style="color:#16a34a;">Orcs</span><span class="t-faction-icon">👺</span><span class="t-count">10/25</span></div>
+            <div class="t-row"><span class="t-faction" style="color:#a0a0a0;">Undead</span><span class="t-faction-icon">💀</span><span class="t-count">6/25</span></div>
+            <div class="t-row"><span class="t-faction" style="color:#2563eb;">Dragonkin</span><span class="t-faction-icon">🐉</span><span class="t-count">7/25</span></div>
+            <div class="t-row"><span class="t-faction taint-label" style="color:#9333ea;">Taint Crystals</span><span class="t-faction-icon">💎</span><span class="t-count">1/12</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-hint">📱 Pinch · Drag &nbsp; 🔄 Reset</div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -353,19 +353,19 @@ Object.assign(game, {
                 html += `<div style="font-weight: bold; color: #ffd700; margin-bottom: 5px;">Available Actions:</div>`;
                 
                 if (totalMinions > 0) {
-                    html += `<button class="btn btn-primary" onclick="event.stopPropagation(); game.engageMinionsAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">⚔️ Engage Minions</button>`;
+                    html += `<button class="phase-btn" onclick="event.stopPropagation(); game.engageMinionsAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">⚔️ Engage Minions</button>`;
                     // Wizard Fireball
                     if (currentHero.name === 'Wizard') {
                         const minionColors = Object.entries(minionsHere).filter(([c, n]) => n > 0).map(([c]) => c);
                         const hasFireballCard = minionColors.some(color => currentHero.cards.some(card => card.color === color));
                         if (hasFireballCard) {
-                            html += `<button class="btn btn-primary" onclick="event.stopPropagation(); game.wizardFireball()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">🔥 Fireball</button>`;
+                            html += `<button class="phase-btn" onclick="event.stopPropagation(); game.wizardFireball()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">🔥 Fireball</button>`;
                         }
                     }
                 }
                 
                 if (generalHere && totalMinions === 0) {
-                    html += `<button class="btn btn-primary" onclick="event.stopPropagation(); game.attackGeneralAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">👹 Attack General</button>`;
+                    html += `<button class="phase-btn" onclick="event.stopPropagation(); game.attackGeneralAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">👹 Attack General</button>`;
                 }
                 
                 if (isInn && this.actionsRemaining > 0) {
@@ -479,13 +479,13 @@ Object.assign(game, {
                 const escapedLocation = locationName.replace(/'/g, "\\'");
                 html += `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #d4af37;">`;
                 html += `<div style="font-weight: bold; color: #ffd700; margin-bottom: 5px;">Available Actions:</div>`;
-                html += `<button class="btn btn-primary" onclick="event.stopPropagation(); game.hideTooltip(true); game.moveToLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;" title="Move to ${escapedLocation} by foot (1 action)">🥾 Foot</button>`;
+                html += `<button class="phase-btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.moveToLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;" title="Move to ${escapedLocation} by foot (1 action)">🥾 Foot</button>`;
                 
                 // Ranger Archery: direct ranged attack at connected location
                 if (currentHero.name === 'Ranger') {
                     const targetMinions = minionsHere ? Object.values(minionsHere).reduce((a, b) => a + b, 0) : 0;
                     if (targetMinions > 0) {
-                        html += `<button class="btn btn-primary" onclick="event.stopPropagation(); game.engageMinionsAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">🏹 Archery</button>`;
+                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.engageMinionsAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">🏹 Archery</button>`;
                     }
                 }
                 
@@ -560,17 +560,17 @@ Object.assign(game, {
             `;
             
             if (totalMinions > 0) {
-                actionsHTML += `<button class="btn btn-primary" onclick="event.stopPropagation(); game.engageMinionsAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">⚔️ Engage Minions (${totalMinions})</button>`;
+                actionsHTML += `<button class="phase-btn" onclick="event.stopPropagation(); game.engageMinionsAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">⚔️ Engage Minions (${totalMinions})</button>`;
                 // Wizard Fireball
                 if (currentHero.name === 'Wizard') {
                     const minionColors = Object.entries(minionsHere).filter(([c, n]) => n > 0).map(([c]) => c);
                     const hasFireballCard = minionColors.some(color => currentHero.cards.some(card => card.color === color));
                     if (hasFireballCard) {
-                        actionsHTML += `<button class="btn btn-primary" onclick="event.stopPropagation(); game.wizardFireball()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">🔥 Fireball</button>`;
+                        actionsHTML += `<button class="phase-btn" onclick="event.stopPropagation(); game.wizardFireball()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">🔥 Fireball</button>`;
                     }
                 }
             } else {
-                actionsHTML += `<button class="btn btn-primary" onclick="event.stopPropagation(); game.attackGeneralAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">👹 Attack General</button>`;
+                actionsHTML += `<button class="phase-btn" onclick="event.stopPropagation(); game.attackGeneralAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px;">👹 Attack General</button>`;
             }
             
             actionsHTML += `</div>`;
@@ -840,7 +840,7 @@ Object.assign(game, {
                 </div>
             </div>
             <div style="text-align:center;margin-top:10px;">
-                <button class="btn btn-primary" onclick="game.closeCardDetail()" style="padding:8px 24px;">Close</button>
+                <button class="phase-btn" onclick="game.closeCardDetail()" style="padding:8px 24px;">Close</button>
             </div>
         `;
 

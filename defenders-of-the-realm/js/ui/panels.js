@@ -267,8 +267,6 @@ Object.assign(game, {
         const endTurnBtn = document.getElementById('map-end-turn-btn');
         if (endTurnBtn) {
             endTurnBtn.disabled = false;
-            endTurnBtn.style.opacity = '1';
-            endTurnBtn.style.cursor = 'pointer';
         }
         
         // Update token positions - renderTokens clears the layer itself
@@ -480,16 +478,10 @@ Object.assign(game, {
         if (footBtn) {
             if (hasActions) {
                 footBtn.disabled = false;
-                footBtn.className = 'btn btn-primary';
-                footBtn.style.opacity = '1';
-                footBtn.style.cursor = 'pointer';
-                footBtn.style.background = '';
+                footBtn.className = 'phase-btn';
             } else {
                 footBtn.disabled = true;
-                footBtn.className = 'btn';
-                footBtn.style.opacity = '0.5';
-                footBtn.style.cursor = 'not-allowed';
-                footBtn.style.background = '#666';
+                footBtn.className = 'phase-btn';
             }
         }
         
@@ -507,16 +499,10 @@ Object.assign(game, {
             console.log('[BUTTONS] Magic Gate should enable:', shouldEnable);
             if (shouldEnable) {
                 magicGateBtn.disabled = false;
-                magicGateBtn.className = 'btn btn-primary';
-                magicGateBtn.style.opacity = '1';
-                magicGateBtn.style.cursor = 'pointer';
-                magicGateBtn.style.background = '';
+                magicGateBtn.className = 'phase-btn';
             } else {
                 magicGateBtn.disabled = true;
-                magicGateBtn.className = 'btn';
-                magicGateBtn.style.opacity = '0.5';
-                magicGateBtn.style.cursor = 'not-allowed';
-                magicGateBtn.style.background = '#666';
+                magicGateBtn.className = 'phase-btn';
             }
         }
         
@@ -528,16 +514,10 @@ Object.assign(game, {
             console.log('[BUTTONS] Horse should enable:', shouldEnable);
             if (shouldEnable) {
                 horseBtn.disabled = false;
-                horseBtn.className = 'btn btn-primary';
-                horseBtn.style.opacity = '1';
-                horseBtn.style.cursor = 'pointer';
-                horseBtn.style.background = '';
+                horseBtn.className = 'phase-btn';
             } else {
                 horseBtn.disabled = true;
-                horseBtn.className = 'btn';
-                horseBtn.style.opacity = '0.5';
-                horseBtn.style.cursor = 'not-allowed';
-                horseBtn.style.background = '#666';
+                horseBtn.className = 'phase-btn';
             }
         }
         
@@ -549,16 +529,10 @@ Object.assign(game, {
             console.log('[BUTTONS] Eagle should enable:', shouldEnable);
             if (shouldEnable) {
                 eagleBtn.disabled = false;
-                eagleBtn.className = 'btn btn-primary';
-                eagleBtn.style.opacity = '1';
-                eagleBtn.style.cursor = 'pointer';
-                eagleBtn.style.background = '';
+                eagleBtn.className = 'phase-btn';
             } else {
                 eagleBtn.disabled = true;
-                eagleBtn.className = 'btn';
-                eagleBtn.style.opacity = '0.5';
-                eagleBtn.style.cursor = 'not-allowed';
-                eagleBtn.style.background = '#666';
+                eagleBtn.className = 'phase-btn';
             }
         }
     },
@@ -593,16 +567,10 @@ Object.assign(game, {
             console.log('[ACTION BUTTONS] Engage should enable:', canEngage);
             if (canEngage) {
                 engageBtn.disabled = false;
-                engageBtn.className = 'btn btn-primary';
-                engageBtn.style.opacity = '1';
-                engageBtn.style.cursor = 'pointer';
-                engageBtn.style.background = '';
+                engageBtn.className = 'phase-btn';
             } else {
                 engageBtn.disabled = true;
-                engageBtn.className = 'btn';
-                engageBtn.style.opacity = '0.5';
-                engageBtn.style.cursor = 'not-allowed';
-                engageBtn.style.background = '#666';
+                engageBtn.className = 'phase-btn';
             }
         }
         
@@ -617,16 +585,10 @@ Object.assign(game, {
                 const canFireball = hasActions && totalMinions > 0 && hasMatchingCard;
                 if (canFireball) {
                     fireballBtn.disabled = false;
-                    fireballBtn.className = 'btn btn-primary';
-                    fireballBtn.style.opacity = '1';
-                    fireballBtn.style.cursor = 'pointer';
-                    fireballBtn.style.background = '';
+                    fireballBtn.className = 'phase-btn';
                 } else {
                     fireballBtn.disabled = true;
-                    fireballBtn.className = 'btn';
-                    fireballBtn.style.opacity = '0.5';
-                    fireballBtn.style.cursor = 'not-allowed';
-                    fireballBtn.style.background = '#666';
+                    fireballBtn.className = 'phase-btn';
                 }
             } else {
                 fireballBtn.style.display = 'none';
@@ -642,16 +604,10 @@ Object.assign(game, {
                 const canArchery = hasActions && archeryTargets.length > 0;
                 if (canArchery) {
                     archeryBtn.disabled = false;
-                    archeryBtn.className = 'btn btn-primary';
-                    archeryBtn.style.opacity = '1';
-                    archeryBtn.style.cursor = 'pointer';
-                    archeryBtn.style.background = '';
+                    archeryBtn.className = 'phase-btn';
                 } else {
                     archeryBtn.disabled = true;
-                    archeryBtn.className = 'btn';
-                    archeryBtn.style.opacity = '0.5';
-                    archeryBtn.style.cursor = 'not-allowed';
-                    archeryBtn.style.background = '#666';
+                    archeryBtn.className = 'phase-btn';
                 }
             } else {
                 archeryBtn.style.display = 'none';
@@ -666,16 +622,10 @@ Object.assign(game, {
                 const canSanctify = hasActions && hasTaint && totalMinions === 0 && !generalHere;
                 if (canSanctify) {
                     sanctifyLandBtn.disabled = false;
-                    sanctifyLandBtn.className = 'btn btn-primary';
-                    sanctifyLandBtn.style.opacity = '1';
-                    sanctifyLandBtn.style.cursor = 'pointer';
-                    sanctifyLandBtn.style.background = '';
+                    sanctifyLandBtn.className = 'phase-btn';
                 } else {
                     sanctifyLandBtn.disabled = true;
-                    sanctifyLandBtn.className = 'btn';
-                    sanctifyLandBtn.style.opacity = '0.5';
-                    sanctifyLandBtn.style.cursor = 'not-allowed';
-                    sanctifyLandBtn.style.background = '#666';
+                    sanctifyLandBtn.className = 'phase-btn';
                 }
             } else {
                 sanctifyLandBtn.style.display = 'none';
@@ -689,16 +639,10 @@ Object.assign(game, {
             const anySpecialCards = this.heroes.some(h => h.cards && h.cards.some(c => c.special));
             if (anySpecialCards) {
                 specialCardsBtn.disabled = false;
-                specialCardsBtn.className = 'btn btn-primary';
-                specialCardsBtn.style.opacity = '1';
-                specialCardsBtn.style.cursor = 'pointer';
-                specialCardsBtn.style.background = '';
+                specialCardsBtn.className = 'phase-btn';
             } else {
                 specialCardsBtn.disabled = true;
-                specialCardsBtn.className = 'btn';
-                specialCardsBtn.style.opacity = '0.5';
-                specialCardsBtn.style.cursor = 'not-allowed';
-                specialCardsBtn.style.background = '#666';
+                specialCardsBtn.className = 'phase-btn';
             }
         }
         
@@ -708,16 +652,10 @@ Object.assign(game, {
             const anyQuestCards = this.heroes.some(h => h.questCards && h.questCards.length > 0);
             if (anyQuestCards) {
                 questCardsBtn.disabled = false;
-                questCardsBtn.className = 'btn btn-primary';
-                questCardsBtn.style.opacity = '1';
-                questCardsBtn.style.cursor = 'pointer';
-                questCardsBtn.style.background = '';
+                questCardsBtn.className = 'phase-btn';
             } else {
                 questCardsBtn.disabled = true;
-                questCardsBtn.className = 'btn';
-                questCardsBtn.style.opacity = '0.5';
-                questCardsBtn.style.cursor = 'not-allowed';
-                questCardsBtn.style.background = '#666';
+                questCardsBtn.className = 'phase-btn';
             }
         }
         
@@ -728,9 +666,7 @@ Object.assign(game, {
             const canComplete = questResult !== null;
             if (canComplete) {
                 completeQuestBtn.disabled = false;
-                completeQuestBtn.className = 'btn btn-primary';
-                completeQuestBtn.style.opacity = '1';
-                completeQuestBtn.style.cursor = 'pointer';
+                completeQuestBtn.className = 'phase-btn';
                 completeQuestBtn.style.background = '#dc2626';
                 // Show specific label for multi-location action quests
                 if (questResult.quest.mechanic?.type === 'multi_location_action') {
@@ -740,10 +676,8 @@ Object.assign(game, {
                 }
             } else {
                 completeQuestBtn.disabled = true;
-                completeQuestBtn.className = 'btn';
-                completeQuestBtn.style.opacity = '0.5';
-                completeQuestBtn.style.cursor = 'not-allowed';
-                completeQuestBtn.style.background = '#666';
+                completeQuestBtn.className = 'phase-btn';
+                completeQuestBtn.style.background = '';
                 completeQuestBtn.innerHTML = `<span class="action-btn-icon">🎯 </span>Complete Quest`;
             }
         }
@@ -755,16 +689,10 @@ Object.assign(game, {
             console.log('[ACTION BUTTONS] Attack General should enable:', canAttackGeneral);
             if (canAttackGeneral) {
                 attackGeneralBtn.disabled = false;
-                attackGeneralBtn.className = 'btn btn-primary';
-                attackGeneralBtn.style.opacity = '1';
-                attackGeneralBtn.style.cursor = 'pointer';
-                attackGeneralBtn.style.background = '';
+                attackGeneralBtn.className = 'phase-btn';
             } else {
                 attackGeneralBtn.disabled = true;
-                attackGeneralBtn.className = 'btn';
-                attackGeneralBtn.style.opacity = '0.5';
-                attackGeneralBtn.style.cursor = 'not-allowed';
-                attackGeneralBtn.style.background = '#666';
+                attackGeneralBtn.className = 'phase-btn';
             }
         }
         
@@ -775,17 +703,11 @@ Object.assign(game, {
             console.log('[ACTION BUTTONS] Rumors should enable:', canRumors, '(hasActions:', hasActions, 'isInn:', isInn, 'rumorsLeft:', rumorsLeft, ')');
             if (canRumors) {
                 rumorsBtn.disabled = false;
-                rumorsBtn.className = 'btn btn-primary';
-                rumorsBtn.style.opacity = '1';
-                rumorsBtn.style.cursor = 'pointer';
-                rumorsBtn.style.background = '';
+                rumorsBtn.className = 'phase-btn';
                 rumorsBtn.innerHTML = `<span class="action-btn-icon">🍺 </span>Rumors`;
             } else {
                 rumorsBtn.disabled = true;
-                rumorsBtn.className = 'btn';
-                rumorsBtn.style.opacity = '0.5';
-                rumorsBtn.style.cursor = 'not-allowed';
-                rumorsBtn.style.background = '#666';
+                rumorsBtn.className = 'phase-btn';
                 rumorsBtn.innerHTML = `<span class="action-btn-icon">🍺 </span>Rumors`;
             }
         }
@@ -798,16 +720,10 @@ Object.assign(game, {
                 const canCrafty = hasActions && isInn && rumorsLeft > 0;
                 if (canCrafty) {
                     craftyBtn.disabled = false;
-                    craftyBtn.className = 'btn btn-primary';
-                    craftyBtn.style.opacity = '1';
-                    craftyBtn.style.cursor = 'pointer';
-                    craftyBtn.style.background = '';
+                    craftyBtn.className = 'phase-btn';
                 } else {
                     craftyBtn.disabled = true;
-                    craftyBtn.className = 'btn';
-                    craftyBtn.style.opacity = '0.5';
-                    craftyBtn.style.cursor = 'not-allowed';
-                    craftyBtn.style.background = '#666';
+                    craftyBtn.className = 'phase-btn';
                 }
             } else {
                 craftyBtn.style.display = 'none';
@@ -821,16 +737,10 @@ Object.assign(game, {
             console.log('[ACTION BUTTONS] Heal the Land should enable:', canHealLand, '(hasActions:', hasActions, 'hasTaint:', hasTaint, 'noMinions:', totalMinions === 0, 'noGeneral:', !generalHere, ')');
             if (canHealLand) {
                 healLandBtn.disabled = false;
-                healLandBtn.className = 'btn btn-primary';
-                healLandBtn.style.opacity = '1';
-                healLandBtn.style.cursor = 'pointer';
-                healLandBtn.style.background = '';
+                healLandBtn.className = 'phase-btn';
             } else {
                 healLandBtn.disabled = true;
-                healLandBtn.className = 'btn';
-                healLandBtn.style.opacity = '0.5';
-                healLandBtn.style.cursor = 'not-allowed';
-                healLandBtn.style.background = '#666';
+                healLandBtn.className = 'phase-btn';
             }
         }
         
@@ -848,16 +758,10 @@ Object.assign(game, {
             console.log('[ACTION BUTTONS] Healing Wounds should enable:', canHeal, '(hasActions:', hasActions, 'isWounded:', isWounded, 'isInn:', isInn, 'isSafe:', isSafe, ')');
             if (canHeal) {
                 healingWoundsBtn.disabled = false;
-                healingWoundsBtn.className = 'btn btn-primary';
-                healingWoundsBtn.style.opacity = '1';
-                healingWoundsBtn.style.cursor = 'pointer';
-                healingWoundsBtn.style.background = '';
+                healingWoundsBtn.className = 'phase-btn';
             } else {
                 healingWoundsBtn.disabled = true;
-                healingWoundsBtn.className = 'btn';
-                healingWoundsBtn.style.opacity = '0.5';
-                healingWoundsBtn.style.cursor = 'not-allowed';
-                healingWoundsBtn.style.background = '#666';
+                healingWoundsBtn.className = 'phase-btn';
             }
         }
         
@@ -888,16 +792,10 @@ Object.assign(game, {
                 
                 if (canUseSkill) {
                     specialSkillBtn.disabled = false;
-                    specialSkillBtn.className = 'btn btn-primary';
-                    specialSkillBtn.style.opacity = '1';
-                    specialSkillBtn.style.cursor = 'pointer';
-                    specialSkillBtn.style.background = '';
+                    specialSkillBtn.className = 'phase-btn';
                 } else {
                     specialSkillBtn.disabled = true;
-                    specialSkillBtn.className = 'btn';
-                    specialSkillBtn.style.opacity = '0.5';
-                    specialSkillBtn.style.cursor = 'not-allowed';
-                    specialSkillBtn.style.background = '#666';
+                    specialSkillBtn.className = 'phase-btn';
                 }
             } else {
                 // Hero has no special skill - hide button
@@ -920,6 +818,7 @@ Object.assign(game, {
                     unicornBtn.id = 'unicorn-steed-btn';
                     unicornBtn.innerHTML = '<span class="action-btn-icon">🦄 </span>Unicorn';
                     unicornBtn.title = 'Unicorn Steed (move 2 spaces, no card required)';
+                    unicornBtn.style.cssText = 'width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;';
                     unicornBtn.onclick = () => game.useUnicornSteed();
                     actionsSection.insertBefore(unicornBtn, buildGateBtn2);
                 }
@@ -928,16 +827,10 @@ Object.assign(game, {
                 unicornBtn.style.display = '';
                 if (hasActions) {
                     unicornBtn.disabled = false;
-                    unicornBtn.className = 'btn btn-primary';
-                    unicornBtn.style.opacity = '1';
-                    unicornBtn.style.cursor = 'pointer';
-                    unicornBtn.style.background = '';
+                    unicornBtn.className = 'phase-btn';
                 } else {
                     unicornBtn.disabled = true;
-                    unicornBtn.className = 'btn';
-                    unicornBtn.style.opacity = '0.5';
-                    unicornBtn.style.cursor = 'not-allowed';
-                    unicornBtn.style.background = '#666';
+                    unicornBtn.className = 'phase-btn';
                 }
             }
         } else if (unicornBtn) {
@@ -954,16 +847,10 @@ Object.assign(game, {
             
             if (canBuildGate) {
                 buildGateBtn.disabled = false;
-                buildGateBtn.className = 'btn btn-primary';
-                buildGateBtn.style.opacity = '1';
-                buildGateBtn.style.cursor = 'pointer';
-                buildGateBtn.style.background = '';
+                buildGateBtn.className = 'phase-btn';
             } else {
                 buildGateBtn.disabled = true;
-                buildGateBtn.className = 'btn';
-                buildGateBtn.style.opacity = '0.5';
-                buildGateBtn.style.cursor = 'not-allowed';
-                buildGateBtn.style.background = '#666';
+                buildGateBtn.className = 'phase-btn';
             }
         }
         

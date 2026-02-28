@@ -27,12 +27,13 @@ Object.assign(game, {
         const setVh = () => {
             const modal = document.querySelector('#map-modal .modal-content');
             if (modal && window.innerWidth <= 700) {
-                modal.style.height = window.innerHeight + 'px';
-                modal.style.maxHeight = window.innerHeight + 'px';
+                // Account for #map-modal padding (4px*2) + border (2px*2)
+                const available = window.innerHeight - 12;
+                modal.style.height = available + 'px';
+                modal.style.maxHeight = available + 'px';
             }
         };
         setVh();
-        // Update on resize/orientation change (debounced)
         if (!this._vhListenerAdded) {
             window.addEventListener('resize', setVh);
             window.addEventListener('orientationchange', () => setTimeout(setVh, 100));

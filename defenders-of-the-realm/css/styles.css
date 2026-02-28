@@ -985,17 +985,14 @@
         @media (max-width: 700px) {
             /* Map modal fullscreen on mobile — safe for browser chrome */
             #map-modal {
-                padding: 0 !important;
-                top: 0 !important; bottom: 0 !important;
-                height: 100% !important;
-                height: 100dvh !important;
-                height: -webkit-fill-available !important;
+                padding: 4px !important;
             }
             #map-modal .modal-content,
             #map-modal .map-modal-content {
-                max-width: 96vw !important; width: 96vw !important;
+                max-width: 100% !important; width: 100% !important;
                 max-height: 100% !important; height: 100% !important;
-                border-radius: 0 !important; border: none !important;
+                border-radius: 8px !important;
+                border: 2px solid #d4af37 !important;
                 padding: 0 !important; padding-top: 0 !important;
                 box-shadow: none !important;
             }

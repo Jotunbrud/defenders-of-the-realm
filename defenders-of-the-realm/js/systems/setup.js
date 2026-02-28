@@ -239,12 +239,11 @@ Object.assign(game, {
             
             questsHTML += `
                 <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;">
-                    <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
-                        <span class="hero-banner-name">${hero.symbol} ${hero.name}</span>
-                        <span class="hero-banner-name" style="font-size:0.85em">📜 Quest</span>
+                    <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">📜 ${quest.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
                     </div>
                     <div style="padding:12px 14px;">
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#b91c1c;margin-bottom:6px;">${quest.name}</div>
                         <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
                         <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>

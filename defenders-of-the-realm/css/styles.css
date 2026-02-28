@@ -30,8 +30,10 @@
         }
 
         .game-header h1 {
+            font-family: 'Cinzel', Georgia, serif;
             font-size: 1.5em;
-            color: #ffd700;
+            color: #d4af37;
+            font-weight: 700;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
             margin-bottom: 8px;
         }
@@ -213,10 +215,12 @@
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
+            border: 1px solid rgba(212,175,55,0.25);
         }
         .tray-title {
-            font-weight: bold;
-            color: #ffd700;
+            font-family: 'Cinzel', Georgia, serif;
+            font-weight: 700;
+            color: #d4af37;
             font-size: 1.1em;
             margin-bottom: 8px;
         }
@@ -1182,6 +1186,10 @@
         .phase-btn.danger {
           background: linear-gradient(135deg, #dc2626, #991b1b);
           border-color: #dc2626; color: #fff;
+        }
+        .phase-btn-inline {
+          width: auto !important; margin-top: 0 !important;
+          padding: 5px 10px !important; font-size: 0.75em !important;
         }
 
         /* ── LOCATION RING ── */

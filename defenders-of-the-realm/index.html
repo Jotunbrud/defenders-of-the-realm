@@ -37,23 +37,23 @@
     <!-- ── END SPLASH SCREEN ── -->
     <div class="game-container">
         <div class="game-header">
-            <h1>⚔️ Defenders of the Realm ⚔️</h1>
-            <div style="font-size: 0.85em; color: #d4af37; margin-top: 5px;">Version 5.3.11 - Beta</div>
+            <h1 class="modal-heading" style="font-size: 1.5em;">⚔️ Defenders of the Realm ⚔️</h1>
+            <div class="modal-desc-text" style="font-size: 0.85em; color: #d4af37; margin-top: 5px;">Version 5.3.11 - Beta</div>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="game.showRules()">📜 Rules</button>
-                <button class="btn btn-primary" onclick="game.showTips()">💡 Tips</button>
-                <button class="btn btn-primary" onclick="game.showReleaseNotes()">📋 Release Notes</button>
-                <button class="btn btn-primary" onclick="game.showSettings()">⚙️ Settings</button>
-                <button class="btn" onclick="if(confirm('Quit game and return to setup?')) window.close()" style="background: #dc2626;">🚪 Quit Game</button>
+                <button class="phase-btn phase-btn-inline" onclick="game.showRules()">📜 Rules</button>
+                <button class="phase-btn phase-btn-inline" onclick="game.showTips()">💡 Tips</button>
+                <button class="phase-btn phase-btn-inline" onclick="game.showReleaseNotes()">📋 Release Notes</button>
+                <button class="phase-btn phase-btn-inline" onclick="game.showSettings()">⚙️ Settings</button>
+                <button class="phase-btn phase-btn-inline danger" onclick="if(confirm('Quit game and return to setup?')) window.close()">🚪 Quit Game</button>
             </div>
         </div>
 
         <div class="controls-panel">
             <div class="section-tray">
                 <div class="tray-title">Play Area</div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="game.showMap()">Game Board</button>
-                    <button class="btn btn-primary" onclick="game.showHeroesModal()">👥 View Heroes</button>
+                <div class="action-buttons" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="phase-btn phase-btn-inline" onclick="game.showMap()" style="padding: 8px 14px !important; font-size: 0.85em !important;">Game Board</button>
+                    <button class="phase-btn phase-btn-inline" onclick="game.showHeroesModal()" style="padding: 8px 14px !important; font-size: 0.85em !important;">👥 View Heroes</button>
                 </div>
             </div>
 
@@ -176,7 +176,7 @@
     <div class="modal active" id="setup-modal">
         <div class="modal-content">
             <h2 class="modal-heading" style="color: #d4af37; margin: 0; font-size: 1.2em; text-align: center;">⚔️ Hero Selection</h2>
-            <p style="margin-bottom: 15px; text-align: center;">Select your heroes (1-4 players)</p>
+            <p class="modal-desc-text" style="margin-bottom: 15px; text-align: center;">Select your heroes (1-4 players)</p>
             <div id="hero-selection"></div>
             
             <!-- White Rabbit Test General (hidden) -->
@@ -192,7 +192,7 @@
                 </label>
             </div>
             
-            <button class="btn btn-primary" style="margin-top: 15px; width: 100%;" onclick="game.startGame()">
+            <button class="phase-btn" style="margin-top: 15px;" onclick="game.startGame()">
                 Start Game
             </button>
         </div>

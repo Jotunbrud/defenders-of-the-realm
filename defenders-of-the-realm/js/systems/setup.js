@@ -238,19 +238,17 @@ Object.assign(game, {
             if (!quest) return;
             
             questsHTML += `
-                <div style="padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 4px solid ${hero.color};">
-                    <div style="display: flex; align-items: flex-start; gap: 12px;">
-                        <div style="flex-shrink: 0; text-align: center; min-width: 50px;">
-                            <div style="font-size: 1.8em;">${hero.symbol}</div>
-                            <div style="font-size: 0.8em; color: ${hero.color}; font-weight: bold; margin-top: 2px;">${hero.name}</div>
-                        </div>
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                <span style="font-size: 1.2em;">📜</span>
-                                <span style="font-weight: bold; color: #ef4444; font-size: 1.05em;">${quest.name}</span>
-                            </div>
-                            <div style="font-size: 0.9em; color: #d4af37; margin-bottom: 4px;">${quest.description}</div>
-                            <div style="font-size: 0.8em; color: #a78bfa;">🏆 Reward: ${quest.reward}</div>
+                <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;">
+                    <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">${hero.symbol} ${hero.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">📜 Quest</span>
+                    </div>
+                    <div style="padding:12px 14px;">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#b91c1c;margin-bottom:6px;">${quest.name}</div>
+                        <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
+                        <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                         </div>
                     </div>
                 </div>
@@ -258,14 +256,14 @@ Object.assign(game, {
         });
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 16px;">
-                <div style="font-size: 2.5em; margin-bottom: 8px;">📜</div>
-                <div style="color: #d4af37; font-size: 1.1em;">Each hero has been assigned a quest to complete!</div>
-                <div style="color: #999; font-size: 0.85em; margin-top: 6px;">
-                    Quests may not be discarded. Complete them to earn rewards and draw new quests.
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">📜 Quest Cards Drawn</div>
+            ${this._parchmentBoxOpen('Starting Quests')}
+                <div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:10px;">
+                    Each hero has been assigned a quest to complete!<br>Quests may not be discarded. Complete them to earn rewards and draw new quests.
                 </div>
-            </div>
-            ${questsHTML}
+                <div class="sep"></div>
+                ${questsHTML}
+            ${this._parchmentBoxClose()}
         `;
         
         this.showInfoModal('📜 Quest Cards Drawn', contentHTML, () => {
@@ -274,46 +272,47 @@ Object.assign(game, {
     },
     
     _showGeneralSetupModal() {
-        const factionColors = { red: '#dc2626', green: '#16a34a', black: '#6b7280', blue: '#3b82f6' };
+        const factionColors = { red: '#dc2626', green: '#16a34a', black: '#374151', blue: '#3b82f6' };
+        const factionNames = { red: 'Demons', green: 'Orcs', black: 'Undead', blue: 'Dragonkin' };
         
         let generalsHTML = '';
         this.generals.forEach(g => {
             const gc = factionColors[g.color] || '#ccc';
+            const fn = factionNames[g.color] || g.faction;
             const hasTaint = g.color === 'red';
             
             generalsHTML += `
-                <div style="padding: 10px 12px; margin: 6px 0; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 4px solid ${gc};">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
-                        <div>
-                            <span style="font-size: 1.3em;">${g.symbol}</span>
-                            <strong style="color: ${gc}; font-size: 1.05em; margin-left: 4px;">${g.name}</strong>
-                            <span style="color: #999; font-size: 0.9em; margin-left: 6px;">${g.faction}</span>
-                        </div>
-                        <div style="text-align: right;">
-                            <span style="color: #ccc; font-size: 0.9em;">❤️ ${g.health}/${g.maxHealth}</span>
-                        </div>
+                <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;">
+                    <div style="background:linear-gradient(135deg,${gc}cc 0%,${gc}99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">${g.symbol} ${g.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">${fn}</span>
                     </div>
-                    <div style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
-                        <div style="color: #d4af37; font-size: 0.9em;">
-                            📍 ${g.location}
+                    <div style="padding:12px 14px;">
+                        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:8px;">
+                            ${this._minionDotsHTML(g.color, 3, 20)}
+                            ${this._generalTokenHTML(g.color, 44)}
+                            ${this._locationRingHTML(g.location, g.color, 80)}
                         </div>
-                        <div style="font-size: 0.85em;">
-                            <span style="color: ${gc};">●●● 3 minions</span>
-                        </div>
-                    </div>${hasTaint ? `
-                    <div style="margin-top: 5px; padding: 5px 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 4px;">
-                        <strong style="color: #9333ea; font-size: 0.85em;">Taint Crystal placed!</strong>
-                    </div>` : ''}
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${gc};">●●● 3 minions</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:${g.health <= 2 ? '#b91c1c' : '#2c1810'};">❤️ ${g.health}/${g.maxHealth}</span>
+                        </div>${hasTaint ? `
+                        <div class="taint-box" style="margin-top:8px;">
+                            <div class="taint-title">💎 Taint Crystal Placed</div>
+                        </div>` : ''}
+                    </div>
                 </div>`;
         });
         
         const contentHTML = `
-            <div style="max-height: 420px; overflow-y: auto; padding: 2px;">
-                <div style="text-align: center; color: #999; font-size: 0.9em; margin-bottom: 10px;">
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">⚔️ Generals Take Position</div>
+            ${this._parchmentBoxOpen('Enemy Forces')}
+                <div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:10px;">
                     Each General begins with 3 minions at their starting location.
                 </div>
+                <div class="sep"></div>
                 ${generalsHTML}
-            </div>
+            ${this._parchmentBoxClose()}
         `;
         
         this.showInfoModal('⚔️ Generals Take Position', contentHTML, () => {
@@ -365,7 +364,6 @@ Object.assign(game, {
     _runSetupDarkness() {
         const setupCards = [];
         const factionNames = { red: 'Demon', blue: 'Dragon', green: 'Orc', black: 'Undead' };
-        const factionIcons = { red: '🔴', blue: '🔵', green: '🟢', black: '⚫' };
         
         // Phase 1: 3 cards, 2 minions per slot
         for (let i = 0; i < 3; i++) {
@@ -420,69 +418,75 @@ Object.assign(game, {
         this.updateDeckCounts();
         this.updateGameStatus();
         
-        // Build summary modal
+        // Build summary modal using parchment design system
         let phase1HTML = '';
         let phase2HTML = '';
+        
+        const slColors = { green: 'green', blue: 'blue', red: 'red', black: 'gray' };
+        const cColors = { green: 'cg', blue: 'cb', red: 'cr', black: 'ck' };
         
         setupCards.forEach(entry => {
             const c = entry.card;
             const n = entry.count;
-            const gc1 = this.getGeneralColor(c.faction1);
-            const gc2 = this.getGeneralColor(c.faction2);
             const fn1 = factionNames[c.faction1];
             const fn2 = factionNames[c.faction2];
-            const fi1 = factionIcons[c.faction1];
-            const fi2 = factionIcons[c.faction2];
             
-            let taintHTML = '';
+            // Build spawn lines for both placements
+            let cardHTML = '';
+            
+            // Placement 1
+            cardHTML += `<div class="sl ${slColors[c.faction1] || 'gray'}">
+                <span class="left ${cColors[c.faction1] || 'ck'}">${this._inlineDotsHTML(c.faction1, n)} ${fn1}</span>
+                <span class="right">→ ${c.location1}</span>
+            </div>`;
             if (entry.taint1) {
-                taintHTML += `<div style="margin-top: 5px; padding: 5px 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 4px;">
-                    <strong style="color: #9333ea; font-size: 0.85em;">Taint Crystal placed!</strong>
-                </div>`;
-            }
-            if (entry.taint2) {
-                taintHTML += `<div style="margin-top: 5px; padding: 5px 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 4px;">
-                    <strong style="color: #9333ea; font-size: 0.85em;">Taint Crystal placed!</strong>
+                cardHTML += `<div class="taint-box" style="margin:4px 0;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span class="taint-title">💎 Taint Crystal Placed</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;">→ ${c.location1}</span>
+                    </div>
                 </div>`;
             }
             
-            const cardHTML = `
-                <div style="padding: 8px 10px; margin: 5px 0; background: rgba(0,0,0,0.3); border-radius: 6px; border-left: 3px solid #d4af37;">
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 120px;">
-                            <span style="color: ${gc1};">${fi1}</span> 
-                            <strong style="color: ${gc1};">+${n} ${fn1}</strong> 
-                            <span style="color: #ccc;">→ ${c.location1}</span>
-                        </div>
-                        <div style="flex: 1; min-width: 120px;">
-                            <span style="color: ${gc2};">${fi2}</span> 
-                            <strong style="color: ${gc2};">+${n} ${fn2}</strong> 
-                            <span style="color: #ccc;">→ ${c.location2}</span>
-                        </div>
+            // Placement 2
+            cardHTML += `<div class="sl ${slColors[c.faction2] || 'gray'}">
+                <span class="left ${cColors[c.faction2] || 'ck'}">${this._inlineDotsHTML(c.faction2, n)} ${fn2}</span>
+                <span class="right">→ ${c.location2}</span>
+            </div>`;
+            if (entry.taint2) {
+                cardHTML += `<div class="taint-box" style="margin:4px 0;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span class="taint-title">💎 Taint Crystal Placed</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;">→ ${c.location2}</span>
                     </div>
-                    ${taintHTML}
                 </div>`;
+            }
             
             if (entry.phase === 1) phase1HTML += cardHTML;
             else phase2HTML += cardHTML;
         });
         
         const totalMinions = setupCards.reduce((sum, e) => sum + e.count * 2, 0);
+        const phase1Count = setupCards.filter(e => e.phase === 1).length;
+        const phase2Count = setupCards.filter(e => e.phase === 2).length;
         
         const summaryHTML = `
-            <div style="max-height: 400px; overflow-y: auto; padding: 5px;">
-                <div style="margin-bottom: 12px;">
-                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 6px;">Phase 1 — 2 minions per location (${setupCards.filter(e => e.phase === 1).length} cards)</div>
-                    ${phase1HTML || '<div style="color: #888; padding: 5px;">No cards drawn</div>'}
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">🌑 Initial Darkness Spreads</div>
+            ${this._parchmentBoxOpen('Darkness Spreads Setup')}
+                <div>
+                    <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Phase 1 — 2 minions per location (${phase1Count} cards)</div>
+                    ${phase1HTML || '<div class="no-minion-note">No cards drawn</div>'}
                 </div>
-                <div style="margin-bottom: 12px;">
-                    <div style="color: #60a5fa; font-weight: bold; margin-bottom: 6px;">Phase 2 — 1 minion per location (${setupCards.filter(e => e.phase === 2).length} cards)</div>
-                    ${phase2HTML || '<div style="color: #888; padding: 5px;">No cards drawn</div>'}
+                <div class="sep"></div>
+                <div>
+                    <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px">Phase 2 — 1 minion per location (${phase2Count} cards)</div>
+                    ${phase2HTML || '<div class="no-minion-note">No cards drawn</div>'}
                 </div>
-                <div style="text-align: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; margin-top: 8px;">
-                    <span style="color: #d4af37; font-size: 1.05em;">${totalMinions} minions placed across ${setupCards.length} cards</span>
+                <div class="sep"></div>
+                <div style="text-align:center;padding:8px;background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;">
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#2c1810;">${totalMinions} minions placed across ${setupCards.length} cards</span>
                 </div>
-            </div>
+            ${this._parchmentBoxClose()}
         `;
         
         this.showInfoModal('🌑 Initial Darkness Spreads', summaryHTML, () => {

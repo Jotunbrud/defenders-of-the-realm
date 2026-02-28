@@ -174,9 +174,9 @@
 
     <!-- Setup Modal -->
     <div class="modal active" id="setup-modal">
-        <div class="modal-content">
-            <h2 class="modal-heading" style="color: #d4af37; margin: 0; font-size: 1.2em; text-align: center;">⚔️ Hero Selection</h2>
-            <p style="margin-bottom: 15px; text-align: center;">Select your heroes (1-4 players)</p>
+        <div class="modal-content" style="padding-top: 20px;">
+            <div class="modal-heading" style="color: #d4af37; margin: 0; font-size: 1.15em; text-align: center; margin-bottom: 12px;">⚔️ Hero Selection</div>
+            <div class="modal-desc-text" style="margin-bottom: 15px; text-align: center; font-size: 0.75em; color: #ccc;">Select your heroes (1-4 players)</div>
             <div id="hero-selection"></div>
             
             <!-- White Rabbit Test General (hidden) -->
@@ -192,7 +192,7 @@
                 </label>
             </div>
             
-            <button class="btn btn-primary" style="margin-top: 15px; width: 100%;" onclick="game.startGame()">
+            <button class="phase-btn" style="margin-top: 15px;" onclick="game.startGame()">
                 Start Game
             </button>
         </div>
@@ -799,7 +799,7 @@
     
     <!-- Generic Info Modal (replaces alerts) -->
     <div id="info-modal" class="modal" style="z-index: 40000;">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 500px; padding-top: 20px;">
             <h2 id="info-modal-title" class="modal-title"></h2>
             <div id="info-modal-content" style="color: #f4e4c1;"></div>
             <div style="text-align: center; margin-top: 20px;">

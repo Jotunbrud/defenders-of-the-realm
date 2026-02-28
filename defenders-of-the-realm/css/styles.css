@@ -215,9 +215,8 @@
             margin-bottom: 10px;
         }
         .tray-title {
-            font-family: 'Cinzel', Georgia, serif;
-            font-weight: 900;
-            color: #d4af37;
+            font-weight: bold;
+            color: #ffd700;
             font-size: 1.1em;
             margin-bottom: 8px;
         }
@@ -846,54 +845,193 @@
                 stroke-width: 2;
             }
         }
-        /* Active Hero & Threat Tracker - responsive single-line trays */
-        .hero-tray {
-            background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 5px; margin-bottom: 8px; border: 1px solid rgba(212,175,55,0.3);
+        /* ═══════════════════════════════════════
+           MAP TOP BAR & ACTION TRAY
+           ═══════════════════════════════════════ */
+        .map-top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 6px 10px; border-bottom: 1px solid rgba(212,175,55,0.25);
+            flex-shrink: 0;
         }
-        .hero-tray-row {
-            display: flex; align-items: center; white-space: nowrap; overflow: hidden;
+        .close-circle {
+            width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px; color: #fff;
+            background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
-        .hero-tray-left { flex: 1 1 0; min-width: 0; }
-        .hero-tray-center { flex: 1 1 0; display: flex; gap: 2px; align-items: center; justify-content: center; }
-        .hero-tray-right { flex: 1 1 0; display: flex; gap: 2px; align-items: center; justify-content: flex-end; }
-        .tray-label { color: #d4af37; font-weight: 900; font-size: clamp(0.65em, 1.8vw, 0.95em); margin-right: 4px; font-family: 'Cinzel', Georgia, serif; }
-        .tray-label-text { }
-        .tray-label-icon { display: none; }
-        .tray-value { color: #f4e4c1; font-size: clamp(0.65em, 1.8vw, 0.95em); font-family: 'Cinzel', Georgia, serif; font-weight: 700; }
-        .tray-icon { font-size: clamp(0.9em, 2.2vw, 1.3em); line-height: 1; }
-        .tray-icon-dim { font-size: clamp(0.9em, 2.2vw, 1.3em); line-height: 1; opacity: 0.3; filter: grayscale(100%); }
-        .tray-icons { display: flex; gap: 2px; align-items: center; }
-        .tray-text-counter { display: none; color: #f4e4c1; font-weight: 900; font-size: 0.95em; font-family: 'Cinzel', Georgia, serif; }
+        .hdr-btn-text { }
+        .hdr-btn-icon { display: none; }
 
-        .map-header-btn-text { }
-        .map-header-btn-icon { display: none; }
+        .action-tray {
+            padding: 6px 10px; border-bottom: 1px solid rgba(212,175,55,0.15);
+            flex-shrink: 0; display: flex; gap: 4px; flex-wrap: wrap;
+            align-items: center; justify-content: space-between;
+        }
+        .action-tray-title {
+            font-family: 'Cinzel', Georgia, serif;
+            font-weight: 700; color: #d4af37;
+            font-size: 0.85em; white-space: nowrap; flex-shrink: 0; margin-right: 2px;
+        }
+        .action-btns { display: contents; }
+        .action-btns .phase-btn { flex: 1 1 auto; text-align: center; }
 
-        .threat-tray {
-            background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 5px; margin-bottom: 8px; border: 1px solid rgba(212,175,55,0.3);
+        /* ═══════════════════════════════════════
+           MAP OVERLAY PANELS — DESKTOP DEFAULT
+           ═══════════════════════════════════════ */
+        .overlay-stack {
+            position: absolute; top: 0; left: 0; z-index: 10;
+            display: flex; flex-direction: column;
+            pointer-events: none;
         }
-        .threat-row {
-            display: flex; align-items: center; white-space: nowrap; overflow: hidden;
-            justify-content: space-between; width: 100%;
+        .overlay-bar {
+            background: rgba(8, 8, 16, 0.88);
+            border-right: 1px solid rgba(212,175,55,0.35);
+            border-bottom: 1px solid rgba(212,175,55,0.35);
+            backdrop-filter: blur(6px);
+            padding: 5px 10px 5px 8px;
+            pointer-events: auto;
         }
-        .threat-label { color: #d4af37; font-weight: 900; font-size: clamp(0.6em, 1.6vw, 0.95em); font-family: 'Cinzel', Georgia, serif; }
-        .threat-item { display: flex; align-items: center; gap: clamp(2px, 0.5vw, 5px); }
-        .threat-faction { font-weight: 900; font-size: clamp(0.55em, 1.5vw, 0.9em); font-family: 'Cinzel', Georgia, serif; }
-        .threat-count { color: #f4e4c1; font-weight: 900; font-size: clamp(0.55em, 1.5vw, 0.9em); font-family: 'Cinzel', Georgia, serif; }
-        .threat-faction-name { }
-        .threat-faction-icon { display: none; }
+        .overlay-stack > .overlay-bar:last-child { border-radius: 0 0 6px 0; }
+        .overlay-title {
+            font-family: 'Cinzel', Georgia, serif;
+            font-size: 0.58em; color: #d4af37; font-weight: 700; margin-bottom: 2px;
+        }
+
+        /* Turn Tracker */
+        .turn-inner { display: flex; flex-direction: column; gap: 1px; }
+        .turn-hero {
+            padding: 2px 7px; border-radius: 4px;
+            font-weight: 700; font-size: 0.63em;
+            color: rgba(244,228,193,0.35); border: 1px solid transparent;
+            white-space: nowrap; cursor: default;
+        }
+        .turn-hero.active {
+            color: #f4e4c1;
+            background: rgba(212,175,55,0.15);
+            border-color: rgba(212,175,55,0.45);
+        }
+
+        /* Hero Overlay */
+        .hero-inner { }
+        .hero-name {
+            font-weight: 900; font-size: 0.75em; color: #f4e4c1;
+            margin-bottom: 3px; white-space: nowrap; cursor: pointer;
+        }
+        .hero-label-name { }
+        .hero-stats { }
+        .stat-row { display: flex; align-items: center; gap: 2px; margin-bottom: 1px; white-space: nowrap; }
+        .stat-icons { display: flex; gap: 1px; font-size: 0.75em; }
+        .stat-compact { display: none; font-weight: 900; font-size: 0.62em; color: #f4e4c1; }
+        .ic-off { opacity: 0.2; filter: grayscale(100%); }
+
+        /* Threat Overlay */
+        .threat-inner { }
+        .threat-items { display: flex; flex-direction: column; }
+        .t-row { display: flex; align-items: center; padding: 1px 0; }
+        .t-faction { font-weight: 900; font-size: 0.62em; white-space: nowrap; flex: 1; }
+        .t-faction.taint-label { white-space: normal; line-height: 1.15; }
+        .t-faction-icon { display: none; }
+        .t-count { font-weight: 900; font-size: 0.62em; color: #f4e4c1; white-space: nowrap; text-align: right; margin-left: auto; }
+
+        /* Desktop: turn-hero-row is pass-through */
+        .turn-hero-row { display: contents; }
+
+        /* Map bottom hint */
+        .map-bottom-hint {
+            display: flex; justify-content: center; align-items: center;
+            gap: 10px; padding: 4px 0;
+            font-family: 'Cinzel', Georgia, serif;
+            font-size: 0.7em; color: rgba(212,175,55,0.4);
+        }
 
         @media (max-width: 700px) {
-            .threat-faction-name { display: none; }
-            .threat-faction-icon { display: inline; }
-            .tray-icons { display: none; }
-            .tray-text-counter { display: inline; }
             .action-btn-icon { display: none; }
-            .map-header-btn-text { display: none; }
-            .map-header-btn-icon { display: inline; }
-            .tray-label-text { display: none; }
-            .tray-label-icon { display: inline; font-size: 1.1em; }
-            .hero-tray-row { justify-content: space-between; }
-            .hero-tray-left, .hero-tray-center, .hero-tray-right { flex: 0 1 auto; }
+
+            /* Header buttons: icon only on mobile */
+            .hdr-btn-text { display: none; }
+            .hdr-btn-icon { display: inline; }
+
+            /* Overlay: full-width horizontal bars */
+            .overlay-stack { left: 0; right: 0; }
+            .overlay-bar {
+                border-right: none; border-radius: 0 !important;
+                padding: 3px 10px;
+                background: rgba(8, 8, 16, 0.88);
+                backdrop-filter: blur(6px);
+            }
+            .overlay-title {
+                margin-bottom: 0; font-size: 0.5em;
+                white-space: nowrap; flex-shrink: 0;
+            }
+
+            /* ROW 1: Turn | Hero combined */
+            .turn-hero-row {
+                display: flex;
+                background: rgba(8, 8, 16, 0.88);
+                border-bottom: 1px solid rgba(212,175,55,0.35);
+                backdrop-filter: blur(6px);
+                padding: 3px 10px;
+                align-items: center;
+                pointer-events: auto;
+            }
+            .turn-hero-row > .overlay-bar {
+                background: none; backdrop-filter: none;
+                border: none; border-radius: 0 !important; padding: 0;
+            }
+
+            /* Turn: fixed left, icons only */
+            .turn-bar {
+                display: flex; align-items: center; gap: 4px;
+                padding-right: 8px !important;
+                margin-right: 8px;
+                border-right: 1px solid rgba(212,175,55,0.25) !important;
+                flex-shrink: 0;
+            }
+            .turn-inner { flex-direction: row; gap: 2px; }
+            .turn-hero { font-size: 0.56em; padding: 2px 4px; }
+            .turn-bar .hero-label-name { display: none; }
+
+            /* Hero: fills remaining space, justified layout */
+            .hero-bar {
+                display: flex; align-items: center; gap: 4px;
+                flex: 1; min-width: 0;
+            }
+            .hero-inner {
+                display: flex; align-items: center;
+                flex: 1; min-width: 0;
+            }
+            .hero-name {
+                font-size: 0.62em; margin-bottom: 0;
+                flex-shrink: 0;
+            }
+            .hero-bar .hero-label-name { display: inline; }
+            .hero-stats {
+                display: flex; align-items: center;
+                flex: 1; min-width: 0;
+            }
+            .stat-row { margin-bottom: 0; }
+            .stat-icons { display: none; }
+            .stat-compact { display: inline; }
+            .health-row { flex: 1; justify-content: center; }
+            .actions-row { flex-shrink: 0; }
+
+            /* ROW 2: Threat — title inline, items spread */
+            .threat-bar {
+                display: flex; align-items: center; gap: 6px;
+            }
+            .threat-inner { flex: 1; }
+            .threat-items {
+                flex-direction: row; justify-content: space-between;
+            }
+            .t-row {
+                flex-direction: row; align-items: center;
+                gap: 2px; padding: 0;
+            }
+            .t-faction { display: none; }
+            .t-faction-icon {
+                display: inline; font-weight: 900; font-size: 0.62em;
+            }
+            .t-count { font-size: 0.62em; margin-left: 0; }
         }
 
         /* Parchment modal typography */

@@ -242,96 +242,103 @@ Object.assign(game, {
     updateMapStatus() {
         const mapModal = document.getElementById('map-modal');
         if (!mapModal || !mapModal.classList.contains('active')) {
-            return; // Map not open, skip update
+            return;
         }
         
         const hero = this.heroes[this.currentPlayerIndex];
-        const mapActiveHero = document.getElementById('map-active-hero');
         
-        if (mapActiveHero) {
-            if (hero.name === 'Eagle Rider' && this.eagleRiderAttackStyle) {
-                const isSky = this.eagleRiderAttackStyle === 'sky';
-                const tooltipText = isSky ? 'Sky Attack' : 'Ground Attack';
-                const icon = isSky ? '☁️' : '⚔️';
-                mapActiveHero.innerHTML = `${hero.symbol} ${hero.name} <span title="${tooltipText}" style="cursor: help;">(${icon})</span>`;
-            } else if (hero.name === 'Sorceress' && this.shapeshiftForm) {
-                const sfNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-                const sfIcons = { green: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#16a34a;border:1.5px solid #000;vertical-align:middle;"></span>', black: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#1f2937;border:1.5px solid #000;vertical-align:middle;"></span>', red: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#dc2626;border:1.5px solid #000;vertical-align:middle;"></span>', blue: '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#2563eb;border:1.5px solid #000;vertical-align:middle;"></span>' };
-                mapActiveHero.innerHTML = `${hero.symbol} ${hero.name} <span title="${sfNames[this.shapeshiftForm]} Form" style="cursor: help;">(${sfIcons[this.shapeshiftForm]})</span>`;
-            } else {
-                mapActiveHero.textContent = `${hero.symbol} ${hero.name}`;
-            }
-        }
-        
-        // Re-enable end turn button (in case it was disabled)
+        // Re-enable end turn button
         const endTurnBtn = document.getElementById('map-end-turn-btn');
         if (endTurnBtn) {
             endTurnBtn.disabled = false;
         }
         
-        // Update token positions - renderTokens clears the layer itself
+        // Update token positions
         this.renderTokens();
         
-        // Update life tokens, action tokens, and minion/taint tracker
-        this.renderMapHeroLifeTokens();
-        this.renderMapActionTokens();
+        // Update overlay panels
+        this.renderTurnTracker();
+        this.renderHeroOverlay();
         this.renderMinionTracker();
     },
+
     
-    renderMapActionTokens() {
-        const container = document.getElementById('map-hero-action-tokens');
+    renderTurnTracker() {
+        const container = document.getElementById('map-turn-tracker');
+        if (!container) return;
+        
+        let html = '';
+        for (let i = 0; i < this.heroes.length; i++) {
+            const h = this.heroes[i];
+            const isActive = i === this.currentPlayerIndex;
+            html += `<div class="turn-hero${isActive ? ' active' : ''}">${h.symbol} <span class="hero-label-name">${h.name}</span></div>`;
+        }
+        container.innerHTML = html;
+    },
+    
+    renderHeroOverlay() {
+        const container = document.getElementById('map-hero-overlay');
         if (!container) return;
         
         const hero = this.heroes[this.currentPlayerIndex];
         if (!hero) return;
         
-        // Use the higher of health or actionsRemaining to account for bonus actions
+        // Build hero name with special status
+        let nameExtra = '';
+        if (hero.name === 'Eagle Rider' && this.eagleRiderAttackStyle) {
+            const isSky = this.eagleRiderAttackStyle === 'sky';
+            nameExtra = ` <span title="${isSky ? 'Sky Attack' : 'Ground Attack'}" style="cursor: help;">(${isSky ? '☁️' : '⚔️'})</span>`;
+        } else if (hero.name === 'Sorceress' && this.shapeshiftForm) {
+            const sfNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
+            const sfColors = { green: '#16a34a', black: '#1f2937', red: '#dc2626', blue: '#2563eb' };
+            nameExtra = ` <span title="${sfNames[this.shapeshiftForm]} Form" style="cursor: help;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${sfColors[this.shapeshiftForm]};border:1px solid #000;vertical-align:middle;"></span></span>`;
+        }
+        
+        // Health icons
+        let healthIcons = '';
+        for (let i = 0; i < hero.maxHealth; i++) {
+            if (i < hero.health) {
+                healthIcons += '<span title="Life token">❤️</span>';
+            } else {
+                healthIcons += '<span class="ic-off" title="Lost life token">❤️</span>';
+            }
+        }
+        
+        // Action icons
         const questActionBonus = this._getQuestActionBonus(hero);
         const baseMax = hero.health + questActionBonus;
         const maxActions = Math.max(baseMax, this.actionsRemaining);
-        const bonusSource = hero.name === 'Eagle Rider' ? 'Fresh Mount' : hero.name === 'Dwarf' ? 'Mountain Lore' : 'Bonus';
-        const questBonusSource = questActionBonus > 0 ? 'Boots of Speed' : '';
-        let html = '<span class="tray-label"><span class="tray-label-text">Actions:</span><span class="tray-label-icon">⚡</span></span>';
-        html += '<span class="tray-icons">';
+        let actionIcons = '';
         for (let i = 0; i < maxActions; i++) {
             if (i < this.actionsRemaining) {
-                // Mark bonus actions with a different style
                 if (i >= hero.health && i < hero.health + questActionBonus) {
-                    html += `<span class="tray-icon" title="Bonus action (${questBonusSource})" style="filter: hue-rotate(300deg);">⚡</span>`;
+                    actionIcons += '<span title="Bonus action (Boots of Speed)" style="filter: hue-rotate(300deg);">⚡</span>';
                 } else if (i >= hero.health + questActionBonus) {
-                    html += `<span class="tray-icon" title="Bonus action (${bonusSource})" style="filter: hue-rotate(180deg);">⚡</span>`;
+                    const bonusSource = hero.name === 'Eagle Rider' ? 'Fresh Mount' : hero.name === 'Dwarf' ? 'Mountain Lore' : 'Bonus';
+                    actionIcons += `<span title="Bonus action (${bonusSource})" style="filter: hue-rotate(180deg);">⚡</span>`;
                 } else {
-                    html += '<span class="tray-icon" title="Action available">⚡</span>';
+                    actionIcons += '<span title="Action available">⚡</span>';
                 }
             } else {
-                html += '<span class="tray-icon-dim" title="Action spent">⚡</span>';
+                actionIcons += '<span class="ic-off" title="Action spent">⚡</span>';
             }
         }
-        html += '</span>';
-        html += `<span class="tray-text-counter">${this.actionsRemaining}/${maxActions}</span>`;
-        container.innerHTML = html;
-    },
-    
-    renderMapHeroLifeTokens() {
-        const container = document.getElementById('map-hero-life-tokens');
-        if (!container) return;
         
-        const hero = this.heroes[this.currentPlayerIndex];
-        if (!hero) return;
-        
-        let html = '<span class="tray-label"><span class="tray-label-text">Life Tokens:</span><span class="tray-label-icon">❤️</span></span>';
-        html += '<span class="tray-icons">';
-        for (let i = 0; i < hero.maxHealth; i++) {
-            if (i < hero.health) {
-                html += '<span class="tray-icon" title="Life token">❤️</span>';
-            } else {
-                html += '<span class="tray-icon-dim" title="Lost life token">❤️</span>';
-            }
-        }
-        html += '</span>';
-        html += `<span class="tray-text-counter">${hero.health}/${hero.maxHealth}</span>`;
-        container.innerHTML = html;
+        container.innerHTML = `
+            <div class="hero-name" onclick="game.onHeroTrayClick(event)" title="Click to view hero details">${hero.symbol} <span class="hero-label-name">${hero.name}${nameExtra}</span></div>
+            <div class="hero-stats">
+                <div class="stat-row health-row">
+                    <div class="stat-icons">${healthIcons}</div>
+                    <span class="stat-compact">❤️ ${hero.health}/${hero.maxHealth}</span>
+                </div>
+                <div class="stat-row actions-row">
+                    <div class="stat-icons">${actionIcons}</div>
+                    <span class="stat-compact">⚡ ${this.actionsRemaining}/${maxActions}</span>
+                </div>
+            </div>
+        `;
     },
+
     
     getTooltipLifeTokensHTML(hero) {
         let html = '<span style="color: #ffd700; font-weight: bold;">Life Tokens:</span> ';
@@ -428,7 +435,7 @@ Object.assign(game, {
             return '#f4e4c1';
         };
         
-        let html = '<span class="threat-label">Threat:</span>';
+        let html = '';
         for (const faction of factions) {
             let count = 0;
             for (const loc in this.minions) {
@@ -437,11 +444,10 @@ Object.assign(game, {
                 }
             }
             const countColor = getMinionCountColor(count);
-            html += `<span class="threat-item"><span class="threat-faction" style="color: ${faction.css};"><span class="threat-faction-name">${faction.name}</span><span class="threat-faction-icon">${faction.symbol}</span></span>
-                <span class="threat-count" style="color: ${countColor};">${count}/25</span></span>`;
+            html += `<div class="t-row"><span class="t-faction" style="color: ${faction.css};">${faction.name}</span><span class="t-faction-icon">${faction.symbol}</span><span class="t-count" style="color: ${countColor};">${count}/25</span></div>`;
         }
         
-        // Tainted Crystals
+        // Taint Crystals
         let placed = 0;
         for (const loc in this.taintCrystals) {
             if (this.taintCrystals[loc]) {
@@ -450,11 +456,11 @@ Object.assign(game, {
         }
         const total = 12;
         const taintColor = placed >= 10 ? '#ef4444' : placed >= 7 ? '#b8860b' : '#f4e4c1';
-        html += `<span class="threat-item"><span class="threat-faction" style="color: #9333ea;"><span class="threat-faction-name">Tainted Crystals</span><span class="threat-faction-icon">💎</span></span>
-            <span class="threat-count" style="color: ${taintColor};">${placed}/${total}</span></span>`;
+        html += `<div class="t-row"><span class="t-faction taint-label" style="color: #9333ea;">Taint Crystals</span><span class="t-faction-icon">💎</span><span class="t-count" style="color: ${taintColor};">${placed}/${total}</span></div>`;
         
         container.innerHTML = html;
     },
+
     
     updateMovementButtons() {
         const hero = this.heroes[this.currentPlayerIndex];
@@ -479,6 +485,7 @@ Object.assign(game, {
             if (hasActions) {
                 footBtn.disabled = false;
                 footBtn.className = 'phase-btn';
+                footBtn.style.background = '';
             } else {
                 footBtn.disabled = true;
                 footBtn.className = 'phase-btn';
@@ -500,6 +507,7 @@ Object.assign(game, {
             if (shouldEnable) {
                 magicGateBtn.disabled = false;
                 magicGateBtn.className = 'phase-btn';
+                magicGateBtn.style.background = '';
             } else {
                 magicGateBtn.disabled = true;
                 magicGateBtn.className = 'phase-btn';
@@ -515,6 +523,7 @@ Object.assign(game, {
             if (shouldEnable) {
                 horseBtn.disabled = false;
                 horseBtn.className = 'phase-btn';
+                horseBtn.style.background = '';
             } else {
                 horseBtn.disabled = true;
                 horseBtn.className = 'phase-btn';
@@ -530,6 +539,7 @@ Object.assign(game, {
             if (shouldEnable) {
                 eagleBtn.disabled = false;
                 eagleBtn.className = 'phase-btn';
+                eagleBtn.style.background = '';
             } else {
                 eagleBtn.disabled = true;
                 eagleBtn.className = 'phase-btn';
@@ -568,6 +578,7 @@ Object.assign(game, {
             if (canEngage) {
                 engageBtn.disabled = false;
                 engageBtn.className = 'phase-btn';
+                engageBtn.style.background = '';
             } else {
                 engageBtn.disabled = true;
                 engageBtn.className = 'phase-btn';
@@ -586,6 +597,7 @@ Object.assign(game, {
                 if (canFireball) {
                     fireballBtn.disabled = false;
                     fireballBtn.className = 'phase-btn';
+                    fireballBtn.style.background = '';
                 } else {
                     fireballBtn.disabled = true;
                     fireballBtn.className = 'phase-btn';
@@ -605,6 +617,7 @@ Object.assign(game, {
                 if (canArchery) {
                     archeryBtn.disabled = false;
                     archeryBtn.className = 'phase-btn';
+                    archeryBtn.style.background = '';
                 } else {
                     archeryBtn.disabled = true;
                     archeryBtn.className = 'phase-btn';
@@ -623,6 +636,7 @@ Object.assign(game, {
                 if (canSanctify) {
                     sanctifyLandBtn.disabled = false;
                     sanctifyLandBtn.className = 'phase-btn';
+                    sanctifyLandBtn.style.background = '';
                 } else {
                     sanctifyLandBtn.disabled = true;
                     sanctifyLandBtn.className = 'phase-btn';
@@ -640,6 +654,7 @@ Object.assign(game, {
             if (anySpecialCards) {
                 specialCardsBtn.disabled = false;
                 specialCardsBtn.className = 'phase-btn';
+                specialCardsBtn.style.background = '';
             } else {
                 specialCardsBtn.disabled = true;
                 specialCardsBtn.className = 'phase-btn';
@@ -653,6 +668,7 @@ Object.assign(game, {
             if (anyQuestCards) {
                 questCardsBtn.disabled = false;
                 questCardsBtn.className = 'phase-btn';
+                questCardsBtn.style.background = '';
             } else {
                 questCardsBtn.disabled = true;
                 questCardsBtn.className = 'phase-btn';
@@ -677,7 +693,6 @@ Object.assign(game, {
             } else {
                 completeQuestBtn.disabled = true;
                 completeQuestBtn.className = 'phase-btn';
-                completeQuestBtn.style.background = '';
                 completeQuestBtn.innerHTML = `<span class="action-btn-icon">🎯 </span>Complete Quest`;
             }
         }
@@ -690,6 +705,7 @@ Object.assign(game, {
             if (canAttackGeneral) {
                 attackGeneralBtn.disabled = false;
                 attackGeneralBtn.className = 'phase-btn';
+                attackGeneralBtn.style.background = '';
             } else {
                 attackGeneralBtn.disabled = true;
                 attackGeneralBtn.className = 'phase-btn';
@@ -704,6 +720,7 @@ Object.assign(game, {
             if (canRumors) {
                 rumorsBtn.disabled = false;
                 rumorsBtn.className = 'phase-btn';
+                rumorsBtn.style.background = '';
                 rumorsBtn.innerHTML = `<span class="action-btn-icon">🍺 </span>Rumors`;
             } else {
                 rumorsBtn.disabled = true;
@@ -721,6 +738,7 @@ Object.assign(game, {
                 if (canCrafty) {
                     craftyBtn.disabled = false;
                     craftyBtn.className = 'phase-btn';
+                    craftyBtn.style.background = '';
                 } else {
                     craftyBtn.disabled = true;
                     craftyBtn.className = 'phase-btn';
@@ -738,6 +756,7 @@ Object.assign(game, {
             if (canHealLand) {
                 healLandBtn.disabled = false;
                 healLandBtn.className = 'phase-btn';
+                healLandBtn.style.background = '';
             } else {
                 healLandBtn.disabled = true;
                 healLandBtn.className = 'phase-btn';
@@ -759,6 +778,7 @@ Object.assign(game, {
             if (canHeal) {
                 healingWoundsBtn.disabled = false;
                 healingWoundsBtn.className = 'phase-btn';
+                healingWoundsBtn.style.background = '';
             } else {
                 healingWoundsBtn.disabled = true;
                 healingWoundsBtn.className = 'phase-btn';
@@ -793,6 +813,7 @@ Object.assign(game, {
                 if (canUseSkill) {
                     specialSkillBtn.disabled = false;
                     specialSkillBtn.className = 'phase-btn';
+                    specialSkillBtn.style.background = '';
                 } else {
                     specialSkillBtn.disabled = true;
                     specialSkillBtn.className = 'phase-btn';
@@ -818,7 +839,6 @@ Object.assign(game, {
                     unicornBtn.id = 'unicorn-steed-btn';
                     unicornBtn.innerHTML = '<span class="action-btn-icon">🦄 </span>Unicorn';
                     unicornBtn.title = 'Unicorn Steed (move 2 spaces, no card required)';
-                    unicornBtn.style.cssText = 'width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;';
                     unicornBtn.onclick = () => game.useUnicornSteed();
                     actionsSection.insertBefore(unicornBtn, buildGateBtn2);
                 }
@@ -828,6 +848,7 @@ Object.assign(game, {
                 if (hasActions) {
                     unicornBtn.disabled = false;
                     unicornBtn.className = 'phase-btn';
+                    unicornBtn.style.background = '';
                 } else {
                     unicornBtn.disabled = true;
                     unicornBtn.className = 'phase-btn';
@@ -848,6 +869,7 @@ Object.assign(game, {
             if (canBuildGate) {
                 buildGateBtn.disabled = false;
                 buildGateBtn.className = 'phase-btn';
+                buildGateBtn.style.background = '';
             } else {
                 buildGateBtn.disabled = true;
                 buildGateBtn.className = 'phase-btn';

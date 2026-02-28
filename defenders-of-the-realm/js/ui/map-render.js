@@ -371,21 +371,21 @@ Object.assign(game, {
                 if (isInn && this.actionsRemaining > 0) {
                     const rumorsLeft = 2 - this.rumorsUsedThisTurn;
                     if (rumorsLeft > 0) {
-                        html += `<button class="btn" onclick="event.stopPropagation(); game.rumorsAction()" style="width: 100%; background: #d97706; margin-bottom: 5px;">🍺 Rumors</button>`;
+                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.rumorsAction()" style="width: 100%; background: #d97706; margin-bottom: 5px;">🍺 Rumors</button>`;
                         if (currentHero.name === 'Rogue') {
-                            html += `<button class="btn" onclick="event.stopPropagation(); game.craftyAction()" style="width: 100%; background: #b91c1c; margin-bottom: 5px;">🗡️ Crafty</button>`;
+                            html += `<button class="phase-btn" onclick="event.stopPropagation(); game.craftyAction()" style="width: 100%; background: #b91c1c; margin-bottom: 5px;">🗡️ Crafty</button>`;
                         }
                     } else {
-                        html += `<button class="btn" disabled style="width: 100%; background: #666; cursor: not-allowed; opacity: 0.5; margin-bottom: 5px;">🍺 Rumors</button>`;
+                        html += `<button class="phase-btn" disabled style="width: 100%; background: #666; cursor: not-allowed; opacity: 0.5; margin-bottom: 5px;">🍺 Rumors</button>`;
                         if (currentHero.name === 'Rogue') {
-                            html += `<button class="btn" disabled style="width: 100%; background: #666; cursor: not-allowed; opacity: 0.5; margin-bottom: 5px;">🗡️ Crafty</button>`;
+                            html += `<button class="phase-btn" disabled style="width: 100%; background: #666; cursor: not-allowed; opacity: 0.5; margin-bottom: 5px;">🗡️ Crafty</button>`;
                         }
                     }
                 }
                 
                 // Build Magic Gate button
                 if (this.actionsRemaining > 0 && !location.magicGate && currentHero.cards.some(c => c.name === locationName)) {
-                    html += `<button class="btn" onclick="event.stopPropagation(); game.buildMagicGate()" style="width: 100%; margin-bottom: 5px; background: #9333ea;">💫 Build Magic Gate</button>`;
+                    html += `<button class="phase-btn" onclick="event.stopPropagation(); game.buildMagicGate()" style="width: 100%; margin-bottom: 5px; background: #9333ea;">💫 Build Magic Gate</button>`;
                 }
                 
                 if (hasTaint && this.actionsRemaining > 0) {
@@ -395,13 +395,13 @@ Object.assign(game, {
                     const hasMatchingCard = currentHero.cards.some(card => card.color === locationColor);
                     
                     if (isDruid) {
-                        html += `<button class="btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">🌳 Heal the Land (Druid - Free)</button>`;
+                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">🌳 Heal the Land (Druid - Free)</button>`;
                     } else if (isCleric) {
-                        html += `<button class="btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">✝️ Sanctify Land</button>`;
+                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">✝️ Sanctify Land</button>`;
                     } else if (hasMatchingCard) {
-                        html += `<button class="btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">🌳 Heal the Land</button>`;
+                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">🌳 Heal the Land</button>`;
                     } else {
-                        html += `<button class="btn" disabled style="width: 100%; margin-bottom: 5px; background: #666; cursor: not-allowed; opacity: 0.5;">🌳 Heal the Land</button>`;
+                        html += `<button class="phase-btn" disabled style="width: 100%; margin-bottom: 5px; background: #666; cursor: not-allowed; opacity: 0.5;">🌳 Heal the Land</button>`;
                     }
                 }
                 
@@ -409,15 +409,15 @@ Object.assign(game, {
                 if (this.actionsRemaining > 0 && currentHero.health < currentHero.maxHealth) {
                     // Full heal at Inn (no enemies required)
                     if (isInn) {
-                        html += `<button class="btn" onclick="event.stopPropagation(); game.healAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #10b981;">❤️ Healing Wounds</button>`;
+                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #10b981;">❤️ Healing Wounds</button>`;
                     }
                     // Full heal at Monarch City ONLY if safe (no minions or generals)
                     else if (locationName === 'Monarch City' && totalMinions === 0 && !generalHere) {
-                        html += `<button class="btn" onclick="event.stopPropagation(); game.healAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #10b981;">❤️ Healing Wounds</button>`;
+                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #10b981;">❤️ Healing Wounds</button>`;
                     }
                     // Heal 2 wounds at safe location (no minions or generals)
                     else if (totalMinions === 0 && !generalHere) {
-                        html += `<button class="btn" onclick="event.stopPropagation(); game.healAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #10b981;">❤️ Healing Wounds</button>`;
+                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healAtLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #10b981;">❤️ Healing Wounds</button>`;
                     }
                 }
                 
@@ -433,7 +433,7 @@ Object.assign(game, {
                             const btnLabel = q.mechanic.type === 'multi_location_action'
                                 ? `📜 Organize: ${q.name} (1 action)`
                                 : `🎯 Complete Quest: ${q.name}`;
-                            html += `<button class="btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.completeQuestAction()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">${btnLabel}</button>`;
+                            html += `<button class="phase-btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.completeQuestAction()" style="width: 100%; margin-bottom: 5px; background: #dc2626;">${btnLabel}</button>`;
                         }
                     }
                 }
@@ -448,12 +448,12 @@ Object.assign(game, {
                                 if (quest.mechanic.requirePresence) {
                                     // Must be on the space - only show at hero's location
                                     if (locationName === currentHero.location && hasTaintHere) {
-                                        html += `<button class="btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.useCompletedQuestCard(${heroIdx}, ${qIdx})" style="width: 100%; margin-bottom: 5px; background: #4ade80; color: #000; font-weight: bold;">✨ Use: ${quest.name}</button>`;
+                                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.useCompletedQuestCard(${heroIdx}, ${qIdx})" style="width: 100%; margin-bottom: 5px; background: #4ade80; color: #000; font-weight: bold;">✨ Use: ${quest.name}</button>`;
                                     }
                                 } else {
                                     // Can use from anywhere - show button that opens map targeting
                                     if (locationName === currentHero.location) {
-                                        html += `<button class="btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.useCompletedQuestCard(${heroIdx}, ${qIdx})" style="width: 100%; margin-bottom: 5px; background: #4ade80; color: #000; font-weight: bold;">✨ Use: ${quest.name}</button>`;
+                                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.hideTooltip(true); game.useCompletedQuestCard(${heroIdx}, ${qIdx})" style="width: 100%; margin-bottom: 5px; background: #4ade80; color: #000; font-weight: bold;">✨ Use: ${quest.name}</button>`;
                                     }
                                 }
                             }
@@ -491,9 +491,9 @@ Object.assign(game, {
                 
                 // Add teleport button for wizard with matching card
                 if (hasMatchingCard) {
-                    html += `<button class="btn" onclick="event.stopPropagation(); game.showWizardTeleport('${escapedLocation}')" style="width: 100%; background: #9333ea;">✨ Teleport</button>`;
+                    html += `<button class="phase-btn" onclick="event.stopPropagation(); game.showWizardTeleport('${escapedLocation}')" style="width: 100%; background: #9333ea;">✨ Teleport</button>`;
                 } else if (isWizard && this.wizardTeleportUsedThisTurn) {
-                    html += `<button class="btn" disabled style="width: 100%; background: #666; opacity: 0.5; cursor: not-allowed;">✨ Teleport (used this turn)</button>`;
+                    html += `<button class="phase-btn" disabled style="width: 100%; background: #666; opacity: 0.5; cursor: not-allowed;">✨ Teleport (used this turn)</button>`;
                 }
                 
                 html += `</div>`;
@@ -502,7 +502,7 @@ Object.assign(game, {
                 const escapedLocation = locationName.replace(/'/g, "\\'");
                 html += `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #d4af37;">`;
                 html += `<div style="font-weight: bold; color: #ffd700; margin-bottom: 5px;">Available Actions:</div>`;
-                html += `<button class="btn" onclick="event.stopPropagation(); game.showWizardTeleport('${escapedLocation}')" style="width: 100%; background: #9333ea;">✨ Teleport</button>`;
+                html += `<button class="phase-btn" onclick="event.stopPropagation(); game.showWizardTeleport('${escapedLocation}')" style="width: 100%; background: #9333ea;">✨ Teleport</button>`;
                 html += `</div>`;
                 html += `<div style="margin-top: 10px; padding: 8px; background: rgba(255,165,0,0.2); border-radius: 5px; font-size: 0.9em;">
                     ⚠️ No path - but Wizard can teleport!
@@ -687,7 +687,7 @@ Object.assign(game, {
             actionButtonsHTML = `
                 <div style="margin: 10px 0; padding: 10px; border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37;">
                     <div style="font-weight: bold; color: #ffd700; margin-bottom: 5px;">${abilityLabel}:</div>
-                    <button class="btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" 
+                    <button class="phase-btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" 
                             style="width: 100%; background: #9333ea; margin-bottom: 5px;">
                         ${buttonIcon} ${buttonText}
                     </button>

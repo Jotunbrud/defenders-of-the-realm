@@ -37,28 +37,28 @@
     <!-- ── END SPLASH SCREEN ── -->
     <div class="game-container">
         <div class="game-header">
-            <h1 class="modal-heading" style="font-size:1.5em;color:#ffd700;margin-bottom:8px;">⚔️ Defenders of the Realm ⚔️</h1>
-            <div class="modal-desc-text" style="font-size: 0.75em; color: #d4af37; margin-top: 5px;">Version 5.3.11 - Beta</div>
+            <h1>⚔️ Defenders of the Realm ⚔️</h1>
+            <div style="font-size: 0.85em; color: #d4af37; margin-top: 5px;">Version 5.3.11 - Beta</div>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
-                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showRules()">📜 Rules</button>
-                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showTips()">💡 Tips</button>
-                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showReleaseNotes()">📋 Release Notes</button>
-                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showSettings()">⚙️ Settings</button>
-                <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;background:linear-gradient(135deg,#dc2626,#991b1b);border-color:#dc2626;color:#fff;" onclick="if(confirm('Quit game and return to setup?')) window.close()">🚪 Quit Game</button>
+                <button class="btn btn-primary" onclick="game.showRules()">📜 Rules</button>
+                <button class="btn btn-primary" onclick="game.showTips()">💡 Tips</button>
+                <button class="btn btn-primary" onclick="game.showReleaseNotes()">📋 Release Notes</button>
+                <button class="btn btn-primary" onclick="game.showSettings()">⚙️ Settings</button>
+                <button class="btn" onclick="if(confirm('Quit game and return to setup?')) window.close()" style="background: #dc2626;">🚪 Quit Game</button>
             </div>
         </div>
 
         <div class="controls-panel">
             <div class="section-tray">
-                <div class="tray-title modal-heading" style="font-size:1.1em;color:#ffd700;">Play Area</div>
+                <div class="tray-title">Play Area</div>
                 <div class="action-buttons">
-                    <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showMap()">🗺️ Game Board</button>
-                    <button class="phase-btn" style="width:auto;margin-top:0;padding:8px 14px;font-size:0.85em;" onclick="game.showHeroesModal()">👥 View Heroes</button>
+                    <button class="btn btn-primary" onclick="game.showMap()">Game Board</button>
+                    <button class="btn btn-primary" onclick="game.showHeroesModal()">👥 View Heroes</button>
                 </div>
             </div>
 
             <div class="section-tray">
-                <div class="tray-title modal-heading" style="font-size:1.1em;color:#ffd700;">Card Decks</div>
+                <div class="tray-title">Card Decks</div>
                 <div class="deck-placard-grid">
                     <!-- Hero Cards Deck -->
                     <div class="general-placard">
@@ -108,7 +108,7 @@
                     <div class="general-placard">
                         <div class="general-banner" style="background: linear-gradient(135deg, #6d28d9cc 0%, #5b21b6aa 100%);">
                             <div>
-                                <div class="general-banner-name">🌑 Darkness Spreads</div>
+                                <div class="general-banner-name">☠️ Darkness Spreads</div>
                             </div>
                         </div>
                         <div class="general-body deck-body">
@@ -129,7 +129,7 @@
             </div>
 
             <div class="section-tray">
-                <div class="tray-title modal-heading" style="font-size:1.1em;color:#ffd700;">Enemy Generals</div>
+                <div class="tray-title">Enemy Generals</div>
                 <div class="generals-panel" id="generals-panel"></div>
             </div>
             
@@ -157,12 +157,10 @@
                             <div class="g-section-label"><strong>Early War</strong></div>
                             <div class="g-section-text">Each player draws 1 Darkness Spreads card at the end of their turn, placing minions and moving Generals as noted.</div>
                         </div>
-                        <br>
                         <div class="g-section">
                             <div class="g-section-label"><strong>Mid War</strong></div>
                             <div class="g-section-text">Each player draws 2 Darkness Spreads cards at the end of their turn. The 1st card is used to place minions and move a General, and the 2nd card is used for General movement only.</div>
                         </div>
-                        <br>
                         <div class="g-section">
                             <div class="g-section-label"><strong>Late War</strong></div>
                             <div class="g-section-text">Each player draws 3 Darkness Spreads cards at the end of their turn. The first 2 cards are used to place minions and move Generals, and the 3rd card is used for General movement only.</div>
@@ -176,9 +174,9 @@
 
     <!-- Setup Modal -->
     <div class="modal active" id="setup-modal">
-        <div class="modal-content" style="padding-top: 20px;">
-            <div class="modal-heading" style="color: #d4af37; margin: 0; font-size: 1.15em; text-align: center; margin-bottom: 12px;">⚔️ Hero Selection</div>
-            <div class="modal-desc-text" style="margin-bottom: 15px; text-align: center; font-size: 0.75em; color: #ccc;">Select your heroes (1-4 players)</div>
+        <div class="modal-content">
+            <h2 class="modal-heading" style="color: #d4af37; margin: 0; font-size: 1.2em; text-align: center;">⚔️ Hero Selection</h2>
+            <p style="margin-bottom: 15px; text-align: center;">Select your heroes (1-4 players)</p>
             <div id="hero-selection"></div>
             
             <!-- White Rabbit Test General (hidden) -->
@@ -194,7 +192,7 @@
                 </label>
             </div>
             
-            <button class="phase-btn" style="margin-top: 15px;" onclick="game.startGame()">
+            <button class="btn btn-primary" style="margin-top: 15px; width: 100%;" onclick="game.startGame()">
                 Start Game
             </button>
         </div>
@@ -236,96 +234,96 @@
     <!-- Map Modal -->
     <div class="modal" id="map-modal" onclick="game.closeMapOnBackground(event)">
         <div class="modal-content" style="max-width: 95vw; max-height: 95vh; padding: 10px; display: flex; flex-direction: column;" onclick="event.stopPropagation()">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <h2 class="modal-heading" style="margin: 0; font-size: 1.15em; color: #d4af37;">🗺️ Game Board</h2>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <button id="game-log-btn" onclick="game.showGameLogModal()" class="phase-btn" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="View Game Log">
-                        <span class="map-header-btn-text">📜 Game Log</span><span class="map-header-btn-icon">📜</span>
-                    </button>
-                    <button onclick="game.showTips()" class="phase-btn" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Show gameplay tips">
-                        <span class="map-header-btn-text">💡 Game Tips</span><span class="map-header-btn-icon">💡</span>
-                    </button>
-                    <button onclick="game.closeMap()" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #fff; background: rgba(100,100,100,0.9); border: 2px solid #666; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Close map">×</button>
+            <div class="map-top-bar">
+                <h2 class="modal-heading" style="margin: 0; font-size: 1.2em;">Game Board</h2>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <button class="phase-btn" id="game-log-btn" onclick="game.showGameLogModal()" title="View Game Log"><span class="hdr-btn-text">Game Log</span><span class="hdr-btn-icon">📜</span></button>
+                    <button class="phase-btn" onclick="game.showTips()" title="Show gameplay tips"><span class="hdr-btn-text">Game Tips</span><span class="hdr-btn-icon">❓</span></button>
+                    <button onclick="game.closeMap()" class="close-circle" title="Close map">×</button>
                 </div>
             </div>
             
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid rgba(212,175,55,0.3);">
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.05em;margin-bottom:8px;">⚡ Actions</div>
-                <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
-                    <button class="phase-btn" id="foot-movement-btn" onclick="game.showFootMovement()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Movement by foot — walk 1 adjacent location per action">
+            <div class="action-tray">
+                <div class="action-tray-title">Actions</div>
+                <div class="action-btns">
+                    <button class="phase-btn" id="foot-movement-btn" onclick="game.showFootMovement()" style="padding: 8px 12px;" title="Movement by foot — walk 1 adjacent location per action">
                         <span class="action-btn-icon">🥾 </span>Foot
                     </button>
-                    <button class="phase-btn" id="horse-btn" onclick="game.showHorseMovement()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Movement by horse">
+                    <button class="phase-btn" id="horse-btn" onclick="game.showHorseMovement()" style="padding: 8px 12px;" title="Movement by horse">
                         <span class="action-btn-icon">🐎 </span>Horse
                     </button>
-                    <button class="phase-btn" id="eagle-btn" onclick="game.showEagleMovement()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Movement by eagle">
+                    <button class="phase-btn" id="eagle-btn" onclick="game.showEagleMovement()" style="padding: 8px 12px;" title="Movement by eagle">
                         <span class="action-btn-icon">🦅 </span>Eagle
                     </button>
-                    <button class="phase-btn" id="magic-gate-btn" onclick="game.showMagicGateMovement()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Movement by magic gate">
+                    <button class="phase-btn" id="magic-gate-btn" onclick="game.showMagicGateMovement()" style="padding: 8px 12px;" title="Movement by magic gate">
                         <span class="action-btn-icon">🌀 </span>Magic Gate
                     </button>
-                    <button class="phase-btn" id="special-skill-btn" onclick="game.useSpecialSkill()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em; display: none;" title="Perform special skill">
+                    <button class="phase-btn" id="special-skill-btn" onclick="game.useSpecialSkill()" style="padding: 8px 12px; display: none;" title="Perform special skill">
                         <span class="action-btn-icon">✨ </span>Special Skill
                     </button>
-                    <button class="phase-btn" id="fireball-btn" onclick="game.wizardFireball()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em; display: none;" title="Fireball: Discard matching card, 2+ defeats minions">
+                    <button class="phase-btn" id="fireball-btn" onclick="game.wizardFireball()" style="padding: 8px 12px; display: none;" title="Fireball: Discard matching card, 2+ defeats minions">
                         <span class="action-btn-icon">🔥 </span>Fireball
                     </button>
-                    <button class="phase-btn" id="archery-btn" onclick="game.archeryFromMap()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em; display: none;" title="Archery: Attack minions 1 space away">
+                    <button class="phase-btn" id="archery-btn" onclick="game.archeryFromMap()" style="padding: 8px 12px; display: none;" title="Archery: Attack minions 1 space away">
                         <span class="action-btn-icon">🏹 </span>Archery
                     </button>
-                    <button class="phase-btn" id="sanctify-land-btn" onclick="game.healLandCrystal()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em; display: none;" title="Sanctify Land: Heal tainted land without cards, roll 5+ to remove">
+                    <button class="phase-btn" id="sanctify-land-btn" onclick="game.healLandCrystal()" style="padding: 8px 12px; display: none;" title="Sanctify Land: Heal tainted land without cards, roll 5+ to remove">
                         <span class="action-btn-icon">✝️ </span>Sanctify Land
                     </button>
-                    <button class="phase-btn" id="build-magic-gate-btn" onclick="game.buildMagicGate()" disabled style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Build a magic gate">
+                    <button class="phase-btn" id="build-magic-gate-btn" onclick="game.buildMagicGate()" disabled style="padding: 8px 12px; opacity: 0.5; cursor: not-allowed; background: #666;" title="Build a magic gate">
                         <span class="action-btn-icon">💫 </span>Build Magic Gate
                     </button>
-                    <button class="phase-btn" id="rumors-btn" onclick="game.rumorsAction()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Rumors at the Inn">
+                    <button class="phase-btn" id="rumors-btn" onclick="game.rumorsAction()" style="padding: 8px 12px;" title="Rumors at the Inn">
                         <span class="action-btn-icon">🍺 </span>Rumors
                     </button>
-                    <button class="phase-btn" id="crafty-btn" onclick="game.craftyAction()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em; display: none;" title="Crafty: Draw 5 cards at Inn, keep matching color + specials">
+                    <button class="phase-btn" id="crafty-btn" onclick="game.craftyAction()" style="padding: 8px 12px; display: none;" title="Crafty: Draw 5 cards at Inn, keep matching color + specials">
                         <span class="action-btn-icon">🗡️ </span>Crafty
                     </button>
-                    <button class="phase-btn" id="heal-land-btn" onclick="game.healLandCrystal()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Heal the Land">
+                    <button class="phase-btn" id="heal-land-btn" onclick="game.healLandCrystal()" style="padding: 8px 12px;" title="Heal the Land">
                         <span class="action-btn-icon">🌳 </span>Heal the Land
                     </button>
-                    <button class="phase-btn" id="healing-wounds-btn" onclick="game.healingWoundsAction()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Healing Wounds">
+                    <button class="phase-btn" id="healing-wounds-btn" onclick="game.healingWoundsAction()" style="padding: 8px 12px;" title="Healing Wounds">
                         <span class="action-btn-icon">❤️ </span>Healing Wounds
                     </button>
-                    <button class="phase-btn" id="engage-minions-btn" onclick="game.engageMinionsFromMap()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Engage minions in combat">
+                    <button class="phase-btn" id="engage-minions-btn" onclick="game.engageMinionsFromMap()" style="padding: 8px 12px;" title="Engage minions in combat">
                         <span class="action-btn-icon">⚔️ </span>Engage Minions
                     </button>
-                    <button class="phase-btn" id="attack-general-btn" onclick="game.attackGeneralFromMap()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Attack an enemy general">
+                    <button class="phase-btn" id="attack-general-btn" onclick="game.attackGeneralFromMap()" style="padding: 8px 12px;" title="Attack an enemy general">
                         <span class="action-btn-icon">👹 </span>Attack General
                     </button>
-                    <button class="phase-btn" id="quest-cards-btn" onclick="game.showQuestCardsModal()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="View Quest Cards">
+                    <button class="phase-btn" id="quest-cards-btn" onclick="game.showQuestCardsModal()" style="padding: 8px 12px;" title="View Quest Cards">
                         <span class="action-btn-icon">📜 </span>Quests
                     </button>
-                    <button class="phase-btn" id="complete-quest-btn" onclick="game.completeQuestAction()" disabled style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Attempt to complete a quest at this location">
+                    <button class="phase-btn" id="complete-quest-btn" onclick="game.completeQuestAction()" disabled style="padding: 8px 12px; opacity: 0.5; cursor: not-allowed; background: #666;" title="Attempt to complete a quest at this location">
                         <span class="action-btn-icon">🎯 </span>Complete Quest
                     </button>
-                    <button class="phase-btn" id="special-cards-btn" onclick="game.showSpecialCardsModal()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;" title="Play a Special Card">
+                    <button class="phase-btn" id="special-cards-btn" onclick="game.showSpecialCardsModal()" style="padding: 8px 12px;" title="Play a Special Card">
                         <span class="action-btn-icon">🌟 </span>Special Cards
                     </button>
-                    <button class="phase-btn" id="map-end-turn-btn" onclick="game.endTurnFromMap()" style="width:auto;margin-top:0;padding:6px 10px;font-size:0.8em;background:linear-gradient(135deg,#dc2626,#991b1b);border-color:#dc2626;color:#fff;">End Turn</button>
+                    <button class="phase-btn danger" id="map-end-turn-btn" onclick="game.endTurnFromMap()" style="padding: 8px 12px;"><span class="action-btn-icon">⏭️ </span>End Turn</button>
                 </div>
-            </div>
-            
-            <div class="hero-tray" onclick="game.onHeroTrayClick(event)" style="cursor: pointer;">
-                <div class="hero-tray-row">
-                    <div class="hero-tray-left">
-                        <span class="tray-label"><span class="tray-label-text">Active Hero:</span><span class="tray-label-icon">Hero:</span></span>
-                        <span id="map-active-hero" class="tray-value"></span>
-                    </div>
-                    <div id="map-hero-life-tokens" class="hero-tray-center"></div>
-                    <div id="map-hero-action-tokens" class="hero-tray-right"></div>
-                </div>
-            </div>
-            
-            <div class="threat-tray">
-                <div id="map-minion-tracker" class="threat-row"></div>
             </div>
             
             <div class="board-container" id="board-container" style="margin: 0; position: relative; overflow: hidden; touch-action: none; cursor: grab;">
+                <!-- Overlay panels -->
+                <div class="overlay-stack" id="map-overlay-stack">
+                    <div class="turn-hero-row">
+                        <div class="overlay-bar turn-bar">
+                            <div class="overlay-title">Turn</div>
+                            <div class="turn-inner" id="map-turn-tracker"></div>
+                        </div>
+                        <div class="overlay-bar hero-bar">
+                            <div class="overlay-title">Hero</div>
+                            <div class="hero-inner" id="map-hero-overlay"></div>
+                        </div>
+                    </div>
+                    <div class="overlay-bar threat-bar">
+                        <div class="overlay-title">Threat</div>
+                        <div class="threat-inner">
+                            <div class="threat-items" id="map-minion-tracker"></div>
+                        </div>
+                    </div>
+                </div>
                 <svg id="game-map" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; background: #000; transform-origin: center center;">
                     <!-- Background terrain -->
                     <defs>
@@ -361,8 +359,8 @@
                 </div>
             </div>
             
-            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; padding: 4px 0; font-size: 0.8em; color: #d4af37; font-family:'Cinzel',Georgia,serif;">
-                <span>📱 Pinch to zoom • Drag to pan</span>
+            <div class="map-bottom-hint">
+                <span>📱 Pinch to zoom · Drag to pan</span>
                 <span onclick="game.resetMapZoom()" style="cursor: pointer; color: #d4af37; text-decoration: underline;" title="Reset zoom and position">🔄 Reset View</span>
             </div>
             
@@ -803,7 +801,7 @@
     
     <!-- Generic Info Modal (replaces alerts) -->
     <div id="info-modal" class="modal" style="z-index: 40000;">
-        <div class="modal-content" style="max-width: 500px; padding-top: 20px;">
+        <div class="modal-content" style="max-width: 500px;">
             <h2 id="info-modal-title" class="modal-title"></h2>
             <div id="info-modal-content" style="color: #f4e4c1;"></div>
             <div style="text-align: center; margin-top: 20px;">

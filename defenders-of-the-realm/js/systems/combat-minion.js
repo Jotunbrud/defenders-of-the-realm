@@ -134,7 +134,7 @@ Object.assign(game, {
                     </div>
                     <div class="general-body">
                         <div class="g-hi-block">
-                            <div class="g-hi-title"><strong>Combat Skill:</strong> ${meta.combatSkillName} — ${meta.combatSkillDesc}</div>
+                            <div class="g-hi-title"><strong>Combat Skill:</strong> ${meta.combatSkillDesc}</div>
                         </div>
                         <div class="g-hi-block">
                             <div class="g-hi-title"><strong>Hero Defeated:</strong> ${meta.heroDefeatedDesc}</div>

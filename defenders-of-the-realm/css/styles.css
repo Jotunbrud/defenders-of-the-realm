@@ -990,11 +990,12 @@
             #map-modal .modal-content,
             #map-modal .map-modal-content {
                 max-width: 100% !important; width: 100% !important;
-                max-height: 100% !important; height: 100% !important;
+                max-height: none; height: auto;
                 border-radius: 8px !important;
                 border: 2px solid #d4af37 !important;
                 padding: 0 !important; padding-top: 0 !important;
                 box-shadow: none !important;
+                overflow: hidden !important;
             }
             .map-top-bar { padding: 4px 8px; }
             .action-tray { padding: 3px 6px; gap: 3px; }

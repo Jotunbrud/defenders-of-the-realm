@@ -873,7 +873,14 @@
             font-size: 0.85em; white-space: nowrap; flex-shrink: 0; margin-right: 2px;
         }
         .action-btns { display: contents; }
-        .action-btns .phase-btn { flex: 1 1 auto; text-align: center; }
+        .action-btns .phase-btn {
+            width: auto; margin-top: 0; padding: 4px 8px;
+            font-size: 0.7em; flex: 1 1 auto; text-align: center;
+        }
+        .map-top-bar .phase-btn {
+            width: auto; margin-top: 0; padding: 5px 10px;
+            font-size: 0.75em;
+        }
 
         /* ═══════════════════════════════════════
            MAP OVERLAY PANELS — DESKTOP DEFAULT
@@ -1067,6 +1074,7 @@
         .modal-heading {
           font-family: 'Cinzel', Georgia, serif;
           font-weight: 700;
+          color: #d4af37;
         }
 
         /* ── STEP INDICATOR (Daytime / Evening / Night) ── */
@@ -1127,6 +1135,10 @@
         .phase-btn:disabled {
           background: #444; color: #888; border-color: #666;
           opacity: 0.5; cursor: not-allowed;
+        }
+        .phase-btn.danger {
+          background: linear-gradient(135deg, #dc2626, #991b1b);
+          border-color: #dc2626; color: #fff;
         }
 
         /* ── LOCATION RING ── */

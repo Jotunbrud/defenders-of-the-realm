@@ -290,7 +290,7 @@ Object.assign(game, {
         for (let i = 0; i < this.heroes.length; i++) {
             const h = this.heroes[i];
             const isActive = i === this.currentPlayerIndex;
-            html += `<div class="turn-hero${isActive ? ' active' : ''}" onclick="game.showHeroDetail(${i})" style="cursor:pointer;" title="View ${h.name} details">${h.symbol} <span class="hero-label-name">${h.name}</span></div>`;
+            html += `<div class="turn-hero${isActive ? ' active' : ''}" onclick="game.showHeroesModal()" style="cursor:pointer;" title="View Heroes">${h.symbol} <span class="hero-label-name">${h.name}</span></div>`;
         }
         container.innerHTML = html;
     },

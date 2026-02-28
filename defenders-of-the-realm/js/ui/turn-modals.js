@@ -47,7 +47,7 @@ Object.assign(game, {
     },
 
     _stepIndicatorHTML(currentStep) {
-        const steps = [{ num: 1, icon: '☀️', label: 'Daytime' }, { num: 2, icon: '🌅', label: 'Evening' }, { num: 3, icon: '🌙', label: 'Night' }];
+        const steps = [{ num: 1, icon: '☀️', label: 'Daytime' }, { num: 2, icon: '🌙', label: 'Evening' }, { num: 3, icon: '🌑', label: 'Night' }];
         let html = '<div class="step-indicator-bar">';
         steps.forEach((s, i) => {
             const cls = s.num === currentStep ? 'active' : s.num < currentStep ? 'past' : 'future';
@@ -593,7 +593,7 @@ Object.assign(game, {
 
         content.innerHTML = `
             ${this._stepIndicatorHTML(2)}
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">Step 2 — 🌅 Evening</div>
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">Step 2 — 🌙 Evening</div>
             ${this._parchmentBoxOpen('🎴 Hero Cards Drawn')}
                 <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
                 <div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3)">
@@ -780,7 +780,7 @@ Object.assign(game, {
 
             content.innerHTML = `
                 ${this._stepIndicatorHTML(3)}
-                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">Step 3 — 🌙 Night</div>
+                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:12px">Step 3 — 🌑 Night</div>
                 ${this._parchmentBoxOpen('Darkness Spreads')}
                     <div style="padding:15px;text-align:center">
                         <div style="font-size:1.2em;color:#6d28a8;font-weight:bold;font-family:'Cinzel',Georgia,serif">🌅 All Is Quiet</div>

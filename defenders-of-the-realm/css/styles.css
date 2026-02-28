@@ -982,8 +982,9 @@
             #map-modal { padding: 0 !important; }
             #map-modal .modal-content,
             #map-modal .map-modal-content {
-                max-width: 96vw !important; max-height: 100vh !important;
-                width: 96vw !important; height: 100vh !important;
+                max-width: 96vw !important; width: 96vw !important;
+                max-height: 100vh !important; height: 100vh !important;
+                max-height: 100dvh !important; height: 100dvh !important;
                 border-radius: 0 !important; border: none !important;
                 padding: 0 !important; padding-top: 0 !important;
                 box-shadow: none !important;

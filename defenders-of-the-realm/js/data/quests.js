@@ -216,35 +216,48 @@ function createQuestDeck() {
         }
     });
     
-    // ── PLACEHOLDER QUESTS (1 card) ──
-    // These use the standard dice_roll mechanic but have no implemented reward yet.
-    // rewardType: 'placeholder' — completion logs success but grants no mechanical benefit.
+    // Duke Envoy
+    questDeck.push({
+        id: questId++,
+        name: 'Duke Envoy',
+        description: 'Convince the Duke to send warriors. Spend 1 action in McCorm Highlands and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.',
+        difficulty: 'Hard',
+        reward: 'Defeat D6 minions within 2 spaces of McCorm Highlands.',
+        effect: 'active',
+        completed: false,
+        location: 'McCorm Highlands',
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'amazon_envoy_sweep',
+            rewardValue: 'McCorm Highlands'
+        }
+    });
     
-    const placeholderQuests = [
-        { name: 'Talisman of Warding', location: 'Cursed Plateau', description: 'Perform the ritual of warding atop the cursed plateau.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true }
-    ];
-    
-    placeholderQuests.forEach(pq => {
-        questDeck.push({
-            id: questId++,
-            name: pq.name,
-            description: pq.description + ` Spend 1 action and roll ${pq.diceCount} dice. A roll of ${pq.successOn}+ on any die succeeds.`,
-            difficulty: 'Medium',
-            reward: pq.reward,
-            effect: 'passive',
-            completed: false,
-            location: pq.location,
-            mechanic: {
-                type: 'dice_roll',
-                actionCost: 1,
-                diceCount: pq.diceCount,
-                successOn: pq.successOn,
-                successCount: 1,
-                failDiscard: pq.failDiscard,
-                rewardType: 'placeholder',
-                rewardValue: 'Not yet implemented'
-            }
-        });
+    // Elf Envoy
+    questDeck.push({
+        id: questId++,
+        name: 'Elf Envoy',
+        description: "Convince the Elves to send warriors. Spend 1 action in Heaven's Glade and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.",
+        difficulty: 'Hard',
+        reward: "Defeat D6 minions within 2 spaces of Heaven's Glade.",
+        effect: 'active',
+        completed: false,
+        location: "Heaven's Glade",
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'amazon_envoy_sweep',
+            rewardValue: "Heaven's Glade"
+        }
     });
     
     // ── DEFEAT FACTION MINIONS QUEST ──

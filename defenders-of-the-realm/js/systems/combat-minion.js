@@ -2454,7 +2454,10 @@ Object.assign(game, {
         if (!found) return;
         
         const { heroIndex, questIndex, hero, quest } = found;
-        const general = this.currentCombat ? this.currentCombat.target : null;
+        // Get general from whichever combat flow is active
+        const general = this.groupAttack ? this.groupAttack.general
+            : this.selectedGeneralForAttack
+            || (this.currentCombat ? this.currentCombat.target : null);
         
         // Set the active flag
         this._amarakBlessingActive = true;
@@ -2469,9 +2472,11 @@ Object.assign(game, {
         this.renderHeroes();
         this.updateActionButtons();
         
-        // Refresh combat modal to show active indicator instead of button
+        // Refresh the active combat modal to show active indicator instead of button
         if (this.groupAttack) {
             this.showGroupAttackCardSelection();
+        } else if (this.selectedGeneralForAttack) {
+            this.showGeneralCardSelection(this.selectedGeneralForAttack);
         } else if (this.currentCombat && this.currentCombat.type === 'general') {
             this.showCombatModal('general', this.currentCombat.target);
         }

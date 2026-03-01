@@ -241,10 +241,9 @@ Object.assign(game, {
                 </div>
             `;
         } else {
-            // Check for Amarak's Blessing (show on first hero's selection only)
+            // Check for Amarak's Blessing
             const amarakQuest = this._findAmarakBlessingQuest ? this._findAmarakBlessingQuest() : null;
-            const isFirstHero = this.groupAttack.currentSelectionHeroIndex === 0;
-            const amarakHTML = isFirstHero && amarakQuest && general.combatSkill && !this._amarakBlessingActive ? `
+            const amarakHTML = amarakQuest && general.combatSkill && !this._amarakBlessingActive ? `
                 <div style="margin: 10px 0; padding: 10px; background: rgba(147,51,234,0.15); border: 2px solid #9333ea; border-radius: 6px; text-align: center;">
                     <div style="color: #c084fc; font-weight: bold; margin-bottom: 6px;">📜 Amarak's Blessing Available</div>
                     <div style="color: #d4af37; font-size: 0.85em; margin-bottom: 8px;">
@@ -1262,6 +1261,31 @@ Object.assign(game, {
                 </div>
             </div>
         `;
+        
+        // Amarak's Blessing button (any hero may hold it)
+        const amarakQuest = this._findAmarakBlessingQuest ? this._findAmarakBlessingQuest() : null;
+        if (amarakQuest && general.combatSkill && !this._amarakBlessingActive) {
+            html += `
+                <div style="margin: 0 0 12px 0; padding: 10px; background: rgba(147,51,234,0.15); border: 2px solid #9333ea; border-radius: 6px; text-align: center;">
+                    <div style="color: #c084fc; font-weight: bold; margin-bottom: 6px;">📜 Amarak's Blessing Available</div>
+                    <div style="color: #d4af37; font-size: 0.85em; margin-bottom: 8px;">
+                        Ignore <strong>${general.name}'s</strong> combat skill: <strong>${general.combatSkillName}</strong>
+                    </div>
+                    <div style="color: #999; font-size: 0.8em; margin-bottom: 8px;">
+                        (Does not affect Hero Defeated penalty)
+                    </div>
+                    <button class="btn btn-primary" style="background: #9333ea; padding: 6px 16px;" onclick="game._useAmarakBlessing()">
+                        📜 Use Blessing
+                    </button>
+                </div>
+            `;
+        } else if (this._amarakBlessingActive && general.combatSkill) {
+            html += `
+                <div style="margin: 0 0 12px 0; padding: 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 5px; text-align: center;">
+                    <span style="color: #c084fc; font-weight: bold;">📜 Amarak's Blessing Active — ${general.combatSkillName} Ignored!</span>
+                </div>
+            `; 
+        }
         
         if (applicableCards.length === 0) {
             html += `

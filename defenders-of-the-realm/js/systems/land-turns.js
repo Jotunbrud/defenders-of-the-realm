@@ -216,7 +216,22 @@ Object.assign(game, {
         this.updateMovementButtons();
         
         // Check if Find Magic Gate quest should complete
-        const questCompleted = this._pendingFindMagicGateQuest;
+        // Support both: triggered via Complete Quest button (_pendingFindMagicGateQuest)
+        // OR built normally via Build Magic Gate at a red location while holding the quest
+        let questCompleted = this._pendingFindMagicGateQuest;
+        if (!questCompleted && hero.questCards) {
+            const locData = this.locationCoords[locationName];
+            if (locData && locData.faction === 'red') {
+                for (let i = 0; i < hero.questCards.length; i++) {
+                    const q = hero.questCards[i];
+                    if (!q.completed && !q.discarded && q.mechanic && q.mechanic.type === 'build_gate_red') {
+                        this._pendingFindMagicGateQuest = { questIndex: i };
+                        questCompleted = this._pendingFindMagicGateQuest;
+                        break;
+                    }
+                }
+            }
+        }
         if (questCompleted) {
             this._checkFindMagicGateCompletion(hero);
         }

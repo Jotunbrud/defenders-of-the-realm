@@ -216,6 +216,28 @@ function createQuestDeck() {
         }
     });
     
+    // Amarak's Blessing — Ignore general combat skill
+    questDeck.push({
+        id: questId++,
+        name: "Amarak's Blessing",
+        description: "Travel to Raven Forest to find the hidden tower of the ancient wizard Amarak. Spend 1 action and roll 3 dice. A roll of 6 on any of the dice succeeds.",
+        difficulty: 'Easy',
+        reward: 'Discard this Quest Card at any time to ignore the special ability of a General in combat.',
+        effect: 'active',
+        completed: false,
+        location: 'Raven Forest',
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 6,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'amarak_ignore_combat_skill'
+        }
+    });
+    
     // Raids — Defeat 1 of each minion type
     questDeck.push({
         id: questId++,

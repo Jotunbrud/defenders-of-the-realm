@@ -550,6 +550,7 @@ Object.assign(game, {
             if (canUse && quest.mechanic.rewardValue === 'combat_bonus_dice') canUse = false;
             if (canUse && quest.mechanic.rewardValue === 'block_general_advance') canUse = false;
             if (canUse && quest.mechanic.rewardValue && quest.mechanic.rewardValue.startsWith('block_minion_placement')) canUse = false;
+            if (canUse && quest.mechanic.rewardValue === 'amarak_ignore_combat_skill') canUse = false;
             // If requirePresence, check hero is on a valid location
             if (canUse && quest.mechanic.requirePresence && quest.mechanic.rewardValue === 'remove_taint') {
                 const hero = this.heroes[heroIndex];
@@ -565,6 +566,8 @@ Object.assign(game, {
                     contextHint = '<div style="color: #d4af37; font-size: 0.8em; margin-top: 4px;">🌙 Used during Darkness Spreads phase</div>';
                 } else if (quest.mechanic.rewardValue && quest.mechanic.rewardValue.startsWith('block_minion_placement')) {
                     contextHint = '<div style="color: #d4af37; font-size: 0.8em; margin-top: 4px;">🌙 Used during Darkness Spreads phase</div>';
+                } else if (quest.mechanic.rewardValue === 'amarak_ignore_combat_skill') {
+                    contextHint = '<div style="color: #d4af37; font-size: 0.8em; margin-top: 4px;">⚔️ Used when attacking a General</div>';
                 }
             }
             const hintDiv = document.getElementById('quest-use-context-hint');

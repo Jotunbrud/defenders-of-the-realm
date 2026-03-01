@@ -319,8 +319,36 @@ Object.assign(game, {
                 rollBtn.style.opacity = '0.5';
                 rollBtn.style.cursor = 'not-allowed';
             } else {
+                // Check for Amarak's Blessing quest
+                const amarakQuest = this._findAmarakBlessingQuest();
+                const amarakHTML = amarakQuest && target.combatSkill ? `
+                    <div id="amarak-blessing-area" style="margin: 10px 0; padding: 10px; background: rgba(147,51,234,0.15); border: 2px solid #9333ea; border-radius: 6px; text-align: center;">
+                        <div style="color: #c084fc; font-weight: bold; margin-bottom: 6px;">📜 Amarak's Blessing Available</div>
+                        <div style="color: #d4af37; font-size: 0.85em; margin-bottom: 8px;">
+                            Ignore <strong>${target.name}'s</strong> combat skill: <strong>${target.combatSkillName}</strong>
+                        </div>
+                        <div style="color: #999; font-size: 0.8em; margin-bottom: 8px;">
+                            (Does not affect Hero Defeated penalty)
+                        </div>
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            <button class="btn btn-primary" style="background: #9333ea; padding: 6px 16px;" onclick="game._useAmarakBlessing()">
+                                📜 Use Blessing
+                            </button>
+                        </div>
+                    </div>
+                ` : '';
+                
+                // Show active Amarak indicator if already activated
+                const amarakActiveHTML = this._amarakBlessingActive && target.combatSkill ? `
+                    <div style="margin: 10px 0; padding: 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 5px; text-align: center;">
+                        <span style="color: #c084fc; font-weight: bold;">📜 Amarak's Blessing Active — ${target.combatSkillName} Ignored!</span>
+                    </div>
+                ` : '';
+                
                 content.innerHTML = `
                     <p>Select a card to use against ${target.name}:</p>
+                    ${amarakHTML}
+                    ${amarakActiveHTML}
                     <div style="margin: 10px 0;">
                         ${applicableCards.map((card, i) => `
                             <div style="margin: 8px 0; padding: 10px; background: rgba(0,0,0,0.3); 
@@ -1212,7 +1240,7 @@ Object.assign(game, {
             
             // BALAZARG COMBAT SKILL: Demonic Curse
             // Roll D6 for each card before battle - discard on 1
-            if (general.combatSkill === 'demonic_curse') {
+            if (general.combatSkill === 'demonic_curse' && !this._amarakBlessingActive) {
                 const curseRolls = [];
                 const cardsLost = [];
                 
@@ -1356,7 +1384,7 @@ Object.assign(game, {
         // Check if Eagle Rider can re-roll (Ground Attack + not Varkolak)
         const canReroll = hero.name === 'Eagle Rider' 
             && this.eagleRiderAttackStyle === 'ground' 
-            && general.combatSkill !== 'no_rerolls'
+            && (general.combatSkill !== 'no_rerolls' || this._amarakBlessingActive)
             && !this.eagleRiderRerollUsed;
         
         if (canReroll) {
@@ -1552,7 +1580,7 @@ Object.assign(game, {
         try {
         
         // Check for Battle Luck re-roll opportunity (not against Varkolak)
-        if (!this._battleLuckChecked && general.combatSkill !== 'no_rerolls') {
+        if (!this._battleLuckChecked && (general.combatSkill !== 'no_rerolls' || this._amarakBlessingActive)) {
             const blCard = this._findBattleLuckCard();
             const hasFailedDice = diceRolls.some(r => !r.hit);
             if (blCard && hasFailedDice) {
@@ -1584,7 +1612,7 @@ Object.assign(game, {
         this._battleLuckChecked = false;
         
         // Unicorn Steed: re-roll ALL failed dice once per combat (not against Varkolak)
-        if (!this._unicornSteedRerollUsed && general.combatSkill !== 'no_rerolls') {
+        if (!this._unicornSteedRerollUsed && (general.combatSkill !== 'no_rerolls' || this._amarakBlessingActive)) {
             if (this._hasUnicornSteed(hero)) {
                 const hasFailedDice = diceRolls.some(r => !r.hit);
                 if (hasFailedDice) {
@@ -1636,7 +1664,7 @@ Object.assign(game, {
         // IMPORTANT: Parry happens AFTER re-roll phase is complete
         // This ensures that each 1 rolled (after any re-rolls) eliminates one hit
         let parryMessage = '';
-        if (general.combatSkill === 'parry') {
+        if (general.combatSkill === 'parry' && !this._amarakBlessingActive) {
             const onesRolled = diceRolls.filter(d => d.roll === 1).length;
             
             if (onesRolled > 0) {
@@ -1733,7 +1761,7 @@ Object.assign(game, {
         
         // Add Varkolak no-reroll message to results HTML if applicable
         let noRerollWarning = '';
-        if (general.combatSkill === 'no_rerolls') {
+        if (general.combatSkill === 'no_rerolls' && !this._amarakBlessingActive) {
             noRerollWarning = `
                 <div style="background: rgba(139,0,0,0.2); padding: 10px; border-radius: 5px; margin-top: 10px; border: 2px solid #8b0000;">
                     <div style="color: #ef4444; font-weight: bold; margin-bottom: 5px;">💀 UNDEAD CURSE</div>
@@ -1754,6 +1782,7 @@ Object.assign(game, {
                 <div class="dice-result-container">
                     ${diceHTML}
                 </div>
+                ${this._amarakBlessingActive && general.combatSkill ? `<div style="text-align: center; margin-top: 8px; padding: 6px; background: rgba(147,51,234,0.15); border: 1px solid #9333ea; border-radius: 5px;"><span style="color: #c084fc; font-weight: bold;">📜 Amarak's Blessing: ${general.combatSkillName} Ignored!</span></div>` : ''}
                 ${noRerollWarning}
             </div>
         `;
@@ -1771,7 +1800,7 @@ Object.assign(game, {
             let combatSkillMessage = '';
             
             // Sapphire's Regeneration: Returns to full health if not defeated in single combat
-            if (general.combatSkill === 'regeneration' && damage < general.maxHealth) {
+            if (general.combatSkill === 'regeneration' && !this._amarakBlessingActive && damage < general.maxHealth) {
                 const healedAmount = general.maxHealth - general.health;
                 general.health = general.maxHealth;
                 combatSkillMessage = `<br><br><span style="color: #ef4444; font-weight: bold;">⚡ REGENERATION!</span><br><span style="color: #d4af37;">${general.name} was not defeated and heals ${healedAmount} life token(s) back to full!</span>`;
@@ -2403,6 +2432,52 @@ Object.assign(game, {
         }
     },
     
+    _findAmarakBlessingQuest() {
+        // Find any hero with a completed Amarak's Blessing quest
+        for (let i = 0; i < this.heroes.length; i++) {
+            const hero = this.heroes[i];
+            if (!hero.questCards || hero.health <= 0) continue;
+            for (let j = 0; j < hero.questCards.length; j++) {
+                const q = hero.questCards[j];
+                if (q.completed && !q.discarded && q.mechanic &&
+                    q.mechanic.rewardType === 'use_quest_card_anytime' &&
+                    q.mechanic.rewardValue === 'amarak_ignore_combat_skill') {
+                    return { heroIndex: i, questIndex: j, hero, quest: q };
+                }
+            }
+        }
+        return null;
+    },
+    
+    _useAmarakBlessing() {
+        const found = this._findAmarakBlessingQuest();
+        if (!found) return;
+        
+        const { heroIndex, questIndex, hero, quest } = found;
+        const general = this.currentCombat ? this.currentCombat.target : null;
+        
+        // Set the active flag
+        this._amarakBlessingActive = true;
+        
+        // Retire the quest card
+        this._retireQuest(hero, quest, 'Ignored general combat skill');
+        this.updateDeckCounts();
+        
+        const skillName = general ? general.combatSkillName : 'combat skill';
+        this.addLog(`📜 ${hero.name} uses Amarak's Blessing — ${general ? general.name + "'s" : "General's"} ${skillName} is ignored!`);
+        
+        this.renderHeroes();
+        this.updateActionButtons();
+        
+        // Refresh combat modal to show active indicator instead of button
+        if (this.currentCombat && this.currentCombat.type === 'general') {
+            this.showCombatModal('general', this.currentCombat.target);
+        }
+        
+        // Draw replacement quest
+        this._drawAndShowNewQuest(heroIndex);
+    },
+    
     closeCombat() {
         document.getElementById('combat-modal').classList.remove('active');
         document.getElementById('dice-display').innerHTML = '';
@@ -2410,6 +2485,7 @@ Object.assign(game, {
         this.rangedAttack = false;
         this._combatBonusDiceActive = false;
         this._generalBonusDiceChecked = false;
+        this._amarakBlessingActive = false;
     },
     
 });

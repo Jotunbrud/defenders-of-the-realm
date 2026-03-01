@@ -1311,14 +1311,13 @@ Object.assign(game, {
             if (hero && hero.name === 'Wizard' && !this.wizardWisdomRedraw && card.type !== 'all_quiet') {
                 hasSpecialButtons = true;
                 btnContainer.style.display = 'flex';
+                btnContainer.style.flexDirection = 'column';
                 btnContainer.style.gap = '10px';
-                btnContainer.style.justifyContent = 'center';
-                btn.style.flex = '1';
                 
                 const wisdomBtn = document.createElement('button');
                 wisdomBtn.id = 'wisdom-discard-btn';
                 wisdomBtn.className = 'phase-btn';
-                wisdomBtn.style.cssText = 'flex:1;background:linear-gradient(135deg,#c2410c,#a83808);color:#fff;border:2px solid #e87040;';
+                wisdomBtn.style.cssText = 'background:linear-gradient(135deg,#c2410c,#a83808);color:#fff;border:2px solid #e87040;';
                 wisdomBtn.textContent = '🔮 Wisdom';
                 wisdomBtn.onclick = () => game.wizardWisdomDiscard();
                 btnContainer.appendChild(wisdomBtn);
@@ -1336,16 +1335,15 @@ Object.assign(game, {
             if (canUseMilitia) {
                 if (!hasSpecialButtons) {
                     btnContainer.style.display = 'flex';
+                    btnContainer.style.flexDirection = 'column';
                     btnContainer.style.gap = '10px';
-                    btnContainer.style.justifyContent = 'center';
-                    btn.style.flex = '1';
                 }
                 hasSpecialButtons = true;
                 
                 const militiaBtn = document.createElement('button');
                 militiaBtn.id = 'militia-secures-btn';
-                militiaBtn.className = 'btn btn-primary';
-                militiaBtn.style.cssText = 'flex: 1; background: linear-gradient(135deg, #4b5563, #374151); border-color: #6b7280;';
+                militiaBtn.className = 'phase-btn';
+                militiaBtn.style.cssText = 'background: linear-gradient(135deg, #4b5563, #374151); color: #fff; border: 2px solid #6b7280;';
                 militiaBtn.textContent = `🛡️ Militia (${militiaHolder.hero.symbol})`;
                 militiaBtn.onclick = () => game._militiaSecuresShowPicker();
                 btnContainer.appendChild(militiaBtn);
@@ -1373,16 +1371,15 @@ Object.assign(game, {
             if (canUseStrong) {
                 if (!hasSpecialButtons) {
                     btnContainer.style.display = 'flex';
+                    btnContainer.style.flexDirection = 'column';
                     btnContainer.style.gap = '10px';
-                    btnContainer.style.justifyContent = 'center';
-                    btn.style.flex = '1';
                 }
                 hasSpecialButtons = true;
                 
                 const strongBtn = document.createElement('button');
                 strongBtn.id = 'strong-defenses-btn';
-                strongBtn.className = 'btn btn-primary';
-                strongBtn.style.cssText = 'flex: 1; background: linear-gradient(135deg, #b45309, #92400e); border-color: #f59e0b;';
+                strongBtn.className = 'phase-btn';
+                strongBtn.style.cssText = 'background: linear-gradient(135deg, #b45309, #92400e); color: #fff; border: 2px solid #f59e0b;';
                 const genName = this.generals.find(g => g.color === card.general)?.name || 'General';
                 strongBtn.textContent = `🏰 Block ${genName} (${strongHolder.hero.symbol})`;
                 strongBtn.onclick = () => game._strongDefensesConfirm();
@@ -1397,16 +1394,15 @@ Object.assign(game, {
             if (canUseMilitiaQuest) {
                 if (!hasSpecialButtons) {
                     btnContainer.style.display = 'flex';
+                    btnContainer.style.flexDirection = 'column';
                     btnContainer.style.gap = '10px';
-                    btnContainer.style.justifyContent = 'center';
-                    btn.style.flex = '1';
                 }
                 hasSpecialButtons = true;
                 
                 const militiaQuestBtn = document.createElement('button');
                 militiaQuestBtn.id = 'organize-militia-btn';
-                militiaQuestBtn.className = 'btn btn-primary';
-                militiaQuestBtn.style.cssText = 'flex: 1; background: linear-gradient(135deg, #16a34a, #15803d); border-color: #4ade80;';
+                militiaQuestBtn.className = 'phase-btn';
+                militiaQuestBtn.style.cssText = 'background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: 2px solid #4ade80;';
                 const genName2 = this.generals.find(g => g.color === card.general)?.name || 'General';
                 militiaQuestBtn.textContent = `📜 Block ${genName2} (${militiaQuestHolder.hero.symbol})`;
                 militiaQuestBtn.onclick = () => game._organizeMilitiaConfirm();

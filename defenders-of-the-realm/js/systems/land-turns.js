@@ -710,6 +710,9 @@ Object.assign(game, {
         this.strongDefensesActive = false;
         this.militiaSecuredSlot = null;
         this.factionHunterBlockedSlot = null;
+        this._factionHunterUsedQuestName = null;
+        // Clean up any leftover faction hunter buttons from previous night phase
+        document.querySelectorAll('.faction-hunter-dynamic-btn').forEach(el => el.remove());
         
         // Calculate damage from minions
         let damageInfo = {
@@ -846,6 +849,7 @@ Object.assign(game, {
         this.militiaSecuredSlot = null;
         // Clear orc hunter blocked state for new card
         this.factionHunterBlockedSlot = null;
+        this._factionHunterUsedQuestName = null;
         // Clear strong defenses state for new card
         this.strongDefensesActive = false;
         // Clear organize militia state for new card
@@ -1048,6 +1052,9 @@ Object.assign(game, {
     showDarknessCardPreview(card, cardNum, totalCards, generalOnly) {
         const content = document.getElementById('end-of-turn-content');
         const btn = document.getElementById('end-of-turn-btn');
+        
+        // Clean up faction hunter buttons from previous renders
+        document.querySelectorAll('.faction-hunter-dynamic-btn').forEach(el => el.remove());
 
         // Card counter line
         let cardCounterHTML = '';
@@ -1433,6 +1440,9 @@ Object.assign(game, {
             }
             
             // Faction Hunter quests: Block matching faction minion placement
+            // Clean up any stale faction hunter buttons from previous renders
+            document.querySelectorAll('.faction-hunter-dynamic-btn').forEach(el => el.remove());
+            
             const factionNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
             const factionEmojis = { red: '🔴', green: '👺', blue: '🐉', black: '💀' };
             if (!generalOnly && !this.factionHunterBlockedSlot
@@ -1454,13 +1464,11 @@ Object.assign(game, {
                     }
                     hasSpecialButtons = true;
                     
-                    const emoji = factionEmojis[faction] || '🏹';
-                    const name = factionNames[faction] || faction;
                     const hunterBtn = document.createElement('button');
                     hunterBtn.id = `faction-hunter-btn-${slot}`;
-                    hunterBtn.className = 'phase-btn';
+                    hunterBtn.className = 'phase-btn faction-hunter-dynamic-btn';
                     hunterBtn.style.cssText = 'background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: 2px solid #4ade80;';
-                    hunterBtn.textContent = `${emoji} Block ${name} at ${loc} (${holder.hero.symbol})`;
+                    hunterBtn.textContent = `📜 ${holder.quest.name} — ${loc}`;
                     hunterBtn.onclick = () => game._factionHunterBlockConfirm(slot);
                     btnContainer.appendChild(hunterBtn);
                 });
@@ -1749,7 +1757,8 @@ Object.assign(game, {
                         type: 'faction_hunter_blocked',
                         color: card.faction1,
                         count: card.minions1,
-                        location: card.location1
+                        location: card.location1,
+                        questName: this._factionHunterUsedQuestName || 'Faction Hunter'
                     });
                     this.addLog(`  🏹 Faction Hunter: ${fh1Name} placement (${card.minions1} @ ${card.location1}) CANCELLED`);
                 } else {
@@ -1772,7 +1781,8 @@ Object.assign(game, {
                         type: 'faction_hunter_blocked',
                         color: card.faction2,
                         count: card.minions2,
-                        location: card.location2
+                        location: card.location2,
+                        questName: this._factionHunterUsedQuestName || 'Faction Hunter'
                     });
                     this.addLog(`  🏹 Faction Hunter: ${fh2Name} placement (${card.minions2} @ ${card.location2}) CANCELLED`);
                 } else {
@@ -1783,6 +1793,7 @@ Object.assign(game, {
             // Clear militia and orc hunter state after resolve
             this.militiaSecuredSlot = null;
             this.factionHunterBlockedSlot = null;
+            this._factionHunterUsedQuestName = null;
             
             // Strong Defenses / Organize Militia: skip general movement
             if (this.strongDefensesActive || this.organizeMilitiaActive) {
@@ -1820,6 +1831,9 @@ Object.assign(game, {
     },
     
     showDarknessCardResults(events) {
+        // Clean up faction hunter buttons from preview phase
+        document.querySelectorAll('.faction-hunter-dynamic-btn').forEach(el => el.remove());
+        
         const content = document.getElementById('end-of-turn-content');
         const btn = document.getElementById('end-of-turn-btn');
 
@@ -1922,7 +1936,7 @@ Object.assign(game, {
 
             events.forEach(e => {
                 if (e.type === 'spawn' || e.type === 'taint' || e.type === 'overrun' ||
-                    e.type === 'patrol' || e.type === 'militia_secured' ||
+                    e.type === 'patrol' || e.type === 'militia_secured' || e.type === 'faction_hunter_blocked' ||
                     e.type === 'general_only_notice' || e.type === 'monarch_city_special') {
                     minionEvents.push(e);
                 } else if (e.type === 'advance' || e.type === 'general_move' ||
@@ -2043,6 +2057,16 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#15803d">🛡️ CANCELLED</span>
                             </div>
                             <div class="modal-desc-text" style="font-size:0.75em;color:#15803d;margin-top:2px">Militia Secures Area — ${e.location}</div>
+                        </div>`;
+                    } else if (e.type === 'faction_hunter_blocked') {
+                        const mc = gColors[e.color] || '#888';
+                        const fn = fNames[e.color] || e.color;
+                        minionHTML += `<div style="background:rgba(22,163,74,0.08);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${mc};text-decoration:line-through">+${e.count} ${fn}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#15803d">📜 CANCELLED</span>
+                            </div>
+                            <div class="modal-desc-text" style="font-size:0.75em;color:#15803d;margin-top:2px">${e.questName || 'Faction Hunter'} — ${e.location}</div>
                         </div>`;
                     } else if (e.type === 'general_only_notice') {
                         minionHTML += `<div style="background:rgba(251,191,36,0.08);border:1px solid #fbbf24;border-radius:5px;padding:5px 10px;margin:4px 0">

@@ -2300,6 +2300,7 @@ Object.assign(game, {
         
         // Store blocked state
         this.factionHunterBlockedSlot = slot;
+        this._factionHunterUsedQuestName = holder.quest.name;
         
         this.addLog(`📜 🏹 ${holder.hero.name} uses ${holder.quest.name} — prevents ${factionName} placement at ${slotLocation}!`);
         

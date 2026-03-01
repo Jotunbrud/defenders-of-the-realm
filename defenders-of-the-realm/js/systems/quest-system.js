@@ -1333,6 +1333,10 @@ Object.assign(game, {
     
     // Show a Quest Detail modal for a specific quest card
     showQuestDetailModal(hero, quest) {
+        // Determine heroIndex and questIndex for Use button
+        const heroIndex = this.heroes.indexOf(hero);
+        const questIndex = hero.questCards ? hero.questCards.indexOf(quest) : -1;
+        
         // Determine status
         let statusLabel, statusBg, statusBorder, statusColor;
         if (quest.discarded) {
@@ -1397,6 +1401,44 @@ Object.assign(game, {
             }
         }
 
+        // Check if this quest has a usable reward (Use Card button)
+        let useButtonHTML = '';
+        if (quest.completed && !quest.discarded && quest.mechanic && quest.mechanic.rewardType === 'use_quest_card_anytime' && heroIndex >= 0 && questIndex >= 0) {
+            let canUse = true;
+            // Exclude context-dependent rewards
+            if (quest.mechanic.rewardValue === 'combat_bonus_dice') canUse = false;
+            if (quest.mechanic.rewardValue === 'block_general_advance') canUse = false;
+            if (quest.mechanic.rewardValue && quest.mechanic.rewardValue.startsWith('block_minion_placement')) canUse = false;
+            if (quest.mechanic.rewardValue === 'amarak_ignore_combat_skill') canUse = false;
+            // requirePresence check
+            if (canUse && quest.mechanic.requirePresence && quest.mechanic.rewardValue === 'remove_taint') {
+                canUse = this.taintCrystals[hero.location] && this.taintCrystals[hero.location] > 0;
+            }
+            
+            let contextHint = '';
+            if (!canUse && quest.mechanic.rewardValue === 'combat_bonus_dice') {
+                contextHint = '<div style="color:#d4af37;font-size:0.75em;margin-top:4px;">⚔️ Used automatically before combat rolls</div>';
+            } else if (!canUse && quest.mechanic.rewardValue === 'block_general_advance') {
+                contextHint = '<div style="color:#d4af37;font-size:0.75em;margin-top:4px;">🌙 Used during Darkness Spreads phase</div>';
+            } else if (!canUse && quest.mechanic.rewardValue && quest.mechanic.rewardValue.startsWith('block_minion_placement')) {
+                contextHint = '<div style="color:#d4af37;font-size:0.75em;margin-top:4px;">🌙 Used during Darkness Spreads phase</div>';
+            } else if (!canUse && quest.mechanic.rewardValue === 'amarak_ignore_combat_skill') {
+                contextHint = '<div style="color:#d4af37;font-size:0.75em;margin-top:4px;">⚔️ Used when attacking a General</div>';
+            }
+            
+            if (canUse) {
+                useButtonHTML = `
+                    <div style="margin-top:10px;text-align:center;">
+                        <button class="btn btn-primary" onclick="game.closeInfoModal(); game.useCompletedQuestCard(${heroIndex}, ${questIndex});"
+                            style="padding:8px 20px;background:#4ade80;color:#000;font-weight:bold;">
+                            📜 Use Card
+                        </button>
+                    </div>`;
+            } else {
+                useButtonHTML = `<div style="text-align:center;">${contextHint}</div>`;
+            }
+        }
+
         const contentHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                 <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">📜 Quest Details</h2>
@@ -1421,6 +1463,7 @@ Object.assign(game, {
                     <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${statusBg};border:1px solid ${statusBorder};color:${statusColor};">${statusLabel}</span>
                     </div>
+                    ${useButtonHTML}
                 </div>
             </div>
             <div style="text-align:center;margin-top:10px;">
@@ -2369,9 +2412,7 @@ Object.assign(game, {
                 <div style="color:#999;font-size:0.9em;">All Darkness Spreads cards will be skipped at the end of ${hero.name}'s turn.</div>
                 <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded.</div>
             </div>
-        `, () => {
-            this._drawAndShowNewQuest(heroIndex);
-        });
+        `);
     },
     
     // ===== KING OF THE GRYPHONS: Move 2 Heroes =====
@@ -2655,9 +2696,7 @@ Object.assign(game, {
                 ${unused > 0 ? `<div style="color:#999;font-size:0.85em;margin-top:8px;">${unused} move${unused !== 1 ? 's' : ''} unused</div>` : ''}
                 <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded — No action used</div>
             </div>
-        `, () => {
-            this._drawAndShowNewQuest(heroIndex);
-        });
+        `);
     },
     
     // ===== AMAZON ENVOY QUEST: Sweep Picker =====

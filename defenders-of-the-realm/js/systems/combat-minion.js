@@ -2470,12 +2470,11 @@ Object.assign(game, {
         this.updateActionButtons();
         
         // Refresh combat modal to show active indicator instead of button
-        if (this.currentCombat && this.currentCombat.type === 'general') {
+        if (this.groupAttack) {
+            this.showGroupAttackCardSelection();
+        } else if (this.currentCombat && this.currentCombat.type === 'general') {
             this.showCombatModal('general', this.currentCombat.target);
         }
-        
-        // Draw replacement quest
-        this._drawAndShowNewQuest(heroIndex);
     },
     
     closeCombat() {

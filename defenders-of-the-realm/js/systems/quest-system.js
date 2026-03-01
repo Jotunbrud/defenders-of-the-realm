@@ -2318,7 +2318,7 @@ Object.assign(game, {
         // Include origin itself
         locationsInRange.push(state.originLocation);
         
-        // Filter to only locations with minions
+        // Filter to only locations that still have minions (removals already applied)
         return locationsInRange.filter(loc => {
             const m = this.minions[loc];
             if (!m) return false;
@@ -2371,81 +2371,153 @@ Object.assign(game, {
         const state = this._amazonEnvoyState;
         if (!state) return;
         
-        const minionsHere = this.minions[locationName];
-        if (!minionsHere) return;
+        state.currentLocation = locationName;
         
-        const factionNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
-        const factionColors = { red: '#dc2626', green: '#16a34a', blue: '#3b82f6', black: '#6b7280' };
+        const minionsObj = this.minions[locationName];
+        const remaining = state.remaining;
+        const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
+        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
+        const factionIcons = { green: '🪓', black: '💀', red: '🔥', blue: '🐉' };
         
-        let pickerHTML = `
-            <div style="text-align:center;">
-                <div style="color:#d4af37;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;margin-bottom:6px;">
-                    ${locationName}
-                </div>
-                <div style="color:#999;font-size:0.85em;margin-bottom:12px;">
-                    ${state.remaining} defeat${state.remaining !== 1 ? 's' : ''} remaining — Select a minion to defeat
-                </div>
-        `;
+        // Calculate already-picked minions at this location (from previous visits)
+        const pendingForLoc = {};
+        state.results.filter(r => r.location === locationName).forEach(r => {
+            pendingForLoc[r.color] = (pendingForLoc[r.color] || 0) + 1;
+        });
         
-        const colors = ['green', 'red', 'blue', 'black'];
-        let hasMinions = false;
-        colors.forEach(color => {
-            const count = minionsHere[color] || 0;
-            if (count > 0) {
-                hasMinions = true;
-                const name = factionNames[color];
-                const clr = factionColors[color];
-                pickerHTML += `
-                    <button onclick="game._amazonEnvoyPickMinion('${locationName}', '${color}')"
-                        class="phase-btn" style="display:block;width:100%;margin:6px 0;padding:10px;
-                        background:rgba(0,0,0,0.3);border:2px solid ${clr};color:${clr};
-                        font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;cursor:pointer;">
-                        ${this._inlineDotsHTML(color, count)} ${name} (${count})
-                    </button>
+        this._aeSelected = new Set();
+        
+        let minionId = 0;
+        let listHTML = '<div id="ae-minion-list" style="max-height: 280px; overflow-y: auto; padding-right: 5px;">';
+        
+        const factionOrder = ['green', 'red', 'black', 'blue'];
+        factionOrder.forEach(color => {
+            const totalCount = (minionsObj && minionsObj[color]) || 0;
+            const alreadyPicked = pendingForLoc[color] || 0;
+            const availableCount = Math.max(0, totalCount - alreadyPicked);
+            if (availableCount === 0) return;
+            const fname = factionNames[color];
+            const fcolor = factionColors[color];
+            const ficon = factionIcons[color];
+            
+            for (let i = 0; i < availableCount; i++) {
+                const id = `ae-m-${minionId}`;
+                listHTML += `
+                    <div id="${id}" data-color="${color}" data-mid="${minionId}"
+                         onclick="game._amazonEnvoyToggle(${minionId})"
+                         style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin: 3px 0; border: 2px solid ${fcolor}; border-radius: 6px; cursor: pointer; background: rgba(0,0,0,0.3); transition: all 0.15s;"
+                         onmouseover="if(!this.classList.contains('ae-sel')) this.style.background='rgba(255,255,255,0.08)'"
+                         onmouseout="if(!this.classList.contains('ae-sel')) this.style.background='rgba(0,0,0,0.3)'">
+                        <span style="font-size: 1.3em;">${ficon}</span>
+                        <span style="flex: 1; color: ${fcolor}; font-weight: bold;">${fname} Minion</span>
+                        <span id="${id}-check" style="font-size: 1.2em; opacity: 0.3;">☐</span>
+                    </div>
                 `;
+                minionId++;
             }
         });
         
-        pickerHTML += `
-                <button onclick="game._amazonEnvoyBackToMap()"
-                    class="phase-btn" style="display:block;width:100%;margin:10px 0 0 0;padding:8px;
-                    background:rgba(100,100,100,0.3);border:2px solid #666;color:#999;
-                    font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;cursor:pointer;">
-                    ← Back to Map
-                </button>
+        listHTML += '</div>';
+        
+        const contentHTML = `
+            <div style="text-align: center; margin-bottom: 10px;">
+                <div style="font-size: 1.5em; margin-bottom: 3px;">⚔️</div>
+                <div style="color: #ffd700; font-weight: bold; font-size: 1.05em;">📍 ${locationName}</div>
+                <div style="color: #d4af37; margin-top: 4px; font-size: 0.9em;">Select minions to defeat at this location.</div>
+                <div id="ae-budget-display" style="color: #4ade80; font-weight: bold; margin-top: 6px;">Remaining: ${remaining} / ${state.sweepRoll} — Selected: 0 at this location</div>
+            </div>
+            ${listHTML}
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn" style="flex: 1; background: #666;" onclick="game._amazonEnvoyFinishEarly()">Finish</button>
+                <button id="ae-confirm-btn" class="btn btn-primary" style="flex: 1;" onclick="game._amazonEnvoyConfirmLocation()">Skip Location</button>
             </div>
         `;
         
-        this.showInfoModal('⚔️ Amazon Warriors', pickerHTML);
-        // Hide the default Continue button
+        this.showInfoModal('⚔️ ' + state.questName, contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+        if (defaultBtnDiv && !defaultBtnDiv.querySelector('#ae-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
     
-    _amazonEnvoyPickMinion(locationName, color) {
+    _amazonEnvoyToggle(minionId) {
         const state = this._amazonEnvoyState;
-        if (!state || state.remaining <= 0) return;
+        if (!state) return;
         
-        const minionsHere = this.minions[locationName];
-        if (!minionsHere || (minionsHere[color] || 0) <= 0) return;
+        const el = document.getElementById(`ae-m-${minionId}`);
+        const check = document.getElementById(`ae-m-${minionId}-check`);
+        if (!el) return;
         
-        // Remove 1 minion
-        minionsHere[color]--;
-        state.remaining--;
+        const remaining = state.remaining;
         
+        if (this._aeSelected.has(minionId)) {
+            // Deselect
+            this._aeSelected.delete(minionId);
+            el.classList.remove('ae-sel');
+            el.style.background = 'rgba(0,0,0,0.3)';
+            if (check) { check.textContent = '☐'; check.style.opacity = '0.3'; check.style.color = ''; }
+        } else {
+            // Check total limit
+            if (this._aeSelected.size >= remaining) return;
+            this._aeSelected.add(minionId);
+            el.classList.add('ae-sel');
+            el.style.background = 'rgba(255,215,0,0.2)';
+            if (check) { check.textContent = '☑'; check.style.opacity = '1'; check.style.color = '#4ade80'; }
+        }
+        
+        // Update budget display
+        const display = document.getElementById('ae-budget-display');
+        if (display) display.textContent = `Remaining: ${remaining - this._aeSelected.size} / ${state.sweepRoll} — Selected: ${this._aeSelected.size} at this location`;
+        
+        // Update confirm button
+        const btn = document.getElementById('ae-confirm-btn');
+        if (btn) {
+            btn.textContent = this._aeSelected.size > 0 ? `Confirm (${this._aeSelected.size})` : 'Skip Location';
+        }
+        
+        // Update affordability of unselected
+        document.querySelectorAll('#ae-minion-list > div').forEach(div => {
+            const mid = parseInt(div.getAttribute('data-mid'));
+            if (this._aeSelected.has(mid)) return;
+            const canSelect = this._aeSelected.size < remaining;
+            div.style.opacity = canSelect ? '1' : '0.4';
+            div.style.cursor = canSelect ? 'pointer' : 'not-allowed';
+        });
+    },
+    
+    _amazonEnvoyConfirmLocation() {
+        const state = this._amazonEnvoyState;
+        if (!state) return;
+        
+        const locationName = state.currentLocation;
         const factionNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
-        const fName = factionNames[color] || color;
         
-        // Track for quest kill progress
-        this._trackQuestMinionDefeatsRaw(color, 1);
-        
-        state.results.push({
-            location: locationName,
-            color: color,
-            faction: fName
+        // Collect selected minions by color
+        const colorCounts = {};
+        this._aeSelected.forEach(mid => {
+            const el = document.getElementById(`ae-m-${mid}`);
+            if (!el) return;
+            const color = el.getAttribute('data-color');
+            colorCounts[color] = (colorCounts[color] || 0) + 1;
         });
         
-        this.addLog(`⚔️ Amazon Warriors: Defeated 1 ${fName} at ${locationName} (${state.remaining} remaining)`);
+        // Apply removals immediately and record results
+        for (const [color, count] of Object.entries(colorCounts)) {
+            if (this.minions[locationName]) {
+                this.minions[locationName][color] = Math.max(0, (this.minions[locationName][color] || 0) - count);
+            }
+            state.remaining -= count;
+            
+            // Track for faction hunter quest progress
+            this._trackQuestMinionDefeatsRaw(color, count);
+            
+            const fName = factionNames[color] || color;
+            for (let i = 0; i < count; i++) {
+                state.results.push({ location: locationName, color, faction: fName });
+            }
+            
+            this.addLog(`⚔️ ${state.questName}: Defeated ${count} ${fName} at ${locationName}`);
+        }
+        
+        this.closeInfoModal();
         
         // Update map
         this.renderMap();
@@ -2453,26 +2525,74 @@ Object.assign(game, {
         this.renderHeroes();
         this.updateGameStatus();
         
-        // Close picker and continue
-        this.closeInfoModal();
+        // Clean up movement highlights
+        this.activeMovement = null;
+        document.querySelectorAll('.location-highlight').forEach(el => el.remove());
+        const indicator = document.getElementById('movement-indicator');
+        if (indicator) indicator.remove();
         
+        // Check if budget exhausted
         if (state.remaining <= 0) {
             this._finishAmazonEnvoy();
-        } else {
-            // Check if current location still has minions
-            const totalHere = Object.values(minionsHere).reduce((a, b) => a + b, 0);
-            if (totalHere > 0) {
-                // Reopen picker at same location
-                this._amazonEnvoyShowPicker(locationName);
-            } else {
-                // Go back to map for next pick
-                this._startAmazonEnvoyHighlight();
+            return;
+        }
+        
+        // Re-highlight locations that still have minions
+        const validLocations = this._getAmazonEnvoyValidLocations();
+        if (validLocations.length === 0) {
+            this._finishAmazonEnvoy();
+            return;
+        }
+        
+        this._startAmazonEnvoyHighlight();
+    },
+    
+    _amazonEnvoyFinishEarly() {
+        const state = this._amazonEnvoyState;
+        if (!state) return;
+        
+        const locationName = state.currentLocation;
+        const factionNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
+        
+        // Record any current selections before finishing
+        if (this._aeSelected && this._aeSelected.size > 0) {
+            const colorCounts = {};
+            this._aeSelected.forEach(mid => {
+                const el = document.getElementById(`ae-m-${mid}`);
+                if (!el) return;
+                const color = el.getAttribute('data-color');
+                colorCounts[color] = (colorCounts[color] || 0) + 1;
+            });
+            for (const [color, count] of Object.entries(colorCounts)) {
+                if (this.minions[locationName]) {
+                    this.minions[locationName][color] = Math.max(0, (this.minions[locationName][color] || 0) - count);
+                }
+                state.remaining -= count;
+                this._trackQuestMinionDefeatsRaw(color, count);
+                const fName = factionNames[color] || color;
+                for (let i = 0; i < count; i++) {
+                    state.results.push({ location: locationName, color, faction: fName });
+                }
+                this.addLog(`⚔️ ${state.questName}: Defeated ${count} ${fName} at ${locationName}`);
             }
         }
+        
+        this.closeInfoModal();
+        this.activeMovement = null;
+        document.querySelectorAll('.location-highlight').forEach(el => el.remove());
+        const indicator = document.getElementById('movement-indicator');
+        if (indicator) indicator.remove();
+        
+        this._finishAmazonEnvoy();
     },
     
     _amazonEnvoyBackToMap() {
+        // Skip Location without selecting — same as confirm with nothing selected
         this.closeInfoModal();
+        this.activeMovement = null;
+        document.querySelectorAll('.location-highlight').forEach(el => el.remove());
+        const indicator = document.getElementById('movement-indicator');
+        if (indicator) indicator.remove();
         this._startAmazonEnvoyHighlight();
     },
     
@@ -2494,29 +2614,29 @@ Object.assign(game, {
             boardContainer.style.pointerEvents = 'auto';
         }
         
-        // Build results summary
+        // Build results summary (removals already applied in _amazonEnvoyConfirmLocation)
+        const totalDefeated = state.results.length;
         let resultsHTML = '';
-        if (state.results.length === 0) {
+        if (totalDefeated === 0) {
             resultsHTML = '<div style="color:#999;">No minions were defeated.</div>';
         } else {
             // Group by location
             const byLoc = {};
             state.results.forEach(r => {
-                if (!byLoc[r.location]) byLoc[r.location] = [];
-                byLoc[r.location].push(r);
+                if (!byLoc[r.location]) byLoc[r.location] = {};
+                byLoc[r.location][r.faction] = (byLoc[r.location][r.faction] || 0) + 1;
             });
             
-            for (const [loc, kills] of Object.entries(byLoc)) {
-                const summary = kills.map(k => k.faction).join(', ');
+            for (const [loc, factions] of Object.entries(byLoc)) {
+                const details = Object.entries(factions).map(([fname, count]) => `${count} ${fname}`).join(', ');
                 resultsHTML += `<div style="margin:6px 0;padding:8px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;border-radius:6px;">
-                    <strong style="color:#16a34a;">${loc}</strong> — ${kills.length} defeated (${summary})
+                    <strong style="color:#16a34a;">${loc}</strong> — ${details}
                 </div>`;
             }
         }
         
-        const totalDefeated = state.results.length;
         const unused = state.sweepRoll - totalDefeated;
-        this.addLog(`⚔️ Amazon Envoy: ${state.heroName} deployed Amazon warriors — ${totalDefeated} minion${totalDefeated !== 1 ? 's' : ''} defeated!`);
+        this.addLog(`⚔️ ${state.questName}: ${state.heroName} deployed warriors — ${totalDefeated} minion${totalDefeated !== 1 ? 's' : ''} defeated!`);
         
         // Update everything
         this.renderMap();
@@ -2526,7 +2646,8 @@ Object.assign(game, {
         this.updateMovementButtons();
         this.updateActionButtons();
         
-        this.showInfoModal('⚔️ Amazon Envoy — Complete!', `
+        const heroIndex = state.heroIndex;
+        this.showInfoModal('⚔️ ' + state.questName + ' — Complete!', `
             <div style="text-align:center;">
                 <div style="font-size:2em;margin-bottom:10px;">⚔️</div>
                 <div style="color:#16a34a;font-size:1.1em;font-weight:bold;margin-bottom:10px;">
@@ -2538,7 +2659,7 @@ Object.assign(game, {
             </div>
         `, () => {
             // Draw new quest after sweep completes
-            this._drawAndShowNewQuest(state.heroIndex);
+            this._drawAndShowNewQuest(heroIndex);
         });
     },
     

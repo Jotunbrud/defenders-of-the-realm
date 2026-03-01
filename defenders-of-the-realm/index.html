@@ -144,12 +144,12 @@
                     <div style="display: flex; gap: 12px;">
                     <!-- Vertical tracker -->
                     <div class="war-tracker-col">
-                        <div class="war-box"><span class="war-icon">⚔️</span><span class="war-label">Early</span></div>
+                        <div class="war-box" id="war-early"><span class="war-icon">⚔️</span><span class="war-label">Early</span></div>
                         <div class="war-arrow">▼</div>
-                        <div class="war-box"><span class="war-icon"></span><span class="war-label">Mid</span></div>
-                        <div class="war-box"><span class="war-icon"></span><span class="war-label">Mid</span></div>
+                        <div class="war-box" id="war-mid1"><span class="war-icon"></span><span class="war-label">Mid</span></div>
+                        <div class="war-box" id="war-mid2"><span class="war-icon"></span><span class="war-label">Mid</span></div>
                         <div class="war-arrow">▼</div>
-                        <div class="war-box"><span class="war-icon"></span><span class="war-label">Late</span></div>
+                        <div class="war-box" id="war-late"><span class="war-icon"></span><span class="war-label">Late</span></div>
                     </div>
                     <!-- Descriptions -->
                     <div style="flex: 1; min-width: 0;">
@@ -167,6 +167,7 @@
                         </div>
                     </div>
                     </div>
+                    <div id="war-status-desc" style="font-family: Georgia, serif; font-size: 0.78em; color: #6b5b4a; text-align: center; margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(139,115,85,0.3);"></div>
                 </div>
             </div>
         </div>

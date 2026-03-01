@@ -207,35 +207,67 @@ Object.assign(game, {
     },
     
     renderWarStatus() {
-        const earlyEl = document.getElementById('war-early');
-        const midEl = document.getElementById('war-mid');
-        const lateEl = document.getElementById('war-late');
+        const boxes = [
+            document.getElementById('war-early'),
+            document.getElementById('war-mid1'),
+            document.getElementById('war-mid2'),
+            document.getElementById('war-late')
+        ];
         const descEl = document.getElementById('war-status-desc');
         
-        if (!earlyEl) return;
+        if (!boxes[0]) return;
         
-        // Reset all
-        [earlyEl, midEl, lateEl].forEach(el => {
-            el.style.background = 'rgba(100,100,100,0.1)';
-            el.style.borderColor = '#555';
-            el.querySelector('div').style.color = '#888';
+        const defeatedCount = this.generals.filter(g => g.defeated).length;
+        
+        // Determine which box the icon sits on (0-3) based on generals defeated
+        // 0 defeated = box 0 (Early), 1 = box 1 (Mid), 2 = box 2 (Mid), 3+ = box 3 (Late)
+        let activeIndex;
+        if (this.warTrackerLocked) {
+            activeIndex = 0;
+        } else {
+            activeIndex = Math.min(defeatedCount, 3);
+        }
+        
+        // Phase colors
+        const phaseThemes = {
+            early:  { accent: '#4ade80', glow: 'rgba(74,222,128,0.25)' },
+            mid:    { accent: '#d4af37', glow: 'rgba(212,175,55,0.25)' },
+            late:   { accent: '#dc2626', glow: 'rgba(220,38,38,0.25)' }
+        };
+        const theme = phaseThemes[this.warStatus];
+        
+        // Reset all boxes to inactive
+        boxes.forEach(el => {
+            el.style.background = 'rgba(139,115,85,0.1)';
+            el.style.borderColor = '#8b7355';
+            el.style.boxShadow = 'none';
+            const label = el.querySelector('.war-label');
+            if (label) label.style.color = '#6b5b4a';
+            const icon = el.querySelector('.war-icon');
+            if (icon) icon.textContent = '';
         });
         
-        if (this.warStatus === 'early') {
-            earlyEl.style.background = 'rgba(74,222,128,0.3)';
-            earlyEl.style.borderColor = '#4ade80';
-            earlyEl.querySelector('div').style.color = '#4ade80';
-            descEl.innerHTML = 'Draw <strong>1</strong> Darkness Spreads card per Night Phase';
-        } else if (this.warStatus === 'mid') {
-            midEl.style.background = 'rgba(251,191,36,0.3)';
-            midEl.style.borderColor = '#fbbf24';
-            midEl.querySelector('div').style.color = '#fbbf24';
-            descEl.innerHTML = 'Draw <strong>2</strong> Darkness Spreads cards per Night Phase<br><span style="font-size: 0.9em; color: #999;">Card 1: Minions + General &nbsp;|&nbsp; Card 2: General only</span>';
-        } else {
-            lateEl.style.background = 'rgba(239,68,68,0.3)';
-            lateEl.style.borderColor = '#ef4444';
-            lateEl.querySelector('div').style.color = '#ef4444';
-            descEl.innerHTML = 'Draw <strong>3</strong> Darkness Spreads cards per Night Phase<br><span style="font-size: 0.9em; color: #999;">Cards 1-2: Minions + General &nbsp;|&nbsp; Card 3: General only</span>';
+        // Style active box
+        const activeEl = boxes[activeIndex];
+        activeEl.style.background = `linear-gradient(135deg, ${theme.glow}, rgba(139,115,85,0.15))`;
+        activeEl.style.borderColor = theme.accent;
+        activeEl.style.boxShadow = `0 0 8px ${theme.glow}, inset 0 0 6px ${theme.glow}`;
+        const activeLabel = activeEl.querySelector('.war-label');
+        if (activeLabel) activeLabel.style.color = theme.accent;
+        
+        // Place icon in active box
+        const activeIcon = activeEl.querySelector('.war-icon');
+        if (activeIcon) activeIcon.textContent = '⚔️';
+        
+        // Update description
+        if (descEl) {
+            if (this.warStatus === 'early') {
+                descEl.innerHTML = 'Draw <strong>1</strong> Darkness Spreads card per Night Phase';
+            } else if (this.warStatus === 'mid') {
+                descEl.innerHTML = 'Draw <strong>2</strong> Darkness Spreads cards per Night Phase<br><span style="font-size: 0.9em; color: #999;">Card 1: Minions + General &nbsp;|&nbsp; Card 2: General only</span>';
+            } else {
+                descEl.innerHTML = 'Draw <strong>3</strong> Darkness Spreads cards per Night Phase<br><span style="font-size: 0.9em; color: #999;">Cards 1-2: Minions + General &nbsp;|&nbsp; Card 3: General only</span>';
+            }
         }
     },
     

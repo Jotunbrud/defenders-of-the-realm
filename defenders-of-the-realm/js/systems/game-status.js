@@ -220,7 +220,6 @@ Object.assign(game, {
         const defeatedCount = this.generals.filter(g => g.defeated).length;
         
         // Determine which box the icon sits on (0-3) based on generals defeated
-        // 0 defeated = box 0 (Early), 1 = box 1 (Mid), 2 = box 2 (Mid), 3+ = box 3 (Late)
         let activeIndex;
         if (this.warTrackerLocked) {
             activeIndex = 0;
@@ -228,32 +227,17 @@ Object.assign(game, {
             activeIndex = Math.min(defeatedCount, 3);
         }
         
-        // Phase colors
-        const phaseThemes = {
-            early:  { accent: '#4ade80', glow: 'rgba(74,222,128,0.25)' },
-            mid:    { accent: '#d4af37', glow: 'rgba(212,175,55,0.25)' },
-            late:   { accent: '#dc2626', glow: 'rgba(220,38,38,0.25)' }
-        };
-        const theme = phaseThemes[this.warStatus];
-        
-        // Reset all boxes to inactive
+        // Reset all boxes — background only, leave border/label as default CSS
         boxes.forEach(el => {
             el.style.background = 'rgba(139,115,85,0.1)';
-            el.style.borderColor = '#8b7355';
             el.style.boxShadow = 'none';
-            const label = el.querySelector('.war-label');
-            if (label) label.style.color = '#6b5b4a';
             const icon = el.querySelector('.war-icon');
             if (icon) icon.textContent = '';
         });
         
-        // Style active box
+        // Fill active box background with a warm neutral parchment tone
         const activeEl = boxes[activeIndex];
-        activeEl.style.background = `linear-gradient(135deg, ${theme.glow}, rgba(139,115,85,0.15))`;
-        activeEl.style.borderColor = theme.accent;
-        activeEl.style.boxShadow = `0 0 8px ${theme.glow}, inset 0 0 6px ${theme.glow}`;
-        const activeLabel = activeEl.querySelector('.war-label');
-        if (activeLabel) activeLabel.style.color = theme.accent;
+        activeEl.style.background = 'rgba(212,175,55,0.55)';
         
         // Place icon in active box
         const activeIcon = activeEl.querySelector('.war-icon');

@@ -950,6 +950,14 @@ Object.assign(game, {
                     return { quest, questIndex: i };
                 }
             }
+            
+            // Scout the General: hero must be at the same location as the named general (not defeated)
+            if (quest.mechanic.type === 'scout_general') {
+                const targetGeneral = this.generals.find(g => g.name === quest.mechanic.generalName);
+                if (targetGeneral && !targetGeneral.defeated && hero.location === targetGeneral.location) {
+                    return { quest, questIndex: i };
+                }
+            }
         }
         return null;
     },
@@ -1012,6 +1020,16 @@ Object.assign(game, {
                 return;
             }
             this._confirmOrganizeAction(hero, quest, questIndex);
+            return;
+        }
+        
+        // Scout the General — auto-complete, search deck for matching card
+        if (m.type === 'scout_general') {
+            if (this.actionsRemaining < (m.actionCost || 1)) {
+                this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
+                return;
+            }
+            this._executeScoutGeneral(hero, quest, questIndex);
             return;
         }
         
@@ -2205,6 +2223,112 @@ Object.assign(game, {
             }
         }
         return locations;
+    },
+    
+    // ===== SCOUT THE GENERAL QUEST =====
+    // Auto-complete: spend 1 action at the general's location, search deck for matching card
+    _executeScoutGeneral(hero, quest, questIndex) {
+        const m = quest.mechanic;
+        const heroIndex = this.currentPlayerIndex;
+        const targetColor = m.faction;
+        const generalName = m.generalName;
+        const factionNames = { red: 'Red', green: 'Green', blue: 'Blue', black: 'Black' };
+        const colorName = factionNames[targetColor] || targetColor;
+        
+        // Spend action
+        this.actionsRemaining -= (m.actionCost || 1);
+        this.addLog(`📜 ${hero.name} spends 1 action scouting ${generalName}'s forces`);
+        
+        // Search deck for first card matching target color
+        let foundCard = null;
+        let foundIndex = -1;
+        if (this.heroDeck && this.heroDeck.length > 0) {
+            // Search from top of deck (end of array) to bottom
+            for (let i = this.heroDeck.length - 1; i >= 0; i--) {
+                if (this.heroDeck[i].color === targetColor) {
+                    foundCard = this.heroDeck[i];
+                    foundIndex = i;
+                    break;
+                }
+            }
+        }
+        
+        let cardDrawHTML = '';
+        if (foundCard) {
+            // Remove card from deck and add to hand
+            this.heroDeck.splice(foundIndex, 1);
+            hero.cards.push(foundCard);
+            
+            // Shuffle remaining deck (Fisher-Yates)
+            for (let i = this.heroDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [this.heroDeck[i], this.heroDeck[j]] = [this.heroDeck[j], this.heroDeck[i]];
+            }
+            
+            const cardColorMap = { red: '#dc2626', green: '#16a34a', blue: '#3b82f6', black: '#6b7280' };
+            const borderColor = cardColorMap[foundCard.color] || '#8B7355';
+            
+            cardDrawHTML = `
+                <div style="margin-top:12px;padding:10px;background:rgba(212,175,55,0.1);border:2px solid #d4af37;border-radius:8px;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#d4af37;font-size:0.9em;margin-bottom:8px;text-align:center;">Card Found!</div>
+                    <div style="display:flex;justify-content:center;">
+                        <div style="padding:8px 16px;background:rgba(0,0,0,0.3);border:3px solid ${borderColor};border-radius:8px;text-align:center;">
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${borderColor};font-size:1em;">${foundCard.name}</div>
+                            ${foundCard.special ? '<div style="color:#9333ea;font-size:0.8em;">Special Card</div>' : ''}
+                        </div>
+                    </div>
+                    <div style="color:#8b7355;font-size:0.8em;text-align:center;margin-top:6px;">Hero deck reshuffled (${this.heroDeck.length} cards)</div>
+                </div>`;
+            
+            this.addLog(`📜 ✅ ${hero.name} found ${foundCard.name} (${colorName}) while scouting ${generalName}! Deck reshuffled.`);
+        } else {
+            // No matching card found — still complete quest, just no card drawn
+            // Shuffle deck anyway per quest rules
+            if (this.heroDeck) {
+                for (let i = this.heroDeck.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.heroDeck[i], this.heroDeck[j]] = [this.heroDeck[j], this.heroDeck[i]];
+                }
+            }
+            
+            cardDrawHTML = `
+                <div style="margin-top:12px;padding:10px;background:rgba(239,68,68,0.1);border:2px solid #ef4444;border-radius:8px;text-align:center;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#ef4444;font-size:0.9em;">No ${colorName} Cards in Deck</div>
+                    <div style="color:#8b7355;font-size:0.8em;margin-top:4px;">Hero deck reshuffled</div>
+                </div>`;
+            
+            this.addLog(`📜 ✅ ${hero.name} scouted ${generalName} but found no ${colorName} cards. Deck reshuffled.`);
+        }
+        
+        // Mark quest complete
+        quest.completed = true;
+        this._retireQuest(hero, quest, `Scouted ${generalName}`);
+        this.updateDeckCounts();
+        
+        const generalEmojis = { red: '😈', green: '👺', blue: '🐉', black: '💀' };
+        const emoji = generalEmojis[targetColor] || '🔍';
+        
+        this.showInfoModal('📜 Quest Complete!', `
+            <div style="text-align: center;">
+                <div style="font-size: 2.5em; margin-bottom: 8px;">${emoji}</div>
+                <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 8px;">${quest.name} Complete!</div>
+                <div style="color: #d4af37; margin-bottom: 4px;">Scouted ${generalName}'s forces at ${hero.location}</div>
+                ${cardDrawHTML}
+            </div>
+        `, () => {
+            this._drawAndShowNewQuest(heroIndex);
+        });
+        
+        this.updateGameStatus();
+        this.updateActionButtons();
+        this.renderHeroes();
+        
+        const mapModal = document.getElementById('map-modal');
+        if (mapModal && mapModal.classList.contains('active')) {
+            this.updateMapStatus();
+            this.updateMovementButtons();
+            this.updateActionButtons();
+        }
     },
     
     // ===== DEFEAT FACTION MINIONS QUEST TRACKING =====

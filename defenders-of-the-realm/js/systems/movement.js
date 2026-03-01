@@ -996,6 +996,13 @@ Object.assign(game, {
                 progressNote = ` (${done}/${total})`;
             } else if (q.mechanic?.type === 'defeat_faction_minions') {
                 progressNote = ` (${q.mechanic.currentKills || 0}/${q.mechanic.requiredKills})`;
+            } else if (q.mechanic?.type === 'scout_general') {
+                const gen = this.generals ? this.generals.find(g => g.name === q.mechanic.generalName) : null;
+                if (gen && !gen.defeated) {
+                    progressNote = ` (at ${gen.location})`;
+                } else if (gen && gen.defeated) {
+                    progressNote = ' (Defeated)';
+                }
             }
             questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:6px 8px;margin:4px 0;background:rgba(202,138,4,0.08);border:1px solid rgba(202,138,4,0.3);border-radius:6px;cursor:pointer;">
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}${progressNote}</div>
@@ -1233,6 +1240,22 @@ Object.assign(game, {
                     <div style="font-size:1.3em;letter-spacing:4px;">${pips}</div>
                     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">${current} / ${required} ${factionName} Defeated</div>
                 </div>`;
+            }
+            if (quest.mechanic.type === 'scout_general') {
+                const general = this.generals ? this.generals.find(g => g.name === quest.mechanic.generalName) : null;
+                const genEmojis = { red: '😈', green: '👺', blue: '🐉', black: '💀' };
+                const emoji = genEmojis[quest.mechanic.faction] || '⚔️';
+                if (general && !general.defeated) {
+                    progressHTML = `<div style="margin-top:8px;text-align:center;">
+                        <div style="font-size:1.5em;">${emoji}</div>
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">${quest.mechanic.generalName} is at ${general.location}</div>
+                    </div>`;
+                } else if (general && general.defeated) {
+                    progressHTML = `<div style="margin-top:8px;text-align:center;">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;margin-top:4px;">${quest.mechanic.generalName} has been defeated — quest cannot be completed</div>
+                    </div>`;
+                }
+            }
             }
         }
 

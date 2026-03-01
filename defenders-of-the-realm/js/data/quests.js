@@ -192,15 +192,11 @@ function createQuestDeck() {
         }
     });
     
-    // ── PLACEHOLDER QUESTS (9 cards) ──
+    // ── PLACEHOLDER QUESTS (1 card) ──
     // These use the standard dice_roll mechanic but have no implemented reward yet.
     // rewardType: 'placeholder' — completion logs success but grants no mechanical benefit.
     
     const placeholderQuests = [
-        { name: 'Horn of Summoning', location: 'Eagle Peak Pass', description: 'Sound the ancient horn atop Eagle Peak to rally allies.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
-        { name: 'Tome of Lost Knowledge', location: 'Whispering Woods', description: 'Decipher the whispers of the woods to unlock the tome.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
-        { name: 'Blessed Chalice', location: 'Angel Tear Falls', description: 'Fill the chalice with the waters of Angel Tear Falls.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
-        { name: 'Shadow Blade', location: 'Ghost Marsh', description: 'Retrieve the cursed blade from the depths of the marsh.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
         { name: 'Talisman of Warding', location: 'Cursed Plateau', description: 'Perform the ritual of warding atop the cursed plateau.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true }
     ];
     
@@ -314,6 +310,95 @@ function createQuestDeck() {
             failDiscard: false,
             rewardType: 'use_quest_card_anytime',
             rewardValue: 'block_minion_placement_black'
+        }
+    });
+    
+    // ── SCOUT THE GENERAL QUESTS (4 cards) ──
+    // Travel to the named general's current location and spend 1 action scouting.
+    // Reward: Search the Hero Card deck for the first card matching the general's faction color,
+    // add it to your hand, then reshuffle the Hero Card deck.
+    
+    // Scout Balazarg (Red / Demons)
+    questDeck.push({
+        id: questId++,
+        name: 'Scout the General (Balazarg)',
+        description: 'Travel to Balazarg\'s location and spend 1 action scouting.',
+        difficulty: 'Medium',
+        reward: 'Look through the Hero Card deck and take the first Red Card and add it to your hand. Then reshuffle the Hero Cards.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'scout_general',
+            generalName: 'Balazarg',
+            faction: 'red',
+            actionCost: 1,
+            failDiscard: false,
+            rewardType: 'scout_draw_card',
+            rewardValue: 'red'
+        }
+    });
+    
+    // Scout Gorgutt (Green / Orcs)
+    questDeck.push({
+        id: questId++,
+        name: 'Scout the General (Gorgutt)',
+        description: 'Travel to Gorgutt\'s location and spend 1 action scouting.',
+        difficulty: 'Medium',
+        reward: 'Look through the Hero Card deck and take the first Green Card and add it to your hand. Then reshuffle the Hero Cards.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'scout_general',
+            generalName: 'Gorgutt',
+            faction: 'green',
+            actionCost: 1,
+            failDiscard: false,
+            rewardType: 'scout_draw_card',
+            rewardValue: 'green'
+        }
+    });
+    
+    // Scout Sapphire (Blue / Dragonkin)
+    questDeck.push({
+        id: questId++,
+        name: 'Scout the General (Sapphire)',
+        description: 'Travel to Sapphire\'s location and spend 1 action scouting.',
+        difficulty: 'Medium',
+        reward: 'Look through the Hero Card deck and take the first Blue Card and add it to your hand. Then reshuffle the Hero Cards.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'scout_general',
+            generalName: 'Sapphire',
+            faction: 'blue',
+            actionCost: 1,
+            failDiscard: false,
+            rewardType: 'scout_draw_card',
+            rewardValue: 'blue'
+        }
+    });
+    
+    // Scout Varkolak (Black / Undead)
+    questDeck.push({
+        id: questId++,
+        name: 'Scout the General (Varkolak)',
+        description: 'Travel to Varkolak\'s location and spend 1 action scouting.',
+        difficulty: 'Medium',
+        reward: 'Look through the Hero Card deck and take the first Black Card and add it to your hand. Then reshuffle the Hero Cards.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'scout_general',
+            generalName: 'Varkolak',
+            faction: 'black',
+            actionCost: 1,
+            failDiscard: false,
+            rewardType: 'scout_draw_card',
+            rewardValue: 'black'
         }
     });
     

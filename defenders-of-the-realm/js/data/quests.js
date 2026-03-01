@@ -216,6 +216,25 @@ function createQuestDeck() {
         }
     });
     
+    // Raids — Defeat 1 of each minion type
+    questDeck.push({
+        id: questId++,
+        name: 'Raids',
+        description: 'Defeat 1 of each Minion: Dragonkin, Orc, Demon, and Undead. As you fulfill this quest, place each Minion you defeat onto this card for reference.',
+        difficulty: 'Medium',
+        reward: 'Discard this Quest Card to avoid drawing all Darkness Spreads Cards at the end of your turn.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'defeat_all_factions',
+            factionKills: { red: 0, green: 0, blue: 0, black: 0 },
+            requiredPerFaction: 1,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'raids_skip_darkness'
+        }
+    });
+    
     // King of the Gryphons
     questDeck.push({
         id: questId++,

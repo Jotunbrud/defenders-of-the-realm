@@ -723,6 +723,23 @@ Object.assign(game, {
         if (!quest || !quest.completed || quest.discarded) return;
         
         const m = quest.mechanic;
+        if (m.rewardType === 'use_quest_card_anytime' && m.rewardValue === 'raids_skip_darkness') {
+            // Confirm usage
+            this.showInfoModal('📜 Use Raids?', `
+                <div style="text-align:center;">
+                    <div style="font-size:2em;margin-bottom:10px;">⚔️</div>
+                    <div style="color:#d4af37;font-weight:bold;font-size:1.1em;margin-bottom:10px;">Discard ${quest.name}?</div>
+                    <div style="color:#999;font-size:0.9em;margin-bottom:15px;">This will skip ALL Darkness Spreads cards at the end of your current turn.</div>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn" style="flex:1;background:#666;" onclick="game.closeInfoModal()">Cancel</button>
+                        <button class="btn btn-primary" style="flex:1;" onclick="game.closeInfoModal(); game._confirmRaidsSkip(${heroIndex}, ${questIndex})">Confirm</button>
+                    </div>
+                </div>
+            `);
+            const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+            return;
+        }
         if (m.rewardType === 'use_quest_card_anytime' && m.rewardValue === 'gryphon_move_heroes') {
             this._startGryphonMoveHeroes(heroIndex, questIndex);
             return;
@@ -1341,6 +1358,24 @@ Object.assign(game, {
                     const clr = data.organized ? '#15803d' : '#8b7355';
                     progressHTML += `<div style="color:${clr};font-size:0.85em;padding:2px 0;">${emoji} ${loc} ${check}</div>`;
                 }
+                progressHTML += '</div>';
+            }
+            if (quest.mechanic.type === 'defeat_all_factions' && quest.mechanic.factionKills) {
+                const fk = quest.mechanic.factionKills;
+                const req = quest.mechanic.requiredPerFaction;
+                const factionInfo = [
+                    { color: 'blue', name: 'Dragonkin', emoji: '🔵' },
+                    { color: 'green', name: 'Orc', emoji: '🟢' },
+                    { color: 'red', name: 'Demon', emoji: '🔴' },
+                    { color: 'black', name: 'Undead', emoji: '⚫' }
+                ];
+                progressHTML = '<div style="margin-top:8px;">';
+                factionInfo.forEach(f => {
+                    const done = (fk[f.color] || 0) >= req;
+                    const check = done ? '✅' : '⬜';
+                    const clr = done ? '#15803d' : '#8b7355';
+                    progressHTML += `<div style="color:${clr};font-size:0.85em;padding:2px 0;">${f.emoji} ${f.name} ${check}</div>`;
+                });
                 progressHTML += '</div>';
             }
         }
@@ -2288,6 +2323,40 @@ Object.assign(game, {
         return locations;
     },
     
+    // ===== RAIDS QUEST: Skip Darkness =====
+    
+    _confirmRaidsSkip(heroIndex, questIndex) {
+        const hero = this.heroes[heroIndex];
+        const quest = hero.questCards[questIndex];
+        if (!quest || !quest.completed || quest.discarded) return;
+        
+        // Set the flag for darkness phase to check
+        this.raidsSkipDarkness = true;
+        this._raidsSkipQuestName = quest.name;
+        this._raidsSkipHeroName = hero.name;
+        this._raidsSkipHeroSymbol = hero.symbol;
+        
+        // Retire the quest card
+        this._retireQuest(hero, quest, 'Skipped Darkness Spreads');
+        this.updateDeckCounts();
+        
+        this.addLog(`📜 ${hero.name} uses ${quest.name} — Darkness Spreads cards will be skipped this turn!`);
+        
+        this.renderHeroes();
+        this.updateActionButtons();
+        
+        this.showInfoModal('📜 Raids Activated!', `
+            <div style="text-align:center;">
+                <div style="font-size:2em;margin-bottom:10px;">⚔️</div>
+                <div style="color:#4ade80;font-weight:bold;font-size:1.1em;margin-bottom:10px;">Darkness Spreads Skipped!</div>
+                <div style="color:#999;font-size:0.9em;">All Darkness Spreads cards will be skipped at the end of ${hero.name}'s turn.</div>
+                <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded.</div>
+            </div>
+        `, () => {
+            this._drawAndShowNewQuest(heroIndex);
+        });
+    },
+    
     // ===== KING OF THE GRYPHONS: Move 2 Heroes =====
     
     _startGryphonMoveHeroes(heroIndex, questIndex) {
@@ -3070,8 +3139,10 @@ Object.assign(game, {
             if (!hero.questCards) continue;
             hero.questCards.forEach(quest => {
                 if (quest.completed || quest.discarded) return;
-                if (!quest.mechanic || quest.mechanic.type !== 'defeat_faction_minions') return;
+                if (!quest.mechanic) return;
                 
+                // Single-faction hunter quests
+                if (quest.mechanic.type === 'defeat_faction_minions') {
                 const faction = quest.mechanic.faction;
                 const killed = colorResults.reduce((sum, cr) => {
                     return sum + (cr.color === faction ? cr.defeated : 0);
@@ -3111,6 +3182,49 @@ Object.assign(game, {
                     
                     this.renderHeroes();
                     this.updateActionButtons();
+                }
+                }
+                
+                // All-factions quest (Raids)
+                if (quest.mechanic.type === 'defeat_all_factions') {
+                    const fk = quest.mechanic.factionKills;
+                    const req = quest.mechanic.requiredPerFaction;
+                    let anyProgress = false;
+                    
+                    colorResults.forEach(cr => {
+                        if (cr.defeated > 0 && fk[cr.color] !== undefined && fk[cr.color] < req) {
+                            fk[cr.color] = Math.min(fk[cr.color] + cr.defeated, req);
+                            anyProgress = true;
+                        }
+                    });
+                    
+                    if (anyProgress) {
+                        const done = Object.values(fk).filter(v => v >= req).length;
+                        this.addLog(`📜 ${quest.name}: ${hero.name} — ${done}/4 factions defeated`);
+                        
+                        if (done >= 4 && !quest.completed) {
+                            quest.completed = true;
+                            this.addLog(`📜 ✅ ${hero.name} completed quest: ${quest.name}!`);
+                            const heroIndex = i;
+                            setTimeout(() => {
+                                this.showInfoModal('📜 Quest Complete!', `
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 2.5em; margin-bottom: 8px;">⚔️</div>
+                                        <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">${quest.name} Complete!</div>
+                                        <div style="color: #d4af37; margin-bottom: 8px;">All 4 faction minions defeated!</div>
+                                        <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
+                                            🏆 ${quest.reward}
+                                        </div>
+                                    </div>
+                                `, () => {
+                                    this._drawAndShowNewQuest(heroIndex);
+                                });
+                            }, 600);
+                        }
+                        
+                        this.renderHeroes();
+                        this.updateActionButtons();
+                    }
                 }
             });
         }

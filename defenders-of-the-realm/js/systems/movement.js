@@ -1046,6 +1046,9 @@ Object.assign(game, {
                 progressNote = ` (${done}/${total})`;
             } else if (q.mechanic?.type === 'defeat_faction_minions') {
                 progressNote = ` (${q.mechanic.currentKills || 0}/${q.mechanic.requiredKills})`;
+            } else if (q.mechanic?.type === 'defeat_all_factions' && q.mechanic.factionKills) {
+                const done = Object.values(q.mechanic.factionKills).filter(v => v >= (q.mechanic.requiredPerFaction || 1)).length;
+                progressNote = ` (${done}/4)`;
             } else if (q.mechanic?.type === 'scout_general') {
                 const gen = this.generals ? this.generals.find(g => g.name === q.mechanic.generalName) : null;
                 if (gen && !gen.defeated) {
@@ -1289,6 +1292,25 @@ Object.assign(game, {
                 progressHTML = `<div style="margin-top:8px;text-align:center;">
                     <div style="font-size:1.3em;letter-spacing:4px;">${pips}</div>
                     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">${current} / ${required} ${factionName} Defeated</div>
+                </div>`;
+            }
+            if (quest.mechanic.type === 'defeat_all_factions' && quest.mechanic.factionKills) {
+                const fk = quest.mechanic.factionKills;
+                const req = quest.mechanic.requiredPerFaction;
+                const factionInfo = [
+                    { color: 'blue', name: 'Dragonkin', emoji: '🔵' },
+                    { color: 'green', name: 'Orc', emoji: '🟢' },
+                    { color: 'red', name: 'Demon', emoji: '🔴' },
+                    { color: 'black', name: 'Undead', emoji: '⚫' }
+                ];
+                let pips = '';
+                factionInfo.forEach(f => {
+                    pips += (fk[f.color] || 0) >= req ? f.emoji : '⬜';
+                });
+                const done = Object.values(fk).filter(v => v >= req).length;
+                progressHTML = `<div style="margin-top:8px;text-align:center;">
+                    <div style="font-size:1.3em;letter-spacing:4px;">${pips}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">${done} / 4 Factions Defeated</div>
                 </div>`;
             }
             if (quest.mechanic.type === 'scout_general') {

@@ -843,6 +843,57 @@ Object.assign(game, {
     },
     
     drawNextDarknessCard() {
+        // Raids quest: skip ALL darkness cards this turn
+        if (this.raidsSkipDarkness) {
+            this.raidsSkipDarkness = false;
+            const questName = this._raidsSkipQuestName || 'Raids';
+            const heroName = this._raidsSkipHeroName || 'Hero';
+            const heroSymbol = this._raidsSkipHeroSymbol || '';
+            this._raidsSkipQuestName = null;
+            this._raidsSkipHeroName = null;
+            this._raidsSkipHeroSymbol = null;
+            
+            // Mark all cards as drawn so the button says "End Night Phase"
+            this.darknessCardsDrawn = this.darknessCardsToDraw;
+            this.darknessCardPhase = 'resolved';
+            
+            this.addLog(`📜 ${questName}: ${heroName} skipped all Darkness Spreads cards!`);
+            this.darknessAllEvents.push({ type: 'raids_skipped', description: `${questName} played by ${heroSymbol} ${heroName}` });
+            
+            // Show skip message in the end-of-turn modal
+            const content = document.getElementById('end-of-turn-content');
+            const btn = document.getElementById('end-of-turn-btn');
+            
+            if (content) {
+                const totalCards = this.darknessCardsToDraw;
+                const warLabel = this.warStatus === 'late' ? 'Late War (3 cards)' : (this.warStatus === 'mid' ? 'Mid War (2 cards)' : 'Early War (1 card)');
+                content.innerHTML = `
+                    ${this._stepIndicatorHTML(3)}
+                    <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">Step 3 — 🌙 Night</div>
+                    ${this._parchmentBoxOpen('Darkness Spreads')}
+                        <div style="padding:20px;text-align:center;">
+                            <div style="font-size:2em;margin-bottom:10px;">⚔️</div>
+                            <div style="color:#4ade80;font-weight:bold;font-size:1.1em;font-family:'Cinzel',Georgia,serif;margin-bottom:8px;">Raids — Darkness Skipped!</div>
+                            <div class="modal-desc-text" style="color:#3d2b1f;font-size:0.85em;margin-bottom:6px;">
+                                ${heroSymbol} ${heroName} played <strong>📜 ${questName}</strong>
+                            </div>
+                            <div class="modal-desc-text" style="color:#3d2b1f;font-size:0.8em;">
+                                ${totalCards} Darkness Spreads card${totalCards !== 1 ? 's' : ''} skipped (${warLabel})
+                            </div>
+                        </div>
+                    ${this._parchmentBoxClose()}
+                `;
+            }
+            
+            if (btn) {
+                btn.textContent = 'End Night Phase';
+                btn.className = 'phase-btn';
+                this._cleanupEndOfTurnButtons();
+            }
+            
+            return;
+        }
+        
         // Reset Wizard Wisdom flag - each new card position allows fresh use
         this.wizardWisdomRedraw = false;
         // Clear militia secured state for new card

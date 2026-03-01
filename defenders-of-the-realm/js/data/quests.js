@@ -216,6 +216,28 @@ function createQuestDeck() {
         }
     });
     
+    // King of the Gryphons
+    questDeck.push({
+        id: questId++,
+        name: 'King of the Gryphons',
+        description: "Travel to Gryphon Forest to request assistance from the Gryphon King. Spend 1 action and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.",
+        difficulty: 'Medium',
+        reward: 'Discard this Quest Card at any time to move up to 2 Heroes to any 2 locations. This move does not count as an action.',
+        effect: 'active',
+        completed: false,
+        location: 'Gryphon Forest',
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'gryphon_move_heroes'
+        }
+    });
+    
     // Duke Envoy
     questDeck.push({
         id: questId++,

@@ -549,6 +549,7 @@ Object.assign(game, {
             // Exclude context-dependent rewards (these have their own buttons in combat/darkness phase)
             if (canUse && quest.mechanic.rewardValue === 'combat_bonus_dice') canUse = false;
             if (canUse && quest.mechanic.rewardValue === 'block_general_advance') canUse = false;
+            if (canUse && quest.mechanic.rewardValue && quest.mechanic.rewardValue.startsWith('block_minion_placement')) canUse = false;
             // If requirePresence, check hero is on a valid location
             if (canUse && quest.mechanic.requirePresence && quest.mechanic.rewardValue === 'remove_taint') {
                 const hero = this.heroes[heroIndex];
@@ -561,6 +562,8 @@ Object.assign(game, {
                 if (quest.mechanic.rewardValue === 'combat_bonus_dice') {
                     contextHint = '<div style="color: #d4af37; font-size: 0.8em; margin-top: 4px;">⚔️ Used automatically before combat rolls</div>';
                 } else if (quest.mechanic.rewardValue === 'block_general_advance') {
+                    contextHint = '<div style="color: #d4af37; font-size: 0.8em; margin-top: 4px;">🌙 Used during Darkness Spreads phase</div>';
+                } else if (quest.mechanic.rewardValue && quest.mechanic.rewardValue.startsWith('block_minion_placement')) {
                     contextHint = '<div style="color: #d4af37; font-size: 0.8em; margin-top: 4px;">🌙 Used during Darkness Spreads phase</div>';
                 }
             }
@@ -720,6 +723,10 @@ Object.assign(game, {
         if (!quest || !quest.completed || quest.discarded) return;
         
         const m = quest.mechanic;
+        if (m.rewardType === 'use_quest_card_anytime' && m.rewardValue === 'gryphon_move_heroes') {
+            this._startGryphonMoveHeroes(heroIndex, questIndex);
+            return;
+        }
         if (m.rewardType === 'use_quest_card_anytime' && m.rewardValue === 'remove_taint') {
             // Find all tainted locations
             let taintedLocations = Object.keys(this.taintCrystals).filter(loc => this.taintCrystals[loc] > 0);
@@ -2279,6 +2286,292 @@ Object.assign(game, {
             }
         }
         return locations;
+    },
+    
+    // ===== KING OF THE GRYPHONS: Move 2 Heroes =====
+    
+    _startGryphonMoveHeroes(heroIndex, questIndex) {
+        const hero = this.heroes[heroIndex];
+        const quest = hero.questCards[questIndex];
+        
+        this._gryphonState = {
+            heroIndex,
+            questIndex,
+            quest,
+            questHeroName: hero.name,
+            movesTotal: 2,
+            movesRemaining: 2,
+            results: [] // { heroName, heroSymbol, from, to }
+        };
+        
+        this._gryphonShowHeroPicker();
+    },
+    
+    _gryphonShowHeroPicker() {
+        const state = this._gryphonState;
+        if (!state) return;
+        
+        state._selectedHero = null;
+        
+        let heroesHTML = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+        this.heroes.forEach((hero, i) => {
+            if (hero.health <= 0) return;
+            heroesHTML += `
+                <div id="gryph-hero-${i}" onclick="game._gryphonSelectHero(${i})"
+                     style="border: 3px solid ${hero.color}; cursor: pointer; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.3); transition: all 0.2s; display: flex; align-items: center; gap: 12px;"
+                     onmouseover="if(!this.classList.contains('gryph-selected')) this.style.background='rgba(255,255,255,0.1)'"
+                     onmouseout="if(!this.classList.contains('gryph-selected')) this.style.background='rgba(0,0,0,0.3)'">
+                    <div style="font-size: 2em;">${hero.symbol}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold; color: ${hero.color}; font-size: 1.1em;">${hero.name}</div>
+                        <div style="font-size: 0.85em; color: #999;">Currently at: ${hero.location}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.85em; color: #ef4444;">❤️ ${hero.health}/${hero.maxHealth}</div>
+                    </div>
+                </div>
+            `;
+        });
+        heroesHTML += '</div>';
+        
+        const moveNum = state.movesTotal - state.movesRemaining + 1;
+        const contentHTML = `
+            <div style="color: #d4af37; margin-bottom: 12px;">
+                Using: <strong style="color: #ef4444;">📜 ${state.quest.name}</strong>
+            </div>
+            <div style="color: #a78bfa; margin-bottom: 10px;">Select hero ${moveNum} of ${state.movesTotal} to move:</div>
+            ${heroesHTML}
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn" style="flex: 1; background: #666;" onclick="game._gryphonFinishEarly()">
+                    ${state.results.length > 0 ? 'Finish' : 'Cancel'}
+                </button>
+                <button id="gryph-confirm-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game._gryphonConfirmHero()">Confirm Hero</button>
+            </div>
+        `;
+        
+        this.showInfoModal('📜 ' + state.quest.name, contentHTML);
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv && !defaultBtnDiv.querySelector('#gryph-confirm-btn')) defaultBtnDiv.style.display = 'none';
+    },
+    
+    _gryphonSelectHero(heroIdx) {
+        const state = this._gryphonState;
+        if (!state) return;
+        
+        state._selectedHero = heroIdx;
+        
+        // Clear all selections
+        this.heroes.forEach((h, i) => {
+            const el = document.getElementById(`gryph-hero-${i}`);
+            if (el) {
+                el.classList.remove('gryph-selected');
+                el.style.background = 'rgba(0,0,0,0.3)';
+                el.style.borderColor = h.color;
+            }
+        });
+        
+        // Highlight selected
+        const selected = document.getElementById(`gryph-hero-${heroIdx}`);
+        if (selected) {
+            selected.classList.add('gryph-selected');
+            selected.style.background = 'rgba(255,215,0,0.2)';
+            selected.style.borderColor = '#d4af37';
+        }
+        
+        // Enable confirm button
+        const btn = document.getElementById('gryph-confirm-btn');
+        if (btn) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.style.background = '';
+            btn.className = 'btn btn-primary';
+        }
+    },
+    
+    _gryphonConfirmHero() {
+        const state = this._gryphonState;
+        if (!state || state._selectedHero == null) return;
+        
+        const targetHeroIndex = state._selectedHero;
+        const targetHero = this.heroes[targetHeroIndex];
+        
+        // Store for click handler
+        state._currentTargetHeroIndex = targetHeroIndex;
+        
+        this.closeInfoModal();
+        
+        // All locations except target hero's current location
+        const allLocations = [];
+        for (let [locName] of Object.entries(this.locationCoords)) {
+            if (locName !== targetHero.location) {
+                allLocations.push(locName);
+            }
+        }
+        
+        // Open map if not already open
+        const mapModal = document.getElementById('map-modal');
+        if (!mapModal.classList.contains('active')) {
+            mapModal.classList.add('active');
+            this.updateMapStatus();
+            this.updateMovementButtons();
+            this.updateActionButtons();
+        }
+        
+        // Set movement state
+        this.activeMovement = {
+            cardIndex: -1,
+            movementType: 'King of the Gryphons',
+            maxMoves: 1,
+            movesRemaining: 1,
+            startLocation: targetHero.location,
+            cardUsed: null,
+            validDestinations: allLocations,
+            isGryphonMove: true
+        };
+        
+        // Disable map dragging
+        const boardContainer = document.getElementById('board-container');
+        if (boardContainer) {
+            boardContainer.style.cursor = 'default';
+            boardContainer.style.pointerEvents = 'none';
+        }
+        const svg = document.getElementById('game-map');
+        if (svg) svg.style.pointerEvents = 'auto';
+        
+        this.showMovementIndicator();
+        this.highlightMagicGateLocations(allLocations);
+        
+        // Update indicator text
+        const indicator = document.getElementById('movement-indicator');
+        if (indicator) {
+            indicator.innerHTML = `<span style="color: #ffd700;">📜 ${state.quest.name}</span> — Select destination for ${targetHero.symbol} ${targetHero.name}<br><span style="font-size: 0.85em;">Move ${state.movesTotal - state.movesRemaining + 1} of ${state.movesTotal}</span>`;
+        }
+    },
+    
+    _gryphonLocationSelected(locationName) {
+        const state = this._gryphonState;
+        if (!state) return;
+        
+        const targetHeroIndex = state._currentTargetHeroIndex;
+        const targetHero = this.heroes[targetHeroIndex];
+        const oldLocation = targetHero.location;
+        
+        // Move the hero
+        targetHero.location = locationName;
+        state.movesRemaining--;
+        
+        state.results.push({
+            heroName: targetHero.name,
+            heroSymbol: targetHero.symbol,
+            from: oldLocation,
+            to: locationName
+        });
+        
+        this.addLog(`📜 ${state.quest.name}: ${targetHero.name} moved from ${oldLocation} to ${locationName}`);
+        
+        // Clean up movement state
+        this.activeMovement = null;
+        document.querySelectorAll('.location-highlight').forEach(el => el.remove());
+        const indicator = document.getElementById('movement-indicator');
+        if (indicator) indicator.remove();
+        
+        const boardContainer = document.getElementById('board-container');
+        if (boardContainer) {
+            boardContainer.style.cursor = 'grab';
+            boardContainer.style.pointerEvents = 'auto';
+        }
+        
+        // Update display
+        this.renderTokens();
+        this.renderHeroes();
+        this.updateMapStatus();
+        this.updateMovementButtons();
+        this.updateActionButtons();
+        
+        // If moves remain, show hero picker again
+        if (state.movesRemaining > 0) {
+            this._gryphonShowHeroPicker();
+        } else {
+            this._finishGryphonMove();
+        }
+    },
+    
+    _gryphonFinishEarly() {
+        const state = this._gryphonState;
+        if (!state) return;
+        
+        this.closeInfoModal();
+        
+        if (state.results.length === 0) {
+            // Cancel — no moves made, don't consume quest
+            this._gryphonState = null;
+            return;
+        }
+        
+        this._finishGryphonMove();
+    },
+    
+    _finishGryphonMove() {
+        const state = this._gryphonState;
+        if (!state) return;
+        
+        // Clean up
+        this.activeMovement = null;
+        document.querySelectorAll('.location-highlight').forEach(el => el.remove());
+        const indicator = document.getElementById('movement-indicator');
+        if (indicator) indicator.remove();
+        
+        const boardContainer = document.getElementById('board-container');
+        if (boardContainer) {
+            boardContainer.style.cursor = 'grab';
+            boardContainer.style.pointerEvents = 'auto';
+        }
+        
+        // Retire the quest card
+        const hero = this.heroes[state.heroIndex];
+        const quest = state.quest;
+        this._retireQuest(hero, quest, 'Gryphon King moved heroes');
+        this.updateDeckCounts();
+        
+        // Build results
+        let resultsHTML = '';
+        state.results.forEach(r => {
+            resultsHTML += `<div style="margin:6px 0;padding:8px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;border-radius:6px;">
+                <strong style="color:#d4af37;">${r.heroSymbol} ${r.heroName}</strong>
+                <span style="color:#999;"> moved from </span>
+                <span style="color:#ef4444;">${r.from}</span>
+                <span style="color:#999;"> → </span>
+                <span style="color:#4ade80;">${r.to}</span>
+            </div>`;
+        });
+        
+        const unused = state.movesRemaining;
+        this.addLog(`📜 ${state.quest.name}: ${state.results.length} hero${state.results.length !== 1 ? 'es' : ''} moved! (No action used)`);
+        
+        this.renderMap();
+        this.renderTokens();
+        this.renderHeroes();
+        this.updateGameStatus();
+        this.updateMovementButtons();
+        this.updateActionButtons();
+        
+        const heroIndex = state.heroIndex;
+        this._gryphonState = null;
+        
+        this.showInfoModal('📜 King of the Gryphons — Complete!', `
+            <div style="text-align:center;">
+                <div style="font-size:2em;margin-bottom:10px;">🦅</div>
+                <div style="color:#16a34a;font-size:1.1em;font-weight:bold;margin-bottom:10px;">
+                    ${state.results.length} hero${state.results.length !== 1 ? 'es' : ''} moved!
+                </div>
+                ${resultsHTML}
+                ${unused > 0 ? `<div style="color:#999;font-size:0.85em;margin-top:8px;">${unused} move${unused !== 1 ? 's' : ''} unused</div>` : ''}
+                <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded — No action used</div>
+            </div>
+        `, () => {
+            this._drawAndShowNewQuest(heroIndex);
+        });
     },
     
     // ===== AMAZON ENVOY QUEST: Sweep Picker =====

@@ -410,6 +410,19 @@ Object.assign(game, {
             return true;
         }
         
+        // Gryphon Move: move selected hero to clicked location
+        if (this.activeMovement.isGryphonMove) {
+            if (!this.activeMovement.validDestinations || !this.activeMovement.validDestinations.includes(locationName)) {
+                console.log(`[MOVEMENT] ❌ Not a valid Gryphon Move destination`);
+                return false;
+            }
+            
+            if (!this._gryphonState) return false;
+            
+            this._gryphonLocationSelected(locationName);
+            return true;
+        }
+        
         // Amazon Envoy: open minion picker at clicked location
         if (this.activeMovement.isAmazonEnvoy) {
             if (!this.activeMovement.validDestinations || !this.activeMovement.validDestinations.includes(locationName)) {
@@ -666,6 +679,18 @@ Object.assign(game, {
         // Special handling for Amazon Envoy - quest already consumed, finish with results so far
         if (this.activeMovement.isAmazonEnvoy && this._amazonEnvoyState) {
             this._finishAmazonEnvoy();
+            return;
+        }
+        
+        // Special handling for Gryphon Move - finish with moves made so far
+        if (this.activeMovement.isGryphonMove && this._gryphonState) {
+            if (this._gryphonState.results.length > 0) {
+                this._finishGryphonMove();
+            } else {
+                // No moves made, just cancel
+                this._gryphonState = null;
+                this.clearMovementMode();
+            }
             return;
         }
         

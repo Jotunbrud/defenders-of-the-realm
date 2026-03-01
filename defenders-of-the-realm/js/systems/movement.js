@@ -1109,9 +1109,8 @@ Object.assign(game, {
                 <div class="hero-banner-name">🌟 ${card.name}</div>
             </div>`;
             bodyHTML = `
-                <div style="margin:8px 0;padding:8px 10px;background:rgba(109,40,168,0.1);border:1.5px solid #6d28a8;border-radius:6px;">
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.9em;color:#6d28a8;text-align:center;margin-bottom:4px;">Special</div>
-                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;">${card.description || 'Special ability'}</div>
+                <div style="margin:8px 0;padding:4px 10px;">
+                    <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a;">Special:</strong> <span style="font-family:'Comic Sans MS',cursive;">${card.description || 'Special ability'}</span></div>
                 </div>
                 <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
                     <div class="modal-general-token" style="background:${diceColorObj.dice}">${general.icon}</div>

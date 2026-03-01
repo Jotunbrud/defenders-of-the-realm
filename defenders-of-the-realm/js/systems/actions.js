@@ -287,31 +287,32 @@ Object.assign(game, {
             optionsHTML += `
                 <div id="rumors-color-${opt.color}" 
                      onclick="game._rumorsSelectColor('${opt.color}')"
-                     style="border: 3px solid ${opt.hex}; cursor: pointer; padding: 14px; border-radius: 8px; background: rgba(0,0,0,0.3); transition: all 0.2s; text-align: center;"
-                     onmouseover="if(!this.classList.contains('rum-selected')) this.style.background='rgba(255,255,255,0.1)'"
-                     onmouseout="if(!this.classList.contains('rum-selected')) this.style.background='rgba(0,0,0,0.3)'">
+                     style="border: 3px solid ${opt.hex}; cursor: pointer; padding: 14px; border-radius: 8px; background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); transition: all 0.2s; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
+                     onmouseover="if(!this.classList.contains('rum-selected')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)'"
+                     onmouseout="if(!this.classList.contains('rum-selected')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.3)'">
                     <div style="font-size: 1.5em;">${opt.icon}</div>
-                    <div style="color: ${opt.hex}; font-weight: bold; margin-top: 4px;">${opt.label}</div>
-                    <div style="color: #999; font-size: 0.85em;">${opt.color.toUpperCase()}</div>
+                    <div style="color: ${opt.hex}; font-weight: bold; margin-top: 4px; font-family:'Cinzel',Georgia,serif;">${opt.label}</div>
+                    <div style="color: #6b5b4a; font-size: 0.85em;">${opt.color.toUpperCase()}</div>
                 </div>
             `;
         });
         optionsHTML += '</div>';
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 2em; margin-bottom: 5px;">🍺</div>
-                <div style="color: #d4af37;">Choose a color — you will draw 2 cards and keep all that match this color, plus any Special cards. Non-matching cards are discarded.</div>
+            <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 10px;">
+                Choose a color — you will draw 2 cards and keep all that match this color, plus any Special cards. Non-matching cards are discarded.
             </div>
             ${optionsHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game._rumorsSelectedColor = null; game.closeInfoModal()">Cancel</button>
-                <button id="rumors-confirm-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game._rumorsConfirmColor()">Confirm</button>
+            <div id="rumors-confirm-btn-row" style="display: none;">
+                <button id="rumors-confirm-btn" class="phase-btn" onclick="game._rumorsConfirmColor()">Confirm</button>
             </div>
+            <button class="phase-btn" onclick="game._rumorsSelectedColor = null; game.closeInfoModal()">Continue</button>
         `;
         
         this._rumorsSelectedColor = null;
         this.showInfoModal('🍺 Rumors at the Inn', contentHTML);
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#rumors-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -324,7 +325,8 @@ Object.assign(game, {
             const el = document.getElementById(`rumors-color-${c}`);
             if (el) {
                 el.classList.remove('rum-selected');
-                el.style.background = 'rgba(0,0,0,0.3)';
+                el.style.borderColor = '';
+                el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
             }
         });
         
@@ -332,19 +334,13 @@ Object.assign(game, {
         const selected = document.getElementById(`rumors-color-${color}`);
         if (selected) {
             selected.classList.add('rum-selected');
-            selected.style.background = 'rgba(255,215,0,0.2)';
             selected.style.borderColor = '#d4af37';
+            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';
         }
         
-        // Enable confirm button
-        const btn = document.getElementById('rumors-confirm-btn');
-        if (btn) {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.style.cursor = 'pointer';
-            btn.style.background = '';
-            btn.className = 'btn btn-primary';
-        }
+        // Show confirm button
+        const btnRow = document.getElementById('rumors-confirm-btn-row');
+        if (btnRow) btnRow.style.display = 'block';
     },
     
     _rumorsConfirmColor() {
@@ -417,13 +413,12 @@ Object.assign(game, {
         const cardColorMap = { red: '#dc2626', blue: '#2563eb', green: '#16a34a', black: '#1f2937' };
         
         const renderCard = (c, badge) => {
-            const borderColor = c.special ? '#9333ea' : (cardColorMap[c.color] || '#8B7355');
-            const bgColor = c.special ? 'rgba(147,51,234,0.15)' : 'rgba(0,0,0,0.3)';
-            return `<div style="border: 2px solid ${borderColor}; background: ${bgColor}; border-radius: 6px; padding: 8px 10px; display: flex; align-items: center; gap: 8px;">
+            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[c.color] || '#8B7355', text: cardColorMap[c.color] || '#8B7355' };
+            return `<div style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid ${cc.border}; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
                 <span style="font-size: 1.3em;">${c.icon || '🃏'}</span>
                 <div style="flex: 1;">
-                    <div style="font-weight: bold; color: ${borderColor}; font-size: 0.95em;">${c.name}</div>
-                    <div style="font-size: 0.8em; color: #999;">${c.special ? '🌟 Special' : c.type} · ${c.dice} ${c.dice === 1 ? 'die' : 'dice'}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.8em; color:${cc.text};">${c.name}</div>
+                    <div style="font-size: 0.75em; color: #6b5b4a;">${c.special ? '🌟 Special' : c.type} · ${c.dice} ${c.dice === 1 ? 'die' : 'dice'}</div>
                 </div>
                 ${badge}
             </div>`;
@@ -433,30 +428,31 @@ Object.assign(game, {
         
         kept.forEach(k => {
             const badge = k.reason === 'special' 
-                ? '<span style="color: #9333ea; font-weight: bold; font-size: 0.85em;">✓ KEPT (Special)</span>'
-                : `<span style="color: ${chosenHex}; font-weight: bold; font-size: 0.85em;">✓ KEPT</span>`;
+                ? '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #6d28a8; font-size: 0.75em;">✓ KEPT</span>'
+                : `<span style="font-family:'Cinzel',Georgia,serif; font-weight:900; color: #15803d; font-size: 0.75em;">✓ KEPT</span>`;
             cardsResultHTML += renderCard(k.card, badge);
         });
         
         discarded.forEach(c => {
-            cardsResultHTML += renderCard(c, '<span style="color: #ef4444; font-weight: bold; font-size: 0.85em;">✗ Discarded</span>');
+            cardsResultHTML += renderCard(c, '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #b91c1c; font-size: 0.75em;">✗ Discarded</span>');
         });
         
         cardsResultHTML += '</div>';
         
         const summaryHTML = `
-            <div style="text-align: center; margin-bottom: 12px;">
-                <div style="font-size: 2em; margin-bottom: 5px;">🍺</div>
-                <div style="color: #d4af37; margin-bottom: 4px;">Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong></div>
-                <div style="color: #4ade80; font-size: 0.95em;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</div>
+            <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
+                Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong><br>
+                <span style="color: #d4af37;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</span>
             </div>
             ${cardsResultHTML}
-            <div style="color: #d97706; margin-top: 12px; font-size: 0.9em; text-align: center;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
+            <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
         `;
         
         this._rumorsSelectedColor = null;
         
         this.showInfoModal('🍺 Rumors — Results', summaryHTML);
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
     },
     
     // Rogue Crafty: Draw 5 cards at Inn, keep matching color + specials (like Local Information)
@@ -506,31 +502,32 @@ Object.assign(game, {
             optionsHTML += `
                 <div id="crafty-color-${opt.color}" 
                      onclick="game._craftySelectColor('${opt.color}')"
-                     style="border: 3px solid ${opt.hex}; cursor: pointer; padding: 14px; border-radius: 8px; background: rgba(0,0,0,0.3); transition: all 0.2s; text-align: center;"
-                     onmouseover="if(!this.classList.contains('crf-selected')) this.style.background='rgba(255,255,255,0.1)'"
-                     onmouseout="if(!this.classList.contains('crf-selected')) this.style.background='rgba(0,0,0,0.3)'">
+                     style="border: 3px solid ${opt.hex}; cursor: pointer; padding: 14px; border-radius: 8px; background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); transition: all 0.2s; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
+                     onmouseover="if(!this.classList.contains('crf-selected')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)'"
+                     onmouseout="if(!this.classList.contains('crf-selected')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.3)'">
                     <div style="font-size: 1.5em;">${opt.icon}</div>
-                    <div style="color: ${opt.hex}; font-weight: bold; margin-top: 4px;">${opt.label}</div>
-                    <div style="color: #999; font-size: 0.85em;">${opt.color.toUpperCase()}</div>
+                    <div style="color: ${opt.hex}; font-weight: bold; margin-top: 4px; font-family:'Cinzel',Georgia,serif;">${opt.label}</div>
+                    <div style="color: #6b5b4a; font-size: 0.85em;">${opt.color.toUpperCase()}</div>
                 </div>
             `;
         });
         optionsHTML += '</div>';
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 2em; margin-bottom: 5px;">🗡️</div>
-                <div style="color: #d4af37;">Choose a color — you will draw <strong>5 cards</strong> and keep all that match this color, plus any Special cards. Non-matching cards are discarded.</div>
+            <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 10px;">
+                Choose a color — you will draw <strong>5 cards</strong> and keep all that match this color, plus any Special cards. Non-matching cards are discarded.
             </div>
             ${optionsHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game._craftySelectedColor = null; game.closeInfoModal()">Cancel</button>
-                <button id="crafty-confirm-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game._craftyConfirmColor()">Confirm</button>
+            <div id="crafty-confirm-btn-row" style="display: none;">
+                <button id="crafty-confirm-btn" class="phase-btn" onclick="game._craftyConfirmColor()">Confirm</button>
             </div>
+            <button class="phase-btn" onclick="game._craftySelectedColor = null; game.closeInfoModal()">Continue</button>
         `;
         
         this._craftySelectedColor = null;
         this.showInfoModal('🗡️ Crafty', contentHTML);
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#crafty-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -542,25 +539,20 @@ Object.assign(game, {
             const el = document.getElementById(`crafty-color-${c}`);
             if (el) {
                 el.classList.remove('crf-selected');
-                el.style.background = 'rgba(0,0,0,0.3)';
+                el.style.borderColor = '';
+                el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
             }
         });
         
         const selected = document.getElementById(`crafty-color-${color}`);
         if (selected) {
             selected.classList.add('crf-selected');
-            selected.style.background = 'rgba(124,58,237,0.2)';
-            selected.style.borderColor = '#a78bfa';
+            selected.style.borderColor = '#d4af37';
+            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';
         }
         
-        const btn = document.getElementById('crafty-confirm-btn');
-        if (btn) {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.style.cursor = 'pointer';
-            btn.style.background = '';
-            btn.className = 'btn btn-primary';
-        }
+        const btnRow = document.getElementById('crafty-confirm-btn-row');
+        if (btnRow) btnRow.style.display = 'block';
     },
     
     _craftyConfirmColor() {
@@ -633,13 +625,12 @@ Object.assign(game, {
         const cardColorMap = { red: '#dc2626', blue: '#2563eb', green: '#16a34a', black: '#1f2937' };
         
         const renderCard = (c, badge) => {
-            const borderColor = c.special ? '#9333ea' : (cardColorMap[c.color] || '#8B7355');
-            const bgColor = c.special ? 'rgba(147,51,234,0.15)' : 'rgba(0,0,0,0.3)';
-            return `<div style="border: 2px solid ${borderColor}; background: ${bgColor}; border-radius: 6px; padding: 8px 10px; display: flex; align-items: center; gap: 8px;">
+            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[c.color] || '#8B7355', text: cardColorMap[c.color] || '#8B7355' };
+            return `<div style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid ${cc.border}; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
                 <span style="font-size: 1.3em;">${c.icon || '🃏'}</span>
                 <div style="flex: 1;">
-                    <div style="font-weight: bold; color: ${borderColor}; font-size: 0.95em;">${c.name}</div>
-                    <div style="font-size: 0.8em; color: #999;">${c.special ? '🌟 Special' : c.type} · ${c.dice} ${c.dice === 1 ? 'die' : 'dice'}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.8em; color:${cc.text};">${c.name}</div>
+                    <div style="font-size: 0.75em; color: #6b5b4a;">${c.special ? '🌟 Special' : c.type} · ${c.dice} ${c.dice === 1 ? 'die' : 'dice'}</div>
                 </div>
                 ${badge}
             </div>`;
@@ -649,30 +640,31 @@ Object.assign(game, {
         
         kept.forEach(k => {
             const badge = k.reason === 'special' 
-                ? '<span style="color: #9333ea; font-weight: bold; font-size: 0.85em;">✓ KEPT (Special)</span>'
-                : `<span style="color: ${chosenHex}; font-weight: bold; font-size: 0.85em;">✓ KEPT</span>`;
+                ? '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #6d28a8; font-size: 0.75em;">✓ KEPT</span>'
+                : `<span style="font-family:'Cinzel',Georgia,serif; font-weight:900; color: #15803d; font-size: 0.75em;">✓ KEPT</span>`;
             cardsResultHTML += renderCard(k.card, badge);
         });
         
         discarded.forEach(c => {
-            cardsResultHTML += renderCard(c, '<span style="color: #ef4444; font-weight: bold; font-size: 0.85em;">✗ Discarded</span>');
+            cardsResultHTML += renderCard(c, '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #b91c1c; font-size: 0.75em;">✗ Discarded</span>');
         });
         
         cardsResultHTML += '</div>';
         
         const summaryHTML = `
-            <div style="text-align: center; margin-bottom: 12px;">
-                <div style="font-size: 2em; margin-bottom: 5px;">🗡️</div>
-                <div style="color: #d4af37; margin-bottom: 4px;">Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong></div>
-                <div style="color: #4ade80; font-size: 0.95em;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</div>
+            <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
+                Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong><br>
+                <span style="color: #d4af37;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</span>
             </div>
             ${cardsResultHTML}
-            <div style="color: #a78bfa; margin-top: 12px; font-size: 0.9em; text-align: center;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
+            <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
         `;
         
         this._craftySelectedColor = null;
         
         this.showInfoModal('🗡️ Crafty — Results', summaryHTML);
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
     },
     
     showRumorsModal(card1, card2) {

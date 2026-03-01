@@ -222,35 +222,46 @@ Object.assign(game, {
         specialCards.forEach(({ hero, heroIndex, card, cardIndex }, i) => {
             cardsHTML += `
                 <div id="special-card-option-${i}" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})"
-                     style="border: 3px solid #9333ea; cursor: pointer; padding: 12px; border-radius: 8px; background: rgba(147,51,234,0.1); transition: all 0.2s; display: flex; align-items: center; gap: 12px;"
-                     onmouseover="if(!this.classList.contains('selected-special')) this.style.background='rgba(147,51,234,0.25)'" 
-                     onmouseout="if(!this.classList.contains('selected-special')) this.style.background='rgba(147,51,234,0.1)'">
-                    <div style="font-size: 2em;">${card.icon || '💫'}</div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: bold; color: #9333ea; font-size: 1.1em;">${card.name}</div>
-                        <div style="font-size: 0.85em; color: #d4af37; margin-top: 2px;">${card.description || card.type}</div>
-                        <div style="font-size: 0.85em; color: #999; margin-top: 2px;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'} vs ${card.color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[card.color] || 'Any')} in combat</div>
+                     style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid #8b7355; border-radius: 10px; cursor: pointer; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3); transition: all 0.2s;"
+                     onmouseover="if(!this.classList.contains('selected-special')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(139,115,85,0.3)'"
+                     onmouseout="if(!this.classList.contains('selected-special')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)'">
+                    <div style="background: linear-gradient(135deg, #7e22cecc 0%, #6b21a899 100%); padding: 5px 14px; border-bottom: 2px solid #8b7355; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                        <div class="hero-banner-name" style="font-size: 0.85em;">${card.icon || '💫'} ${card.name}</div>
+                        <div style="font-size: 0.78em; color: #f0e6d3; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">${hero.symbol} ${hero.name}</div>
                     </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 0.85em; color: #a78bfa;">${hero.symbol} ${hero.name}</div>
+                    <div style="padding: 10px 14px;">
+                        <div class="modal-desc-text" style="font-size: 0.8em; color: #3d2b1f; line-height: 1.5;">${card.description || card.type}</div>
+                        <div style="margin-top: 4px;">
+                            <span style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.75em; color:#6b21a8;">Combat:</span>
+                            <span class="modal-desc-text" style="font-size:0.78em; color:#3d2b1f;"> ${card.dice} ${card.dice === 1 ? 'die' : 'dice'} vs ${card.color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[card.color] || 'Any')}</span>
+                        </div>
                     </div>
                 </div>
             `;
         });
         cardsHTML += '</div>';
         
+        const modalTitle = '🌟 Special Cards';
         const contentHTML = `
-            <div style="color: #d4af37; margin-bottom: 12px;">
+            <div class="modal-heading" style="font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
                 Special cards can be played at any time without using an action. Select a card:
             </div>
             ${cardsHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game.closeInfoModal()">Cancel</button>
-                <button id="use-special-card-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmSpecialCard()">Use Card</button>
+            <div id="use-special-card-btn-row" style="display: none;">
+                <button id="use-special-card-btn" class="phase-btn" style="background: linear-gradient(135deg, #7e22ce, #581c87); border-color: #9333ea; color: #fff;" onclick="game.confirmSpecialCard()">✨ Use Card</button>
             </div>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
         
-        this.showInfoModal('🌟 Special Cards', contentHTML);
+        this.showInfoModal(modalTitle, contentHTML);
+        // Style title to match end-of-turn modal heading
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) {
+            titleEl.className = 'modal-heading';
+            titleEl.style.textAlign = 'center';
+            titleEl.style.fontSize = '1.15em';
+            titleEl.style.marginBottom = '12px';
+        }
         // Hide the default Continue button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#use-special-card-btn')) defaultBtnDiv.style.display = 'none';
@@ -262,26 +273,22 @@ Object.assign(game, {
         // Clear all selections
         document.querySelectorAll('#special-cards-list > div').forEach(el => {
             el.classList.remove('selected-special');
-            el.style.background = 'rgba(147,51,234,0.1)';
-            el.style.borderColor = '#9333ea';
+            el.style.borderColor = '#8b7355';
+            el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)';
         });
         
         // Highlight selected
         const selected = document.getElementById(`special-card-option-${displayIndex}`);
         if (selected) {
             selected.classList.add('selected-special');
-            selected.style.background = 'rgba(255,215,0,0.2)';
             selected.style.borderColor = '#d4af37';
+            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(212,175,55,0.3)';
         }
         
-        // Enable Use Card button
-        const useBtn = document.getElementById('use-special-card-btn');
-        if (useBtn) {
-            useBtn.disabled = false;
-            useBtn.style.opacity = '1';
-            useBtn.style.cursor = 'pointer';
-            useBtn.style.background = '';
-            useBtn.className = 'btn btn-primary';
+        // Show Use Card button
+        const useBtnRow = document.getElementById('use-special-card-btn-row');
+        if (useBtnRow) {
+            useBtnRow.style.display = 'block';
         }
     },
     
@@ -402,9 +409,12 @@ Object.assign(game, {
         activeQuests.forEach(({ hero, heroIndex, quest, questIndex }, i) => {
             const statusIcon = quest.completed ? '✅' : '⏳';
             const statusText = quest.completed ? 'COMPLETED' : 'In Progress';
-            const statusColor = quest.completed ? '#4ade80' : '#ef4444';
-            const borderColor = quest.completed ? '#4ade80' : '#dc2626';
-            const bgColor = quest.completed ? 'rgba(74,222,128,0.1)' : 'rgba(220,38,38,0.1)';
+            let statusBg, statusBorder, statusColor;
+            if (quest.completed) {
+                statusBg = 'rgba(22,163,74,0.15)'; statusBorder = '#16a34a'; statusColor = '#15803d';
+            } else {
+                statusBg = 'rgba(202,138,4,0.15)'; statusBorder = '#ca8a04'; statusColor = '#a16207';
+            }
             let locationText = quest.location ? `📍 ${quest.location}` : '';
             
             // Multi-location progress (Rumors, Organize Militia)
@@ -413,16 +423,16 @@ Object.assign(game, {
                 locationText = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
                     const emoji = colorEmojis[data.color] || '⭕';
                     const check = data.visited ? '✅' : '⬜';
-                    const color = data.visited ? '#4ade80' : '#999';
-                    return `<span style="color: ${color};">${emoji} ${loc} ${check}</span>`;
+                    const clr = data.visited ? '#15803d' : '#8b7355';
+                    return `<span style="color: ${clr};">${emoji} ${loc} ${check}</span>`;
                 }).join(' &nbsp;');
             }
             if (!quest.completed && quest.mechanic && quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
                 locationText = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
                     const emoji = colorEmojis[data.color] || '⭕';
                     const check = data.organized ? '✅' : '⬜';
-                    const color = data.organized ? '#4ade80' : '#999';
-                    return `<span style="color: ${color};">${emoji} ${loc} ${check}</span>`;
+                    const clr = data.organized ? '#15803d' : '#8b7355';
+                    return `<span style="color: ${clr};">${emoji} ${loc} ${check}</span>`;
                 }).join(' &nbsp;');
             }
             if (quest.mechanic && quest.mechanic.type === 'build_gate_red' && !quest.completed) {
@@ -431,21 +441,24 @@ Object.assign(game, {
             
             cardsHTML += `
                 <div id="quest-card-option-${i}" onclick="game.selectQuestCard(${i}, ${heroIndex}, ${questIndex})"
-                     data-border-color="${borderColor}" data-bg-color="${bgColor}"
-                     style="border: 3px solid ${borderColor}; cursor: pointer; padding: 12px; border-radius: 8px; background: ${bgColor}; display: flex; align-items: flex-start; gap: 12px; transition: all 0.2s;"
-                     onmouseover="if(!this.classList.contains('selected-quest')) this.style.background='rgba(255,215,0,0.15)'" 
-                     onmouseout="if(!this.classList.contains('selected-quest')) this.style.background='${bgColor}'">
-                    <div style="font-size: 2em; flex-shrink: 0;">📜</div>
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
-                            <div style="font-weight: bold; color: #ef4444; font-size: 1.05em;">${quest.name}</div>
-                            <div style="font-size: 0.8em; padding: 2px 8px; border-radius: 10px; background: rgba(0,0,0,0.3); color: ${statusColor}; font-weight: bold;">${statusIcon} ${statusText}</div>
-                        </div>
-                        <div style="font-size: 0.85em; color: #d4af37; margin-top: 4px;">${quest.description}</div>
-                        ${locationText ? `<div style="font-size: 0.8em; color: #999; margin-top: 4px;">${locationText}</div>` : ''}
-                        <div style="font-size: 0.8em; color: #a78bfa; margin-top: 2px;">🏆 ${quest.reward}</div>
+                     style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid #8b7355; border-radius: 10px; cursor: pointer; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3); transition: all 0.2s;"
+                     onmouseover="if(!this.classList.contains('selected-quest')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(139,115,85,0.3)'"
+                     onmouseout="if(!this.classList.contains('selected-quest')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)'">
+                    <div style="background: linear-gradient(135deg, #b91c1ccc 0%, #b91c1c99 100%); padding: 5px 14px; border-bottom: 2px solid #8b7355; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                        <div class="hero-banner-name" style="font-size: 0.85em;">📜 ${quest.name}</div>
+                        ${filterHeroIndex === null ? `<div style="font-size: 0.78em; color: #f0e6d3; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">${hero.symbol} ${hero.name}</div>` : ''}
                     </div>
-                    ${filterHeroIndex === null ? `<div style="text-align: right; flex-shrink: 0;"><div style="font-size: 0.85em; color: ${hero.color};">${hero.symbol} ${hero.name}</div></div>` : ''}
+                    <div style="padding: 10px 14px;">
+                        <div class="modal-desc-text" style="font-size: 0.8em; color: #3d2b1f; line-height: 1.5;">${quest.description}</div>
+                        ${locationText ? `<div style="font-size: 0.78em; color: #6b5b4a; margin-top: 4px;">${locationText}</div>` : ''}
+                        <div style="margin-top: 4px;">
+                            <span style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.75em; color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.78em; color:#3d2b1f;"> ${quest.reward}</span>
+                        </div>
+                        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px;">
+                            <span style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.75em; padding:2px 8px; border-radius:4px; background:${statusBg}; border:1px solid ${statusBorder}; color:${statusColor};">${statusIcon} ${statusText}</span>
+                        </div>
+                    </div>
                 </div>
             `;
         });
@@ -454,19 +467,23 @@ Object.assign(game, {
         // Build retired quests section (used/discarded/failed)
         let archivedHTML = '';
         if (retiredQuests.length > 0) {
-            archivedHTML = '<div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #555;">';
-            archivedHTML += '<div style="color: #666; font-size: 0.85em; font-weight: bold; margin-bottom: 8px;">📋 Quest History (Used/Discarded)</div>';
+            archivedHTML = '<div style="margin-top: 16px; padding-top: 12px; border-top: 2px solid rgba(139,115,85,0.5);">';
+            archivedHTML += '<div class="modal-heading" style="font-size:0.85em; color:#d4af37; margin-bottom: 8px;">📋 Quest History</div>';
             retiredQuests.forEach(({ hero, quest, isLegacy }) => {
                 const icon = quest.failed ? '❌' : '🏆';
                 const label = isLegacy ? (quest.useReason || 'Used') : (quest.failed ? 'Failed' : (quest.discardReason || 'Used'));
                 archivedHTML += `
-                    <div style="border: 2px solid #444; padding: 8px 12px; border-radius: 6px; background: rgba(50,50,50,0.3); margin-bottom: 6px; opacity: 0.7;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
-                            <div style="font-weight: bold; color: #888; font-size: 0.95em;">📜 ${quest.name}</div>
-                            <div style="font-size: 0.75em; padding: 2px 8px; border-radius: 10px; background: rgba(100,100,100,0.4); color: #888; font-weight: bold;">${icon} ${quest.failed ? 'FAILED' : 'USED'}</div>
+                    <div style="background: linear-gradient(135deg, #e8dcc8 0%, #d5c9b3 100%); border: 2px solid #a89880; padding: 0; border-radius: 8px; margin-bottom: 6px; opacity: 0.7; overflow: hidden;">
+                        <div style="background: rgba(100,80,60,0.5); padding: 4px 12px; border-bottom: 1px solid #a89880; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <div style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.85em; color:#f0e6d3; text-shadow:0 1px 3px rgba(0,0,0,0.6);">📜 ${quest.name}</div>
+                            ${filterHeroIndex === null ? `<div style="font-size: 0.72em; color: #f0e6d3; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">${hero.symbol} ${hero.name}</div>` : ''}
                         </div>
-                        <div style="font-size: 0.8em; color: #777; margin-top: 3px;">${label}</div>
-                        ${filterHeroIndex === null ? `<div style="font-size: 0.75em; color: ${hero.color}; margin-top: 2px;">${hero.symbol} ${hero.name}</div>` : ''}
+                        <div style="padding: 6px 12px;">
+                            <div style="font-size: 0.78em; color: #6b5b4a;">${label}</div>
+                            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:6px;">
+                                <span style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.65em; padding:2px 8px; border-radius:4px; background:rgba(220,38,38,0.15); border:1px solid #dc2626; color:#b91c1c;">${icon} ${quest.failed ? 'FAILED' : 'USED'}</span>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -474,20 +491,27 @@ Object.assign(game, {
         }
         
         const contentHTML = `
-            <div style="color: #d4af37; margin-bottom: 12px;">
-                ${filterHero ? `${filterHero.name}'s quest cards. Select a quest to view or use.` : 'Quest cards assigned to heroes. Select a quest to view or use.'}
+            <div class="modal-heading" style="font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
+                ${filterHero ? `${filterHero.name}'s quest cards.` : 'Quest cards assigned to heroes.'}
             </div>
-            ${activeQuests.length > 0 ? cardsHTML : '<div style="color: #666; margin-bottom: 10px;">No active quest cards.</div>'}
+            ${activeQuests.length > 0 ? cardsHTML : '<div class="modal-heading" style="font-size:0.85em; color:#d4af37; margin-bottom: 10px;">No active quest cards.</div>'}
             ${archivedHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game.closeInfoModal()">Close</button>
-                <button id="view-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmViewQuest()">🗺️ View Quest</button>
-                <button id="use-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmUseQuest()">✨ Use</button>
+            <div id="use-quest-btn-row" style="display: none;">
+                <button id="use-quest-btn" class="phase-btn" style="background: linear-gradient(135deg, #15803d, #166534); border-color: #16a34a; color: #fff;" onclick="game.confirmUseQuest()">✨ Use Quest Card</button>
             </div>
             <div id="quest-use-context-hint" style="text-align: center;"></div>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         this.showInfoModal(modalTitle, contentHTML);
+        // Style title to match end-of-turn modal heading
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) {
+            titleEl.className = 'modal-heading';
+            titleEl.style.textAlign = 'center';
+            titleEl.style.fontSize = '1.15em';
+            titleEl.style.marginBottom = '12px';
+        }
         // Hide the default Continue button since we have our own Close button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
@@ -506,45 +530,22 @@ Object.assign(game, {
         // Clear all selections
         document.querySelectorAll('#quest-cards-list > div').forEach(el => {
             el.classList.remove('selected-quest');
-            el.style.background = el.getAttribute('data-bg-color');
-            el.style.borderColor = el.getAttribute('data-border-color');
+            el.style.borderColor = '#8b7355';
+            el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)';
         });
         
         // Highlight selected
         const selected = document.getElementById(`quest-card-option-${displayIndex}`);
         if (selected) {
             selected.classList.add('selected-quest');
-            selected.style.background = 'rgba(255,215,0,0.2)';
             selected.style.borderColor = '#d4af37';
+            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(212,175,55,0.3)';
         }
         
-        // Update View Quest button
-        const viewBtn = document.getElementById('view-quest-btn');
-        if (viewBtn) {
-            // Can view if quest has a single location and is not completed
-            const hasSingleLoc = quest.location && !quest.completed;
-            // Multi-location quests: show first unvisited/unorganized location
-            let multiLocTarget = null;
-            if (!quest.completed && quest.mechanic) {
-                if (quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
-                    const unvisited = Object.entries(quest.mechanic.locations).find(([, d]) => !d.visited);
-                    if (unvisited) multiLocTarget = unvisited[0];
-                }
-                if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
-                    const undone = Object.entries(quest.mechanic.locations).find(([, d]) => !d.organized);
-                    if (undone) multiLocTarget = undone[0];
-                }
-            }
-            const canView = hasSingleLoc || multiLocTarget;
-            viewBtn.disabled = !canView;
-            viewBtn.style.opacity = canView ? '1' : '0.5';
-            viewBtn.style.cursor = canView ? 'pointer' : 'not-allowed';
-            viewBtn.style.background = canView ? '#dc2626' : '#666';
-        }
-        
-        // Update Use button
+        // Update Use button — show/hide entire row
         const useBtn = document.getElementById('use-quest-btn');
-        if (useBtn) {
+        const useBtnRow = document.getElementById('use-quest-btn-row');
+        if (useBtn && useBtnRow) {
             let canUse = quest.completed && quest.mechanic && quest.mechanic.rewardType === 'use_quest_card_anytime';
             // Exclude context-dependent rewards (these have their own buttons in combat/darkness phase)
             if (canUse && quest.mechanic.rewardValue === 'combat_bonus_dice') canUse = false;
@@ -573,12 +574,7 @@ Object.assign(game, {
             const hintDiv = document.getElementById('quest-use-context-hint');
             if (hintDiv) hintDiv.innerHTML = contextHint;
             
-            useBtn.disabled = !canUse;
-            useBtn.style.opacity = canUse ? '1' : '0.5';
-            useBtn.style.cursor = canUse ? 'pointer' : 'not-allowed';
-            useBtn.style.background = canUse ? '#4ade80' : '#666';
-            useBtn.style.color = canUse ? '#000' : '';
-            useBtn.style.fontWeight = canUse ? 'bold' : '';
+            useBtnRow.style.display = canUse ? 'block' : 'none';
         }
     },
     

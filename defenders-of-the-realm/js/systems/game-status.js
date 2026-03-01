@@ -12,7 +12,9 @@ Object.assign(game, {
     
     closeInfoModal() {
         document.getElementById('info-modal').classList.remove('active');
-        // Restore default Continue button visibility
+        // Restore default title class and Continue button visibility
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-title'; titleEl.style = ''; }
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtn) defaultBtn.style.display = '';
         if (this._infoModalCallback) {

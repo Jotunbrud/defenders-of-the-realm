@@ -395,97 +395,31 @@ Object.assign(game, {
     },
     
     getColoredPathTowardMonarchCity(general) {
-        // General can ONLY move on paths that match their color
-        // Must move toward Monarch City along these colored paths
+        // General can ONLY move along their FIXED colored path toward Monarch City
+        // These are the canonical general paths (same as in special-effects.js)
+        const generalPaths = {
+            'black': [['Dark Woods', 'Windy Pass'], ['Windy Pass', 'Sea Bird Port'], ['Sea Bird Port', 'Father Oak Forest'], ['Father Oak Forest', 'Monarch City']],
+            'red': [['Scorpion Canyon', 'Raven Forest'], ['Raven Forest', 'Angel Tear Falls'], ['Angel Tear Falls', 'Bounty Bay'], ['Bounty Bay', 'Monarch City']],
+            'green': [['Thorny Woods', 'Amarak Peak'], ['Amarak Peak', 'Eagle Peak Pass'], ['Eagle Peak Pass', 'Orc Valley'], ['Orc Valley', 'Monarch City']],
+            'blue': [['Blizzard Mountains', "Heaven's Glade"], ["Heaven's Glade", 'Ancient Ruins'], ['Ancient Ruins', 'Greenleaf Village'], ['Greenleaf Village', 'Monarch City']]
+        };
         
         if (general.location === 'Monarch City') return null;
         
-        const connections = this.getAllConnections();
-        const adjacent = [];
+        const path = generalPaths[general.color];
+        if (!path) return null;
         
-        // Find adjacent locations
-        connections.forEach(([loc1, loc2]) => {
-            if (loc1 === general.location) adjacent.push(loc2);
-            if (loc2 === general.location) adjacent.push(loc1);
-        });
-        
-        // Filter to only colored paths for this general
-        // Check the original connections data from renderMap
-        const coloredAdjacent = [];
-        const allConnectionsWithColor = [
-            ['Dark Woods', 'Golden Oak Forest', 'black'],
-            ['Dark Woods', 'Windy Pass', 'black'],
-            ['Blood Flats', 'Scorpion Canyon', 'red'],
-            ['Blood Flats', 'Raven Forest', 'red'],
-            ['Scorpion Canyon', 'Raven Forest', 'red'],
-            ['Windy Pass', 'Rock Bridge Pass', 'black'],
-            ['Windy Pass', 'Sea Bird Port', 'black'],
-            ['Rock Bridge Pass', 'Sea Bird Port', 'black'],
-            ['Brookdale Village', 'Sea Bird Port', 'black'],
-            ['Brookdale Village', 'Father Oak Forest', 'black'],
-            ['Raven Forest', 'Pleasant Hill', 'red'],
-            ['Raven Forest', 'Angel Tear Falls', 'red'],
-            ['Sea Bird Port', 'Father Oak Forest', 'black'],
-            ['Pleasant Hill', 'Father Oak Forest', 'black'],
-            ['Pleasant Hill', 'Angel Tear Falls', 'red'],
-            ['Father Oak Forest', 'Wolf Pass', 'black'],
-            ['Father Oak Forest', 'Monarch City', 'black'],
-            ['Angel Tear Falls', 'Dragon\'s Teeth Range', 'red'],
-            ['Angel Tear Falls', 'Bounty Bay', 'red'],
-            ['Angel Tear Falls', 'Fire River', 'red'],
-            ['Wolf Pass', 'Orc Valley', 'green'],
-            ['Monarch City', 'Bounty Bay', 'red'],
-            ['Monarch City', 'Orc Valley', 'green'],
-            ['Monarch City', 'Greenleaf Village', 'blue'],
-            ['Bounty Bay', 'Greenleaf Village', 'red'],
-            ['Bounty Bay', 'Mermaid Harbor', 'red'],
-            ['Orc Valley', 'Dancing Stone', 'green'],
-            ['Orc Valley', 'Eagle Peak Pass', 'green'],
-            ['Orc Valley', 'Whispering Woods', 'green'],
-            ['Dancing Stone', 'Greenleaf Village', 'blue'],
-            ['Greenleaf Village', 'Ancient Ruins', 'blue'],
-            ['Greenleaf Village', 'Mountains of Mist', 'blue'],
-            ['Eagle Peak Pass', 'Whispering Woods', 'green'],
-            ['Eagle Peak Pass', 'Amarak Peak', 'green'],
-            ['Ancient Ruins', 'Heaven\'s Glade', 'blue'],
-            ['McCorm Highlands', 'Amarak Peak', 'green'],
-            ['Amarak Peak', 'Ghost Marsh', 'green'],
-            ['Amarak Peak', 'Thorny Woods', 'green'],
-            ['Heaven\'s Glade', 'Thorny Woods', 'blue'],
-            ['Heaven\'s Glade', 'Blizzard Mountains', 'blue'],
-            ['Blizzard Mountains', 'Withered Hills', 'blue']
-        ];
-        
-        // Find colored paths from current location matching general's color
-        allConnectionsWithColor.forEach(([loc1, loc2, color]) => {
-            if (color === general.color) {
-                if (loc1 === general.location && adjacent.includes(loc2)) {
-                    coloredAdjacent.push(loc2);
-                } else if (loc2 === general.location && adjacent.includes(loc1)) {
-                    coloredAdjacent.push(loc1);
-                }
+        // Find the segment where general's current location is the 'from'
+        // The 'to' of that segment is the next location toward Monarch City
+        for (const [from, to] of path) {
+            if (from === general.location) {
+                return to;
             }
-        });
+        }
         
-        if (coloredAdjacent.length === 0) return null;
-        
-        // From colored adjacent locations, find closest to Monarch City
-        const monarchCoords = this.locationCoords['Monarch City'];
-        let closestLoc = null;
-        let minDistance = Infinity;
-        
-        coloredAdjacent.forEach(loc => {
-            const coords = this.locationCoords[loc];
-            if (coords) {
-                const dist = Math.sqrt(Math.pow(coords.x - monarchCoords.x, 2) + Math.pow(coords.y - monarchCoords.y, 2));
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    closestLoc = loc;
-                }
-            }
-        });
-        
-        return closestLoc;
+        // General is not on their canonical path (e.g. pushed back off-path or at Monarch City)
+        // This shouldn't normally happen, but fall back to null
+        return null;
     },
     
     getAdjacentLocations(location) {

@@ -709,6 +709,7 @@ Object.assign(game, {
         // Reset Night Phase passive card states (these are Step 3 only)
         this.strongDefensesActive = false;
         this.militiaSecuredSlot = null;
+        this.orcHunterBlockedSlot = null;
         
         // Calculate damage from minions
         let damageInfo = {
@@ -843,6 +844,8 @@ Object.assign(game, {
         this.wizardWisdomRedraw = false;
         // Clear militia secured state for new card
         this.militiaSecuredSlot = null;
+        // Clear orc hunter blocked state for new card
+        this.orcHunterBlockedSlot = null;
         // Clear strong defenses state for new card
         this.strongDefensesActive = false;
         // Clear organize militia state for new card
@@ -924,6 +927,9 @@ Object.assign(game, {
         
         // Organize Militia quest: any hero with a completed quest, any card with a general that will advance
         if (generalWillAdvance && this._findOrganizeMilitiaQuestCard()) return true;
+        
+        // Orc Hunter quest: block green minion placement on regular cards
+        if (isRegularCard && (card.faction1 === 'green' || card.faction2 === 'green') && this._findOrcHunterQuestCard()) return true;
         
         return false;
     },
@@ -1229,10 +1235,16 @@ Object.assign(game, {
             // Militia Secures Area: mark secured slot
             const militia1 = this.militiaSecuredSlot === 1;
             const militia2 = this.militiaSecuredSlot === 2;
+            
+            // Orc Hunter: mark blocked green slot
+            const orcHunter1 = this.orcHunterBlockedSlot === 1;
+            const orcHunter2 = this.orcHunterBlockedSlot === 2;
+            const blocked1 = militia1 || orcHunter1;
+            const blocked2 = militia2 || orcHunter2;
 
             // Predict outcomes
-            const minion1Warnings = !generalOnly && !militia1 ? this.predictMinionOutcome(card.faction1, card.minions1, card.location1) : [];
-            const minion2Warnings = !generalOnly && !militia2 ? this.predictMinionOutcome(card.faction2, card.minions2, card.location2) : [];
+            const minion1Warnings = !generalOnly && !blocked1 ? this.predictMinionOutcome(card.faction1, card.minions1, card.location1) : [];
+            const minion2Warnings = !generalOnly && !blocked2 ? this.predictMinionOutcome(card.faction2, card.minions2, card.location2) : [];
 
             // Strong Defenses: mark blocked general
             const sdBlocked = this.strongDefensesActive || this.organizeMilitiaActive;
@@ -1250,8 +1262,8 @@ Object.assign(game, {
             }
 
             // Build location card visuals
-            const minion1Visual = this._darknessLocationCardHTML(card.location1, card.faction1, card.minions1, false, generalOnly || militia1, minion1Warnings, militia1);
-            const minion2Visual = this._darknessLocationCardHTML(card.location2, card.faction2, card.minions2, false, generalOnly || militia2, minion2Warnings, militia2);
+            const minion1Visual = this._darknessLocationCardHTML(card.location1, card.faction1, card.minions1, false, generalOnly || blocked1, minion1Warnings, blocked1);
+            const minion2Visual = this._darknessLocationCardHTML(card.location2, card.faction2, card.minions2, false, generalOnly || blocked2, minion2Warnings, blocked2);
             const generalVisual = this._darknessLocationCardHTML(card.location3, card.general, card.minions3, true, sdBlocked, generalWarnings, false, _genPosition);
 
             // Darkness Spreads Effects section (fx-note bars)
@@ -1260,6 +1272,8 @@ Object.assign(game, {
             let militiaLabels = '';
             if (militia1) militiaLabels += '<div class="modal-desc-text" style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;">🛡️ Militia Secures Area — Placement 1 cancelled</div>';
             if (militia2) militiaLabels += '<div class="modal-desc-text" style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;">🛡️ Militia Secures Area — Placement 2 cancelled</div>';
+            if (orcHunter1) militiaLabels += '<div class="modal-desc-text" style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;">👺 Orc Hunter — Green placement 1 cancelled</div>';
+            if (orcHunter2) militiaLabels += '<div class="modal-desc-text" style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;">👺 Orc Hunter — Green placement 2 cancelled</div>';
             let sdLabel = '';
             if (this.strongDefensesActive) sdLabel = '<div class="modal-desc-text" style="text-align:center;color:#a16207;font-size:0.75em;margin-top:4px;">🏰 Strong Defenses — General movement cancelled</div>';
             else if (this.organizeMilitiaActive) sdLabel = '<div class="modal-desc-text" style="text-align:center;color:#15803d;font-size:0.75em;margin-top:4px;">📜 Organize Militia — General movement cancelled</div>';
@@ -1409,6 +1423,37 @@ Object.assign(game, {
                 btnContainer.appendChild(militiaQuestBtn);
             }
             
+            // Orc Hunter quest: Block green minion placement
+            const orcHunterHolder = this._findOrcHunterQuestCard();
+            const canUseOrcHunter = orcHunterHolder && !generalOnly && !this.orcHunterBlockedSlot
+                && (card.type === 'regular' || (!card.type && card.faction1))
+                && card.type !== 'all_quiet' && card.type !== 'patrol' && card.type !== 'monarch_city_special';
+            
+            if (canUseOrcHunter) {
+                // Check which slots are green
+                const greenSlots = [];
+                if (card.faction1 === 'green' && !(this.militiaSecuredSlot === 1)) greenSlots.push(1);
+                if (card.faction2 === 'green' && !(this.militiaSecuredSlot === 2)) greenSlots.push(2);
+                
+                greenSlots.forEach(slot => {
+                    if (!hasSpecialButtons) {
+                        btnContainer.style.display = 'flex';
+                        btnContainer.style.flexDirection = 'column';
+                        btnContainer.style.gap = '10px';
+                    }
+                    hasSpecialButtons = true;
+                    
+                    const loc = slot === 1 ? card.location1 : card.location2;
+                    const orcBtn = document.createElement('button');
+                    orcBtn.id = `orc-hunter-btn-${slot}`;
+                    orcBtn.className = 'phase-btn';
+                    orcBtn.style.cssText = 'background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: 2px solid #4ade80;';
+                    orcBtn.textContent = `👺 Block Orcs at ${loc} (${orcHunterHolder.hero.symbol})`;
+                    orcBtn.onclick = () => game._orcHunterBlockConfirm(slot);
+                    btnContainer.appendChild(orcBtn);
+                });
+            }
+            
             // Show militia secured indicator if already active
             if (this.militiaSecuredSlot) {
                 const securedDiv = document.createElement('div');
@@ -1435,7 +1480,16 @@ Object.assign(game, {
                 content.appendChild(omDiv);
             }
             
-            if (!hasSpecialButtons && !this.militiaSecuredSlot && !this.strongDefensesActive && !this.organizeMilitiaActive) {
+            // Show orc hunter indicator if already active
+            if (this.orcHunterBlockedSlot) {
+                const ohDiv = document.createElement('div');
+                ohDiv.style.cssText = 'text-align: center; margin-top: 8px; padding: 6px; background: rgba(22,163,74,0.2); border: 1px solid #16a34a; border-radius: 4px;';
+                const blockedLoc = this.orcHunterBlockedSlot === 1 ? card.location1 : card.location2;
+                ohDiv.innerHTML = `<span style="color: #4ade80; font-size: 0.9em;">👺 Orc Hunter active — Orc placement at ${blockedLoc} will be cancelled</span>`;
+                content.appendChild(ohDiv);
+            }
+            
+            if (!hasSpecialButtons && !this.militiaSecuredSlot && !this.strongDefensesActive && !this.organizeMilitiaActive && !this.orcHunterBlockedSlot) {
                 // Reset container to centered single button
                 btnContainer.style.display = '';
                 btnContainer.style.gap = '';
@@ -1674,6 +1728,14 @@ Object.assign(game, {
                         location: card.location1
                     });
                     this.addLog(`  🛡️ Militia Secures Area: ${securedFaction} placement (${card.minions1} @ ${card.location1}) CANCELLED`);
+                } else if (this.orcHunterBlockedSlot === 1) {
+                    events.push({
+                        type: 'orc_hunter_blocked',
+                        color: card.faction1,
+                        count: card.minions1,
+                        location: card.location1
+                    });
+                    this.addLog(`  👺 Orc Hunter: Orc placement (${card.minions1} @ ${card.location1}) CANCELLED`);
                 } else {
                     this.processMinionPlacement(card.faction1, card.minions1, card.location1, events);
                 }
@@ -1688,13 +1750,22 @@ Object.assign(game, {
                         location: card.location2
                     });
                     this.addLog(`  🛡️ Militia Secures Area: ${securedFaction} placement (${card.minions2} @ ${card.location2}) CANCELLED`);
+                } else if (this.orcHunterBlockedSlot === 2) {
+                    events.push({
+                        type: 'orc_hunter_blocked',
+                        color: card.faction2,
+                        count: card.minions2,
+                        location: card.location2
+                    });
+                    this.addLog(`  👺 Orc Hunter: Orc placement (${card.minions2} @ ${card.location2}) CANCELLED`);
                 } else {
                     this.processMinionPlacement(card.faction2, card.minions2, card.location2, events);
                 }
             }
             
-            // Clear militia state after resolve
+            // Clear militia and orc hunter state after resolve
             this.militiaSecuredSlot = null;
+            this.orcHunterBlockedSlot = null;
             
             // Strong Defenses / Organize Militia: skip general movement
             if (this.strongDefensesActive || this.organizeMilitiaActive) {

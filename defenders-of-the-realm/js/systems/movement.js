@@ -320,6 +320,8 @@ Object.assign(game, {
                     if (count > 0) {
                         factionDetails.push(`<span style="color: ${factionColors[color] || '#999'};">${count} ${factionNames[color] || color}</span>`);
                         totalRemoved += count;
+                        // Track kills for quest progress (e.g. Orc Hunter)
+                        this._trackQuestMinionDefeatsRaw(color, count);
                         minionsHere[color] = 0;
                     }
                 }
@@ -428,6 +430,8 @@ Object.assign(game, {
                     if (count > 0) {
                         factionDetails.push(`<span style="color: ${factionColors[color] || '#999'};">${count} ${factionNames[color] || color}</span>`);
                         totalRemoved += count;
+                        // Track kills for quest progress (e.g. Orc Hunter)
+                        this._trackQuestMinionDefeatsRaw(color, count);
                         minionsHere[color] = 0;
                     }
                 }
@@ -990,6 +994,8 @@ Object.assign(game, {
                 const done = Object.values(q.mechanic.locations).filter(l => l.organized).length;
                 const total = Object.values(q.mechanic.locations).length;
                 progressNote = ` (${done}/${total})`;
+            } else if (q.mechanic?.type === 'defeat_faction_minions') {
+                progressNote = ` (${q.mechanic.currentKills || 0}/${q.mechanic.requiredKills})`;
             }
             questsHTML += `<div class="hero-detail-quest-row" data-quest-name="${q.name}" style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:6px 8px;margin:4px 0;background:rgba(202,138,4,0.08);border:1px solid rgba(202,138,4,0.3);border-radius:6px;cursor:pointer;">
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#2c1810;font-size:0.85em;">📜 ${q.name}${progressNote}</div>
@@ -1212,6 +1218,21 @@ Object.assign(game, {
                     progressHTML += `<div style="color:${clr};font-size:0.85em;padding:2px 0;">${emoji} ${loc} ${check}</div>`;
                 }
                 progressHTML += '</div>';
+            }
+            if (quest.mechanic.type === 'defeat_faction_minions') {
+                const current = quest.mechanic.currentKills || 0;
+                const required = quest.mechanic.requiredKills;
+                const factionEmoji = colorEmojis[quest.mechanic.faction] || '⭕';
+                const factionNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
+                const factionName = factionNames[quest.mechanic.faction] || quest.mechanic.faction;
+                let pips = '';
+                for (let p = 0; p < required; p++) {
+                    pips += p < current ? `${factionEmoji}` : '⬜';
+                }
+                progressHTML = `<div style="margin-top:8px;text-align:center;">
+                    <div style="font-size:1.3em;letter-spacing:4px;">${pips}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">${current} / ${required} ${factionName} Defeated</div>
+                </div>`;
             }
         }
 

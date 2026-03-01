@@ -161,6 +161,9 @@ Object.assign(game, {
             if (minionsHere[cr.color] < 0) minionsHere[cr.color] = 0;
         });
         
+        // Track minion defeats for quest progress (e.g. Orc Hunter)
+        this._trackQuestMinionDefeats(colorResults);
+        
         const totalMinions = colorResults.reduce((sum, cr) => sum + cr.count, 0);
         
         // Build results display
@@ -2202,5 +2205,106 @@ Object.assign(game, {
             }
         }
         return locations;
+    },
+    
+    // ===== DEFEAT FACTION MINIONS QUEST TRACKING =====
+    // Called after minion combat results are applied (colorResults format)
+    _trackQuestMinionDefeats(colorResults) {
+        for (let i = 0; i < this.heroes.length; i++) {
+            const hero = this.heroes[i];
+            if (!hero.questCards) continue;
+            hero.questCards.forEach(quest => {
+                if (quest.completed || quest.discarded) return;
+                if (!quest.mechanic || quest.mechanic.type !== 'defeat_faction_minions') return;
+                
+                const faction = quest.mechanic.faction;
+                const killed = colorResults.reduce((sum, cr) => {
+                    return sum + (cr.color === faction ? cr.defeated : 0);
+                }, 0);
+                
+                if (killed > 0) {
+                    quest.mechanic.currentKills = Math.min(
+                        (quest.mechanic.currentKills || 0) + killed,
+                        quest.mechanic.requiredKills
+                    );
+                    this.addLog(`📜 ${quest.name}: ${hero.name} defeated ${killed} ${faction === 'green' ? 'Orc' : faction} minion${killed !== 1 ? 's' : ''}! (${quest.mechanic.currentKills}/${quest.mechanic.requiredKills})`);
+                    
+                    if (quest.mechanic.currentKills >= quest.mechanic.requiredKills && !quest.completed) {
+                        quest.completed = true;
+                        this.addLog(`📜 ✅ ${hero.name} completed quest: ${quest.name}!`);
+                        const heroIndex = i;
+                        // Show completion modal, then draw new quest
+                        setTimeout(() => {
+                            this.showInfoModal('📜 Quest Complete!', `
+                                <div style="text-align: center;">
+                                    <div style="font-size: 2.5em; margin-bottom: 8px;">👺</div>
+                                    <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">${quest.name} Complete!</div>
+                                    <div style="color: #d4af37; margin-bottom: 8px;">${quest.mechanic.requiredKills} ${faction === 'green' ? 'Orcs' : faction + ' minions'} defeated!</div>
+                                    <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
+                                        🏆 ${quest.reward}
+                                    </div>
+                                </div>
+                            `, () => {
+                                this._drawAndShowNewQuest(heroIndex);
+                            });
+                        }, 600);
+                    }
+                    
+                    this.renderHeroes();
+                    this.updateActionButtons();
+                }
+            });
+        }
+    },
+    
+    // Called from non-standard kill paths (e.g. Elven Archers) with raw faction + count
+    _trackQuestMinionDefeatsRaw(faction, count) {
+        if (count <= 0) return;
+        this._trackQuestMinionDefeats([{ color: faction, defeated: count, rolls: [] }]);
+    },
+    
+    // Find any hero with a completed Orc Hunter (block green minion placement) quest
+    _findOrcHunterQuestCard() {
+        for (let i = 0; i < this.heroes.length; i++) {
+            const hero = this.heroes[i];
+            if (!hero.questCards || hero.health <= 0) continue;
+            for (let j = 0; j < hero.questCards.length; j++) {
+                const q = hero.questCards[j];
+                if (q.completed && !q.discarded && q.mechanic
+                    && q.mechanic.rewardType === 'use_quest_card_anytime'
+                    && q.mechanic.rewardValue === 'block_minion_placement_green') {
+                    return { hero, heroIndex: i, questIndex: j, quest: q };
+                }
+            }
+        }
+        return null;
+    },
+    
+    // Confirm use of Orc Hunter to block green minion placement
+    _orcHunterBlockConfirm(slot) {
+        const holder = this._findOrcHunterQuestCard();
+        if (!holder) return;
+        
+        const card = this.darknessCurrentCard;
+        const slotFaction = slot === 1 ? card.faction1 : card.faction2;
+        const slotLocation = slot === 1 ? card.location1 : card.location2;
+        
+        // Retire quest card
+        this._retireQuest(holder.hero, holder.quest, `Blocked green minion placement at ${slotLocation}`);
+        
+        // Store blocked state — reuse pattern from militia
+        this.orcHunterBlockedSlot = slot;
+        
+        this.addLog(`📜 👺 ${holder.hero.name} uses Orc Hunter — prevents Orc placement at ${slotLocation}!`);
+        
+        this.closeInfoModal();
+        this.renderHeroes();
+        this.updateDeckCounts();
+        
+        // Re-render the preview with blocked placement shown
+        const cardNum = this.darknessCardsDrawn;
+        const totalCards = this.darknessCardsToDraw;
+        const generalOnly = this.darknessCurrentGeneralOnly;
+        this.showDarknessCardPreview(card, cardNum, totalCards, generalOnly);
     },
 });

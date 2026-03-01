@@ -1115,6 +1115,9 @@ Object.assign(game, {
             if (minionsObj[cr.color] < 0) minionsObj[cr.color] = 0;
         });
         
+        // Track minion defeats for quest progress (e.g. Orc Hunter)
+        this._trackQuestMinionDefeats(colorResults);
+        
         const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
         
         this.actionsRemaining--;

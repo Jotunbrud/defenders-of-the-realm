@@ -205,8 +205,7 @@ function createQuestDeck() {
         { name: 'Map of Hidden Paths', location: 'Wolf Pass', description: 'Navigate the treacherous pass to uncover secret routes.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Blessed Chalice', location: 'Angel Tear Falls', description: 'Fill the chalice with the waters of Angel Tear Falls.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Shadow Blade', location: 'Ghost Marsh', description: 'Retrieve the cursed blade from the depths of the marsh.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
-        { name: 'Talisman of Warding', location: 'Cursed Plateau', description: 'Perform the ritual of warding atop the cursed plateau.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
-        { name: 'Compass of the Wanderer', location: 'Sea Bird Port', description: 'Calibrate the ancient compass using the port\'s lighthouse.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 4, failDiscard: true }
+        { name: 'Talisman of Warding', location: 'Cursed Plateau', description: 'Perform the ritual of warding atop the cursed plateau.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true }
     ];
     
     placeholderQuests.forEach(pq => {
@@ -230,6 +229,30 @@ function createQuestDeck() {
                 rewardValue: 'Not yet implemented'
             }
         });
+    });
+    
+    // ── DEFEAT FACTION MINIONS QUEST ──
+    
+    // Orc Hunter — Defeat 6 Green (Orc) minions in combat
+    questDeck.push({
+        id: questId++,
+        name: 'Orc Hunter',
+        description: 'Defeat 6 Orcs. As you fulfill this quest, place each Orc you defeat onto this card for reference.',
+        difficulty: 'Medium',
+        reward: 'Discard this Quest Card to avoid placing troops in 1 Green Location noted on a Darkness Spreads Card.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'defeat_faction_minions',
+            faction: 'green',
+            requiredKills: 6,
+            currentKills: 0,
+            actionCost: 0,
+            failDiscard: false,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'block_minion_placement_green'
+        }
     });
     
     // ── USE-ANYTIME QUEST CARDS (2 cards) ──

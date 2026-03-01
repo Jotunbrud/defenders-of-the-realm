@@ -1246,6 +1246,10 @@ Object.assign(game, {
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                         <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                     </div>` : ''}
+                    ${quest.mechanic?.failDiscard ? `
+                    <div style="text-align:center;margin-top:6px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;">Discard if Failed</span>
+                    </div>` : ''}
                     ${progressHTML}
                     <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${statusBg};border:1px solid ${statusBorder};color:${statusColor};">${statusLabel}</span>

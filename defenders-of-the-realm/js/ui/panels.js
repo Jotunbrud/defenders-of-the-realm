@@ -713,6 +713,7 @@ Object.assign(game, {
             } else {
                 completeQuestBtn.disabled = true;
                 completeQuestBtn.className = 'phase-btn';
+                completeQuestBtn.style.background = '';
                 completeQuestBtn.innerHTML = `<span class="action-btn-icon">🎯 </span>Complete Quest`;
             }
         }

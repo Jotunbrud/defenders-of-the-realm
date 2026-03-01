@@ -410,6 +410,25 @@ Object.assign(game, {
             return true;
         }
         
+        // Amazon Envoy: open minion picker at clicked location
+        if (this.activeMovement.isAmazonEnvoy) {
+            if (!this.activeMovement.validDestinations || !this.activeMovement.validDestinations.includes(locationName)) {
+                console.log(`[MOVEMENT] ❌ Not a valid Amazon Envoy target`);
+                return false;
+            }
+            
+            if (!this._amazonEnvoyState) return false;
+            
+            // Clean up highlights
+            document.querySelectorAll('.location-highlight').forEach(el => el.remove());
+            const indicatorAE = document.getElementById('movement-indicator');
+            if (indicatorAE) indicatorAE.remove();
+            
+            // Open the minion picker for this location
+            this._amazonEnvoyShowPicker(locationName);
+            return true;
+        }
+        
         // Battle Strategy — Minion Phase: clear all minions from clicked location
         if (this.activeMovement.isBattleStrategyMinions) {
             if (!this.activeMovement.validDestinations || !this.activeMovement.validDestinations.includes(locationName)) {
@@ -641,6 +660,12 @@ Object.assign(game, {
         // Special handling for King's Guard - card already consumed, finish with results so far
         if (this.activeMovement.isKingsGuard && this.kingsGuardState) {
             this._finishKingsGuard();
+            return;
+        }
+        
+        // Special handling for Amazon Envoy - quest already consumed, finish with results so far
+        if (this.activeMovement.isAmazonEnvoy && this._amazonEnvoyState) {
+            this._finishAmazonEnvoy();
             return;
         }
         

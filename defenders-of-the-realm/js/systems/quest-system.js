@@ -1127,6 +1127,58 @@ Object.assign(game, {
                 this.addLog(`📜 ${quest.name}: ${hero.name} now ignores Hero Defeated penalties against Generals!`);
             } else if (m.rewardType === 'placeholder') {
                 this.addLog(`📜 ${quest.name}: ${hero.name} completed the quest! (Reward not yet implemented)`);
+            } else if (m.rewardType === 'amazon_envoy_sweep') {
+                // Roll d6 for how many minions to defeat
+                const sweepRoll = Math.floor(Math.random() * 6) + 1;
+                this.addLog(`📜 ${quest.name}: ${hero.name} convinced the Amazons! Rolling D6 for warriors: ${sweepRoll}`);
+                
+                // Store state for the sweep picker
+                this._amazonEnvoyState = {
+                    heroIndex,
+                    heroName: hero.name,
+                    heroSymbol: hero.symbol,
+                    questName: quest.name,
+                    originLocation: m.rewardValue,
+                    sweepRoll,
+                    remaining: sweepRoll,
+                    results: []
+                };
+                
+                // Retire quest and draw new one BEFORE starting sweep
+                this._retireQuest(hero, quest, `Amazon warriors deployed (${sweepRoll})`);
+                
+                // Build dice result + sweep roll into a combined modal
+                const sweepDieHTML = `<div style="display:flex;justify-content:center;margin-top:12px;">
+                    <div style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;
+                        font-size:1.8em;font-weight:bold;border-radius:8px;color:#d4af37;
+                        background:rgba(212,175,55,0.2);border:2px solid #d4af37;">${sweepRoll}</div>
+                </div>
+                <div style="color:#d4af37;font-size:0.9em;margin-top:6px;">Defeat up to ${sweepRoll} minion${sweepRoll !== 1 ? 's' : ''} within 2 spaces of ${m.rewardValue}</div>`;
+                
+                const sweepContentHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5em; margin-bottom: 8px;">✅</div>
+                        <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Quest Complete!</div>
+                        <div style="color: #ef4444; font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">📜 ${quest.name}</div>
+                        <div style="color: #999; margin-bottom: 8px;">Need ${m.successOn}+ on any die</div>
+                        ${visionsNote}
+                        ${diceHTML}
+                        <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
+                            🏆 Amazon Warriors Roll:
+                            ${sweepDieHTML}
+                        </div>
+                    </div>
+                `;
+                
+                this.showInfoModal('📜 Quest Complete!', sweepContentHTML, () => {
+                    this._startAmazonEnvoyHighlight();
+                });
+                
+                // Skip normal completion modal
+                this.updateGameStatus();
+                this.updateActionButtons();
+                this.renderHeroes();
+                return;
             }
             
             this.showInfoModal('📜 Quest Complete!', contentHTML, () => {
@@ -1301,6 +1353,10 @@ Object.assign(game, {
                     <div style="margin-top:8px;">
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                         <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                    </div>` : ''}
+                    ${quest.mechanic && quest.mechanic.failDiscard && !quest.completed && !quest.discarded ? `
+                    <div style="margin-top:6px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:#ef4444;">Discard if Failed</span>
                     </div>` : ''}
                     ${progressHTML}
                     <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
@@ -2223,6 +2279,267 @@ Object.assign(game, {
             }
         }
         return locations;
+    },
+    
+    // ===== AMAZON ENVOY QUEST: Sweep Picker =====
+    
+    _getLocationsWithinSteps(origin, maxSteps) {
+        // BFS using actual board connections (locationConnections adjacency graph)
+        const visited = new Set();
+        const queue = [{ location: origin, distance: 0 }];
+        const results = [];
+        
+        while (queue.length > 0) {
+            const { location, distance } = queue.shift();
+            if (visited.has(location)) continue;
+            visited.add(location);
+            
+            if (distance > 0 && distance <= maxSteps) {
+                results.push(location);
+            }
+            
+            if (distance < maxSteps) {
+                const neighbors = this.locationConnections[location] || [];
+                neighbors.forEach(n => {
+                    if (!visited.has(n)) {
+                        queue.push({ location: n, distance: distance + 1 });
+                    }
+                });
+            }
+        }
+        return results;
+    },
+    
+    _getAmazonEnvoyValidLocations() {
+        const state = this._amazonEnvoyState;
+        if (!state) return [];
+        
+        const locationsInRange = this._getLocationsWithinSteps(state.originLocation, 2);
+        // Include origin itself
+        locationsInRange.push(state.originLocation);
+        
+        // Filter to only locations with minions
+        return locationsInRange.filter(loc => {
+            const m = this.minions[loc];
+            if (!m) return false;
+            return Object.values(m).reduce((a, b) => a + b, 0) > 0;
+        });
+    },
+    
+    _startAmazonEnvoyHighlight() {
+        const state = this._amazonEnvoyState;
+        if (!state) return;
+        
+        const validLocations = this._getAmazonEnvoyValidLocations();
+        
+        // If no valid targets remain or no kills left, finish
+        if (validLocations.length === 0 || state.remaining <= 0) {
+            this._finishAmazonEnvoy();
+            return;
+        }
+        
+        // Set movement state for click handling
+        const currentHero = this.heroes[this.currentPlayerIndex];
+        this.activeMovement = {
+            cardIndex: -1,
+            movementType: 'Amazon Envoy',
+            maxMoves: state.remaining,
+            movesRemaining: state.remaining,
+            startLocation: currentHero.location,
+            cardUsed: null,
+            validDestinations: validLocations,
+            isAmazonEnvoy: true
+        };
+        
+        // Disable map dragging
+        const boardContainer = document.getElementById('board-container');
+        if (boardContainer) {
+            boardContainer.style.cursor = 'default';
+            boardContainer.style.pointerEvents = 'none';
+        }
+        
+        const svg = document.getElementById('game-map');
+        if (svg) {
+            svg.style.pointerEvents = 'auto';
+        }
+        
+        this.showMovementIndicator();
+        this.highlightMagicGateLocations(validLocations);
+    },
+    
+    _amazonEnvoyShowPicker(locationName) {
+        const state = this._amazonEnvoyState;
+        if (!state) return;
+        
+        const minionsHere = this.minions[locationName];
+        if (!minionsHere) return;
+        
+        const factionNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
+        const factionColors = { red: '#dc2626', green: '#16a34a', blue: '#3b82f6', black: '#6b7280' };
+        
+        let pickerHTML = `
+            <div style="text-align:center;">
+                <div style="color:#d4af37;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;margin-bottom:6px;">
+                    ${locationName}
+                </div>
+                <div style="color:#999;font-size:0.85em;margin-bottom:12px;">
+                    ${state.remaining} defeat${state.remaining !== 1 ? 's' : ''} remaining — Select a minion to defeat
+                </div>
+        `;
+        
+        const colors = ['green', 'red', 'blue', 'black'];
+        let hasMinions = false;
+        colors.forEach(color => {
+            const count = minionsHere[color] || 0;
+            if (count > 0) {
+                hasMinions = true;
+                const name = factionNames[color];
+                const clr = factionColors[color];
+                pickerHTML += `
+                    <button onclick="game._amazonEnvoyPickMinion('${locationName}', '${color}')"
+                        class="phase-btn" style="display:block;width:100%;margin:6px 0;padding:10px;
+                        background:rgba(0,0,0,0.3);border:2px solid ${clr};color:${clr};
+                        font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;cursor:pointer;">
+                        ${this._inlineDotsHTML(color, count)} ${name} (${count})
+                    </button>
+                `;
+            }
+        });
+        
+        pickerHTML += `
+                <button onclick="game._amazonEnvoyBackToMap()"
+                    class="phase-btn" style="display:block;width:100%;margin:10px 0 0 0;padding:8px;
+                    background:rgba(100,100,100,0.3);border:2px solid #666;color:#999;
+                    font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;cursor:pointer;">
+                    ← Back to Map
+                </button>
+            </div>
+        `;
+        
+        this.showInfoModal('⚔️ Amazon Warriors', pickerHTML);
+        // Hide the default Continue button
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+    },
+    
+    _amazonEnvoyPickMinion(locationName, color) {
+        const state = this._amazonEnvoyState;
+        if (!state || state.remaining <= 0) return;
+        
+        const minionsHere = this.minions[locationName];
+        if (!minionsHere || (minionsHere[color] || 0) <= 0) return;
+        
+        // Remove 1 minion
+        minionsHere[color]--;
+        state.remaining--;
+        
+        const factionNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
+        const fName = factionNames[color] || color;
+        
+        // Track for quest kill progress
+        this._trackQuestMinionDefeatsRaw(color, 1);
+        
+        state.results.push({
+            location: locationName,
+            color: color,
+            faction: fName
+        });
+        
+        this.addLog(`⚔️ Amazon Warriors: Defeated 1 ${fName} at ${locationName} (${state.remaining} remaining)`);
+        
+        // Update map
+        this.renderMap();
+        this.renderTokens();
+        this.renderHeroes();
+        this.updateGameStatus();
+        
+        // Close picker and continue
+        this.closeInfoModal();
+        
+        if (state.remaining <= 0) {
+            this._finishAmazonEnvoy();
+        } else {
+            // Check if current location still has minions
+            const totalHere = Object.values(minionsHere).reduce((a, b) => a + b, 0);
+            if (totalHere > 0) {
+                // Reopen picker at same location
+                this._amazonEnvoyShowPicker(locationName);
+            } else {
+                // Go back to map for next pick
+                this._startAmazonEnvoyHighlight();
+            }
+        }
+    },
+    
+    _amazonEnvoyBackToMap() {
+        this.closeInfoModal();
+        this._startAmazonEnvoyHighlight();
+    },
+    
+    _finishAmazonEnvoy() {
+        const state = this._amazonEnvoyState;
+        if (!state) return;
+        
+        // Clean up movement state
+        this.activeMovement = null;
+        this._amazonEnvoyState = null;
+        document.querySelectorAll('.location-highlight').forEach(el => el.remove());
+        const indicator = document.getElementById('movement-indicator');
+        if (indicator) indicator.remove();
+        
+        // Re-enable map dragging
+        const boardContainer = document.getElementById('board-container');
+        if (boardContainer) {
+            boardContainer.style.cursor = 'grab';
+            boardContainer.style.pointerEvents = 'auto';
+        }
+        
+        // Build results summary
+        let resultsHTML = '';
+        if (state.results.length === 0) {
+            resultsHTML = '<div style="color:#999;">No minions were defeated.</div>';
+        } else {
+            // Group by location
+            const byLoc = {};
+            state.results.forEach(r => {
+                if (!byLoc[r.location]) byLoc[r.location] = [];
+                byLoc[r.location].push(r);
+            });
+            
+            for (const [loc, kills] of Object.entries(byLoc)) {
+                const summary = kills.map(k => k.faction).join(', ');
+                resultsHTML += `<div style="margin:6px 0;padding:8px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;border-radius:6px;">
+                    <strong style="color:#16a34a;">${loc}</strong> — ${kills.length} defeated (${summary})
+                </div>`;
+            }
+        }
+        
+        const totalDefeated = state.results.length;
+        const unused = state.sweepRoll - totalDefeated;
+        this.addLog(`⚔️ Amazon Envoy: ${state.heroName} deployed Amazon warriors — ${totalDefeated} minion${totalDefeated !== 1 ? 's' : ''} defeated!`);
+        
+        // Update everything
+        this.renderMap();
+        this.renderTokens();
+        this.renderHeroes();
+        this.updateGameStatus();
+        this.updateMovementButtons();
+        this.updateActionButtons();
+        
+        this.showInfoModal('⚔️ Amazon Envoy — Complete!', `
+            <div style="text-align:center;">
+                <div style="font-size:2em;margin-bottom:10px;">⚔️</div>
+                <div style="color:#16a34a;font-size:1.1em;font-weight:bold;margin-bottom:10px;">
+                    ${totalDefeated} minion${totalDefeated !== 1 ? 's' : ''} defeated!
+                </div>
+                ${resultsHTML}
+                ${unused > 0 ? `<div style="color:#999;font-size:0.85em;margin-top:8px;">${unused} warrior${unused !== 1 ? 's' : ''} unused (no more targets in range)</div>` : ''}
+                <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Rolled ${state.sweepRoll} on D6</div>
+            </div>
+        `, () => {
+            // Draw new quest after sweep completes
+            this._drawAndShowNewQuest(state.heroIndex);
+        });
     },
     
     // ===== SCOUT THE GENERAL QUEST =====

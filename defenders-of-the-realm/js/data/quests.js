@@ -192,6 +192,30 @@ function createQuestDeck() {
         }
     });
     
+    // ── AMAZON ENVOY QUEST (1 card) ──
+    // Travel to Land of Amazons, spend 1 action, roll 3 dice (5+ succeeds).
+    // On success: roll 1d6, then select that many minions to defeat from locations within 2 spaces.
+    questDeck.push({
+        id: questId++,
+        name: 'Amazon Envoy',
+        description: 'Convince the Amazons to send warriors. Spend 1 action in the Land of Amazons and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.',
+        difficulty: 'Hard',
+        reward: 'Defeat D6 minions within 2 spaces of the Land of Amazons.',
+        effect: 'active',
+        completed: false,
+        location: 'Land of Amazons',
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'amazon_envoy_sweep',
+            rewardValue: 'Land of Amazons'
+        }
+    });
+    
     // ── PLACEHOLDER QUESTS (1 card) ──
     // These use the standard dice_roll mechanic but have no implemented reward yet.
     // rewardType: 'placeholder' — completion logs success but grants no mechanical benefit.

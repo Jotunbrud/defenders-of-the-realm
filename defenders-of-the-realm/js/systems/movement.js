@@ -1256,7 +1256,6 @@ Object.assign(game, {
                     </div>`;
                 }
             }
-            }
         }
 
         // Quest selector buttons

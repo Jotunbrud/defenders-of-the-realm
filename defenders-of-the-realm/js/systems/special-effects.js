@@ -324,9 +324,7 @@ Object.assign(game, {
                      style="border: 3px solid ${opt.hex}; cursor: pointer; padding: 14px; border-radius: 8px; background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); transition: all 0.2s; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
                      onmouseover="if(!this.classList.contains('li-selected')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)'"
                      onmouseout="if(!this.classList.contains('li-selected')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.3)'">
-                    <div style="font-size: 1.5em;">${opt.icon}</div>
-                    <div style="color: ${opt.hex}; font-weight: bold; margin-top: 4px; font-family:'Cinzel',Georgia,serif;">${opt.label}</div>
-                    <div style="color: #6b5b4a; font-size: 0.85em;">${opt.color.toUpperCase()}</div>
+                    <div style="color: ${opt.hex}; font-weight: bold; font-family:'Cinzel',Georgia,serif;">${opt.color.toUpperCase()}</div>
                 </div>
             `;
         });
@@ -340,7 +338,7 @@ Object.assign(game, {
             <div id="local-info-confirm-btn-row" style="display: none;">
                 <button id="local-info-confirm-btn" class="phase-btn" onclick="game._localInfoConfirmColor()">Confirm</button>
             </div>
-            <button class="phase-btn" onclick="game._localInfoPending = null; game.closeInfoModal()">Continue</button>
+            <button class="phase-btn" onclick="game._localInfoPending = null; game.closeInfoModal()">Cancel</button>
         `;
         
         this._localInfoSelectedColor = null;
@@ -461,6 +459,7 @@ Object.assign(game, {
             </div>
             ${cardsHTML}
             <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">Card played from ${hero.symbol} ${hero.name}'s hand — No action used</div>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         this.addLog(`📜 Special Card: ${hero.name} plays Local Information at ${hero.location} — Called ${chosenName}, drew ${drawnCards.length} cards, kept ${kept.length}`);
@@ -475,6 +474,8 @@ Object.assign(game, {
         this.showInfoModal('📜 Local Information — Results', summaryHTML);
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
     },
     
     

@@ -290,9 +290,7 @@ Object.assign(game, {
                      style="border: 3px solid ${opt.hex}; cursor: pointer; padding: 14px; border-radius: 8px; background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); transition: all 0.2s; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
                      onmouseover="if(!this.classList.contains('rum-selected')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)'"
                      onmouseout="if(!this.classList.contains('rum-selected')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.3)'">
-                    <div style="font-size: 1.5em;">${opt.icon}</div>
-                    <div style="color: ${opt.hex}; font-weight: bold; margin-top: 4px; font-family:'Cinzel',Georgia,serif;">${opt.label}</div>
-                    <div style="color: #6b5b4a; font-size: 0.85em;">${opt.color.toUpperCase()}</div>
+                    <div style="color: ${opt.hex}; font-weight: bold; font-family:'Cinzel',Georgia,serif;">${opt.color.toUpperCase()}</div>
                 </div>
             `;
         });
@@ -306,7 +304,7 @@ Object.assign(game, {
             <div id="rumors-confirm-btn-row" style="display: none;">
                 <button id="rumors-confirm-btn" class="phase-btn" onclick="game._rumorsConfirmColor()">Confirm</button>
             </div>
-            <button class="phase-btn" onclick="game._rumorsSelectedColor = null; game.closeInfoModal()">Continue</button>
+            <button class="phase-btn" onclick="game._rumorsSelectedColor = null; game.closeInfoModal()">Cancel</button>
         `;
         
         this._rumorsSelectedColor = null;
@@ -446,6 +444,7 @@ Object.assign(game, {
             </div>
             ${cardsResultHTML}
             <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         this._rumorsSelectedColor = null;
@@ -453,6 +452,8 @@ Object.assign(game, {
         this.showInfoModal('🍺 Rumors — Results', summaryHTML);
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
     },
     
     // Rogue Crafty: Draw 5 cards at Inn, keep matching color + specials (like Local Information)
@@ -505,9 +506,7 @@ Object.assign(game, {
                      style="border: 3px solid ${opt.hex}; cursor: pointer; padding: 14px; border-radius: 8px; background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); transition: all 0.2s; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
                      onmouseover="if(!this.classList.contains('crf-selected')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)'"
                      onmouseout="if(!this.classList.contains('crf-selected')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.3)'">
-                    <div style="font-size: 1.5em;">${opt.icon}</div>
-                    <div style="color: ${opt.hex}; font-weight: bold; margin-top: 4px; font-family:'Cinzel',Georgia,serif;">${opt.label}</div>
-                    <div style="color: #6b5b4a; font-size: 0.85em;">${opt.color.toUpperCase()}</div>
+                    <div style="color: ${opt.hex}; font-weight: bold; font-family:'Cinzel',Georgia,serif;">${opt.color.toUpperCase()}</div>
                 </div>
             `;
         });
@@ -521,7 +520,7 @@ Object.assign(game, {
             <div id="crafty-confirm-btn-row" style="display: none;">
                 <button id="crafty-confirm-btn" class="phase-btn" onclick="game._craftyConfirmColor()">Confirm</button>
             </div>
-            <button class="phase-btn" onclick="game._craftySelectedColor = null; game.closeInfoModal()">Continue</button>
+            <button class="phase-btn" onclick="game._craftySelectedColor = null; game.closeInfoModal()">Cancel</button>
         `;
         
         this._craftySelectedColor = null;
@@ -658,6 +657,7 @@ Object.assign(game, {
             </div>
             ${cardsResultHTML}
             <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         this._craftySelectedColor = null;
@@ -665,6 +665,8 @@ Object.assign(game, {
         this.showInfoModal('🗡️ Crafty — Results', summaryHTML);
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
     },
     
     showRumorsModal(card1, card2) {

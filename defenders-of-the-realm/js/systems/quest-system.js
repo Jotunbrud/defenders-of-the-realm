@@ -250,7 +250,7 @@ Object.assign(game, {
             <div id="use-special-card-btn-row" style="display: none;">
                 <button id="use-special-card-btn" class="phase-btn" style="background: linear-gradient(135deg, #7e22ce, #581c87); border-color: #9333ea; color: #fff;" onclick="game.confirmSpecialCard()">✨ Use Card</button>
             </div>
-            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal(modalTitle, contentHTML);
@@ -500,7 +500,7 @@ Object.assign(game, {
                 <button id="use-quest-btn" class="phase-btn" style="background: linear-gradient(135deg, #15803d, #166534); border-color: #16a34a; color: #fff;" onclick="game.confirmUseQuest()">✨ Use Quest Card</button>
             </div>
             <div id="quest-use-context-hint" style="text-align: center;"></div>
-            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal(modalTitle, contentHTML);

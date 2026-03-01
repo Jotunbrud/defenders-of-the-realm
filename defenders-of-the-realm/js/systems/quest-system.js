@@ -1838,7 +1838,9 @@ Object.assign(game, {
                 </div>
             `;
             
-            this.showInfoModal('🦄 Quest Complete!', contentHTML);
+            this.showInfoModal('🦄 Quest Complete!', contentHTML, () => {
+                this._drawAndShowNewQuest(heroIndex);
+            });
         } else {
             this.addLog(`📜 ❌ ${hero.name} failed Unicorn Steed quest (${actionCount} dice, no 5+)`);
             

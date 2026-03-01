@@ -2227,7 +2227,11 @@ Object.assign(game, {
                         (quest.mechanic.currentKills || 0) + killed,
                         quest.mechanic.requiredKills
                     );
-                    this.addLog(`📜 ${quest.name}: ${hero.name} defeated ${killed} ${faction === 'green' ? 'Orc' : faction} minion${killed !== 1 ? 's' : ''}! (${quest.mechanic.currentKills}/${quest.mechanic.requiredKills})`);
+                    const factionDisplayNames = { red: 'Demon', green: 'Orc', blue: 'Dragonkin', black: 'Undead' };
+                    const factionDisplayPlurals = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
+                    const factionSingular = factionDisplayNames[faction] || faction;
+                    const factionPlural = factionDisplayPlurals[faction] || faction;
+                    this.addLog(`📜 ${quest.name}: ${hero.name} defeated ${killed} ${killed !== 1 ? factionPlural : factionSingular}! (${quest.mechanic.currentKills}/${quest.mechanic.requiredKills})`);
                     
                     if (quest.mechanic.currentKills >= quest.mechanic.requiredKills && !quest.completed) {
                         quest.completed = true;
@@ -2237,9 +2241,9 @@ Object.assign(game, {
                         setTimeout(() => {
                             this.showInfoModal('📜 Quest Complete!', `
                                 <div style="text-align: center;">
-                                    <div style="font-size: 2.5em; margin-bottom: 8px;">👺</div>
+                                    <div style="font-size: 2.5em; margin-bottom: 8px;">🏹</div>
                                     <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">${quest.name} Complete!</div>
-                                    <div style="color: #d4af37; margin-bottom: 8px;">${quest.mechanic.requiredKills} ${faction === 'green' ? 'Orcs' : faction + ' minions'} defeated!</div>
+                                    <div style="color: #d4af37; margin-bottom: 8px;">${quest.mechanic.requiredKills} ${factionPlural} defeated!</div>
                                     <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
                                         🏆 ${quest.reward}
                                     </div>
@@ -2263,8 +2267,8 @@ Object.assign(game, {
         this._trackQuestMinionDefeats([{ color: faction, defeated: count, rolls: [] }]);
     },
     
-    // Find any hero with a completed Orc Hunter (block green minion placement) quest
-    _findOrcHunterQuestCard() {
+    // Find any hero with a completed faction hunter quest matching the given color
+    _findFactionHunterQuestCard(faction) {
         for (let i = 0; i < this.heroes.length; i++) {
             const hero = this.heroes[i];
             if (!hero.questCards || hero.health <= 0) continue;
@@ -2272,7 +2276,7 @@ Object.assign(game, {
                 const q = hero.questCards[j];
                 if (q.completed && !q.discarded && q.mechanic
                     && q.mechanic.rewardType === 'use_quest_card_anytime'
-                    && q.mechanic.rewardValue === 'block_minion_placement_green') {
+                    && q.mechanic.rewardValue === `block_minion_placement_${faction}`) {
                     return { hero, heroIndex: i, questIndex: j, quest: q };
                 }
             }
@@ -2280,22 +2284,24 @@ Object.assign(game, {
         return null;
     },
     
-    // Confirm use of Orc Hunter to block green minion placement
-    _orcHunterBlockConfirm(slot) {
-        const holder = this._findOrcHunterQuestCard();
-        if (!holder) return;
-        
+    // Confirm use of a faction hunter quest to block minion placement
+    _factionHunterBlockConfirm(slot) {
         const card = this.darknessCurrentCard;
         const slotFaction = slot === 1 ? card.faction1 : card.faction2;
+        const holder = this._findFactionHunterQuestCard(slotFaction);
+        if (!holder) return;
+        
         const slotLocation = slot === 1 ? card.location1 : card.location2;
+        const factionNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
+        const factionName = factionNames[slotFaction] || slotFaction;
         
         // Retire quest card
-        this._retireQuest(holder.hero, holder.quest, `Blocked green minion placement at ${slotLocation}`);
+        this._retireQuest(holder.hero, holder.quest, `Blocked ${factionName} placement at ${slotLocation}`);
         
-        // Store blocked state — reuse pattern from militia
-        this.orcHunterBlockedSlot = slot;
+        // Store blocked state
+        this.factionHunterBlockedSlot = slot;
         
-        this.addLog(`📜 👺 ${holder.hero.name} uses Orc Hunter — prevents Orc placement at ${slotLocation}!`);
+        this.addLog(`📜 🏹 ${holder.hero.name} uses ${holder.quest.name} — prevents ${factionName} placement at ${slotLocation}!`);
         
         this.closeInfoModal();
         this.renderHeroes();

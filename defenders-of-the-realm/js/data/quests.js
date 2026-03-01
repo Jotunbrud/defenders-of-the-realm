@@ -198,11 +198,7 @@ function createQuestDeck() {
     
     const placeholderQuests = [
         { name: 'Horn of Summoning', location: 'Eagle Peak Pass', description: 'Sound the ancient horn atop Eagle Peak to rally allies.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
-        { name: 'Crystal of Clarity', location: 'Crystal Hills', description: 'Attune to the crystal veins in the hills to gain insight.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
         { name: 'Tome of Lost Knowledge', location: 'Whispering Woods', description: 'Decipher the whispers of the woods to unlock the tome.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
-        { name: 'Gauntlets of Might', location: 'Orc Valley', description: 'Forge the gauntlets in the fires of Orc Valley.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
-
-        { name: 'Map of Hidden Paths', location: 'Wolf Pass', description: 'Navigate the treacherous pass to uncover secret routes.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Blessed Chalice', location: 'Angel Tear Falls', description: 'Fill the chalice with the waters of Angel Tear Falls.', reward: 'Placeholder — reward not yet implemented.', diceCount: 3, successOn: 5, failDiscard: true },
         { name: 'Shadow Blade', location: 'Ghost Marsh', description: 'Retrieve the cursed blade from the depths of the marsh.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true },
         { name: 'Talisman of Warding', location: 'Cursed Plateau', description: 'Perform the ritual of warding atop the cursed plateau.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true }
@@ -252,6 +248,72 @@ function createQuestDeck() {
             failDiscard: false,
             rewardType: 'use_quest_card_anytime',
             rewardValue: 'block_minion_placement_green'
+        }
+    });
+    
+    // Demon Hunter — Defeat 4 Red (Demon) minions in combat
+    questDeck.push({
+        id: questId++,
+        name: 'Demon Hunter',
+        description: 'Defeat 4 Demons. As you fulfill this quest, place each Demon you defeat onto this card for reference.',
+        difficulty: 'Medium',
+        reward: 'Discard this Quest Card to avoid placing troops in 1 Red Location noted on a Darkness Spreads Card.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'defeat_faction_minions',
+            faction: 'red',
+            requiredKills: 4,
+            currentKills: 0,
+            actionCost: 0,
+            failDiscard: false,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'block_minion_placement_red'
+        }
+    });
+    
+    // Dragon Hunter — Defeat 3 Blue (Dragonkin) minions in combat
+    questDeck.push({
+        id: questId++,
+        name: 'Dragon Hunter',
+        description: 'Defeat 3 Dragonkin. As you fulfill this quest, place each Dragonkin you defeat onto this card for reference.',
+        difficulty: 'Medium',
+        reward: 'Discard this Quest Card to avoid placing troops in 1 Blue Location noted on a Darkness Spreads Card.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'defeat_faction_minions',
+            faction: 'blue',
+            requiredKills: 3,
+            currentKills: 0,
+            actionCost: 0,
+            failDiscard: false,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'block_minion_placement_blue'
+        }
+    });
+    
+    // Undead Hunter — Defeat 4 Black (Undead) minions in combat
+    questDeck.push({
+        id: questId++,
+        name: 'Undead Hunter',
+        description: 'Defeat 4 Undead. As you fulfill this quest, place each Undead you defeat onto this card for reference.',
+        difficulty: 'Medium',
+        reward: 'Discard this Quest Card to avoid placing troops in 1 Black Location noted on a Darkness Spreads Card.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'defeat_faction_minions',
+            faction: 'black',
+            requiredKills: 4,
+            currentKills: 0,
+            actionCost: 0,
+            failDiscard: false,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'block_minion_placement_black'
         }
     });
     

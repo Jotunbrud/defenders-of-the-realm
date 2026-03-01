@@ -1290,6 +1290,20 @@ Object.assign(game, {
         }
         
         const quest = this.questDeck.pop();
+        
+        // Scout the General: if the general is already defeated, discard and draw again
+        if (quest.mechanic && quest.mechanic.type === 'scout_general') {
+            const targetGeneral = this.generals ? this.generals.find(g => g.name === quest.mechanic.generalName) : null;
+            if (targetGeneral && targetGeneral.defeated) {
+                quest.discarded = true;
+                quest.discardReason = 'General already defeated';
+                this.questDiscardPile++;
+                this.addLog(`📜 ${hero.name} drew ${quest.name} but ${quest.mechanic.generalName} is already defeated — discarded, drawing again...`);
+                this.updateDeckCounts();
+                return this.drawQuestCard(heroIndex);
+            }
+        }
+        
         hero.questCards.push(quest);
         this.addLog(`📜 ${hero.name} draws a new quest: ${quest.name}`);
         this.updateDeckCounts();

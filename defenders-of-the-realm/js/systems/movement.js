@@ -410,6 +410,38 @@ Object.assign(game, {
             return true;
         }
         
+        // Gryphon Move: move selected hero to clicked location
+        if (this.activeMovement.isGryphonMove) {
+            if (!this.activeMovement.validDestinations || !this.activeMovement.validDestinations.includes(locationName)) {
+                console.log(`[MOVEMENT] ❌ Not a valid Gryphon Move destination`);
+                return false;
+            }
+            
+            if (!this._gryphonState) return false;
+            
+            this._gryphonLocationSelected(locationName);
+            return true;
+        }
+        
+        // Amazon Envoy: open minion picker at clicked location
+        if (this.activeMovement.isAmazonEnvoy) {
+            if (!this.activeMovement.validDestinations || !this.activeMovement.validDestinations.includes(locationName)) {
+                console.log(`[MOVEMENT] ❌ Not a valid Amazon Envoy target`);
+                return false;
+            }
+            
+            if (!this._amazonEnvoyState) return false;
+            
+            // Clean up highlights
+            document.querySelectorAll('.location-highlight').forEach(el => el.remove());
+            const indicatorAE = document.getElementById('movement-indicator');
+            if (indicatorAE) indicatorAE.remove();
+            
+            // Open the minion picker for this location
+            this._amazonEnvoyShowPicker(locationName);
+            return true;
+        }
+        
         // Battle Strategy — Minion Phase: clear all minions from clicked location
         if (this.activeMovement.isBattleStrategyMinions) {
             if (!this.activeMovement.validDestinations || !this.activeMovement.validDestinations.includes(locationName)) {
@@ -641,6 +673,24 @@ Object.assign(game, {
         // Special handling for King's Guard - card already consumed, finish with results so far
         if (this.activeMovement.isKingsGuard && this.kingsGuardState) {
             this._finishKingsGuard();
+            return;
+        }
+        
+        // Special handling for Amazon Envoy - quest already consumed, finish with results so far
+        if (this.activeMovement.isAmazonEnvoy && this._amazonEnvoyState) {
+            this._finishAmazonEnvoy();
+            return;
+        }
+        
+        // Special handling for Gryphon Move - finish with moves made so far
+        if (this.activeMovement.isGryphonMove && this._gryphonState) {
+            if (this._gryphonState.results.length > 0) {
+                this._finishGryphonMove();
+            } else {
+                // No moves made, just cancel
+                this._gryphonState = null;
+                this.clearMovementMode();
+            }
             return;
         }
         
@@ -996,6 +1046,9 @@ Object.assign(game, {
                 progressNote = ` (${done}/${total})`;
             } else if (q.mechanic?.type === 'defeat_faction_minions') {
                 progressNote = ` (${q.mechanic.currentKills || 0}/${q.mechanic.requiredKills})`;
+            } else if (q.mechanic?.type === 'defeat_all_factions' && q.mechanic.factionKills) {
+                const done = Object.values(q.mechanic.factionKills).filter(v => v >= (q.mechanic.requiredPerFaction || 1)).length;
+                progressNote = ` (${done}/4)`;
             } else if (q.mechanic?.type === 'scout_general') {
                 const gen = this.generals ? this.generals.find(g => g.name === q.mechanic.generalName) : null;
                 if (gen && !gen.defeated) {
@@ -1239,6 +1292,25 @@ Object.assign(game, {
                 progressHTML = `<div style="margin-top:8px;text-align:center;">
                     <div style="font-size:1.3em;letter-spacing:4px;">${pips}</div>
                     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">${current} / ${required} ${factionName} Defeated</div>
+                </div>`;
+            }
+            if (quest.mechanic.type === 'defeat_all_factions' && quest.mechanic.factionKills) {
+                const fk = quest.mechanic.factionKills;
+                const req = quest.mechanic.requiredPerFaction;
+                const factionInfo = [
+                    { color: 'blue', name: 'Dragonkin', emoji: '🔵' },
+                    { color: 'green', name: 'Orc', emoji: '🟢' },
+                    { color: 'red', name: 'Demon', emoji: '🔴' },
+                    { color: 'black', name: 'Undead', emoji: '⚫' }
+                ];
+                let pips = '';
+                factionInfo.forEach(f => {
+                    pips += (fk[f.color] || 0) >= req ? f.emoji : '⬜';
+                });
+                const done = Object.values(fk).filter(v => v >= req).length;
+                progressHTML = `<div style="margin-top:8px;text-align:center;">
+                    <div style="font-size:1.3em;letter-spacing:4px;">${pips}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">${done} / 4 Factions Defeated</div>
                 </div>`;
             }
             if (quest.mechanic.type === 'scout_general') {

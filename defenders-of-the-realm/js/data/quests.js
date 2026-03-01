@@ -192,35 +192,135 @@ function createQuestDeck() {
         }
     });
     
-    // ── PLACEHOLDER QUESTS (1 card) ──
-    // These use the standard dice_roll mechanic but have no implemented reward yet.
-    // rewardType: 'placeholder' — completion logs success but grants no mechanical benefit.
+    // ── AMAZON ENVOY QUEST (1 card) ──
+    // Travel to Land of Amazons, spend 1 action, roll 3 dice (5+ succeeds).
+    // On success: roll 1d6, then select that many minions to defeat from locations within 2 spaces.
+    questDeck.push({
+        id: questId++,
+        name: 'Amazon Envoy',
+        description: 'Convince the Amazons to send warriors. Spend 1 action in the Land of Amazons and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.',
+        difficulty: 'Hard',
+        reward: 'Defeat D6 minions within 2 spaces of the Land of Amazons.',
+        effect: 'active',
+        completed: false,
+        location: 'Land of Amazons',
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'amazon_envoy_sweep',
+            rewardValue: 'Land of Amazons'
+        }
+    });
     
-    const placeholderQuests = [
-        { name: 'Talisman of Warding', location: 'Cursed Plateau', description: 'Perform the ritual of warding atop the cursed plateau.', reward: 'Placeholder — reward not yet implemented.', diceCount: 4, successOn: 6, failDiscard: true }
-    ];
+    // Amarak's Blessing — Ignore general combat skill
+    questDeck.push({
+        id: questId++,
+        name: "Amarak's Blessing",
+        description: "Travel to Raven Forest to find the hidden tower of the ancient wizard Amarak. Spend 1 action and roll 3 dice. A roll of 6 on any of the dice succeeds.",
+        difficulty: 'Easy',
+        reward: 'Discard this Quest Card at any time to ignore the special ability of a General in combat.',
+        effect: 'active',
+        completed: false,
+        location: 'Raven Forest',
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 6,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'amarak_ignore_combat_skill'
+        }
+    });
     
-    placeholderQuests.forEach(pq => {
-        questDeck.push({
-            id: questId++,
-            name: pq.name,
-            description: pq.description + ` Spend 1 action and roll ${pq.diceCount} dice. A roll of ${pq.successOn}+ on any die succeeds.`,
-            difficulty: 'Medium',
-            reward: pq.reward,
-            effect: 'passive',
-            completed: false,
-            location: pq.location,
-            mechanic: {
-                type: 'dice_roll',
-                actionCost: 1,
-                diceCount: pq.diceCount,
-                successOn: pq.successOn,
-                successCount: 1,
-                failDiscard: pq.failDiscard,
-                rewardType: 'placeholder',
-                rewardValue: 'Not yet implemented'
-            }
-        });
+    // Raids — Defeat 1 of each minion type
+    questDeck.push({
+        id: questId++,
+        name: 'Raids',
+        description: 'Defeat 1 of each Minion: Dragonkin, Orc, Demon, and Undead. As you fulfill this quest, place each Minion you defeat onto this card for reference.',
+        difficulty: 'Medium',
+        reward: 'Discard this Quest Card to avoid drawing all Darkness Spreads Cards at the end of your turn.',
+        effect: 'active',
+        completed: false,
+        location: null,
+        mechanic: {
+            type: 'defeat_all_factions',
+            factionKills: { red: 0, green: 0, blue: 0, black: 0 },
+            requiredPerFaction: 1,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'raids_skip_darkness'
+        }
+    });
+    
+    // King of the Gryphons
+    questDeck.push({
+        id: questId++,
+        name: 'King of the Gryphons',
+        description: "Travel to Gryphon Forest to request assistance from the Gryphon King. Spend 1 action and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.",
+        difficulty: 'Medium',
+        reward: 'Discard this Quest Card at any time to move up to 2 Heroes to any 2 locations. This move does not count as an action.',
+        effect: 'active',
+        completed: false,
+        location: 'Gryphon Forest',
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'use_quest_card_anytime',
+            rewardValue: 'gryphon_move_heroes'
+        }
+    });
+    
+    // Duke Envoy
+    questDeck.push({
+        id: questId++,
+        name: 'Duke Envoy',
+        description: 'Convince the Duke to send warriors. Spend 1 action in McCorm Highlands and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.',
+        difficulty: 'Hard',
+        reward: 'Defeat D6 minions within 2 spaces of McCorm Highlands.',
+        effect: 'active',
+        completed: false,
+        location: 'McCorm Highlands',
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'amazon_envoy_sweep',
+            rewardValue: 'McCorm Highlands'
+        }
+    });
+    
+    // Elf Envoy
+    questDeck.push({
+        id: questId++,
+        name: 'Elf Envoy',
+        description: "Convince the Elves to send warriors. Spend 1 action in Heaven's Glade and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.",
+        difficulty: 'Hard',
+        reward: "Defeat D6 minions within 2 spaces of Heaven's Glade.",
+        effect: 'active',
+        completed: false,
+        location: "Heaven's Glade",
+        mechanic: {
+            type: 'dice_roll',
+            actionCost: 1,
+            diceCount: 3,
+            successOn: 5,
+            successCount: 1,
+            failDiscard: true,
+            rewardType: 'amazon_envoy_sweep',
+            rewardValue: "Heaven's Glade"
+        }
     });
     
     // ── DEFEAT FACTION MINIONS QUEST ──

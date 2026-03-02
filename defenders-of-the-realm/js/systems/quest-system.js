@@ -480,9 +480,9 @@ Object.assign(game, {
             ${activeQuests.length > 0 ? cardsHTML : '<div style="color: #666; margin-bottom: 10px;">No active quest cards.</div>'}
             ${archivedHTML}
             <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game.closeInfoModal()">Close</button>
+                <button class="btn" style="flex: 1; background: #666;" onclick="game.closeInfoModal()">Cancel</button>
                 <button id="view-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmViewQuest()">🗺️ View Quest</button>
-                <button id="use-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmUseQuest()">✨ Use</button>
+                <button id="use-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmUseQuest()">Use</button>
             </div>
             <div id="quest-use-context-hint" style="text-align: center;"></div>
         `;

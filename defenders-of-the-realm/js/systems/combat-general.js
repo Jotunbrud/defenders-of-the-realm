@@ -1922,37 +1922,33 @@ Object.assign(game, {
         modal.id = 'movement-card-modal';
         modal.style.zIndex = '16000';
         
-        const cardColorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
         };
         
         let cardsHTML = '';
         cardIndices.forEach(cardIndex => {
             const card = hero.cards[cardIndex];
-            const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
-            const cardIcon = card.icon || '🎴';
+            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
+            const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
+            const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
             
             cardsHTML += `
                 <div onclick="event.stopPropagation(); game.selectMovementCard(${cardIndex}, '${movementType}')" 
-                     style="padding: 15px; margin: 10px 0; border: 3px solid ${borderColor}; border-radius: 8px; background: rgba(0,0,0,0.5); cursor: pointer; transition: background 0.2s;"
-                     onmouseover="this.style.background='rgba(0,0,0,0.7)'"
-                     onmouseout="this.style.background='rgba(0,0,0,0.5)'">
-                    <div style="text-align: center; font-size: 1.5em; margin-bottom: 8px;">
-                        ${cardIcon}
-                    </div>
-                    <div style="font-size: 1.1em; font-weight: bold; color: ${borderColor}; margin-bottom: 8px; text-align: center;">
-                        ${card.name}
-                    </div>
-                    <div style="text-align: center; margin: 8px 0;">
-                        ${Array(card.dice).fill(0).map(() => 
-                            `<span style="display: inline-block; width: 24px; height: 24px; background: ${borderColor}; border-radius: 4px; margin: 2px; line-height: 24px; text-align: center; font-weight: bold;">🎲</span>`
-                        ).join('')}
-                    </div>
-                </div>
-            `;
+                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${shadow}"
+                     onmouseover="this.style.boxShadow='0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';this.style.borderColor='#d4af37'"
+                     onmouseout="this.style.boxShadow='${shadow.replace(/;$/,'')}';this.style.borderColor='${cc.border}'">
+                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                </div>`;
         });
         
         const typeIcon = movementType === 'Magic Gate' ? '🌀' : movementType === 'Horse' ? '🐎' : '🦅';
@@ -1962,12 +1958,16 @@ Object.assign(game, {
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;">
                 <button onclick="this.closest('.modal').remove()" class="modal-close-btn">×</button>
-                <h2 class="modal-title">${typeIcon} ${movementType} Movement</h2>
-                <p style="text-align: center; color: #d4af37; margin-bottom: 15px;">
+                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">${typeIcon} ${movementType} Movement</div>
+                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
                     Select a card to discard and move to ${typeDesc}
-                </p>
-                ${cardsHTML}
-                <button class="btn" onclick="this.closest('.modal').remove()" style="width: 100%; margin-top: 15px;">
+                </div>
+                <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Select a Card to Discard</span></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                        ${cardsHTML}
+                    </div>
+                </div>
+                <button class="phase-btn" onclick="this.closest('.modal').remove()" style="margin-top:12px">
                     Cancel
                 </button>
             </div>
@@ -2144,18 +2144,21 @@ Object.assign(game, {
         if (!indicator) {
             indicator = document.createElement('div');
             indicator.id = 'movement-indicator';
+            const mapBar = document.querySelector('.map-top-bar');
+            const topPos = mapBar ? (mapBar.getBoundingClientRect().top) + 'px' : '40px';
             indicator.style.cssText = `
                 position: fixed;
-                top: 80px;
+                top: ${topPos};
                 left: 50%;
                 transform: translateX(-50%);
                 background: rgba(0,0,0,0.9);
                 border: 3px solid #d4af37;
                 border-radius: 10px;
-                padding: 15px 25px;
+                padding: 12px 18px;
                 z-index: 25000;
                 text-align: center;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+                max-width: 280px;
             `;
             document.body.appendChild(indicator);
         }
@@ -2178,7 +2181,7 @@ Object.assign(game, {
         
         let cardInfo = '';
         if (movement.cardUsed) {
-            cardInfo = `<div style="color: #f4e4c1; margin-bottom: 10px;">
+            cardInfo = `<div style="color: #f4e4c1; margin-bottom: 6px; font-size: 0.85em;">
                 Using: ${movement.cardUsed.icon} ${movement.cardUsed.name}
             </div>`;
         }
@@ -2200,20 +2203,20 @@ Object.assign(game, {
             'Click a highlighted location to teleport' : 
             'Click connected locations to move';
         const movesInfo = (isTeleport && movement.movementType !== 'Elven Archers' && movement.movementType !== 'Battle Strategy') ? '' : `
-            <div style="color: #4ade80; font-size: 1.1em; margin-bottom: 10px;">
+            <div style="color: #4ade80; font-size: 0.95em; margin-bottom: 6px;">
                 ${movement.movementType === 'Elven Archers' ? 'Locations Remaining' : movement.movementType === 'Battle Strategy' ? 'Locations Remaining' : 'Moves Remaining'}: ${movement.movesRemaining} / ${movement.maxMoves}
             </div>`;
         
         indicator.innerHTML = `
-            <div style="color: #ffd700; font-size: 1.2em; font-weight: bold; margin-bottom: 5px;">
-                ${icon} ${isTeleport ? movement.movementType : movement.movementType + ' Movement'} Active
+            <div style="color: #ffd700; font-size: 1em; font-weight: bold; margin-bottom: 4px; font-family:'Cinzel',Georgia,serif;">
+                ${icon} ${isTeleport ? movement.movementType : movement.movementType + ' Movement'}
             </div>
             ${cardInfo}
             ${movesInfo}
-            <div style="font-size: 0.9em; color: #d4af37;">
+            <div style="font-size: 0.8em; color: #d4af37;">
                 ${instructionText}
             </div>
-            <button class="btn btn-danger" onclick="game.cancelMovement()" style="margin-top: 10px; width: 100%;">
+            <button class="btn btn-danger" onclick="game.cancelMovement()" style="margin-top: 8px; width: 100%; font-size: 0.85em; padding: 6px;">
                 ✕ Cancel Movement
             </button>
         `;

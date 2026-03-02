@@ -167,7 +167,6 @@
                         </div>
                     </div>
                     </div>
-                    <div id="war-status-desc" style="font-family: Georgia, serif; font-size: 0.78em; color: #6b5b4a; text-align: center; margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(139,115,85,0.3);"></div>
                 </div>
             </div>
         </div>
@@ -177,7 +176,7 @@
     <div class="modal active" id="setup-modal">
         <div class="modal-content">
             <h2 class="modal-heading" style="color: #d4af37; margin: 0; font-size: 1.2em; text-align: center;">⚔️ Hero Selection</h2>
-            <p class="modal-desc-text" style="margin-bottom: 15px; text-align: center;">Select your heroes (1-4 players)</p>
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">Select your heroes (1-4 players)</div>
             <div id="hero-selection"></div>
             
             <!-- White Rabbit Test General (hidden) -->
@@ -247,6 +246,7 @@
             <div class="action-tray">
                 <div class="action-tray-title">Actions</div>
                 <div class="action-btns">
+                    <div class="action-row action-row-top">
                     <button class="phase-btn" id="foot-movement-btn" onclick="game.showFootMovement()" title="Movement by foot — walk 1 adjacent location per action">
                         <span class="action-btn-icon">🥾 </span>Foot
                     </button>
@@ -271,18 +271,20 @@
                     <button class="phase-btn" id="sanctify-land-btn" onclick="game.healLandCrystal()" style="display: none;" title="Sanctify Land: Heal tainted land without cards, roll 5+ to remove">
                         <span class="action-btn-icon">✝️ </span>Sanctify Land
                     </button>
+                    <button class="phase-btn" id="crafty-btn" onclick="game.craftyAction()" style="display: none;" title="Crafty: Draw 5 cards at Inn, keep matching color + specials">
+                        <span class="action-btn-icon">🗡️ </span>Crafty
+                    </button>
                     <button class="phase-btn" id="build-magic-gate-btn" onclick="game.buildMagicGate()" disabled title="Build a magic gate">
                         <span class="action-btn-icon">💫 </span>Build Magic Gate
                     </button>
                     <button class="phase-btn" id="rumors-btn" onclick="game.rumorsAction()" title="Rumors at the Inn">
                         <span class="action-btn-icon">🍺 </span>Rumors
                     </button>
-                    <button class="phase-btn" id="crafty-btn" onclick="game.craftyAction()" style="display: none;" title="Crafty: Draw 5 cards at Inn, keep matching color + specials">
-                        <span class="action-btn-icon">🗡️ </span>Crafty
-                    </button>
                     <button class="phase-btn" id="heal-land-btn" onclick="game.healLandCrystal()" title="Heal the Land">
                         <span class="action-btn-icon">🌳 </span>Heal the Land
                     </button>
+                    </div>
+                    <div class="action-row action-row-bottom">
                     <button class="phase-btn" id="healing-wounds-btn" onclick="game.healingWoundsAction()" title="Healing Wounds">
                         <span class="action-btn-icon">❤️ </span>Healing Wounds
                     </button>
@@ -302,6 +304,7 @@
                         <span class="action-btn-icon">🌟 </span>Special Cards
                     </button>
                     <button class="phase-btn danger" id="map-end-turn-btn" onclick="game.endTurnFromMap()">End Turn</button>
+                    </div>
                 </div>
             </div>
             

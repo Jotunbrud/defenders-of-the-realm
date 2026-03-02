@@ -245,10 +245,9 @@ Object.assign(game, {
                     </div>
                     <div style="padding:12px 14px;">
                         <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
-                        <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
-                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
-                        </div>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                        <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                        ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#3d2b1f;margin-top:4px;text-align:center;">Discard if Failed</div>' : ''}
                     </div>
                 </div>
             `;
@@ -260,7 +259,6 @@ Object.assign(game, {
                 <div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:10px;">
                     Each hero has been assigned a quest to complete!<br>Quests may not be discarded. Complete them to earn rewards and draw new quests.
                 </div>
-                <div class="sep"></div>
                 ${questsHTML}
             ${this._parchmentBoxClose()}
             <button class="phase-btn" onclick="game.closeInfoModal(); game._showGeneralSetupModal();">Continue</button>
@@ -309,7 +307,6 @@ Object.assign(game, {
                 <div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:10px;">
                     Each General begins with 3 minions at their starting location.
                 </div>
-                <div class="sep"></div>
                 ${generalsHTML}
             ${this._parchmentBoxClose()}
             <button class="phase-btn" onclick="game.closeInfoModal(); game._runSetupDarkness();">Continue</button>

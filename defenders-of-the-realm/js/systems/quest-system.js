@@ -3,6 +3,13 @@
 // ═══════════════════════════════════════════════════════════════
 
 Object.assign(game, {
+    // Style info-modal title and button to match end-of-turn parchment design
+    _styleQuestModal() {
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
+        const contBtn = document.querySelector('#info-modal .modal-content > div:last-child .btn-primary');
+        if (contBtn) { contBtn.className = 'phase-btn'; contBtn.style.marginTop = '8px'; }
+    },
     wizardFireball() {
         // Cancel any active movement
         if (this.activeMovement) {
@@ -218,22 +225,19 @@ Object.assign(game, {
         
         this._selectedSpecialCard = null;
         
-        let cardsHTML = '<div id="special-cards-list" style="display: flex; flex-direction: column; gap: 10px;">';
+        let cardsHTML = '<div id="special-cards-list" style="display: flex; flex-direction: column; gap: 8px;">';
         specialCards.forEach(({ hero, heroIndex, card, cardIndex }, i) => {
             cardsHTML += `
                 <div id="special-card-option-${i}" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})"
-                     style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid #8b7355; border-radius: 10px; cursor: pointer; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3); transition: all 0.2s;"
-                     onmouseover="if(!this.classList.contains('selected-special')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(139,115,85,0.3)'"
-                     onmouseout="if(!this.classList.contains('selected-special')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)'">
-                    <div style="background: linear-gradient(135deg, #7e22cecc 0%, #6b21a899 100%); padding: 5px 14px; border-bottom: 2px solid #8b7355; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
-                        <div class="hero-banner-name" style="font-size: 0.85em;">${card.icon || '💫'} ${card.name}</div>
-                        <div style="font-size: 0.78em; color: #f0e6d3; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">${hero.symbol} ${hero.name}</div>
+                     style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #6d28a8;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(109,40,168,0.4);cursor:pointer;transition:all 0.2s;">
+                    <div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">${card.icon || '💫'} ${card.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
                     </div>
-                    <div style="padding: 10px 14px;">
-                        <div class="modal-desc-text" style="font-size: 0.8em; color: #3d2b1f; line-height: 1.5;">${card.description || card.type}</div>
-                        <div style="margin-top: 4px;">
-                            <span style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.75em; color:#6b21a8;">Combat:</span>
-                            <span class="modal-desc-text" style="font-size:0.78em; color:#3d2b1f;"> ${card.dice} ${card.dice === 1 ? 'die' : 'dice'} vs ${card.color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[card.color] || 'Any')}</span>
+                    <div style="padding:10px 14px;">
+                        <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px;">${card.description || card.type}</div>
+                        <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);display:flex;justify-content:space-between;align-items:center;">
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'} vs ${card.color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[card.color] || 'Any')}</span>
                         </div>
                     </div>
                 </div>
@@ -241,27 +245,20 @@ Object.assign(game, {
         });
         cardsHTML += '</div>';
         
-        const modalTitle = '🌟 Special Cards';
         const contentHTML = `
-            <div class="modal-heading" style="font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
-                Special cards can be played at any time without using an action. Select a card:
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
+                Special cards can be played at any time without using an action.
             </div>
-            ${cardsHTML}
-            <div id="use-special-card-btn-row" style="display: none;">
-                <button id="use-special-card-btn" class="phase-btn" style="background: linear-gradient(135deg, #7e22ce, #581c87); border-color: #9333ea; color: #fff;" onclick="game.confirmSpecialCard()">✨ Use Card</button>
-            </div>
+            ${this._parchmentBoxOpen('Select a Card')}
+                ${cardsHTML}
+            ${this._parchmentBoxClose()}
+            <button id="use-special-card-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmSpecialCard()">Use Card</button>
             <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
-        this.showInfoModal(modalTitle, contentHTML);
-        // Style title to match end-of-turn modal heading
+        this.showInfoModal('🌟 Special Cards', contentHTML);
         const titleEl = document.getElementById('info-modal-title');
-        if (titleEl) {
-            titleEl.className = 'modal-heading';
-            titleEl.style.textAlign = 'center';
-            titleEl.style.fontSize = '1.15em';
-            titleEl.style.marginBottom = '12px';
-        }
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
         // Hide the default Continue button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#use-special-card-btn')) defaultBtnDiv.style.display = 'none';
@@ -273,8 +270,8 @@ Object.assign(game, {
         // Clear all selections
         document.querySelectorAll('#special-cards-list > div').forEach(el => {
             el.classList.remove('selected-special');
-            el.style.borderColor = '#8b7355';
-            el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)';
+            el.style.borderColor = '#6d28a8';
+            el.style.boxShadow = '0 0 8px rgba(109,40,168,0.4)';
         });
         
         // Highlight selected
@@ -282,13 +279,15 @@ Object.assign(game, {
         if (selected) {
             selected.classList.add('selected-special');
             selected.style.borderColor = '#d4af37';
-            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(212,175,55,0.3)';
+            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';
         }
         
-        // Show Use Card button
-        const useBtnRow = document.getElementById('use-special-card-btn-row');
-        if (useBtnRow) {
-            useBtnRow.style.display = 'block';
+        // Enable Use Card button
+        const useBtn = document.getElementById('use-special-card-btn');
+        if (useBtn) {
+            useBtn.disabled = false;
+            useBtn.style.opacity = '1';
+            useBtn.style.cursor = '';
         }
     },
     
@@ -405,16 +404,22 @@ Object.assign(game, {
         this._selectedQuestCard = null;
         this._questCardsList = activeQuests;
         
-        let cardsHTML = '<div id="quest-cards-list" style="display: flex; flex-direction: column; gap: 10px;">';
+        let cardsHTML = '<div id="quest-cards-list" style="display: flex; flex-direction: column; gap: 8px;">';
         activeQuests.forEach(({ hero, heroIndex, quest, questIndex }, i) => {
-            const statusIcon = quest.completed ? '✅' : '⏳';
-            const statusText = quest.completed ? 'COMPLETED' : 'In Progress';
-            let statusBg, statusBorder, statusColor;
+            const statusText = quest.completed ? 'COMPLETED' : 'IN PROGRESS';
+            let statusLabel, statusBg, statusBorder, statusColor;
             if (quest.completed) {
-                statusBg = 'rgba(22,163,74,0.15)'; statusBorder = '#16a34a'; statusColor = '#15803d';
+                statusLabel = 'Completed';
+                statusBg = 'rgba(22,163,74,0.15)';
+                statusBorder = '#16a34a';
+                statusColor = '#15803d';
             } else {
-                statusBg = 'rgba(202,138,4,0.15)'; statusBorder = '#ca8a04'; statusColor = '#a16207';
+                statusLabel = 'In Progress';
+                statusBg = 'rgba(202,138,4,0.15)';
+                statusBorder = '#ca8a04';
+                statusColor = '#a16207';
             }
+            const bannerBg = 'linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%)';
             let locationText = quest.location ? `📍 ${quest.location}` : '';
             
             // Multi-location progress (Rumors, Organize Militia)
@@ -423,16 +428,16 @@ Object.assign(game, {
                 locationText = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
                     const emoji = colorEmojis[data.color] || '⭕';
                     const check = data.visited ? '✅' : '⬜';
-                    const clr = data.visited ? '#15803d' : '#8b7355';
-                    return `<span style="color: ${clr};">${emoji} ${loc} ${check}</span>`;
+                    const color = data.visited ? '#16a34a' : '#8b7355';
+                    return `<span style="color: ${color};">${emoji} ${loc} ${check}</span>`;
                 }).join(' &nbsp;');
             }
             if (!quest.completed && quest.mechanic && quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
                 locationText = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
                     const emoji = colorEmojis[data.color] || '⭕';
                     const check = data.organized ? '✅' : '⬜';
-                    const clr = data.organized ? '#15803d' : '#8b7355';
-                    return `<span style="color: ${clr};">${emoji} ${loc} ${check}</span>`;
+                    const color = data.organized ? '#16a34a' : '#8b7355';
+                    return `<span style="color: ${color};">${emoji} ${loc} ${check}</span>`;
                 }).join(' &nbsp;');
             }
             if (quest.mechanic && quest.mechanic.type === 'build_gate_red' && !quest.completed) {
@@ -441,22 +446,21 @@ Object.assign(game, {
             
             cardsHTML += `
                 <div id="quest-card-option-${i}" onclick="game.selectQuestCard(${i}, ${heroIndex}, ${questIndex})"
-                     style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid #8b7355; border-radius: 10px; cursor: pointer; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3); transition: all 0.2s;"
-                     onmouseover="if(!this.classList.contains('selected-quest')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(139,115,85,0.3)'"
-                     onmouseout="if(!this.classList.contains('selected-quest')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)'">
-                    <div style="background: linear-gradient(135deg, #b91c1ccc 0%, #b91c1c99 100%); padding: 5px 14px; border-bottom: 2px solid #8b7355; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
-                        <div class="hero-banner-name" style="font-size: 0.85em;">📜 ${quest.name}</div>
-                        ${filterHeroIndex === null ? `<div style="font-size: 0.78em; color: #f0e6d3; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">${hero.symbol} ${hero.name}</div>` : ''}
+                     style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);cursor:pointer;transition:all 0.2s;">
+                    <div style="background:${bannerBg};padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">📜 ${quest.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">${filterHeroIndex === null ? hero.symbol + ' ' + hero.name : ''}</span>
                     </div>
-                    <div style="padding: 10px 14px;">
-                        <div class="modal-desc-text" style="font-size: 0.8em; color: #3d2b1f; line-height: 1.5;">${quest.description}</div>
-                        ${locationText ? `<div style="font-size: 0.78em; color: #6b5b4a; margin-top: 4px;">${locationText}</div>` : ''}
-                        <div style="margin-top: 4px;">
-                            <span style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.75em; color:#b91c1c;">Reward:</span>
-                            <span class="modal-desc-text" style="font-size:0.78em; color:#3d2b1f;"> ${quest.reward}</span>
+                    <div style="padding:10px 14px;">
+                        <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px;">${quest.description}</div>
+                        ${locationText ? `<div style="font-size:0.75em;color:#5c4a3a;margin-bottom:4px;">${locationText}</div>` : ''}
+                        <div style="margin-top:8px;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                         </div>
-                        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px;">
-                            <span style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.75em; padding:2px 8px; border-radius:4px; background:${statusBg}; border:1px solid ${statusBorder}; color:${statusColor};">${statusIcon} ${statusText}</span>
+                        ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#3d2b1f;margin-top:4px;text-align:center;">Discard if Failed</div>' : ''}
+                        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${statusBg};border:1px solid ${statusBorder};color:${statusColor};">${statusLabel}</span>
                         </div>
                     </div>
                 </div>
@@ -467,54 +471,54 @@ Object.assign(game, {
         // Build retired quests section (used/discarded/failed)
         let archivedHTML = '';
         if (retiredQuests.length > 0) {
-            archivedHTML = '<div style="margin-top: 16px; padding-top: 12px; border-top: 2px solid rgba(139,115,85,0.5);">';
-            archivedHTML += '<div class="modal-heading" style="font-size:0.85em; color:#d4af37; margin-bottom: 8px;">📋 Quest History</div>';
+            archivedHTML = '<div style="margin-top: 12px;">';
+            archivedHTML += `${this._parchmentBoxOpen('📋 Quest History')}`;
             retiredQuests.forEach(({ hero, quest, isLegacy }) => {
-                const icon = quest.failed ? '❌' : '🏆';
                 const label = isLegacy ? (quest.useReason || 'Used') : (quest.failed ? 'Failed' : (quest.discardReason || 'Used'));
+                const statusText = quest.failed ? 'FAILED' : 'USED';
+                const statusColor = quest.failed ? '#dc2626' : '#8b7355';
                 archivedHTML += `
-                    <div style="background: linear-gradient(135deg, #e8dcc8 0%, #d5c9b3 100%); border: 2px solid #a89880; padding: 0; border-radius: 8px; margin-bottom: 6px; opacity: 0.7; overflow: hidden;">
-                        <div style="background: rgba(100,80,60,0.5); padding: 4px 12px; border-bottom: 1px solid #a89880; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
-                            <div style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.85em; color:#f0e6d3; text-shadow:0 1px 3px rgba(0,0,0,0.6);">📜 ${quest.name}</div>
-                            ${filterHeroIndex === null ? `<div style="font-size: 0.72em; color: #f0e6d3; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">${hero.symbol} ${hero.name}</div>` : ''}
+                    <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid rgba(139,115,85,0.5);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;opacity:0.7;">
+                        <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid rgba(139,115,85,0.5);display:flex;align-items:center;justify-content:space-between;">
+                            <span class="hero-banner-name">📜 ${quest.name}</span>
+                            <span class="hero-banner-name" style="font-size:0.85em">${filterHeroIndex === null ? hero.symbol + ' ' + hero.name : ''}</span>
                         </div>
-                        <div style="padding: 6px 12px;">
-                            <div style="font-size: 0.78em; color: #6b5b4a;">${label}</div>
-                            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:6px;">
-                                <span style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.65em; padding:2px 8px; border-radius:4px; background:rgba(220,38,38,0.15); border:1px solid #dc2626; color:#b91c1c;">${icon} ${quest.failed ? 'FAILED' : 'USED'}</span>
+                        <div style="padding:10px 14px;">
+                            <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px;">${quest.description}</div>
+                            <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                                <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                             </div>
+                            ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
+                            <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:${statusColor};">${statusText}</span>
+                            <span class="modal-desc-text" style="display:block;text-align:center;font-size:0.65em;color:#5c4a3a;">${label}</span>
                         </div>
                     </div>
                 `;
             });
-            archivedHTML += '</div>';
+            archivedHTML += `${this._parchmentBoxClose()}</div>`;
         }
         
         const contentHTML = `
-            <div class="modal-heading" style="font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
-                ${filterHero ? `${filterHero.name}'s quest cards.` : 'Quest cards assigned to heroes.'}
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
+                ${filterHero ? `${filterHero.name}'s quest cards. Select a quest to view or use.` : 'Quest cards assigned to heroes. Select a quest to view or use.'}
             </div>
-            ${activeQuests.length > 0 ? cardsHTML : '<div class="modal-heading" style="font-size:0.85em; color:#d4af37; margin-bottom: 10px;">No active quest cards.</div>'}
+            ${this._parchmentBoxOpen('Active Quests')}
+                ${activeQuests.length > 0 ? cardsHTML : '<div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#5c4a3a;">No active quest cards.</div>'}
+            ${this._parchmentBoxClose()}
             ${archivedHTML}
-            <div id="use-quest-btn-row" style="display: none;">
-                <button id="use-quest-btn" class="phase-btn" style="background: linear-gradient(135deg, #15803d, #166534); border-color: #16a34a; color: #fff;" onclick="game.confirmUseQuest()">✨ Use Quest Card</button>
-            </div>
+
             <div id="quest-use-context-hint" style="text-align: center;"></div>
+            <button id="use-quest-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmUseQuest()">Use</button>
             <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal(modalTitle, contentHTML);
-        // Style title to match end-of-turn modal heading
         const titleEl = document.getElementById('info-modal-title');
-        if (titleEl) {
-            titleEl.className = 'modal-heading';
-            titleEl.style.textAlign = 'center';
-            titleEl.style.fontSize = '1.15em';
-            titleEl.style.marginBottom = '12px';
-        }
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
         // Hide the default Continue button since we have our own Close button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
         
         // Auto-select if only one active quest
         if (activeQuests.length === 1) {
@@ -531,7 +535,7 @@ Object.assign(game, {
         document.querySelectorAll('#quest-cards-list > div').forEach(el => {
             el.classList.remove('selected-quest');
             el.style.borderColor = '#8b7355';
-            el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3)';
+            el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3)';
         });
         
         // Highlight selected
@@ -539,13 +543,12 @@ Object.assign(game, {
         if (selected) {
             selected.classList.add('selected-quest');
             selected.style.borderColor = '#d4af37';
-            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(212,175,55,0.3)';
+            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';
         }
         
-        // Update Use button — show/hide entire row
+        // Update Use button
         const useBtn = document.getElementById('use-quest-btn');
-        const useBtnRow = document.getElementById('use-quest-btn-row');
-        if (useBtn && useBtnRow) {
+        if (useBtn) {
             let canUse = quest.completed && quest.mechanic && quest.mechanic.rewardType === 'use_quest_card_anytime';
             // Exclude context-dependent rewards (these have their own buttons in combat/darkness phase)
             if (canUse && quest.mechanic.rewardValue === 'combat_bonus_dice') canUse = false;
@@ -574,7 +577,12 @@ Object.assign(game, {
             const hintDiv = document.getElementById('quest-use-context-hint');
             if (hintDiv) hintDiv.innerHTML = contextHint;
             
-            useBtnRow.style.display = canUse ? 'block' : 'none';
+            useBtn.disabled = !canUse;
+            useBtn.style.opacity = canUse ? '1' : '0.5';
+            useBtn.style.cursor = canUse ? 'pointer' : 'not-allowed';
+            useBtn.style.background = canUse ? '#4ade80' : '#666';
+            useBtn.style.color = canUse ? '#000' : '';
+            useBtn.style.fontWeight = canUse ? 'bold' : '';
         }
     },
     
@@ -688,24 +696,26 @@ Object.assign(game, {
         
         indicator = document.createElement('div');
         indicator.id = 'quest-view-indicator';
+        const mapBar = document.querySelector('.map-top-bar');
+        const topPos = mapBar ? (mapBar.getBoundingClientRect().top) + 'px' : '40px';
         indicator.style.cssText = `
-            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            position: fixed; top: ${topPos}; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.95); border: 3px solid #dc2626; border-radius: 10px;
-            padding: 15px 25px; z-index: 25000; text-align: center; max-width: 400px;
+            padding: 12px 18px; z-index: 25000; text-align: center; max-width: 280px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.8);
         `;
         
         indicator.innerHTML = `
-            <div style="color: #ef4444; font-weight: bold; font-size: 1.2em; margin-bottom: 8px;">
+            <div style="color: #ef4444; font-weight: bold; font-size: 1em; margin-bottom: 6px; font-family:'Cinzel',Georgia,serif;">
                 📜 ${quest.name}
             </div>
-            <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 8px;">${quest.description}</div>
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; font-size: 0.85em; margin-bottom: 8px;">
+            <div style="color: #d4af37; font-size: 0.8em; margin-bottom: 6px;">${quest.description}</div>
+            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; font-size: 0.8em; margin-bottom: 6px;">
                 ${locationDisplay}
                 <span style="color: ${hero.color};">${hero.symbol} ${hero.name}</span>
             </div>
-            <div style="color: #a78bfa; font-size: 0.85em; margin-bottom: 12px;">🏆 ${quest.reward}</div>
-            <button class="btn" onclick="game._closeQuestView()" style="background: #666; padding: 6px 20px;">Close</button>
+            <div style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#b91c1c;">Reward:</span> ${quest.reward}</div>
+            <button class="btn" onclick="game._closeQuestView()" style="background: #666; padding: 5px 16px; font-size: 0.85em;">Close</button>
         `;
         document.body.appendChild(indicator);
     },
@@ -735,8 +745,9 @@ Object.assign(game, {
                     </div>
                 </div>
             `);
+            this._styleQuestModal();
             const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-            if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+            if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
             return;
         }
         if (m.rewardType === 'use_quest_card_anytime' && m.rewardValue === 'gryphon_move_heroes') {
@@ -751,6 +762,7 @@ Object.assign(game, {
             if (m.requirePresence) {
                 if (!taintedLocations.includes(hero.location)) {
                     this.showInfoModal('📜', `<div>${hero.name} must be on a location with a Tainted Crystal to use ${quest.name}!</div>`);
+                    this._styleQuestModal();
                     return;
                 }
                 // Only the hero's location is valid
@@ -763,6 +775,7 @@ Object.assign(game, {
             
             if (taintedLocations.length === 0) {
                 this.showInfoModal('📜', '<div>There are no Tainted Crystals on the board to remove!</div>');
+                this._styleQuestModal();
                 return;
             }
             
@@ -824,19 +837,22 @@ Object.assign(game, {
                 indicator = document.createElement('div');
                 indicator.id = 'quest-use-indicator';
             }
+            const mapBar2 = document.querySelector('.map-top-bar');
+            const topPos2 = mapBar2 ? (mapBar2.getBoundingClientRect().top) + 'px' : '40px';
             indicator.style.cssText = `
-                position: fixed; top: 60px; left: 50%; transform: translateX(-50%); z-index: 14000;
+                position: fixed; top: ${topPos2}; left: 50%; transform: translateX(-50%); z-index: 25000;
                 background: rgba(0,0,0,0.9); border: 2px solid #dc2626; border-radius: 10px;
-                padding: 12px 20px; color: white; text-align: center; max-width: 400px;
+                padding: 12px 18px; color: white; text-align: center; max-width: 280px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.8);
             `;
             indicator.innerHTML = `
-                <div style="color: #ef4444; font-weight: bold; font-size: 1.1em; margin-bottom: 6px;">
+                <div style="color: #ef4444; font-weight: bold; font-size: 1em; margin-bottom: 4px; font-family:'Cinzel',Georgia,serif;">
                     📜 ${quest.name}
                 </div>
-                <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 8px;">
+                <div style="color: #d4af37; font-size: 0.8em; margin-bottom: 6px;">
                     Click a highlighted location to remove 1 Tainted Crystal
                 </div>
-                <button class="btn" onclick="game.clearQuestUseMode()" style="background: #666; padding: 6px 20px;">Cancel</button>
+                <button class="btn" onclick="game.clearQuestUseMode()" style="background: #666; padding: 5px 16px; font-size: 0.85em;">Cancel</button>
             `;
             document.body.appendChild(indicator);
         }
@@ -906,36 +922,51 @@ Object.assign(game, {
         
         // Show success modal
         const successHTML = `
-            <div style="text-align: center;">
-                <div style="font-size: 2.5em; margin-bottom: 8px;">✨</div>
-                <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Tainted Crystal Removed!</div>
-                <div style="color: #ef4444; font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">📜 ${quest.name}</div>
-                <div style="color: #d4af37; margin-bottom: 8px;">Removed 1 Tainted Crystal at ${locationName}</div>
-                <div style="color: #999; font-size: 0.9em;">Quest card discarded.</div>
-            </div>
+            ${this._parchmentBoxOpen('📜 ' + quest.name)}
+                <div style="text-align:center;padding:8px 0;">
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">Removed 1 Tainted Crystal at ${locationName}</div>
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#5c4a3a;">Quest card discarded.</div>
+                </div>
+            ${this._parchmentBoxClose()}
         `;
         
         this.showInfoModal('📜 Quest Used', successHTML);
+        this._styleQuestModal();
     },
     
     _drawAndShowNewQuest_display(heroIndex, newQuest) {
         const hero = this.heroes[heroIndex];
-        const locationText = newQuest.location ? `📍 ${newQuest.location}` : '';
+        
+        const questCardHTML = `
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                    <span class="hero-banner-name">📜 ${newQuest.name}</span>
+                    <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
+                </div>
+                <div style="padding:12px 14px;">
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${newQuest.description}</div>
+                    <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                        <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${newQuest.reward}</span>
+                    </div>
+                    ${newQuest.mechanic && newQuest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
+                </div>
+            </div>
+        `;
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 12px;">
-                <div style="font-size: 2em; margin-bottom: 8px;">📜</div>
-                <div style="color: #d4af37; font-size: 1.1em;">${hero.name} draws a new quest!</div>
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
+                ${hero.name} draws a new quest!
             </div>
-            <div style="padding: 14px; background: rgba(220,38,38,0.1); border: 2px solid #dc2626; border-radius: 8px;">
-                <div style="font-weight: bold; color: #ef4444; font-size: 1.1em; margin-bottom: 6px;">📜 ${newQuest.name}</div>
-                <div style="font-size: 0.9em; color: #d4af37; margin-bottom: 6px;">${newQuest.description}</div>
-                ${locationText ? `<div style="font-size: 0.85em; color: #999; margin-bottom: 4px;">${locationText}</div>` : ''}
-                <div style="font-size: 0.85em; color: #a78bfa; margin-top: 4px;">🏆 ${newQuest.reward}</div>
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">New Quest</span></div>
+                ${questCardHTML}
             </div>
         `;
         
         this.showInfoModal('📜 New Quest Drawn', contentHTML);
+        this._styleQuestModal();
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
     },
     
     _getCompletableQuest(hero) {
@@ -1016,6 +1047,7 @@ Object.assign(game, {
         const result = this._getCompletableQuest(hero);
         if (!result) {
             this.showInfoModal('📜', '<div>No completable quest at this location!</div>');
+            this._styleQuestModal();
             return;
         }
         
@@ -1040,6 +1072,7 @@ Object.assign(game, {
         if (m.type === 'multi_location_action') {
             if (this.actionsRemaining < (m.actionCost || 1)) {
                 this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
+                this._styleQuestModal();
                 return;
             }
             this._confirmOrganizeAction(hero, quest, questIndex);
@@ -1050,6 +1083,7 @@ Object.assign(game, {
         if (m.type === 'scout_general') {
             if (this.actionsRemaining < (m.actionCost || 1)) {
                 this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
+                this._styleQuestModal();
                 return;
             }
             this._executeScoutGeneral(hero, quest, questIndex);
@@ -1058,6 +1092,7 @@ Object.assign(game, {
         
         if (this.actionsRemaining < (m.actionCost || 1)) {
             this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
+            this._styleQuestModal();
             return;
         }
         
@@ -1106,9 +1141,9 @@ Object.assign(game, {
         
         let diceHTML = '<div style="display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap;">';
         rolls.forEach(r => {
-            const color = r.hit ? '#4ade80' : '#ef4444';
-            const bg = r.hit ? 'rgba(74,222,128,0.2)' : 'rgba(239,68,68,0.2)';
-            const border = r.hit ? '#4ade80' : '#ef4444';
+            const color = r.hit ? '#15803d' : '#991b1b';
+            const bg = r.hit ? 'rgba(22,163,74,0.15)' : 'rgba(185,28,28,0.15)';
+            const border = r.hit ? '#16a34a' : '#b91c1c';
             diceHTML += `<div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; 
                 font-size: 1.5em; font-weight: bold; border-radius: 8px; color: ${color}; 
                 background: ${bg}; border: 2px solid ${border};">${r.roll}</div>`;
@@ -1122,17 +1157,17 @@ Object.assign(game, {
             this.addLog(`📜 ✅ ${hero.name} completed quest: ${quest.name}!`);
             
             const contentHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 2.5em; margin-bottom: 8px;">✅</div>
-                    <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Quest Complete!</div>
-                    <div style="color: #ef4444; font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">📜 ${quest.name}</div>
-                    <div style="color: #999; margin-bottom: 8px;">Need ${m.successOn}+ on any die</div>
-                    ${visionsNote}
-                    ${diceHTML}
-                    <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
-                        🏆 Reward: ${quest.reward}
+                ${this._parchmentBoxOpen('📜 ' + quest.name)}
+                    <div style="text-align:center;padding:8px 0;">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need ${m.successOn}+ on any die</div>
+                        ${visionsNote}
+                        ${diceHTML}
+                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
+                        </div>
                     </div>
-                </div>
+                ${this._parchmentBoxClose()}
             `;
             
             // Mark completed (keep on hero card for passive effects)
@@ -1179,23 +1214,23 @@ Object.assign(game, {
                 <div style="color:#d4af37;font-size:0.9em;margin-top:6px;">Defeat up to ${sweepRoll} minion${sweepRoll !== 1 ? 's' : ''} within 2 spaces of ${m.rewardValue}</div>`;
                 
                 const sweepContentHTML = `
-                    <div style="text-align: center;">
-                        <div style="font-size: 2.5em; margin-bottom: 8px;">✅</div>
-                        <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Quest Complete!</div>
-                        <div style="color: #ef4444; font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">📜 ${quest.name}</div>
-                        <div style="color: #999; margin-bottom: 8px;">Need ${m.successOn}+ on any die</div>
-                        ${visionsNote}
-                        ${diceHTML}
-                        <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
-                            🏆 Amazon Warriors Roll:
-                            ${sweepDieHTML}
+                    ${this._parchmentBoxOpen('📜 ' + quest.name)}
+                        <div style="text-align:center;padding:8px 0;">
+                            <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need ${m.successOn}+ on any die</div>
+                            ${visionsNote}
+                            ${diceHTML}
+                            <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Amazon Warriors Roll:</span>
+                                ${sweepDieHTML}
+                            </div>
                         </div>
-                    </div>
+                    ${this._parchmentBoxClose()}
                 `;
                 
                 this.showInfoModal('📜 Quest Complete!', sweepContentHTML, () => {
                     this._startAmazonEnvoyHighlight();
                 });
+                this._styleQuestModal();
                 
                 // Skip normal completion modal
                 this.updateGameStatus();
@@ -1208,20 +1243,20 @@ Object.assign(game, {
                 // Draw new quest card on completion
                 this._drawAndShowNewQuest(heroIndex);
             });
+            this._styleQuestModal();
         } else {
             // FAILURE
             this.addLog(`📜 ❌ ${hero.name} failed quest: ${quest.name}`);
             
             const contentHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 2.5em; margin-bottom: 8px;">❌</div>
-                    <div style="color: #ef4444; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Quest Failed!</div>
-                    <div style="color: #ef4444; font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">📜 ${quest.name}</div>
-                    <div style="color: #999; margin-bottom: 8px;">Needed ${m.successOn}+ on any die</div>
-                    ${visionsNote}
-                    ${diceHTML}
-                    ${m.failDiscard ? '<div style="color: #ef4444; margin-top: 10px;">Quest card discarded.</div>' : ''}
-                </div>
+                ${this._parchmentBoxOpen('📜 ' + quest.name)}
+                    <div style="text-align:center;padding:8px 0;">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Needed ${m.successOn}+ on any die</div>
+                        ${visionsNote}
+                        ${diceHTML}
+                        ${m.failDiscard ? '<div class="modal-desc-text" style="color:#dc2626;font-size:0.8em;margin-top:10px;">Quest card discarded.</div>' : ''}
+                    </div>
+                ${this._parchmentBoxClose()}
             `;
             
             if (m.failDiscard) {
@@ -1235,6 +1270,7 @@ Object.assign(game, {
                     this._drawAndShowNewQuest(heroIndex);
                 }
             });
+            this._styleQuestModal();
         }
         
         this.updateGameStatus();
@@ -1254,24 +1290,39 @@ Object.assign(game, {
         const newQuest = this.drawQuestCard(heroIndex);
         
         if (newQuest) {
-            const locationText = newQuest.location ? `📍 ${newQuest.location}` : '';
+            const questCardHTML = `
+                <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                    <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">📜 ${newQuest.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
+                    </div>
+                    <div style="padding:12px 14px;">
+                        <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${newQuest.description}</div>
+                        <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${newQuest.reward}</span>
+                        </div>
+                        ${newQuest.mechanic && newQuest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
+                    </div>
+                </div>
+            `;
             
             const contentHTML = `
-                <div style="text-align: center; margin-bottom: 12px;">
-                    <div style="font-size: 2em; margin-bottom: 8px;">📜</div>
-                    <div style="color: #d4af37; font-size: 1.1em;">${hero.name} draws a new quest!</div>
+                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
+                    ${hero.name} draws a new quest!
                 </div>
-                <div style="padding: 14px; background: rgba(220,38,38,0.1); border: 2px solid #dc2626; border-radius: 8px;">
-                    <div style="font-weight: bold; color: #ef4444; font-size: 1.1em; margin-bottom: 6px;">📜 ${newQuest.name}</div>
-                    <div style="font-size: 0.9em; color: #d4af37; margin-bottom: 6px;">${newQuest.description}</div>
-                    ${locationText ? `<div style="font-size: 0.85em; color: #999; margin-bottom: 4px;">${locationText}</div>` : ''}
-                    <div style="font-size: 0.85em; color: #a78bfa; margin-top: 4px;">🏆 ${newQuest.reward}</div>
+                <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">New Quest</span></div>
+                    ${questCardHTML}
                 </div>
             `;
             
             this.showInfoModal('📜 New Quest Drawn', contentHTML);
+            this._styleQuestModal();
+            const titleEl = document.getElementById('info-modal-title');
+            if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
         } else {
             this.showInfoModal('📜', '<div>Quest deck is empty — no new quest drawn.</div>');
+            this._styleQuestModal();
         }
     },
     
@@ -1468,9 +1519,10 @@ Object.assign(game, {
         `;
 
         this.showInfoModal('📜 Quest Details', contentHTML);
+        this._styleQuestModal();
         // Hide the default Continue button since we have our own Close button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
     },
 
     // Build quest cards section for hero detail modal
@@ -1916,6 +1968,7 @@ Object.assign(game, {
         const maxActions = this.actionsRemaining;
         if (maxActions <= 0) {
             this.showInfoModal('📜', '<div>No actions remaining!</div>');
+            this._styleQuestModal();
             return;
         }
         
@@ -1934,19 +1987,21 @@ Object.assign(game, {
         optionsHTML += '</div>';
         
         const contentHTML = `
-            <div style="text-align: center;">
-                <div style="font-size: 2em; margin-bottom: 8px;">🦄</div>
-                <div style="color: #d4af37; margin-bottom: 12px;">
-                    Spend actions to roll dice. Each action = 1 die. Need 5+ on any die to succeed.
+            ${this._parchmentBoxOpen('📜 Choose Actions')}
+                <div style="text-align:center;padding:8px 0;">
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">
+                        Spend actions to roll dice. Each action = 1 die. Need 5+ on any die to succeed.
+                    </div>
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#5c4a3a;margin-bottom:8px;">
+                        You have ${maxActions} action${maxActions > 1 ? 's' : ''} remaining. Choose how many to spend:
+                    </div>
+                    ${optionsHTML}
                 </div>
-                <div style="color: #999; margin-bottom: 8px; font-size: 0.9em;">
-                    You have ${maxActions} action${maxActions > 1 ? 's' : ''} remaining. Choose how many to spend:
-                </div>
-                ${optionsHTML}
-            </div>
+            ${this._parchmentBoxClose()}
         `;
         
-        this.showInfoModal('🦄 Unicorn Steed', contentHTML);
+        this.showInfoModal('📜 Unicorn Steed', contentHTML);
+        this._styleQuestModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
     },
@@ -1985,9 +2040,9 @@ Object.assign(game, {
         
         let diceHTML = '<div style="display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap;">';
         rolls.forEach(r => {
-            const color = r.hit ? '#4ade80' : '#ef4444';
-            const bg = r.hit ? 'rgba(74,222,128,0.2)' : 'rgba(239,68,68,0.2)';
-            const border = r.hit ? '#4ade80' : '#ef4444';
+            const color = r.hit ? '#15803d' : '#991b1b';
+            const bg = r.hit ? 'rgba(22,163,74,0.15)' : 'rgba(185,28,28,0.15)';
+            const border = r.hit ? '#16a34a' : '#b91c1c';
             diceHTML += `<div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; 
                 font-size: 1.5em; font-weight: bold; border-radius: 8px; color: ${color}; 
                 background: ${bg}; border: 2px solid ${border};">${r.roll}</div>`;
@@ -2001,36 +2056,39 @@ Object.assign(game, {
             this.addLog(`📜 ✅ ${hero.name} completed quest: Unicorn Steed! Horse movement + combat re-roll unlocked!`);
             
             const contentHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 2.5em; margin-bottom: 8px;">🦄</div>
-                    <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Unicorn Steed Tamed!</div>
-                    <div style="color: #999; margin-bottom: 8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
-                    ${visionsNote}
-                    ${diceHTML}
-                    <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
-                        🏆 Permanent Horse Movement + Re-roll all failed dice once per combat
+                ${this._parchmentBoxOpen('📜 Unicorn Steed')}
+                    <div style="text-align:center;padding:8px 0;">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
+                        ${visionsNote}
+                        ${diceHTML}
+                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> Permanent Horse Movement + Re-roll all failed dice once per combat</span>
+                        </div>
                     </div>
-                </div>
+                ${this._parchmentBoxClose()}
             `;
             
-            this.showInfoModal('🦄 Quest Complete!', contentHTML, () => {
+            this.showInfoModal('📜 Quest Complete!', contentHTML, () => {
                 this._drawAndShowNewQuest(heroIndex);
             });
+            this._styleQuestModal();
         } else {
             this.addLog(`📜 ❌ ${hero.name} failed Unicorn Steed quest (${actionCount} dice, no 5+)`);
             
             const contentHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 2.5em; margin-bottom: 8px;">🦄</div>
-                    <div style="color: #ef4444; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">The Unicorn Escapes!</div>
-                    <div style="color: #999; margin-bottom: 8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
-                    ${visionsNote}
-                    ${diceHTML}
-                    <div style="color: #d4af37; margin-top: 10px; font-size: 0.9em;">Quest card stays — try again!</div>
-                </div>
+                ${this._parchmentBoxOpen('📜 Unicorn Steed')}
+                    <div style="text-align:center;padding:8px 0;">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
+                        ${visionsNote}
+                        ${diceHTML}
+                        <div class="modal-desc-text" style="color:#d4af37;font-size:0.8em;margin-top:10px;">Quest card stays — try again!</div>
+                    </div>
+                ${this._parchmentBoxClose()}
             `;
             
-            this.showInfoModal('🦄 Quest Failed', contentHTML);
+            this.showInfoModal('📜 Quest Failed', contentHTML);
+            this._styleQuestModal();
         }
         
         this.updateGameStatus();
@@ -2059,27 +2117,29 @@ Object.assign(game, {
             const e = colorEmojis[data.color] || '⭕';
             const isCurrent = loc === hero.location;
             const status = data.organized ? '✅' : (isCurrent ? '👉' : '⬜');
-            const color = data.organized ? '#4ade80' : (isCurrent ? '#ffd700' : '#666');
-            return `<div style="color: ${color}; margin: 3px 0; font-weight: ${isCurrent ? 'bold' : 'normal'};">${e} ${loc} ${status}</div>`;
+            const color = data.organized ? '#16a34a' : (isCurrent ? '#d4af37' : '#5c4a3a');
+            return `<div class="modal-desc-text" style="color:${color};font-size:0.8em;margin:3px 0;font-weight:${isCurrent ? 'bold' : 'normal'};">${e} ${loc} ${status}</div>`;
         }).join('');
         
         this.showInfoModal('📜 Organize Militia', `
-            <div style="text-align: center;">
-                <div style="font-size: 2em; margin-bottom: 8px;">🛡️</div>
-                <div style="color: #d4af37; font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">Organize locals at ${hero.location}?</div>
-                <div style="color: #ef4444; font-weight: bold; margin-bottom: 12px;">Cost: ${actionCost} Action (${this.actionsRemaining} remaining)</div>
-                <div style="margin-bottom: 12px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 6px;">
-                    ${progress}
+            ${this._parchmentBoxOpen('📜 ' + hero.location)}
+                <div style="text-align:center;padding:8px 0;">
+                    <div class="modal-desc-text" style="font-size:0.85em;color:#3d2b1f;margin-bottom:8px;">Organize locals at ${hero.location}?</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#b91c1c;margin-bottom:12px;">Cost: ${actionCost} Action (${this.actionsRemaining} remaining)</div>
+                    <div style="margin-bottom:12px;padding:8px;background:rgba(0,0,0,0.05);border:1px solid rgba(139,115,85,0.3);border-radius:6px;">
+                        ${progress}
+                    </div>
+                    <div style="display:flex;gap:10px;margin-top:10px;">
+                        <button class="btn" style="flex:1;background:#666;" onclick="game.closeInfoModal()">Cancel</button>
+                        <button class="btn btn-primary" style="flex:1;background:#dc2626;" onclick="game.closeInfoModal(); game._organizeLocationAction(game.heroes[game.currentPlayerIndex], game.heroes[game.currentPlayerIndex].questCards[${questIndex}], ${questIndex})">⚡ Organize (${actionCost} Action)</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button class="btn" style="flex: 1; background: #666;" onclick="game.closeInfoModal()">Cancel</button>
-                    <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game.closeInfoModal(); game._organizeLocationAction(game.heroes[game.currentPlayerIndex], game.heroes[game.currentPlayerIndex].questCards[${questIndex}], ${questIndex})">⚡ Organize (${actionCost} Action)</button>
-                </div>
-            </div>
+            ${this._parchmentBoxClose()}
         `);
+        this._styleQuestModal();
         // Hide the default Continue button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtn && defaultBtn.querySelector('.btn-primary')) defaultBtn.style.display = 'none';
+        if (defaultBtn) defaultBtn.style.display = 'none';
     },
     
     _organizeLocationAction(hero, quest, questIndex) {
@@ -2102,18 +2162,19 @@ Object.assign(game, {
             this.addLog(`📜 ✅ ${hero.name} completed quest: Organize Militia!`);
             
             const contentHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 2.5em; margin-bottom: 8px;">🛡️</div>
-                    <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">Militia Organized!</div>
-                    <div style="color: #d4af37; margin-bottom: 8px;">All locations organized:</div>
-                    ${Object.entries(m.locations).map(([loc, data]) => {
-                        const e = colorEmojis[data.color] || '⭕';
-                        return `<div style="color: #4ade80; margin: 4px 0;">${e} ${loc} ✅</div>`;
-                    }).join('')}
-                    <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
-                        🏆 Can be discarded to prevent a General from advancing!
+                ${this._parchmentBoxOpen('📜 Organize Militia')}
+                    <div style="text-align:center;padding:8px 0;">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">All locations organized:</div>
+                        ${Object.entries(m.locations).map(([loc, data]) => {
+                            const e = colorEmojis[data.color] || '⭕';
+                            return `<div class="modal-desc-text" style="color:#16a34a;font-size:0.8em;margin:4px 0;">${e} ${loc} ✅</div>`;
+                        }).join('')}
+                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> Can be discarded to prevent a General from advancing!</span>
+                        </div>
                     </div>
-                </div>
+                ${this._parchmentBoxClose()}
             `;
             
             this.showInfoModal('📜 Quest Complete!', contentHTML, () => {
@@ -2121,20 +2182,23 @@ Object.assign(game, {
                 const heroIndex = this.heroes.indexOf(hero);
                 this._drawAndShowNewQuest(heroIndex);
             });
+            this._styleQuestModal();
         } else {
             const progress = Object.entries(m.locations).map(([loc, data]) => {
                 const e = colorEmojis[data.color] || '⭕';
                 const status = data.organized ? '✅' : '⏳';
-                return `<div style="color: ${data.organized ? '#4ade80' : '#999'}; margin: 4px 0;">${e} ${loc} ${status}</div>`;
+                return `<div class="modal-desc-text" style="color:${data.organized ? '#16a34a' : '#5c4a3a'};font-size:0.8em;margin:4px 0;">${e} ${loc} ${status}</div>`;
             }).join('');
             
             this.showInfoModal('📜 Militia Organized!', `
-                <div style="text-align: center;">
-                    <div style="font-size: 2em; margin-bottom: 8px;">🛡️</div>
-                    <div style="color: #d4af37; font-weight: bold; margin-bottom: 12px;">Organized locals at ${hero.location}!</div>
-                    ${progress}
-                </div>
+                ${this._parchmentBoxOpen('📜 Organize Militia')}
+                    <div style="text-align:center;padding:8px 0;">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Organized locals at ${hero.location}!</div>
+                        ${progress}
+                    </div>
+                ${this._parchmentBoxClose()}
             `);
+            this._styleQuestModal();
         }
         
         this.updateGameStatus();
@@ -2228,7 +2292,7 @@ Object.assign(game, {
         
         const progress = Object.entries(quest.mechanic.locations).map(([loc, locData]) => {
             const e = colorEmojis[locData.color] || '⭕';
-            return `<div style="color: #4ade80; margin: 4px 0;">${e} ${loc} ✅</div>`;
+            return `<div class="modal-desc-text" style="color:#16a34a;font-size:0.8em;margin:4px 0;">${e} ${loc} ✅</div>`;
         }).join('');
         
         const cardColorMap = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#1f2937' };
@@ -2238,13 +2302,15 @@ Object.assign(game, {
         }).join(', ');
         
         this.showInfoModal('📜 Rumors Complete!', `
-            <div style="text-align: center;">
-                <div style="font-size: 2.5em; margin-bottom: 8px;">🍺</div>
-                <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">All Rumors Gathered!</div>
-                ${progress}
-                <div style="color: #d4af37; font-weight: bold; margin-top: 10px;">Drew ${drawnCards.length} Hero Cards:</div>
-                <div style="margin-top: 6px; font-size: 0.9em;">${drawnHTML || 'Deck empty!'}</div>
-            </div>
+            ${this._parchmentBoxOpen('📜 Rumors')}
+                <div style="text-align:center;padding:8px 0;">
+                    ${progress}
+                    <div style="margin-top:12px;padding:8px;background:rgba(212,175,55,0.15);border:1px solid #d4af37;border-radius:6px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#d4af37;">Drew ${drawnCards.length} Hero Cards:</span>
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-top:6px;">${drawnHTML || 'Deck empty!'}</div>
+                    </div>
+                </div>
+            ${this._parchmentBoxClose()}
         `, () => {
             // Draw new quest
             const newQuest = this.drawQuestCard(heroIndex);
@@ -2252,6 +2318,7 @@ Object.assign(game, {
                 this._drawAndShowNewQuest_display(heroIndex, newQuest);
             }
         });
+        this._styleQuestModal();
     },
     
     // ===== FIND MAGIC GATE: Hook after gate building =====
@@ -2409,6 +2476,7 @@ Object.assign(game, {
                 <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded.</div>
             </div>
         `);
+        this._styleQuestModal();
     },
     
     // ===== KING OF THE GRYPHONS: Move 2 Heroes =====
@@ -2473,6 +2541,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('📜 ' + state.quest.name, contentHTML);
+        this._styleQuestModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#gryph-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -2693,6 +2762,7 @@ Object.assign(game, {
                 <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded — No action used</div>
             </div>
         `);
+        this._styleQuestModal();
     },
     
     // ===== AMAZON ENVOY QUEST: Sweep Picker =====
@@ -3161,15 +3231,16 @@ Object.assign(game, {
         const emoji = generalEmojis[targetColor] || '🔍';
         
         this.showInfoModal('📜 Quest Complete!', `
-            <div style="text-align: center;">
-                <div style="font-size: 2.5em; margin-bottom: 8px;">${emoji}</div>
-                <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 8px;">${quest.name} Complete!</div>
-                <div style="color: #d4af37; margin-bottom: 4px;">Scouted ${generalName}'s forces at ${hero.location}</div>
-                ${cardDrawHTML}
-            </div>
+            ${this._parchmentBoxOpen('📜 Scout the General')}
+                <div style="text-align:center;padding:8px 0;">
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">Scouted ${generalName}'s forces at ${hero.location}</div>
+                    ${cardDrawHTML}
+                </div>
+            ${this._parchmentBoxClose()}
         `, () => {
             this._drawAndShowNewQuest(heroIndex);
         });
+        this._styleQuestModal();
         
         this.updateGameStatus();
         this.updateActionButtons();
@@ -3218,17 +3289,19 @@ Object.assign(game, {
                         // Show completion modal, then draw new quest
                         setTimeout(() => {
                             this.showInfoModal('📜 Quest Complete!', `
-                                <div style="text-align: center;">
-                                    <div style="font-size: 2.5em; margin-bottom: 8px;">🏹</div>
-                                    <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">${quest.name} Complete!</div>
-                                    <div style="color: #d4af37; margin-bottom: 8px;">${quest.mechanic.requiredKills} ${factionPlural} defeated!</div>
-                                    <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
-                                        🏆 ${quest.reward}
+                                ${this._parchmentBoxOpen('📜 ' + quest.name)}
+                                    <div style="text-align:center;padding:8px 0;">
+                                        <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">${quest.mechanic.requiredKills} ${factionPlural} defeated!</div>
+                                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                ${this._parchmentBoxClose()}
                             `, () => {
                                 this._drawAndShowNewQuest(heroIndex);
                             });
+                            this._styleQuestModal();
                         }, 600);
                     }
                     
@@ -3260,17 +3333,19 @@ Object.assign(game, {
                             const heroIndex = i;
                             setTimeout(() => {
                                 this.showInfoModal('📜 Quest Complete!', `
-                                    <div style="text-align: center;">
-                                        <div style="font-size: 2.5em; margin-bottom: 8px;">⚔️</div>
-                                        <div style="color: #4ade80; font-weight: bold; font-size: 1.3em; margin-bottom: 12px;">${quest.name} Complete!</div>
-                                        <div style="color: #d4af37; margin-bottom: 8px;">All 4 faction minions defeated!</div>
-                                        <div style="color: #a78bfa; font-weight: bold; margin-top: 10px; padding: 8px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 6px;">
-                                            🏆 ${quest.reward}
+                                    ${this._parchmentBoxOpen('📜 ' + quest.name)}
+                                        <div style="text-align:center;padding:8px 0;">
+                                            <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">All 4 faction minions defeated!</div>
+                                            <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                                                <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ${this._parchmentBoxClose()}
                                 `, () => {
                                     this._drawAndShowNewQuest(heroIndex);
                                 });
+                                this._styleQuestModal();
                             }, 600);
                         }
                         

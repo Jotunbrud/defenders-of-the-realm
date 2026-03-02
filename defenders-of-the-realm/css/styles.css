@@ -896,14 +896,17 @@
         .action-tray {
             padding: 6px 10px; border-bottom: 1px solid rgba(212,175,55,0.15);
             flex-shrink: 0; display: flex; gap: 4px; flex-wrap: wrap;
-            align-items: center;
+            align-items: flex-start;
         }
         .action-tray-title {
             font-family: 'Cinzel', Georgia, serif;
             font-weight: 700; color: #d4af37;
             font-size: 0.85em; white-space: nowrap; flex-shrink: 0; margin-right: 2px;
+            padding-top: 2px;
         }
-        .action-btns { display: contents; }
+        .action-btns { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .action-row { display: flex; gap: 4px; flex-wrap: wrap; }
+        .action-row-bottom { padding-top: 4px; border-top: 1px solid rgba(212,175,55,0.15); }
         .action-btns .phase-btn {
             width: auto; margin-top: 0; padding: 4px 8px;
             font-size: 0.7em; text-align: center;
@@ -1013,6 +1016,8 @@
             .action-tray-title { font-size: 0.7em; }
 
             .action-btn-icon { display: none; }
+            .action-btns { gap: 3px; }
+            .action-row { gap: 3px; }
             .action-btns .phase-btn {
                 font-size: 0.58em; padding: 2px 4px;
                 flex: 1 1 20%;

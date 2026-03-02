@@ -447,9 +447,8 @@ Object.assign(game, {
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                         </div>
-                        <div style="padding-top:6px;margin-top:6px;border-top:1px solid rgba(139,115,85,0.3);text-align:center;">
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:${statusColor};">${statusText}</span>
-                        </div>
+                        ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
+                        <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:${statusColor};">${statusText}</span>
                     </div>
                 </div>
             `;
@@ -477,10 +476,9 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                                 <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                             </div>
-                            <div style="padding-top:6px;margin-top:6px;border-top:1px solid rgba(139,115,85,0.3);text-align:center;">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:${statusColor};">${statusText}</span>
-                                <div class="modal-desc-text" style="font-size:0.65em;color:#5c4a3a;margin-top:2px;">${label}</div>
-                            </div>
+                            ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
+                            <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:${statusColor};">${statusText}</span>
+                            <span class="modal-desc-text" style="display:block;text-align:center;font-size:0.65em;color:#5c4a3a;">${label}</span>
                         </div>
                     </div>
                 `;
@@ -507,7 +505,7 @@ Object.assign(game, {
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
         // Hide the default Continue button since we have our own Close button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
         
         // Auto-select if only one active quest
         if (activeQuests.length === 1) {
@@ -736,7 +734,7 @@ Object.assign(game, {
             `);
             this._styleQuestModal();
             const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-            if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+            if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
             return;
         }
         if (m.rewardType === 'use_quest_card_anytime' && m.rewardValue === 'gryphon_move_heroes') {
@@ -938,6 +936,7 @@ Object.assign(game, {
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                         <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${newQuest.reward}</span>
                     </div>
+                    ${newQuest.mechanic && newQuest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
                 </div>
             </div>
         `;
@@ -1290,6 +1289,7 @@ Object.assign(game, {
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${newQuest.reward}</span>
                         </div>
+                        ${newQuest.mechanic && newQuest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
                     </div>
                 </div>
             `;
@@ -1509,7 +1509,7 @@ Object.assign(game, {
         this._styleQuestModal();
         // Hide the default Continue button since we have our own Close button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
     },
 
     // Build quest cards section for hero detail modal
@@ -2126,7 +2126,7 @@ Object.assign(game, {
         this._styleQuestModal();
         // Hide the default Continue button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtn && defaultBtn.querySelector('.btn-primary')) defaultBtn.style.display = 'none';
+        if (defaultBtn) defaultBtn.style.display = 'none';
     },
     
     _organizeLocationAction(hero, quest, questIndex) {

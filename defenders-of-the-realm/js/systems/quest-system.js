@@ -420,29 +420,6 @@ Object.assign(game, {
                 statusColor = '#a16207';
             }
             const bannerBg = 'linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%)';
-            let locationText = quest.location ? `📍 ${quest.location}` : '';
-            
-            // Multi-location progress (Rumors, Organize Militia)
-            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
-            if (!quest.completed && quest.mechanic && quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
-                locationText = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
-                    const emoji = colorEmojis[data.color] || '⭕';
-                    const check = data.visited ? '✅' : '⬜';
-                    const color = data.visited ? '#16a34a' : '#8b7355';
-                    return `<span style="color: ${color};">${emoji} ${loc} ${check}</span>`;
-                }).join(' &nbsp;');
-            }
-            if (!quest.completed && quest.mechanic && quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
-                locationText = Object.entries(quest.mechanic.locations).map(([loc, data]) => {
-                    const emoji = colorEmojis[data.color] || '⭕';
-                    const check = data.organized ? '✅' : '⬜';
-                    const color = data.organized ? '#16a34a' : '#8b7355';
-                    return `<span style="color: ${color};">${emoji} ${loc} ${check}</span>`;
-                }).join(' &nbsp;');
-            }
-            if (quest.mechanic && quest.mechanic.type === 'build_gate_red' && !quest.completed) {
-                locationText = '📍 Any Red Location (with matching card)';
-            }
             
             cardsHTML += `
                 <div id="quest-card-option-${i}" onclick="game.selectQuestCard(${i}, ${heroIndex}, ${questIndex})"
@@ -453,7 +430,6 @@ Object.assign(game, {
                     </div>
                     <div style="padding:10px 14px;">
                         <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px;">${quest.description}</div>
-                        ${locationText ? `<div style="font-size:0.75em;color:#5c4a3a;margin-bottom:4px;">${locationText}</div>` : ''}
                         <div style="margin-top:8px;">
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>

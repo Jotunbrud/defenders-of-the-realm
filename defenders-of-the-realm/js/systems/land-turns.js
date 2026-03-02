@@ -94,53 +94,51 @@ Object.assign(game, {
         this.buildGateSelectedIndex = null;
         
         // Show modal to select which card to discard
-        const cardColorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
         };
         
         let cardsHTML = matchingCards.map(({ card, index }, i) => {
-            const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
-            const cardIcon = card.icon || '🎴';
+            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
+            const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
+            const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
             return `
                 <div id="build-gate-card-${i}" onclick="game.selectBuildGateCard(${i}, ${index})" 
-                     style="padding: 12px; margin: 5px; border: 3px solid ${borderColor}; border-radius: 8px; 
-                            background: rgba(0,0,0,0.5); cursor: pointer; text-align: center; min-width: 100px;
-                            transition: all 0.2s; position: relative;">
-                    <div style="font-size: 1.3em;">${cardIcon}</div>
-                    <div style="font-size: 0.95em; font-weight: bold; color: ${borderColor};">${card.name}</div>
-                    <div style="font-size: 0.8em; color: #999;">${card.type} • ${card.dice} dice</div>
-                    <div id="build-gate-check-${i}" style="display: none; position: absolute; top: -5px; right: -5px; 
-                         background: #9333ea; border-radius: 50%; width: 22px; height: 22px; line-height: 22px; 
-                         font-size: 14px; text-align: center;">✓</div>
-                </div>
-            `;
+                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;position:relative;transition:all 0.2s;${shadow}">
+                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                    <div id="build-gate-check-${i}" style="display:none;position:absolute;top:-8px;right:-8px;background:#9333ea;border-radius:50%;width:22px;height:22px;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4)">✓</div>
+                </div>`;
         }).join('');
         
         const modalHTML = `
-            <div class="modal-title" style="margin-bottom: 5px;">💫 Build Magic Gate</div>
-            <div style="text-align: center; font-size: 1em; color: #d4af37; margin-bottom: 15px;">
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
                 Building at <strong>${locationName}</strong>
             </div>
-            <div style="text-align: center; padding: 10px; background: rgba(147, 51, 234, 0.15); border: 2px solid #9333ea; border-radius: 8px; margin-bottom: 15px;">
-                <div style="color: #c084fc; font-size: 0.95em;">
-                    Select a card to discard to build the gate:
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Select a Card to Discard</span></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                    ${cardsHTML}
                 </div>
             </div>
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-bottom: 15px;">
-                ${cardsHTML}
-            </div>
-            <div style="text-align: center;">
-                <button id="build-gate-confirm-btn" class="btn" disabled onclick="game.confirmBuildMagicGate()" 
-                        style="opacity: 0.5; padding: 10px 30px; font-size: 1.1em;">
+            <div id="build-gate-confirm-row" style="display:none;margin-top:12px;">
+                <button id="build-gate-confirm-btn" class="phase-btn" onclick="game.confirmBuildMagicGate()">
                     Confirm
                 </button>
             </div>
+            <button class="phase-btn" onclick="game.closeInfoModal()" style="margin-top:8px;">Cancel</button>
         `;
         
-        this.showInfoModal('', modalHTML);
+        this.showInfoModal('💫 Build Magic Gate', modalHTML);
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
         
         // Hide the default Continue button since we have our own Confirm button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
@@ -156,25 +154,21 @@ Object.assign(game, {
         for (let i = 0; i < matchingCards.length; i++) {
             const cardEl = document.getElementById(`build-gate-card-${i}`);
             const checkEl = document.getElementById(`build-gate-check-${i}`);
-            if (cardEl) { cardEl.style.opacity = '1'; cardEl.style.transform = ''; }
+            if (cardEl) { cardEl.style.borderColor = ''; cardEl.style.boxShadow = ''; }
             if (checkEl) checkEl.style.display = 'none';
         }
         
         // Select this one
         const cardEl = document.getElementById(`build-gate-card-${displayIndex}`);
         const checkEl = document.getElementById(`build-gate-check-${displayIndex}`);
-        if (cardEl) { cardEl.style.opacity = '0.7'; cardEl.style.transform = 'scale(0.95)'; }
-        if (checkEl) checkEl.style.display = 'block';
+        if (cardEl) { cardEl.style.borderColor = '#d4af37'; cardEl.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)'; }
+        if (checkEl) checkEl.style.display = 'flex';
         
         this.buildGateSelectedIndex = cardIndex;
         
-        // Enable confirm button
-        const confirmBtn = document.getElementById('build-gate-confirm-btn');
-        if (confirmBtn) {
-            confirmBtn.disabled = false;
-            confirmBtn.className = 'btn btn-primary';
-            confirmBtn.style.opacity = '1';
-        }
+        // Show confirm button row
+        const confirmRow = document.getElementById('build-gate-confirm-row');
+        if (confirmRow) confirmRow.style.display = 'block';
     },
     
     confirmBuildMagicGate() {
@@ -353,37 +347,44 @@ Object.assign(game, {
         modal.className = 'modal active';
         modal.style.zIndex = '15000';
         
-        const cardColorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
         };
         
         const cardsHTML = matchingCards.map((card, index) => {
-            const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
+            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
+            const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
+            const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
             return `
                 <div onclick="game.executeTaintRemoval('${locationName.replace(/'/g, "\\'")}', ${index})" 
-                     style="border: 3px solid ${borderColor}; cursor: pointer; padding: 10px; border-radius: 8px; text-align: center; background: rgba(0,0,0,0.3); transition: background 0.2s;"
-                     onmouseover="this.style.background='rgba(255,215,0,0.2)'" 
-                     onmouseout="this.style.background='rgba(0,0,0,0.3)'">
-                    <div style="font-size: 2em; margin-bottom: 5px;">${card.icon || '🎴'}</div>
-                    <div style="font-weight: bold; color: ${borderColor};">${card.name}</div>
-                    <div style="font-size: 0.9em; color: #999; margin-top: 3px;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'}</div>
-                </div>
-            `;
+                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${shadow}"
+                     onmouseover="this.style.boxShadow='0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';this.style.borderColor='#d4af37'"
+                     onmouseout="this.style.boxShadow='${shadow.replace(/;$/,'')}';this.style.borderColor='${cc.border}'">
+                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                </div>`;
         }).join('');
         
         modal.innerHTML = `
-            <div class="modal-content" style="max-width: 500px;">
-                <h2 class="modal-title">🌳 Heal the Land</h2>
-                <p style="margin-bottom: 15px; text-align: center; color: #9333ea;">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">🌳 Heal the Land</div>
+                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
                     Select a ${locationColor} card to discard at ${locationName}
-                </p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto;">
-                    ${cardsHTML}
                 </div>
-                <button class="btn" style="margin-top: 15px; width: 100%; background: #666;" onclick="this.closest('.modal').remove()">
+                <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Select a Card to Discard</span></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                        ${cardsHTML}
+                    </div>
+                </div>
+                <button class="phase-btn" onclick="this.closest('.modal').remove()" style="margin-top:12px">
                     Cancel
                 </button>
             </div>

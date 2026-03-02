@@ -846,22 +846,21 @@ Object.assign(game, {
         }
         
         // Update Unicorn Steed button (dynamic — only shown when hero has completed quest)
-        // Placed in actions section: after Special Skill, before Build Magic Gate
+        // Placed in top action row with movement buttons
         let unicornBtn = document.getElementById('unicorn-steed-btn');
         const hasUnicornSteed = this._hasUnicornSteed(hero);
         
         if (hasUnicornSteed) {
             // Create button if it doesn't exist
             if (!unicornBtn) {
-                const buildGateBtn2 = document.getElementById('build-magic-gate-btn');
-                const actionsSection = buildGateBtn2 ? buildGateBtn2.parentElement : null;
-                if (actionsSection && buildGateBtn2) {
+                const topRow = document.querySelector('.action-row-top');
+                if (topRow) {
                     unicornBtn = document.createElement('button');
                     unicornBtn.id = 'unicorn-steed-btn';
                     unicornBtn.innerHTML = '<span class="action-btn-icon">🦄 </span>Unicorn';
                     unicornBtn.title = 'Unicorn Steed (move 2 spaces, no card required)';
                     unicornBtn.onclick = () => game.useUnicornSteed();
-                    actionsSection.insertBefore(unicornBtn, buildGateBtn2);
+                    topRow.appendChild(unicornBtn);
                 }
             }
             if (unicornBtn) {
@@ -1028,27 +1027,30 @@ Object.assign(game, {
         // Show indicator
         const indicator = document.createElement('div');
         indicator.id = 'archery-indicator';
+        const mapBar = document.querySelector('.map-top-bar');
+        const topPos = mapBar ? (mapBar.getBoundingClientRect().top) + 'px' : '40px';
         indicator.style.cssText = `
             position: fixed;
-            top: 80px;
+            top: ${topPos};
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.9);
             border: 3px solid #d4af37;
             border-radius: 10px;
-            padding: 15px 25px;
+            padding: 12px 18px;
             z-index: 25000;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+            max-width: 280px;
         `;
         indicator.innerHTML = `
-            <div style="color: #ffd700; font-size: 1.2em; font-weight: bold; margin-bottom: 5px;">
-                🏹 Archery Mode Active
+            <div style="color: #ffd700; font-size: 1em; font-weight: bold; margin-bottom: 4px; font-family:'Cinzel',Georgia,serif;">
+                🏹 Archery Mode
             </div>
-            <div style="font-size: 0.9em; color: #d4af37;">
+            <div style="font-size: 0.8em; color: #d4af37;">
                 Click a highlighted location to attack
             </div>
-            <button class="btn btn-danger" onclick="game.clearArcheryMode()" style="margin-top: 10px; width: 100%;">
+            <button class="btn btn-danger" onclick="game.clearArcheryMode()" style="margin-top: 8px; width: 100%; font-size: 0.85em; padding: 6px;">
                 ✕ Cancel
             </button>
         `;

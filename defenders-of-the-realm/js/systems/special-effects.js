@@ -335,8 +335,8 @@ Object.assign(game, {
                 Choose a color — you will draw 5 cards and keep all that match this color, plus any Special cards.
             </div>
             ${optionsHTML}
-            <div id="local-info-confirm-btn-row" style="display: none;">
-                <button id="local-info-confirm-btn" class="phase-btn" onclick="game._localInfoConfirmColor()">Confirm</button>
+            <div id="local-info-confirm-btn-row">
+                <button id="local-info-confirm-btn" class="phase-btn" onclick="game._localInfoConfirmColor()" disabled style="opacity:0.4;cursor:not-allowed;">Confirm</button>
             </div>
             <button class="phase-btn" onclick="game._localInfoPending = null; game.closeInfoModal()">Cancel</button>
         `;
@@ -370,9 +370,9 @@ Object.assign(game, {
             selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';
         }
         
-        // Show confirm button
-        const btnRow = document.getElementById('local-info-confirm-btn-row');
-        if (btnRow) btnRow.style.display = 'block';
+        // Enable confirm button
+        const confirmBtn = document.getElementById('local-info-confirm-btn');
+        if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.style.opacity = '1'; confirmBtn.style.cursor = ''; }
     },
     
     _localInfoConfirmColor() {
@@ -422,42 +422,48 @@ Object.assign(game, {
         this.heroDiscardPile += discarded.length;
         this.updateDeckCounts();
         
-        // Build results HTML
-        const cardColorMap = { red: '#dc2626', blue: '#2563eb', green: '#16a34a', black: '#1f2937' };
+        // Build results HTML matching Evening modal card style
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
+        };
         
-        const renderCard = (c, badge) => {
-            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[c.color] || '#8B7355', text: cardColorMap[c.color] || '#8B7355' };
-            return `<div style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid ${cc.border}; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-                <span style="font-size: 1.3em;">${c.icon || '🃏'}</span>
-                <div style="flex: 1;">
-                    <div style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.8em; color:${cc.text};">${c.name}</div>
-                    <div style="font-size: 0.75em; color: #6b5b4a;">${c.special ? '🌟 Special' : c.type} · ${c.dice} ${c.dice === 1 ? 'die' : 'dice'}</div>
-                </div>
-                ${badge}
+        const renderCardTile = (c, statusLabel) => {
+            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[c.color] || ccMap.any);
+            const iconDisplay = c.special ? '🌟' : (c.icon || '🎴');
+            const shadow = c.special ? 'box-shadow:0 0 10px rgba(109,40,168,0.5);' : 'box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: c.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+            return `<div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 10px;text-align:center;${shadow}">
+                ${statusLabel}
+                <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${c.name}</div>
+                <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
             </div>`;
         };
         
-        let cardsHTML = '<div style="display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 5px;">';
-        
+        let cardsHTML = '';
         kept.forEach(k => {
-            const badge = k.reason === 'special' 
-                ? '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #6d28a8; font-size: 0.75em;">✓ KEPT</span>'
-                : `<span style="font-family:'Cinzel',Georgia,serif; font-weight:900; color: #15803d; font-size: 0.75em;">✓ KEPT</span>`;
-            cardsHTML += renderCard(k.card, badge);
+            const label = `<div style="font-size:0.65em;color:#15803d;font-weight:bold;font-family:'Cinzel',Georgia,serif">✓ KEPT</div>`;
+            cardsHTML += renderCardTile(k.card, label);
         });
-        
         discarded.forEach(c => {
-            cardsHTML += renderCard(c, '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #b91c1c; font-size: 0.75em;">✗ Discarded</span>');
+            const label = `<div style="font-size:0.65em;color:#b91c1c;font-weight:bold;font-family:'Cinzel',Georgia,serif">✗ DISCARDED</div>`;
+            cardsHTML += renderCardTile(c, label);
         });
-        
-        cardsHTML += '</div>';
         
         const summaryHTML = `
             <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
                 Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong><br>
                 <span style="color: #d4af37;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</span>
             </div>
-            ${cardsHTML}
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
+            </div>
             <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">Card played from ${hero.symbol} ${hero.name}'s hand — No action used</div>
             <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;

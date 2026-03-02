@@ -301,8 +301,8 @@ Object.assign(game, {
                 Choose a color — you will draw 2 cards and keep all that match this color, plus any Special cards. Non-matching cards are discarded.
             </div>
             ${optionsHTML}
-            <div id="rumors-confirm-btn-row" style="display: none;">
-                <button id="rumors-confirm-btn" class="phase-btn" onclick="game._rumorsConfirmColor()">Confirm</button>
+            <div id="rumors-confirm-btn-row">
+                <button id="rumors-confirm-btn" class="phase-btn" onclick="game._rumorsConfirmColor()" disabled style="opacity:0.4;cursor:not-allowed;">Confirm</button>
             </div>
             <button class="phase-btn" onclick="game._rumorsSelectedColor = null; game.closeInfoModal()">Cancel</button>
         `;
@@ -336,9 +336,9 @@ Object.assign(game, {
             selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';
         }
         
-        // Show confirm button
-        const btnRow = document.getElementById('rumors-confirm-btn-row');
-        if (btnRow) btnRow.style.display = 'block';
+        // Enable confirm button
+        const confirmBtn = document.getElementById('rumors-confirm-btn');
+        if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.style.opacity = '1'; confirmBtn.style.cursor = ''; }
     },
     
     _rumorsConfirmColor() {
@@ -407,42 +407,48 @@ Object.assign(game, {
             this.updateActionButtons();
         }
         
-        // Build results HTML
-        const cardColorMap = { red: '#dc2626', blue: '#2563eb', green: '#16a34a', black: '#1f2937' };
+        // Build results HTML matching Evening modal card style
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
+        };
         
-        const renderCard = (c, badge) => {
-            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[c.color] || '#8B7355', text: cardColorMap[c.color] || '#8B7355' };
-            return `<div style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid ${cc.border}; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-                <span style="font-size: 1.3em;">${c.icon || '🃏'}</span>
-                <div style="flex: 1;">
-                    <div style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.8em; color:${cc.text};">${c.name}</div>
-                    <div style="font-size: 0.75em; color: #6b5b4a;">${c.special ? '🌟 Special' : c.type} · ${c.dice} ${c.dice === 1 ? 'die' : 'dice'}</div>
-                </div>
-                ${badge}
+        const renderCardTile = (c, statusLabel) => {
+            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[c.color] || ccMap.any);
+            const iconDisplay = c.special ? '🌟' : (c.icon || '🎴');
+            const shadow = c.special ? 'box-shadow:0 0 10px rgba(109,40,168,0.5);' : 'box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: c.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+            return `<div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 10px;text-align:center;${shadow}">
+                ${statusLabel}
+                <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${c.name}</div>
+                <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
             </div>`;
         };
         
-        let cardsResultHTML = '<div style="display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 5px;">';
-        
+        let cardsHTML = '';
         kept.forEach(k => {
-            const badge = k.reason === 'special' 
-                ? '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #6d28a8; font-size: 0.75em;">✓ KEPT</span>'
-                : `<span style="font-family:'Cinzel',Georgia,serif; font-weight:900; color: #15803d; font-size: 0.75em;">✓ KEPT</span>`;
-            cardsResultHTML += renderCard(k.card, badge);
+            const label = `<div style="font-size:0.65em;color:#15803d;font-weight:bold;font-family:'Cinzel',Georgia,serif">✓ KEPT</div>`;
+            cardsHTML += renderCardTile(k.card, label);
         });
-        
         discarded.forEach(c => {
-            cardsResultHTML += renderCard(c, '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #b91c1c; font-size: 0.75em;">✗ Discarded</span>');
+            const label = `<div style="font-size:0.65em;color:#b91c1c;font-weight:bold;font-family:'Cinzel',Georgia,serif">✗ DISCARDED</div>`;
+            cardsHTML += renderCardTile(c, label);
         });
-        
-        cardsResultHTML += '</div>';
         
         const summaryHTML = `
             <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
                 Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong><br>
                 <span style="color: #d4af37;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</span>
             </div>
-            ${cardsResultHTML}
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
+            </div>
             <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
             <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
@@ -517,8 +523,8 @@ Object.assign(game, {
                 Choose a color — you will draw <strong>5 cards</strong> and keep all that match this color, plus any Special cards. Non-matching cards are discarded.
             </div>
             ${optionsHTML}
-            <div id="crafty-confirm-btn-row" style="display: none;">
-                <button id="crafty-confirm-btn" class="phase-btn" onclick="game._craftyConfirmColor()">Confirm</button>
+            <div id="crafty-confirm-btn-row">
+                <button id="crafty-confirm-btn" class="phase-btn" onclick="game._craftyConfirmColor()" disabled style="opacity:0.4;cursor:not-allowed;">Confirm</button>
             </div>
             <button class="phase-btn" onclick="game._craftySelectedColor = null; game.closeInfoModal()">Cancel</button>
         `;
@@ -550,8 +556,8 @@ Object.assign(game, {
             selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';
         }
         
-        const btnRow = document.getElementById('crafty-confirm-btn-row');
-        if (btnRow) btnRow.style.display = 'block';
+        const confirmBtn = document.getElementById('crafty-confirm-btn');
+        if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.style.opacity = '1'; confirmBtn.style.cursor = ''; }
     },
     
     _craftyConfirmColor() {
@@ -620,42 +626,48 @@ Object.assign(game, {
             this.updateActionButtons();
         }
         
-        // Build results HTML (same format as Local Information)
-        const cardColorMap = { red: '#dc2626', blue: '#2563eb', green: '#16a34a', black: '#1f2937' };
+        // Build results HTML matching Evening modal card style
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
+        };
         
-        const renderCard = (c, badge) => {
-            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[c.color] || '#8B7355', text: cardColorMap[c.color] || '#8B7355' };
-            return `<div style="background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); border: 3px solid ${cc.border}; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-                <span style="font-size: 1.3em;">${c.icon || '🃏'}</span>
-                <div style="flex: 1;">
-                    <div style="font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.8em; color:${cc.text};">${c.name}</div>
-                    <div style="font-size: 0.75em; color: #6b5b4a;">${c.special ? '🌟 Special' : c.type} · ${c.dice} ${c.dice === 1 ? 'die' : 'dice'}</div>
-                </div>
-                ${badge}
+        const renderCardTile = (c, statusLabel) => {
+            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[c.color] || ccMap.any);
+            const iconDisplay = c.special ? '🌟' : (c.icon || '🎴');
+            const shadow = c.special ? 'box-shadow:0 0 10px rgba(109,40,168,0.5);' : 'box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: c.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+            return `<div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 10px;text-align:center;${shadow}">
+                ${statusLabel}
+                <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${c.name}</div>
+                <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
             </div>`;
         };
         
-        let cardsResultHTML = '<div style="display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 5px;">';
-        
+        let cardsHTML = '';
         kept.forEach(k => {
-            const badge = k.reason === 'special' 
-                ? '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #6d28a8; font-size: 0.75em;">✓ KEPT</span>'
-                : `<span style="font-family:'Cinzel',Georgia,serif; font-weight:900; color: #15803d; font-size: 0.75em;">✓ KEPT</span>`;
-            cardsResultHTML += renderCard(k.card, badge);
+            const label = `<div style="font-size:0.65em;color:#15803d;font-weight:bold;font-family:'Cinzel',Georgia,serif">✓ KEPT</div>`;
+            cardsHTML += renderCardTile(k.card, label);
         });
-        
         discarded.forEach(c => {
-            cardsResultHTML += renderCard(c, '<span style="font-family:\'Cinzel\',Georgia,serif; font-weight:900; color: #b91c1c; font-size: 0.75em;">✗ Discarded</span>');
+            const label = `<div style="font-size:0.65em;color:#b91c1c;font-weight:bold;font-family:'Cinzel',Georgia,serif">✗ DISCARDED</div>`;
+            cardsHTML += renderCardTile(c, label);
         });
-        
-        cardsResultHTML += '</div>';
         
         const summaryHTML = `
             <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
                 Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong><br>
                 <span style="color: #d4af37;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</span>
             </div>
-            ${cardsResultHTML}
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
+            </div>
             <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
             <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
@@ -674,50 +686,32 @@ Object.assign(game, {
         const modal = document.getElementById('rumors-modal');
         const content = document.getElementById('rumors-content');
         
-        const cardColorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
-        };
-        
-        const colorToGeneralWithFaction = {
-            'red': 'Balazarg (Demons)',
-            'blue': 'Sapphire (Dragonkin)',
-            'green': 'Gorgutt (Orcs)',
-            'black': 'Varkolak (Undead)'
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
         };
         
         const cardsHTML = [card1, card2].map(card => {
-            const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
-            const generalWithFaction = colorToGeneralWithFaction[card.color] || 'Any General';
-            const cardIcon = card.icon || '🎴';
+            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
+            const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
+            const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
             return `
-                <div style="flex: 1; padding: 15px; margin: 5px; border: 3px solid ${borderColor}; border-radius: 8px; background: rgba(0,0,0,0.5);">
-                    <div style="text-align: center; font-size: 1.5em; margin-bottom: 8px;">
-                        ${cardIcon}
-                    </div>
-                    <div style="font-size: 1.1em; font-weight: bold; color: ${borderColor}; margin-bottom: 8px; text-align: center;">
-                        ${card.name}
-                    </div>
-                    <div style="text-align: center; margin: 8px 0;">
-                        ${Array(card.dice).fill(0).map(() => 
-                            `<span style="display: inline-block; width: 24px; height: 24px; background: ${borderColor}; border-radius: 4px; margin: 2px; line-height: 24px; text-align: center; font-weight: bold;">🎲</span>`
-                        ).join('')}
-                    </div>
-                    <div style="font-size: 0.9em; color: #d4af37; text-align: center;">
-                        ${card.special ? "🌟 Special" : "vs " + generalWithFaction}
-                    </div>
-                </div>
-            `;
+                <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;${shadow}">
+                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                </div>`;
         }).join('');
         
         content.innerHTML = `
-            <div style="margin: 20px 0;">
-                <div style="font-size: 1.1em; color: #ffd700; font-weight: bold; margin-bottom: 10px; text-align: center;">
-                    🎴 Cards Drawn:
-                </div>
-                <div style="display: flex; gap: 10px;">
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
                     ${cardsHTML}
                 </div>
             </div>
@@ -734,18 +728,12 @@ Object.assign(game, {
         const modal = document.getElementById('general-reward-modal');
         const content = document.getElementById('general-reward-content');
         
-        const cardColorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
-        };
-        
-        const colorToGeneralWithFaction = {
-            'red': 'Balazarg (Demons)',
-            'blue': 'Sapphire (Dragonkin)',
-            'green': 'Gorgutt (Orcs)',
-            'black': 'Varkolak (Undead)'
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+            any: { border: '#6d28a8', text: '#6d28a8' },
         };
         
         const rewardText = heroRewards.length === 1 
@@ -753,13 +741,11 @@ Object.assign(game, {
             : `${heroRewards.length} contributing heroes receive 3 cards each:`;
         
         let html = `
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 1.3em; color: #ffd700; margin-bottom: 10px;">
-                    ${generalName} has been vanquished!
-                </div>
-                <div style="color: #d4af37;">
-                    ${rewardText}
-                </div>
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">
+                ${generalName} has been vanquished!
+            </div>
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
+                ${rewardText}
             </div>
         `;
         
@@ -767,39 +753,28 @@ Object.assign(game, {
             const hero = reward.hero;
             const cards = reward.cards;
             
-            html += `
-                <div style="margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 2px solid ${hero.color};">
-                    <div style="font-size: 1.1em; color: ${hero.color}; font-weight: bold; margin-bottom: 10px;">
-                        ${hero.symbol} ${hero.name}
-                    </div>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-            `;
-            
-            cards.forEach(card => {
-                const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
-                const generalWithFaction = colorToGeneralWithFaction[card.color] || 'Any General';
-                const cardIcon = card.icon || '🎴';
-                html += `
-                    <div style="flex: 1; min-width: 150px; max-width: 200px; padding: 15px; margin: 5px; border: 3px solid ${borderColor}; border-radius: 8px; background: rgba(0,0,0,0.5);">
-                        <div style="text-align: center; font-size: 1.5em; margin-bottom: 8px;">
-                            ${cardIcon}
-                        </div>
-                        <div style="font-size: 1.1em; font-weight: bold; color: ${borderColor}; margin-bottom: 8px; text-align: center;">
-                            ${card.name}
-                        </div>
-                        <div style="text-align: center; margin: 8px 0;">
-                            ${Array(card.dice).fill(0).map(() => 
-                                `<span style="display: inline-block; width: 24px; height: 24px; background: ${borderColor}; border-radius: 4px; margin: 2px; line-height: 24px; text-align: center; font-weight: bold;">🎲</span>`
-                            ).join('')}
-                        </div>
-                        <div style="font-size: 0.9em; color: #d4af37; text-align: center;">
-                            ${card.special ? "🌟 Special" : "vs " + generalWithFaction}
-                        </div>
-                    </div>
-                `;
-            });
+            const cardsHTML = cards.map(card => {
+                const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
+                const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
+                const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+                const diceHTML = Array.from({ length: card.dice }).map(() =>
+                    `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+                ).join('');
+                return `
+                    <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;${shadow}">
+                        <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                        <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                    </div>`;
+            }).join('');
             
             html += `
+                <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">${hero.symbol} ${hero.name} — Cards Drawn</span></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                        ${cardsHTML}
+                    </div>
+                    <div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3)">
+                        <span style="font-size:0.82em;color:#2c1810;font-family:'Cinzel',Georgia,serif;font-weight:900">🎴 Total Cards: ${hero.cards.length}</span>
                     </div>
                 </div>
             `;

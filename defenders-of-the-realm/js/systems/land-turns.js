@@ -1402,7 +1402,7 @@ Object.assign(game, {
                 wisdomBtn.style.cssText = 'background:linear-gradient(135deg,#c2410c,#a83808);color:#fff;border:2px solid #e87040;';
                 wisdomBtn.textContent = '🔮 Wisdom';
                 wisdomBtn.onclick = () => game.wizardWisdomDiscard();
-                btnContainer.appendChild(wisdomBtn);
+                btnContainer.insertBefore(wisdomBtn, btn);
             }
             
             // Militia Secures Area & Strong Defenses: Only available during Step 3 (Night Phase)
@@ -1428,7 +1428,7 @@ Object.assign(game, {
                 militiaBtn.style.cssText = 'background: linear-gradient(135deg, #4b5563, #374151); color: #fff; border: 2px solid #6b7280;';
                 militiaBtn.textContent = `🛡️ Militia (${militiaHolder.hero.symbol})`;
                 militiaBtn.onclick = () => game._militiaSecuresShowPicker();
-                btnContainer.appendChild(militiaBtn);
+                btnContainer.insertBefore(militiaBtn, btn);
             }
             
             // Strong Defenses: Show if ANY hero has the card and this card has general movement
@@ -1465,7 +1465,7 @@ Object.assign(game, {
                 const genName = this.generals.find(g => g.color === card.general)?.name || 'General';
                 strongBtn.textContent = `🏰 Block ${genName} (${strongHolder.hero.symbol})`;
                 strongBtn.onclick = () => game._strongDefensesConfirm();
-                btnContainer.appendChild(strongBtn);
+                btnContainer.insertBefore(strongBtn, btn);
             }
             
             // Organize Militia: Show if ANY hero has a completed quest, any card with general movement
@@ -1488,7 +1488,7 @@ Object.assign(game, {
                 const genName2 = this.generals.find(g => g.color === card.general)?.name || 'General';
                 militiaQuestBtn.textContent = `📜 Block ${genName2} (${militiaQuestHolder.hero.symbol})`;
                 militiaQuestBtn.onclick = () => game._organizeMilitiaConfirm();
-                btnContainer.appendChild(militiaQuestBtn);
+                btnContainer.insertBefore(militiaQuestBtn, btn);
             }
             
             // Faction Hunter quests: Block matching faction minion placement
@@ -1522,7 +1522,7 @@ Object.assign(game, {
                     hunterBtn.style.cssText = 'background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: 2px solid #4ade80;';
                     hunterBtn.textContent = `📜 ${holder.quest.name} — ${loc}`;
                     hunterBtn.onclick = () => game._factionHunterBlockConfirm(slot);
-                    btnContainer.appendChild(hunterBtn);
+                    btnContainer.insertBefore(hunterBtn, btn);
                 });
             }
             

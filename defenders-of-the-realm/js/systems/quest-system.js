@@ -478,12 +478,9 @@ Object.assign(game, {
                 ${activeQuests.length > 0 ? cardsHTML : '<div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#5c4a3a;">No active quest cards.</div>'}
             ${this._parchmentBoxClose()}
             ${archivedHTML}
-            <div style="display: flex; gap: 10px; margin-top: 12px;">
-                <button class="phase-btn" style="flex: 1;" onclick="game.closeInfoModal()">Close</button>
-                <button id="view-quest-btn" class="phase-btn" style="flex: 1; opacity: 0.4; cursor: not-allowed;" disabled onclick="game.confirmViewQuest()">🗺️ View Quest</button>
-                <button id="use-quest-btn" class="phase-btn" style="flex: 1; opacity: 0.4; cursor: not-allowed;" disabled onclick="game.confirmUseQuest()">✨ Use</button>
-            </div>
             <div id="quest-use-context-hint" style="text-align: center;"></div>
+            <button id="use-quest-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmUseQuest()">✨ Use</button>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Close</button>
         `;
         
         this.showInfoModal(modalTitle, contentHTML);
@@ -517,30 +514,6 @@ Object.assign(game, {
             selected.classList.add('selected-quest');
             selected.style.borderColor = '#d4af37';
             selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';
-        }
-        
-        // Update View Quest button
-        const viewBtn = document.getElementById('view-quest-btn');
-        if (viewBtn) {
-            // Can view if quest has a single location and is not completed
-            const hasSingleLoc = quest.location && !quest.completed;
-            // Multi-location quests: show first unvisited/unorganized location
-            let multiLocTarget = null;
-            if (!quest.completed && quest.mechanic) {
-                if (quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
-                    const unvisited = Object.entries(quest.mechanic.locations).find(([, d]) => !d.visited);
-                    if (unvisited) multiLocTarget = unvisited[0];
-                }
-                if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
-                    const undone = Object.entries(quest.mechanic.locations).find(([, d]) => !d.organized);
-                    if (undone) multiLocTarget = undone[0];
-                }
-            }
-            const canView = hasSingleLoc || multiLocTarget;
-            viewBtn.disabled = !canView;
-            viewBtn.style.opacity = canView ? '1' : '0.5';
-            viewBtn.style.cursor = canView ? 'pointer' : 'not-allowed';
-            viewBtn.style.background = canView ? '#dc2626' : '#666';
         }
         
         // Update Use button

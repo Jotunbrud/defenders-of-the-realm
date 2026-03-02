@@ -407,7 +407,18 @@ Object.assign(game, {
         let cardsHTML = '<div id="quest-cards-list" style="display: flex; flex-direction: column; gap: 8px;">';
         activeQuests.forEach(({ hero, heroIndex, quest, questIndex }, i) => {
             const statusText = quest.completed ? 'COMPLETED' : 'IN PROGRESS';
-            const statusColor = quest.completed ? '#16a34a' : '#ca8a04';
+            let statusLabel, statusBg, statusBorder, statusColor;
+            if (quest.completed) {
+                statusLabel = 'Completed';
+                statusBg = 'rgba(22,163,74,0.15)';
+                statusBorder = '#16a34a';
+                statusColor = '#15803d';
+            } else {
+                statusLabel = 'In Progress';
+                statusBg = 'rgba(202,138,4,0.15)';
+                statusBorder = '#ca8a04';
+                statusColor = '#a16207';
+            }
             const bannerBg = 'linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%)';
             let locationText = quest.location ? `📍 ${quest.location}` : '';
             
@@ -443,12 +454,14 @@ Object.assign(game, {
                     <div style="padding:10px 14px;">
                         <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px;">${quest.description}</div>
                         ${locationText ? `<div style="font-size:0.75em;color:#5c4a3a;margin-bottom:4px;">${locationText}</div>` : ''}
-                        <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
+                        <div style="margin-top:8px;">
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                         </div>
-                        ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
-                        <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:${statusColor};">${statusText}</span>
+                        ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#3d2b1f;margin-top:4px;text-align:center;">Discard if Failed</div>' : ''}
+                        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${statusBg};border:1px solid ${statusBorder};color:${statusColor};">${statusLabel}</span>
+                        </div>
                     </div>
                 </div>
             `;

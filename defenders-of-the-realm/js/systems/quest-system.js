@@ -245,10 +245,8 @@ Object.assign(game, {
             ${this._parchmentBoxOpen('Select a Card')}
                 ${cardsHTML}
             ${this._parchmentBoxClose()}
-            <div style="display: flex; gap: 10px; margin-top: 12px;">
-                <button class="phase-btn" style="flex: 1;" onclick="game.closeInfoModal()">Cancel</button>
-                <button id="use-special-card-btn" class="phase-btn" style="flex: 1; opacity: 0.4; cursor: not-allowed;" disabled onclick="game.confirmSpecialCard()">Use Card</button>
-            </div>
+            <button id="use-special-card-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmSpecialCard()">Use Card</button>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal('🌟 Special Cards', contentHTML);
@@ -479,14 +477,9 @@ Object.assign(game, {
             ${this._parchmentBoxClose()}
             ${archivedHTML}
 
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game.closeInfoModal()">Cancel</button>
-                <button id="view-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmViewQuest()">🗺️ View Quest</button>
-                <button id="use-quest-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game.confirmUseQuest()">Use</button>
-            </div>
             <div id="quest-use-context-hint" style="text-align: center;"></div>
-            <button id="use-quest-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmUseQuest()">✨ Use</button>
-            <button class="phase-btn" onclick="game.closeInfoModal()">Close</button>
+            <button id="use-quest-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmUseQuest()">Use</button>
+            <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal(modalTitle, contentHTML);

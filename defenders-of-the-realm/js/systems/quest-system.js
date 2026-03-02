@@ -3,6 +3,13 @@
 // ═══════════════════════════════════════════════════════════════
 
 Object.assign(game, {
+    // Style info-modal title and button to match end-of-turn parchment design
+    _styleQuestModal() {
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
+        const contBtn = document.querySelector('#info-modal .modal-content > div:last-child .btn-primary');
+        if (contBtn) { contBtn.className = 'phase-btn'; contBtn.style.marginTop = '8px'; }
+    },
     wizardFireball() {
         // Cancel any active movement
         if (this.activeMovement) {
@@ -696,7 +703,7 @@ Object.assign(game, {
                 ${locationDisplay}
                 <span style="color: ${hero.color};">${hero.symbol} ${hero.name}</span>
             </div>
-            <div style="color: #a78bfa; font-size: 0.8em; margin-bottom: 8px;">🏆 ${quest.reward}</div>
+            <div style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#b91c1c;">Reward:</span> ${quest.reward}</div>
             <button class="btn" onclick="game._closeQuestView()" style="background: #666; padding: 5px 16px; font-size: 0.85em;">Close</button>
         `;
         document.body.appendChild(indicator);
@@ -727,6 +734,7 @@ Object.assign(game, {
                     </div>
                 </div>
             `);
+            this._styleQuestModal();
             const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
             if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
             return;
@@ -743,6 +751,7 @@ Object.assign(game, {
             if (m.requirePresence) {
                 if (!taintedLocations.includes(hero.location)) {
                     this.showInfoModal('📜', `<div>${hero.name} must be on a location with a Tainted Crystal to use ${quest.name}!</div>`);
+                    this._styleQuestModal();
                     return;
                 }
                 // Only the hero's location is valid
@@ -755,6 +764,7 @@ Object.assign(game, {
             
             if (taintedLocations.length === 0) {
                 this.showInfoModal('📜', '<div>There are no Tainted Crystals on the board to remove!</div>');
+                this._styleQuestModal();
                 return;
             }
             
@@ -901,7 +911,6 @@ Object.assign(game, {
         
         // Show success modal
         const successHTML = `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Tainted Crystal Removed!</div>
             ${this._parchmentBoxOpen('📜 ' + quest.name)}
                 <div style="text-align:center;padding:8px 0;">
                     <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">Removed 1 Tainted Crystal at ${locationName}</div>
@@ -911,6 +920,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('📜 Quest Used', successHTML);
+        this._styleQuestModal();
     },
     
     _drawAndShowNewQuest_display(heroIndex, newQuest) {
@@ -942,6 +952,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('📜 New Quest Drawn', contentHTML);
+        this._styleQuestModal();
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
     },
@@ -1024,6 +1035,7 @@ Object.assign(game, {
         const result = this._getCompletableQuest(hero);
         if (!result) {
             this.showInfoModal('📜', '<div>No completable quest at this location!</div>');
+            this._styleQuestModal();
             return;
         }
         
@@ -1048,6 +1060,7 @@ Object.assign(game, {
         if (m.type === 'multi_location_action') {
             if (this.actionsRemaining < (m.actionCost || 1)) {
                 this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
+                this._styleQuestModal();
                 return;
             }
             this._confirmOrganizeAction(hero, quest, questIndex);
@@ -1058,6 +1071,7 @@ Object.assign(game, {
         if (m.type === 'scout_general') {
             if (this.actionsRemaining < (m.actionCost || 1)) {
                 this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
+                this._styleQuestModal();
                 return;
             }
             this._executeScoutGeneral(hero, quest, questIndex);
@@ -1066,6 +1080,7 @@ Object.assign(game, {
         
         if (this.actionsRemaining < (m.actionCost || 1)) {
             this.showInfoModal('📜', '<div>Not enough actions remaining!</div>');
+            this._styleQuestModal();
             return;
         }
         
@@ -1114,9 +1129,9 @@ Object.assign(game, {
         
         let diceHTML = '<div style="display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap;">';
         rolls.forEach(r => {
-            const color = r.hit ? '#4ade80' : '#ef4444';
-            const bg = r.hit ? 'rgba(74,222,128,0.2)' : 'rgba(239,68,68,0.2)';
-            const border = r.hit ? '#4ade80' : '#ef4444';
+            const color = r.hit ? '#15803d' : '#991b1b';
+            const bg = r.hit ? 'rgba(22,163,74,0.15)' : 'rgba(185,28,28,0.15)';
+            const border = r.hit ? '#16a34a' : '#b91c1c';
             diceHTML += `<div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; 
                 font-size: 1.5em; font-weight: bold; border-radius: 8px; color: ${color}; 
                 background: ${bg}; border: 2px solid ${border};">${r.roll}</div>`;
@@ -1130,14 +1145,13 @@ Object.assign(game, {
             this.addLog(`📜 ✅ ${hero.name} completed quest: ${quest.name}!`);
             
             const contentHTML = `
-                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Complete!</div>
                 ${this._parchmentBoxOpen('📜 ' + quest.name)}
                     <div style="text-align:center;padding:8px 0;">
                         <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need ${m.successOn}+ on any die</div>
                         ${visionsNote}
                         ${diceHTML}
-                        <div style="margin-top:12px;padding:8px;background:rgba(167,139,250,0.15);border:1px solid #a78bfa;border-radius:6px;">
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7c3aed;">🏆 Reward:</span>
+                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
                         </div>
                     </div>
@@ -1188,14 +1202,13 @@ Object.assign(game, {
                 <div style="color:#d4af37;font-size:0.9em;margin-top:6px;">Defeat up to ${sweepRoll} minion${sweepRoll !== 1 ? 's' : ''} within 2 spaces of ${m.rewardValue}</div>`;
                 
                 const sweepContentHTML = `
-                    <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Complete!</div>
                     ${this._parchmentBoxOpen('📜 ' + quest.name)}
                         <div style="text-align:center;padding:8px 0;">
                             <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need ${m.successOn}+ on any die</div>
                             ${visionsNote}
                             ${diceHTML}
-                            <div style="margin-top:12px;padding:8px;background:rgba(167,139,250,0.15);border:1px solid #a78bfa;border-radius:6px;">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7c3aed;">🏆 Amazon Warriors Roll:</span>
+                            <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Amazon Warriors Roll:</span>
                                 ${sweepDieHTML}
                             </div>
                         </div>
@@ -1205,6 +1218,7 @@ Object.assign(game, {
                 this.showInfoModal('📜 Quest Complete!', sweepContentHTML, () => {
                     this._startAmazonEnvoyHighlight();
                 });
+                this._styleQuestModal();
                 
                 // Skip normal completion modal
                 this.updateGameStatus();
@@ -1217,12 +1231,12 @@ Object.assign(game, {
                 // Draw new quest card on completion
                 this._drawAndShowNewQuest(heroIndex);
             });
+            this._styleQuestModal();
         } else {
             // FAILURE
             this.addLog(`📜 ❌ ${hero.name} failed quest: ${quest.name}`);
             
             const contentHTML = `
-                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Failed!</div>
                 ${this._parchmentBoxOpen('📜 ' + quest.name)}
                     <div style="text-align:center;padding:8px 0;">
                         <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Needed ${m.successOn}+ on any die</div>
@@ -1244,6 +1258,7 @@ Object.assign(game, {
                     this._drawAndShowNewQuest(heroIndex);
                 }
             });
+            this._styleQuestModal();
         }
         
         this.updateGameStatus();
@@ -1289,10 +1304,12 @@ Object.assign(game, {
             `;
             
             this.showInfoModal('📜 New Quest Drawn', contentHTML);
+            this._styleQuestModal();
             const titleEl = document.getElementById('info-modal-title');
             if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
         } else {
             this.showInfoModal('📜', '<div>Quest deck is empty — no new quest drawn.</div>');
+            this._styleQuestModal();
         }
     },
     
@@ -1489,6 +1506,7 @@ Object.assign(game, {
         `;
 
         this.showInfoModal('📜 Quest Details', contentHTML);
+        this._styleQuestModal();
         // Hide the default Continue button since we have our own Close button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
@@ -1937,6 +1955,7 @@ Object.assign(game, {
         const maxActions = this.actionsRemaining;
         if (maxActions <= 0) {
             this.showInfoModal('📜', '<div>No actions remaining!</div>');
+            this._styleQuestModal();
             return;
         }
         
@@ -1955,7 +1974,6 @@ Object.assign(game, {
         optionsHTML += '</div>';
         
         const contentHTML = `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Unicorn Steed</div>
             ${this._parchmentBoxOpen('📜 Choose Actions')}
                 <div style="text-align:center;padding:8px 0;">
                     <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">
@@ -1970,6 +1988,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('📜 Unicorn Steed', contentHTML);
+        this._styleQuestModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
     },
@@ -2008,9 +2027,9 @@ Object.assign(game, {
         
         let diceHTML = '<div style="display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap;">';
         rolls.forEach(r => {
-            const color = r.hit ? '#4ade80' : '#ef4444';
-            const bg = r.hit ? 'rgba(74,222,128,0.2)' : 'rgba(239,68,68,0.2)';
-            const border = r.hit ? '#4ade80' : '#ef4444';
+            const color = r.hit ? '#15803d' : '#991b1b';
+            const bg = r.hit ? 'rgba(22,163,74,0.15)' : 'rgba(185,28,28,0.15)';
+            const border = r.hit ? '#16a34a' : '#b91c1c';
             diceHTML += `<div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; 
                 font-size: 1.5em; font-weight: bold; border-radius: 8px; color: ${color}; 
                 background: ${bg}; border: 2px solid ${border};">${r.roll}</div>`;
@@ -2024,14 +2043,13 @@ Object.assign(game, {
             this.addLog(`📜 ✅ ${hero.name} completed quest: Unicorn Steed! Horse movement + combat re-roll unlocked!`);
             
             const contentHTML = `
-                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Complete!</div>
                 ${this._parchmentBoxOpen('📜 Unicorn Steed')}
                     <div style="text-align:center;padding:8px 0;">
                         <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
                         ${visionsNote}
                         ${diceHTML}
-                        <div style="margin-top:12px;padding:8px;background:rgba(167,139,250,0.15);border:1px solid #a78bfa;border-radius:6px;">
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7c3aed;">🏆 Reward:</span>
+                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> Permanent Horse Movement + Re-roll all failed dice once per combat</span>
                         </div>
                     </div>
@@ -2041,11 +2059,11 @@ Object.assign(game, {
             this.showInfoModal('📜 Quest Complete!', contentHTML, () => {
                 this._drawAndShowNewQuest(heroIndex);
             });
+            this._styleQuestModal();
         } else {
             this.addLog(`📜 ❌ ${hero.name} failed Unicorn Steed quest (${actionCount} dice, no 5+)`);
             
             const contentHTML = `
-                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Failed!</div>
                 ${this._parchmentBoxOpen('📜 Unicorn Steed')}
                     <div style="text-align:center;padding:8px 0;">
                         <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
@@ -2057,6 +2075,7 @@ Object.assign(game, {
             `;
             
             this.showInfoModal('📜 Quest Failed', contentHTML);
+            this._styleQuestModal();
         }
         
         this.updateGameStatus();
@@ -2090,7 +2109,6 @@ Object.assign(game, {
         }).join('');
         
         this.showInfoModal('📜 Organize Militia', `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Organize Militia</div>
             ${this._parchmentBoxOpen('📜 ' + hero.location)}
                 <div style="text-align:center;padding:8px 0;">
                     <div class="modal-desc-text" style="font-size:0.85em;color:#3d2b1f;margin-bottom:8px;">Organize locals at ${hero.location}?</div>
@@ -2105,6 +2123,7 @@ Object.assign(game, {
                 </div>
             ${this._parchmentBoxClose()}
         `);
+        this._styleQuestModal();
         // Hide the default Continue button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtn && defaultBtn.querySelector('.btn-primary')) defaultBtn.style.display = 'none';
@@ -2130,7 +2149,6 @@ Object.assign(game, {
             this.addLog(`📜 ✅ ${hero.name} completed quest: Organize Militia!`);
             
             const contentHTML = `
-                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Complete!</div>
                 ${this._parchmentBoxOpen('📜 Organize Militia')}
                     <div style="text-align:center;padding:8px 0;">
                         <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">All locations organized:</div>
@@ -2138,8 +2156,8 @@ Object.assign(game, {
                             const e = colorEmojis[data.color] || '⭕';
                             return `<div class="modal-desc-text" style="color:#16a34a;font-size:0.8em;margin:4px 0;">${e} ${loc} ✅</div>`;
                         }).join('')}
-                        <div style="margin-top:12px;padding:8px;background:rgba(167,139,250,0.15);border:1px solid #a78bfa;border-radius:6px;">
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7c3aed;">🏆 Reward:</span>
+                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> Can be discarded to prevent a General from advancing!</span>
                         </div>
                     </div>
@@ -2151,6 +2169,7 @@ Object.assign(game, {
                 const heroIndex = this.heroes.indexOf(hero);
                 this._drawAndShowNewQuest(heroIndex);
             });
+            this._styleQuestModal();
         } else {
             const progress = Object.entries(m.locations).map(([loc, data]) => {
                 const e = colorEmojis[data.color] || '⭕';
@@ -2159,7 +2178,6 @@ Object.assign(game, {
             }).join('');
             
             this.showInfoModal('📜 Militia Organized!', `
-                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Location Organized!</div>
                 ${this._parchmentBoxOpen('📜 Organize Militia')}
                     <div style="text-align:center;padding:8px 0;">
                         <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Organized locals at ${hero.location}!</div>
@@ -2167,6 +2185,7 @@ Object.assign(game, {
                     </div>
                 ${this._parchmentBoxClose()}
             `);
+            this._styleQuestModal();
         }
         
         this.updateGameStatus();
@@ -2270,7 +2289,6 @@ Object.assign(game, {
         }).join(', ');
         
         this.showInfoModal('📜 Rumors Complete!', `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Complete!</div>
             ${this._parchmentBoxOpen('📜 Rumors')}
                 <div style="text-align:center;padding:8px 0;">
                     ${progress}
@@ -2287,6 +2305,7 @@ Object.assign(game, {
                 this._drawAndShowNewQuest_display(heroIndex, newQuest);
             }
         });
+        this._styleQuestModal();
     },
     
     // ===== FIND MAGIC GATE: Hook after gate building =====
@@ -2444,6 +2463,7 @@ Object.assign(game, {
                 <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded.</div>
             </div>
         `);
+        this._styleQuestModal();
     },
     
     // ===== KING OF THE GRYPHONS: Move 2 Heroes =====
@@ -2508,6 +2528,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('📜 ' + state.quest.name, contentHTML);
+        this._styleQuestModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#gryph-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -2728,6 +2749,7 @@ Object.assign(game, {
                 <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded — No action used</div>
             </div>
         `);
+        this._styleQuestModal();
     },
     
     // ===== AMAZON ENVOY QUEST: Sweep Picker =====
@@ -3196,7 +3218,6 @@ Object.assign(game, {
         const emoji = generalEmojis[targetColor] || '🔍';
         
         this.showInfoModal('📜 Quest Complete!', `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Complete!</div>
             ${this._parchmentBoxOpen('📜 Scout the General')}
                 <div style="text-align:center;padding:8px 0;">
                     <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">Scouted ${generalName}'s forces at ${hero.location}</div>
@@ -3206,6 +3227,7 @@ Object.assign(game, {
         `, () => {
             this._drawAndShowNewQuest(heroIndex);
         });
+        this._styleQuestModal();
         
         this.updateGameStatus();
         this.updateActionButtons();
@@ -3254,12 +3276,11 @@ Object.assign(game, {
                         // Show completion modal, then draw new quest
                         setTimeout(() => {
                             this.showInfoModal('📜 Quest Complete!', `
-                                <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Complete!</div>
                                 ${this._parchmentBoxOpen('📜 ' + quest.name)}
                                     <div style="text-align:center;padding:8px 0;">
                                         <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">${quest.mechanic.requiredKills} ${factionPlural} defeated!</div>
-                                        <div style="margin-top:12px;padding:8px;background:rgba(167,139,250,0.15);border:1px solid #a78bfa;border-radius:6px;">
-                                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7c3aed;">🏆 Reward:</span>
+                                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
                                         </div>
                                     </div>
@@ -3267,6 +3288,7 @@ Object.assign(game, {
                             `, () => {
                                 this._drawAndShowNewQuest(heroIndex);
                             });
+                            this._styleQuestModal();
                         }, 600);
                     }
                     
@@ -3298,12 +3320,11 @@ Object.assign(game, {
                             const heroIndex = i;
                             setTimeout(() => {
                                 this.showInfoModal('📜 Quest Complete!', `
-                                    <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">📜 Quest Complete!</div>
                                     ${this._parchmentBoxOpen('📜 ' + quest.name)}
                                         <div style="text-align:center;padding:8px 0;">
                                             <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">All 4 faction minions defeated!</div>
-                                            <div style="margin-top:12px;padding:8px;background:rgba(167,139,250,0.15);border:1px solid #a78bfa;border-radius:6px;">
-                                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#7c3aed;">🏆 Reward:</span>
+                                            <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                                                 <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
                                             </div>
                                         </div>
@@ -3311,6 +3332,7 @@ Object.assign(game, {
                                 `, () => {
                                     this._drawAndShowNewQuest(heroIndex);
                                 });
+                                this._styleQuestModal();
                             }, 600);
                         }
                         

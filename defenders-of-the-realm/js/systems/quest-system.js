@@ -481,19 +481,6 @@ Object.assign(game, {
                                     '<div style="font-size:1.3em;letter-spacing:4px;">' + pips + '</div>' +
                                     '<div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">' + done + ' / 4 Factions Defeated</div></div>';
                             }
-                            if (quest.mechanic.type === 'scout_general') {
-                                const general = game.generals ? game.generals.find(g => g.name === quest.mechanic.generalName) : null;
-                                const ge = { red: '😈', green: '👺', blue: '🐉', black: '💀' };
-                                const emoji = ge[quest.mechanic.faction] || '⚔️';
-                                if (general && !general.defeated) {
-                                    return '<div style="margin-top:8px;text-align:center;">' +
-                                        '<div style="font-size:1.5em;">' + emoji + '</div>' +
-                                        '<div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">' + quest.mechanic.generalName + ' is at ' + general.location + '</div></div>';
-                                } else if (general && general.defeated) {
-                                    return '<div style="margin-top:8px;text-align:center;">' +
-                                        '<div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;margin-top:4px;">' + quest.mechanic.generalName + ' has been defeated — quest cannot be completed</div></div>';
-                                }
-                            }
                             return '';
                         })()}
                         <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">

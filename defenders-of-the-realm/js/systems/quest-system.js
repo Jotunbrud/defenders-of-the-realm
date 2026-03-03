@@ -969,11 +969,10 @@ Object.assign(game, {
                 </div>
                 <div style="padding:12px 14px;">
                     <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${newQuest.description}</div>
-                    <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
+                    <div>
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                         <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${newQuest.reward}</span>
                     </div>
-                    ${newQuest.mechanic && newQuest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
                 </div>
             </div>
         `;
@@ -1186,7 +1185,7 @@ Object.assign(game, {
                         <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need ${m.successOn}+ on any die</div>
                         ${visionsNote}
                         ${diceHTML}
-                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                        <div>
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
                         </div>
@@ -1322,11 +1321,10 @@ Object.assign(game, {
                     </div>
                     <div style="padding:12px 14px;">
                         <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${newQuest.description}</div>
-                        <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);">
+                        <div>
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${newQuest.reward}</span>
                         </div>
-                        ${newQuest.mechanic && newQuest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
                     </div>
                 </div>
             `;
@@ -2085,7 +2083,7 @@ Object.assign(game, {
                         <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Need 5+ on any die (spent ${actionCount} action${actionCount > 1 ? 's' : ''})</div>
                         ${visionsNote}
                         ${diceHTML}
-                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                        <div>
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> Permanent Horse Movement + Re-roll all failed dice once per combat</span>
                         </div>
@@ -2193,7 +2191,7 @@ Object.assign(game, {
                             const e = colorEmojis[data.color] || '⭕';
                             return `<div class="modal-desc-text" style="color:#16a34a;font-size:0.8em;margin:4px 0;">${e} ${loc} ✅</div>`;
                         }).join('')}
-                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                        <div>
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> Can be discarded to prevent a General from advancing!</span>
                         </div>
@@ -3316,7 +3314,7 @@ Object.assign(game, {
                                 ${this._parchmentBoxOpen('📜 ' + quest.name)}
                                     <div style="text-align:center;padding:8px 0;">
                                         <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">${quest.mechanic.requiredKills} ${factionPlural} defeated!</div>
-                                        <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                                        <div>
                                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
                                         </div>
@@ -3360,7 +3358,7 @@ Object.assign(game, {
                                     ${this._parchmentBoxOpen('📜 ' + quest.name)}
                                         <div style="text-align:center;padding:8px 0;">
                                             <div class="modal-desc-text" style="font-size:0.8em;color:#d4af37;margin-bottom:8px;">All 4 faction minions defeated!</div>
-                                            <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                                            <div>
                                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                                                 <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;"> ${quest.reward}</span>
                                             </div>

@@ -435,6 +435,67 @@ Object.assign(game, {
                             <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                         </div>
                         ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#3d2b1f;margin-top:4px;text-align:center;">Discard if Failed</div>' : ''}
+                        ${(() => {
+                            if (quest.completed || quest.discarded || !quest.mechanic) return '';
+                            const ce = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
+                            if (quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
+                                let h = '<div style="margin-top:8px;">';
+                                for (const [loc, data] of Object.entries(quest.mechanic.locations)) {
+                                    const emoji = ce[data.color] || '⭕';
+                                    const check = data.visited ? '✅' : '⬜';
+                                    const clr = data.visited ? '#15803d' : '#8b7355';
+                                    h += '<div style="color:' + clr + ';font-size:0.85em;padding:2px 0;">' + emoji + ' ' + loc + ' ' + check + '</div>';
+                                }
+                                return h + '</div>';
+                            }
+                            if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
+                                let h = '<div style="margin-top:8px;">';
+                                for (const [loc, data] of Object.entries(quest.mechanic.locations)) {
+                                    const emoji = ce[data.color] || '⭕';
+                                    const check = data.organized ? '✅' : '⬜';
+                                    const clr = data.organized ? '#15803d' : '#8b7355';
+                                    h += '<div style="color:' + clr + ';font-size:0.85em;padding:2px 0;">' + emoji + ' ' + loc + ' ' + check + '</div>';
+                                }
+                                return h + '</div>';
+                            }
+                            if (quest.mechanic.type === 'defeat_faction_minions') {
+                                const current = quest.mechanic.currentKills || 0;
+                                const required = quest.mechanic.requiredKills;
+                                const fEmoji = ce[quest.mechanic.faction] || '⭕';
+                                const fNames = { red: 'Demons', green: 'Orcs', blue: 'Dragonkin', black: 'Undead' };
+                                const fName = fNames[quest.mechanic.faction] || quest.mechanic.faction;
+                                let pips = '';
+                                for (let p = 0; p < required; p++) pips += p < current ? fEmoji : '⬜';
+                                return '<div style="margin-top:8px;text-align:center;">' +
+                                    '<div style="font-size:1.3em;letter-spacing:4px;">' + pips + '</div>' +
+                                    '<div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">' + current + ' / ' + required + ' ' + fName + ' Defeated</div></div>';
+                            }
+                            if (quest.mechanic.type === 'defeat_all_factions' && quest.mechanic.factionKills) {
+                                const fk = quest.mechanic.factionKills;
+                                const req = quest.mechanic.requiredPerFaction;
+                                const fi = [{ color: 'blue', name: 'Dragonkin', emoji: '🔵' }, { color: 'green', name: 'Orc', emoji: '🟢' }, { color: 'red', name: 'Demon', emoji: '🔴' }, { color: 'black', name: 'Undead', emoji: '⚫' }];
+                                let pips = '';
+                                fi.forEach(f => { pips += (fk[f.color] || 0) >= req ? f.emoji : '⬜'; });
+                                const done = Object.values(fk).filter(v => v >= req).length;
+                                return '<div style="margin-top:8px;text-align:center;">' +
+                                    '<div style="font-size:1.3em;letter-spacing:4px;">' + pips + '</div>' +
+                                    '<div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">' + done + ' / 4 Factions Defeated</div></div>';
+                            }
+                            if (quest.mechanic.type === 'scout_general') {
+                                const general = game.generals ? game.generals.find(g => g.name === quest.mechanic.generalName) : null;
+                                const ge = { red: '😈', green: '👺', blue: '🐉', black: '💀' };
+                                const emoji = ge[quest.mechanic.faction] || '⚔️';
+                                if (general && !general.defeated) {
+                                    return '<div style="margin-top:8px;text-align:center;">' +
+                                        '<div style="font-size:1.5em;">' + emoji + '</div>' +
+                                        '<div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px;">' + quest.mechanic.generalName + ' is at ' + general.location + '</div></div>';
+                                } else if (general && general.defeated) {
+                                    return '<div style="margin-top:8px;text-align:center;">' +
+                                        '<div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;margin-top:4px;">' + quest.mechanic.generalName + ' has been defeated — quest cannot be completed</div></div>';
+                                }
+                            }
+                            return '';
+                        })()}
                         <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:${statusBg};border:1px solid ${statusBorder};color:${statusColor};">${statusLabel}</span>
                         </div>

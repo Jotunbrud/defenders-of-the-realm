@@ -492,15 +492,13 @@ Object.assign(game, {
         });
         cardsHTML += '</div>';
         
-        // Build retired quests section (used/discarded/failed)
+        // Build retired quests section (completed quests that were used/discarded — excludes failed)
         let archivedHTML = '';
-        if (retiredQuests.length > 0) {
+        const completedRetired = retiredQuests.filter(({ quest }) => quest.completed && !quest.failed);
+        if (completedRetired.length > 0) {
             archivedHTML = '<div style="margin-top: 12px;">';
-            archivedHTML += `${this._parchmentBoxOpen('📋 Quest History')}`;
-            retiredQuests.forEach(({ hero, quest, isLegacy }) => {
-                const label = isLegacy ? (quest.useReason || 'Used') : (quest.failed ? 'Failed' : (quest.discardReason || 'Used'));
-                const statusText = quest.failed ? 'FAILED' : 'USED';
-                const statusColor = quest.failed ? '#dc2626' : '#8b7355';
+            archivedHTML += `${this._parchmentBoxOpen('📋 Discarded/Used Quests')}`;
+            completedRetired.forEach(({ hero, quest, isLegacy }) => {
                 archivedHTML += `
                     <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid rgba(139,115,85,0.5);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;opacity:0.7;">
                         <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid rgba(139,115,85,0.5);display:flex;align-items:center;justify-content:space-between;">
@@ -513,9 +511,9 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
                                 <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                             </div>
-                            ${quest.mechanic && quest.mechanic.failDiscard ? '<div class="modal-desc-text" style="font-size:0.7em;color:#b91c1c;margin-top:4px;">Discard if Failed</div>' : ''}
-                            <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:${statusColor};">${statusText}</span>
-                            <span class="modal-desc-text" style="display:block;text-align:center;font-size:0.65em;color:#5c4a3a;">${label}</span>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d;">Completed</span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1610,10 +1608,11 @@ Object.assign(game, {
         
         const active = allQuests.filter(q => !q.completed && !q.discarded);
         const ready = allQuests.filter(q => q.completed && !q.discarded);
-        const retired = allQuests.filter(q => q.discarded);
+        const completedUsed = allQuests.filter(q => q.completed && q.discarded && !q.failed);
+        const retired = allQuests.filter(q => q.discarded && !q.completed);
         
         let html = '<div class="cards-section" style="margin-top: 10px;">';
-        html += `<div style="font-weight: bold; color: #ffd700; margin-bottom: 8px;">📜 Quests (${active.length + ready.length} active${retired.length + legacyCompleted.length > 0 ? `, ${retired.length + legacyCompleted.length} used` : ''})</div>`;
+        html += `<div style="font-weight: bold; color: #ffd700; margin-bottom: 8px;">📜 Quests (${active.length + ready.length} active${completedUsed.length > 0 ? `, ${completedUsed.length} completed` : ''})</div>`;
         
         // Ready-to-use quests (completed, not discarded)
         ready.forEach(q => {
@@ -1640,21 +1639,19 @@ Object.assign(game, {
             </div>`;
         });
         
-        // Retired quests (used/discarded/failed)
-        retired.forEach(q => {
-            const icon = q.failed ? '❌' : '🏆';
-            const label = q.failed ? 'Failed' : (q.discardReason || 'Used');
-            html += `<div class="card-item" style="border-left: 3px solid #555; padding-left: 8px; margin-bottom: 4px; opacity: 0.6;">
-                <span style="color: #888;">${icon}</span> <span style="color: #777;">${q.name}</span>
-                <span style="color: #666; font-size: 0.75em; font-style: italic;"> — ${label}</span>
+        // Completed quests that were used/discarded (still shown as completed)
+        completedUsed.forEach(q => {
+            html += `<div class="card-item" style="border-left: 3px solid #4ade80; padding-left: 8px; margin-bottom: 4px; opacity: 0.7;">
+                <span style="color: #4ade80; font-weight: bold;">✅</span> <span style="color: #ccc;">${q.name}</span>
+                <span style="color: #4ade80; font-size: 0.8em;">(completed)</span>
             </div>`;
         });
         
         // Legacy archived quests (from before this system)
         legacyCompleted.forEach(q => {
-            html += `<div class="card-item" style="border-left: 3px solid #555; padding-left: 8px; margin-bottom: 4px; opacity: 0.6;">
-                <span style="color: #888;">🏆</span> <span style="color: #777;">${q.name}</span>
-                <span style="color: #666; font-size: 0.75em; font-style: italic;"> — ${q.useReason}</span>
+            html += `<div class="card-item" style="border-left: 3px solid #4ade80; padding-left: 8px; margin-bottom: 4px; opacity: 0.7;">
+                <span style="color: #4ade80; font-weight: bold;">✅</span> <span style="color: #ccc;">${q.name}</span>
+                <span style="color: #4ade80; font-size: 0.8em;">(completed)</span>
             </div>`;
         });
         

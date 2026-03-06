@@ -372,7 +372,8 @@ Object.assign(game, {
     
     _showQuestCardsForHeroes(filterHeroIndex) {
         // Collect quest cards from heroes (all or filtered)
-        const activeQuests = [];
+        const inProgressQuests = [];
+        const completedQuests = [];
         const retiredQuests = [];
         this.heroes.forEach((hero, heroIndex) => {
             if (filterHeroIndex !== null && heroIndex !== filterHeroIndex) return;
@@ -380,8 +381,10 @@ Object.assign(game, {
                 hero.questCards.forEach((quest, questIndex) => {
                     if (quest.discarded) {
                         retiredQuests.push({ hero, heroIndex, quest, questIndex });
+                    } else if (quest.completed) {
+                        completedQuests.push({ hero, heroIndex, quest, questIndex });
                     } else {
-                        activeQuests.push({ hero, heroIndex, quest, questIndex });
+                        inProgressQuests.push({ hero, heroIndex, quest, questIndex });
                     }
                 });
             }
@@ -393,6 +396,7 @@ Object.assign(game, {
             }
         });
         
+        const activeQuests = [...inProgressQuests, ...completedQuests];
         const filterHero = filterHeroIndex !== null ? this.heroes[filterHeroIndex] : null;
         const modalTitle = filterHero ? `📜 ${filterHero.symbol} ${filterHero.name}'s Quests` : '📜 Quest Cards';
         
@@ -404,7 +408,8 @@ Object.assign(game, {
         this._selectedQuestCard = null;
         this._questCardsList = activeQuests;
         
-        let cardsHTML = '<div id="quest-cards-list" style="display: flex; flex-direction: column; gap: 8px;">';
+        let inProgressHTML = '<div id="quest-cards-list" style="display: flex; flex-direction: column; gap: 8px;">';
+        let completedHTML = '<div style="display: flex; flex-direction: column; gap: 8px;">';
         activeQuests.forEach(({ hero, heroIndex, quest, questIndex }, i) => {
             const statusText = quest.completed ? 'COMPLETED' : 'IN PROGRESS';
             let statusLabel, statusBg, statusBorder, statusColor;
@@ -421,7 +426,7 @@ Object.assign(game, {
             }
             const bannerBg = 'linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%)';
             
-            cardsHTML += `
+            const cardHTML = `
                 <div id="quest-card-option-${i}" onclick="game.selectQuestCard(${i}, ${heroIndex}, ${questIndex})"
                      style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);cursor:pointer;transition:all 0.2s;">
                     <div style="background:${bannerBg};padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
@@ -489,8 +494,14 @@ Object.assign(game, {
                     </div>
                 </div>
             `;
+            if (quest.completed) {
+                completedHTML += cardHTML;
+            } else {
+                inProgressHTML += cardHTML;
+            }
         });
-        cardsHTML += '</div>';
+        inProgressHTML += '</div>';
+        completedHTML += '</div>';
         
         // Build retired quests section (completed quests that were used/discarded — excludes failed)
         let archivedHTML = '';
@@ -526,8 +537,9 @@ Object.assign(game, {
                 ${filterHero ? `${filterHero.name}'s quest cards. Select a quest to view or use.` : 'Quest cards assigned to heroes. Select a quest to view or use.'}
             </div>
             ${this._parchmentBoxOpen('Active Quests')}
-                ${activeQuests.length > 0 ? cardsHTML : '<div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#5c4a3a;">No active quest cards.</div>'}
+                ${inProgressQuests.length > 0 ? inProgressHTML : '<div class="modal-desc-text" style="text-align:center;font-size:0.75em;color:#5c4a3a;">No active quest cards.</div>'}
             ${this._parchmentBoxClose()}
+            ${completedQuests.length > 0 ? `<div style="margin-top:12px;">${this._parchmentBoxOpen('Completed Quests')}${completedHTML}${this._parchmentBoxClose()}</div>` : ''}
             ${archivedHTML}
 
             <div id="quest-use-context-hint" style="text-align: center;"></div>
@@ -554,7 +566,7 @@ Object.assign(game, {
         const quest = this.heroes[heroIndex].questCards[questIndex];
         
         // Clear all selections
-        document.querySelectorAll('#quest-cards-list > div').forEach(el => {
+        document.querySelectorAll('[id^="quest-card-option-"]').forEach(el => {
             el.classList.remove('selected-quest');
             el.style.borderColor = '#8b7355';
             el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3)';

@@ -481,10 +481,14 @@ Object.assign(game, {
         // Close the card selection modal
         const modals = document.querySelectorAll('.modal');
         modals.forEach(m => {
-            if (m.querySelector('.modal-title')?.textContent?.includes('Heal the Land')) {
+            if (m.querySelector('.modal-heading')?.textContent?.includes('Heal the Land')) {
                 m.remove();
             }
         });
+        
+        // Clear stored card selection data
+        this.taintRemovalCards = null;
+        this.taintRemovalLocation = null;
         
         this.actionsRemaining--;
         this.hideTooltip(true);

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html><head><title>Quest Modals — Real Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#111;font-family:Georgia,serif;padding:20px}
+.mc{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:2px solid #d4af37;border-radius:12px;padding:20px;max-width:500px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.6);color:#f4e4c1}
+.mh{font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;text-align:center;font-size:1.15em;margin-bottom:4px}
+.hbn{font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.05em;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5)}
+.mdt{font-family:'Comic Sans MS','Comic Sans',cursive;font-size:0.75em;color:#3d2b1f;line-height:1.5}
+.pb{padding:10px;margin-top:10px;border-radius:8px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355}
+.pbn{background:linear-gradient(135deg,#5c3d2ecc 0%,#4a2f20cc 100%);padding:6px 14px;margin:-10px -10px 10px -10px;border-radius:8px 8px 0 0;border-bottom:2px solid #8b7355;text-align:center}
+.pbn .hbn{font-size:0.9em;letter-spacing:1px}
+.qci{background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3)}
+.qrb{background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between}
+.phb{width:100%;margin-top:14px;padding:11px;border-radius:8px;font-weight:bold;font-size:0.95em;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;text-align:center;font-variant:small-caps}
+.rl{font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c}
+.bd{font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px}
+.bd-done{background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d}
+.bd-fail{background:rgba(220,38,38,0.15);border:1px solid #dc2626;color:#b91c1c}
+.bd-prog{background:rgba(202,138,4,0.15);border:1px solid #ca8a04;color:#a16207}
+.st{color:#d4af37;font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;margin:40px 0 20px;font-size:1.5em;border-bottom:2px solid #d4af37;padding-bottom:10px}
+.mg{display:flex;flex-wrap:wrap;gap:24px;justify-content:center}.ms{width:500px}
+.ml{color:#ff6b6b;font-family:monospace;font-size:0.75em;text-align:center;margin-bottom:6px;padding:3px 8px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);border-radius:4px}
+.dice{display:flex;gap:8px;justify-content:center;margin:15px 0;flex-wrap:wrap}
+.die{width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;border-radius:8px}
+.die-g{color:#ffffff;background:linear-gradient(145deg,#16a34a 0%,#15803d 100%);border:2px solid rgba(0,0,0,0.3);box-shadow:0 3px 6px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(22,163,74,0.3);font-weight:900}
+.die-r{color:#ffffff;background:linear-gradient(145deg,#dc2626 0%,#b91c1c 100%);border:2px solid rgba(0,0,0,0.3);box-shadow:0 3px 6px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(185,28,28,0.3);font-weight:900}
+.bc{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.btn{padding:10px 15px;border:2px solid #d4af37;border-radius:8px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#ffd700;font-weight:bold;font-size:0.9em;font-family:'Cinzel',Georgia,serif}
+.qbody{padding:12px 14px}
+</style></head><body>
+
+<!-- ═══ 1. NEW QUEST DRAWN ═══ -->
+<div class="st">1. New Quest Drawn</div>
+<div class="mg"><div class="ms"><div class="ml">_drawAndShowNewQuest_display</div>
+<div class="mc"><h2 class="mh">📜 New Quest Drawn</h2>
+<div class="pb"><div class="pbn"><span class="hbn">New Quest</span></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Boots of Speed</span><span class="hbn" style="font-size:0.85em">✝️ Cleric</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Seek the enchanted boots hidden in the Mountains of Mist. Spend 1 action and roll 4 dice. A roll of 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Gain +2 actions per turn.</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div></div>
+
+<!-- ═══ 2. QUEST COMPLETE — DICE ROLL SUCCESS ═══ -->
+<div class="st">2. Quest Complete — Dice Roll Success</div>
+<div class="mg"><div class="ms"><div class="ml">_rollQuestDice → success</div>
+<div class="mc"><h2 class="mh">📜 Quest Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Roll</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Need 6+ on any die</div>
+  <div class="dice"><div class="die die-r">3</div><div class="die die-g">6</div><div class="die die-r">2</div><div class="die die-r">1</div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Amulet of the Gods</span><span class="hbn" style="font-size:0.85em">🧙 Wizard</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Seek the amulet buried deep inside the Dark Woods. Spend 1 action and roll 4 dice. A roll of 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">The power of the amulet adds +1 to all dice in combat, including Generals.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div></div>
+
+<!-- ═══ 3. QUEST FAILED — DICE ROLL FAILURE ═══ -->
+<div class="st">3. Quest Failed — Dice Roll Failure</div>
+<div class="mg"><div class="ms"><div class="ml">_rollQuestDice → failure (failDiscard: true)</div>
+<div class="mc"><h2 class="mh">📜 Quest Failed</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Roll</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Needed 6+ on any die</div>
+  <div class="dice"><div class="die die-r">3</div><div class="die die-r">4</div><div class="die die-r">2</div><div class="die die-r">1</div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Helm of Power</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Seek the legendary helm within the Ancient Ruins. Spend 1 action and roll 4 dice. A roll of 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Draw +1 extra Hero Card each turn.</span></div>
+  <div class="bc"><span class="bd bd-fail">Discarded</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div></div>
+
+<!-- ═══ 3b. QUEST FAILED — NO DISCARD ═══ -->
+<div class="mg"><div class="ms"><div class="ml">3b. _rollQuestDice → failure (failDiscard: false)</div>
+<div class="mc"><h2 class="mh">📜 Quest Failed</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Roll</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Needed 5+ on any die</div>
+  <div class="dice"><div class="die die-r">3</div><div class="die die-r">4</div><div class="die die-r">2</div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 War Banner of Valor</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Seek the War Banner along the banks of the Fire River. Spend 1 action and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Ignore the wounds and other effects of losing a battle to a general.</span></div>
+  <div class="bc"><span class="bd bd-fail">Failed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div></div>
+
+<!-- ═══ 4. AMAZON SWEEP ═══ -->
+<div class="st">4. Quest Complete — Amazon/Envoy Sweep</div>
+<div class="mg"><div class="ms"><div class="ml">_rollQuestDice → amazon_envoy_sweep</div>
+<div class="mc"><h2 class="mh">📜 Quest Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Roll</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Need 5+ on any die</div>
+  <div class="dice"><div class="die die-g">6</div><div class="die die-r">2</div><div class="die die-r">3</div></div>
+  <div style="padding-top:8px;margin-top:8px;border-top:1px solid rgba(139,115,85,0.3)"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f">Amazon Warriors Roll:</span>
+  <div style="display:flex;justify-content:center;margin-top:12px"><div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:900;border-radius:8px;color:#ffffff;background:linear-gradient(145deg,#2563eb 0%,#1d4ed8 100%);border:2px solid rgba(0,0,0,0.3);box-shadow:0 3px 6px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(59,130,246,0.3)">4</div></div>
+  <div class="mdt" style="margin-top:6px">Defeat up to 4 minions within 2 spaces of Land of Amazons</div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Amazon Envoy</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Convince the Amazons to send warriors. Spend 1 action in the Land of Amazons and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Defeat D6 minions within 2 spaces of the Land of Amazons.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div></div>
+
+<!-- ═══ 5 & 6. UNICORN STEED ═══ -->
+<div class="st">5 & 6. Unicorn Steed</div>
+<div class="mg">
+<div class="ms"><div class="ml">5. completeUnicornQuest → success</div>
+<div class="mc"><h2 class="mh">📜 Quest Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Roll</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Need 5+ on any die (spent 2 actions)</div>
+  <div class="dice"><div class="die die-r">3</div><div class="die die-g">5</div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Unicorn Steed</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to the Unicorn Forest and entice a unicorn to become your steed. Spend 1 action per die roll. A roll of 5 or 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">You may move as if you always have a Horse. Additionally, the Unicorn Steed grants 1 re-roll of all failed dice each combat.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+<div class="ms"><div class="ml">6. completeUnicornQuest → failure</div>
+<div class="mc"><h2 class="mh">📜 Quest Failed</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Roll</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Need 5+ on any die (spent 2 actions)</div>
+  <div class="dice"><div class="die die-r">3</div><div class="die die-r">2</div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Unicorn Steed</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to the Unicorn Forest and entice a unicorn to become your steed. Spend 1 action per die roll. A roll of 5 or 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">You may move as if you always have a Horse. Additionally, the Unicorn Steed grants 1 re-roll of all failed dice each combat.</span></div>
+  <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+</div>
+
+<!-- ═══ 7. QUEST USED ═══ -->
+<div class="st">7. Quest Used — Taint Removal</div>
+<div class="mg"><div class="ms"><div class="ml">_executeQuestRemoveTaint</div>
+<div class="mc"><h2 class="mh">📜 Quest Used</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Used</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Removed 1 Tainted Crystal at Dark Woods</div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Crystal of Light</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Seek the Crystal of Light in the Enchanted Glade. Spend 1 action and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Remove 1 Tainted Crystal from your current location. Must be present on the tainted space to use.</span></div>
+  <div class="bc"><span class="bd bd-fail">Used</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div></div>
+
+<!-- ═══ 8, 9, 10. ORGANIZE MILITIA ═══ -->
+<div class="st">8, 9, 10. Organize Militia</div>
+<div class="mg">
+<div class="ms"><div class="ml">8. _confirmOrganizeAction</div>
+<div class="mc"><h2 class="mh">📜 Organize Militia</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Action</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Organize locals at McCorm Highlands?</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f;margin-bottom:12px">Cost: 1 Action (3 remaining)</div>
+  <div style="display:inline-block;text-align:left"><div class="mdt" style="margin:3px 0;display:flex;justify-content:space-between;gap:12px"><span>🔴 Pleasant Hill</span><span>✅</span></div>
+  <div class="mdt" style="margin:3px 0;display:flex;justify-content:space-between;gap:12px"><span>⚫ McCorm Highlands</span><span>⬜</span></div>
+  <div class="mdt" style="margin:3px 0;display:flex;justify-content:space-between;gap:12px"><span>🟢 Greenleaf Village</span><span>⬜</span></div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Organize Militia</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to the following locations and spend 1 action at each location organizing the locals: Pleasant Hill (Red), McCorm Highlands (Black), Greenleaf Village (Green).</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Discard to prevent a general from moving during Darkness Spreads.</span></div>
+  <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
+</div>
+<button class="phb" style="margin-top:14px;margin-bottom:-12px">Organizing the Locals (spend 1 action)</button>
+<div style="text-align:center;margin-top:4px"><button class="phb">Continue</button></div></div></div>
+<div class="ms"><div class="ml">9. _organizeLocationAction → progress</div>
+<div class="mc"><h2 class="mh">📜 Militia Organized!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Progress</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Organized locals at McCorm Highlands!</div>
+  <div style="display:inline-block;text-align:left"><div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>🔴 Pleasant Hill</span><span>✅</span></div>
+  <div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>⚫ McCorm Highlands</span><span>✅</span></div>
+  <div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>🟢 Greenleaf Village</span><span>⬜</span></div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Organize Militia</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to the following locations and spend 1 action at each location organizing the locals: Pleasant Hill (Red), McCorm Highlands (Black), Greenleaf Village (Green).</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Discard to prevent a general from moving during Darkness Spreads.</span></div>
+  <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+<div class="ms"><div class="ml">10. _organizeLocationAction → all complete</div>
+<div class="mc"><h2 class="mh">📜 Quest Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Complete</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">All locations organized:</div>
+  <div style="display:inline-block;text-align:left"><div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>🔴 Pleasant Hill</span><span>✅</span></div>
+  <div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>⚫ McCorm Highlands</span><span>✅</span></div>
+  <div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>🟢 Greenleaf Village</span><span>✅</span></div></div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Organize Militia</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to the following locations and spend 1 action at each location organizing the locals: Pleasant Hill (Red), McCorm Highlands (Black), Greenleaf Village (Green).</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Discard to prevent a general from moving during Darkness Spreads.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+</div>
+
+<!-- ═══ 11. RUMORS COMPLETE ═══ -->
+<div class="st">11. Rumors Complete</div>
+<div class="mg"><div class="ms"><div class="ml">11a. _showPendingRumorsCompletion</div>
+<div class="mc"><h2 class="mh">📜 Rumors Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Complete</span></div>
+  <div style="text-align:center;padding:8px 0">
+  <div style="display:inline-block;text-align:left"><div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>🔵 Eagle Nest Inn</span><span>✅</span></div>
+  <div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>⚫ Chimera Inn</span><span>✅</span></div>
+  <div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>🔴 Gryphon Inn</span><span>✅</span></div></div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f;margin-top:12px">Draw 4 Hero Cards</div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Rumors</span><span class="hbn" style="font-size:0.85em">✝️ Cleric</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to 3 Inns<br>Place the appropriately colored minion on this card to mark each inn visited:<div style="text-align:center;margin-top:4px"><div style="display:inline-block;text-align:left">🔵 Visit Eagle Nest Inn<br>⚫ Chimera Inn<br>🔴 Gryphon Inn</div></div></div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Draw 4 Hero Cards when Quest is completed.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+
+<div class="ms"><div class="ml">11b. Hero Cards Drawn (after Continue)</div>
+<div class="mc"><h2 class="mh">📜 Hero Cards Drawn</h2>
+<div class="pb"><div class="pbn"><span class="hbn">🎴 Cards Drawn</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+    <div style="font-size:1.4em;margin-bottom:2px">🎴</div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#dc2626">Fire River</div>
+    <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#dc2626;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+  </div><div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #3b82f6;border-radius:8px;padding:8px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+    <div style="font-size:1.4em;margin-bottom:2px">🎴</div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#2563eb">Crystal Hills</div>
+    <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#3b82f6;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#3b82f6;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+  </div><div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+    <div style="font-size:1.4em;margin-bottom:2px">🎴</div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#16a34a">Thorny Woods</div>
+    <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+  </div><div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #6d28a8;border-radius:8px;padding:8px 10px;text-align:center;box-shadow:0 0 10px rgba(109,40,168,0.5);">
+    <div style="font-size:1.4em;margin-bottom:2px">🌟</div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#6d28a8">Battle Fury</div>
+    <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#6d28a8;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#6d28a8;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#6d28a8;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+  </div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+</div>
+
+<!-- ═══ 12 & 13. SCOUT THE GENERAL ═══ -->
+<div class="st">12 & 13. Scout the General</div>
+<div class="mg">
+<div class="ms"><div class="ml">12a. _executeScoutGeneral → card found</div>
+<div class="mc"><h2 class="mh">📜 Quest Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Complete</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Scouted Gorgutt's forces at Thorny Woods</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f;margin-top:12px">Draw the first Green card from the Hero Deck.</div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Scout the General (Gorgutt)</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to Gorgutt's location and spend 1 action scouting.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Look through the Hero Card deck and take the first Green Card and add it to your hand. Then reshuffle the Hero Cards.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+
+<div class="ms"><div class="ml">12b. Hero Card Drawn (after Continue)</div>
+<div class="mc"><h2 class="mh">📜 Hero Card Drawn</h2>
+<div class="pb"><div class="pbn"><span class="hbn">🎴 Card Drawn</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+    <div style="font-size:1.4em;margin-bottom:2px">🎴</div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#16a34a">Thorny Woods</div>
+    <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+  </div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+<div class="ms"><div class="ml">13. _executeScoutGeneral → no card found</div>
+<div class="mc"><h2 class="mh">📜 Quest Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Complete</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Scouted Varkolak's forces at Dark Woods</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f;margin-top:12px">No Black Cards in Deck</div>
+  <div class="mdt" style="margin-top:4px">Hero deck reshuffled</div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Scout the General (Varkolak)</span><span class="hbn" style="font-size:0.85em">🧙 Wizard</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to Varkolak's location and spend 1 action scouting.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Look through the Hero Card deck and take the first Black Card and add it to your hand. Then reshuffle the Hero Cards.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+</div>
+
+<!-- ═══ 14 & 15. KILL TRACKER ═══ -->
+<div class="st">14 & 15. Kill Tracker Quests</div>
+<div class="mg">
+<div class="ms"><div class="ml">14. Faction Hunter — Orc Hunter Complete</div>
+<div class="mc"><h2 class="mh">📜 Quest Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Complete</span></div>
+  <div style="text-align:center;padding:8px 0">
+  <div style="font-size:1.3em;letter-spacing:4px">🟢🟢🟢🟢🟢🟢</div>
+  <div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px">6 / 6 Orcs Defeated</div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Orc Hunter</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Defeat 6 Orcs. As you fulfill this quest, place each Orc you defeat onto this card for reference.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Discard this Quest Card to avoid placing troops in 1 Green Location noted on a Darkness Spreads Card.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+<div class="ms"><div class="ml">15. Defeat All Factions — Raids Complete</div>
+<div class="mc"><h2 class="mh">📜 Quest Complete!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Complete</span></div>
+  <div style="text-align:center;padding:8px 0">
+  <div style="font-size:1.3em;letter-spacing:4px">🔵🟢🔴⚫</div>
+  <div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px">4 / 4 Factions Defeated</div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Raids</span><span class="hbn" style="font-size:0.85em">✝️ Cleric</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Defeat 1 of each Minion: Dragonkin, Orc, Demon, and Undead. As you fulfill this quest, place each Minion you defeat onto this card for reference.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Discard this Quest Card to avoid drawing all Darkness Spreads Cards at the end of your turn.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+</div>
+
+
+<!-- ═══ 16. ACTION TRAY QUEST CARDS MODAL ═══ -->
+<div class="st">16. Action Tray Quest Cards Modal</div>
+<div class="mg"><div class="ms"><div class="ml">_showQuestCardsForHeroes</div>
+<div class="mc"><h2 class="mh">📜 Quest Cards</h2>
+<div class="mh" style="font-size:0.85em;margin-bottom:12px">Quest cards assigned to heroes. Select a quest to view or use.</div>
+
+<div class="pb"><div class="pbn"><span class="hbn">Active Quests</span></div>
+<div style="display:flex;flex-direction:column;gap:8px">
+
+  <!-- Active: Orc Hunter in progress with kill tracker -->
+  <div class="qci" style="cursor:pointer">
+  <div class="qrb"><span class="hbn">📜 Orc Hunter</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Defeat 6 Orcs. As you fulfill this quest, place each Orc you defeat onto this card for reference.</div>
+  <div style="margin-top:8px"><span class="rl">Reward:</span> <span class="mdt">Discard this Quest Card to avoid placing troops in 1 Green Location noted on a Darkness Spreads Card.</span></div>
+  <div style="margin-top:8px;text-align:center"><div style="font-size:1.3em;letter-spacing:4px">🟢🟢🟢⬜⬜⬜</div>
+  <div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px">3 / 6 Orcs Defeated</div></div>
+  <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
+
+  <!-- Active: Raids in progress with faction tracker -->
+  <div class="qci" style="cursor:pointer">
+  <div class="qrb"><span class="hbn">📜 Raids</span><span class="hbn" style="font-size:0.85em">✝️ Cleric</span></div>
+  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Defeat 1 of each Minion: Dragonkin, Orc, Demon, and Undead. As you fulfill this quest, place each Minion you defeat onto this card for reference.</div>
+  <div style="margin-top:8px"><span class="rl">Reward:</span> <span class="mdt">Discard this Quest Card to avoid drawing all Darkness Spreads Cards at the end of your turn.</span></div>
+  <div style="margin-top:8px;text-align:center"><div style="font-size:1.3em;letter-spacing:4px">🔵🟢⬜⬜</div>
+  <div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px">2 / 4 Factions Defeated</div></div>
+  <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
+
+  <!-- Active: Rumors in progress with tavern tracker -->
+  <div class="qci" style="cursor:pointer">
+  <div class="qrb"><span class="hbn">📜 Rumors</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
+  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Travel to 3 Inns<br>Place the appropriately colored minion on this card to mark each inn visited:<div style="text-align:center;margin-top:4px"><div style="display:inline-block;text-align:left">🔵 Visit Eagle Nest Inn<br>⚫ Chimera Inn<br>🔴 Gryphon Inn</div></div></div>
+  <div style="margin-top:8px"><span class="rl">Reward:</span> <span class="mdt">Draw 4 Hero Cards when Quest is completed.</span></div>
+  <div style="margin-top:8px"><div style="color:#15803d;font-size:0.85em;padding:2px 0">🔵 Eagle Nest Inn ✅</div>
+  <div style="color:#8b7355;font-size:0.85em;padding:2px 0">⚫ Chimera Inn ⬜</div>
+  <div style="color:#8b7355;font-size:0.85em;padding:2px 0">🔴 Gryphon Inn ⬜</div></div>
+  <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
+
+  <!-- Active: Amulet completed -->
+  <div class="qci" style="cursor:pointer">
+  <div class="qrb"><span class="hbn">📜 Amulet of the Gods</span><span class="hbn" style="font-size:0.85em">🧙 Wizard</span></div>
+  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Seek the amulet buried deep inside the Dark Woods. Spend 1 action and roll 4 dice. A roll of 6 on any of the dice succeeds.</div>
+  <div style="margin-top:8px"><span class="rl">Reward:</span> <span class="mdt">The power of the amulet adds +1 to all dice in combat, including Generals.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+
+</div></div>
+
+<!-- Quest History -->
+<div style="margin-top:12px">
+<div class="pb"><div class="pbn"><span class="hbn">📋 Quest History</span></div>
+  <!-- Used quest -->
+  <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid rgba(139,115,85,0.5);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;opacity:0.7">
+  <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid rgba(139,115,85,0.5);display:flex;align-items:center;justify-content:space-between">
+  <span class="hbn">📜 Crystal of Light</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
+  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Seek the Crystal of Light in the Enchanted Glade. Spend 1 action and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.</div>
+  <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3)"><span class="rl">Reward:</span> <span class="mdt">Remove 1 Tainted Crystal from your current location.</span></div>
+  <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:#8b7355">USED</span>
+  <span class="mdt" style="display:block;text-align:center;font-size:0.65em;color:#5c4a3a">Removed Taint Crystal at Dark Woods</span></div></div>
+
+  <!-- Failed quest -->
+  <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid rgba(139,115,85,0.5);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;opacity:0.7">
+  <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid rgba(139,115,85,0.5);display:flex;align-items:center;justify-content:space-between">
+  <span class="hbn">📜 Helm of Power</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
+  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Seek the legendary helm within the Ancient Ruins. Spend 1 action and roll 4 dice. A roll of 6 on any of the dice succeeds.</div>
+  <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3)"><span class="rl">Reward:</span> <span class="mdt">Draw +1 extra Hero Card each turn.</span></div>
+  <div class="mdt" style="font-size:0.7em;color:#b91c1c;margin-top:4px">Discard if Failed</div>
+  <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:#dc2626">FAILED</span>
+  <span class="mdt" style="display:block;text-align:center;font-size:0.65em;color:#5c4a3a">Quest failed</span></div></div>
+</div></div>
+
+<div id="quest-use-context-hint" style="text-align:center"></div>
+<button class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px" disabled>Use</button>
+<button class="phb">Cancel</button>
+</div></div></div>
+
+<div style="height:60px"></div>
+</body></html>

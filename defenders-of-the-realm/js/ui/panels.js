@@ -854,13 +854,18 @@ Object.assign(game, {
             // Create button if it doesn't exist
             if (!unicornBtn) {
                 const topRow = document.querySelector('.action-row-top');
+                const gateBtn = document.getElementById('build-magic-gate-btn');
                 if (topRow) {
                     unicornBtn = document.createElement('button');
                     unicornBtn.id = 'unicorn-steed-btn';
                     unicornBtn.innerHTML = '<span class="action-btn-icon">🦄 </span>Unicorn';
                     unicornBtn.title = 'Unicorn Steed (move 2 spaces, no card required)';
                     unicornBtn.onclick = () => game.useUnicornSteed();
-                    topRow.appendChild(unicornBtn);
+                    if (gateBtn) {
+                        topRow.insertBefore(unicornBtn, gateBtn);
+                    } else {
+                        topRow.appendChild(unicornBtn);
+                    }
                 }
             }
             if (unicornBtn) {

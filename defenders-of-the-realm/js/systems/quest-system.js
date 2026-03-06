@@ -3170,7 +3170,7 @@ Object.assign(game, {
             state.remaining -= count;
             
             // Track for faction hunter quest progress
-            this._trackQuestMinionDefeatsRaw(color, count);
+            this._trackQuestMinionDefeatsRaw(color, count, state.heroIndex);
             
             const fName = factionNames[color] || color;
             for (let i = 0; i < count; i++) {
@@ -3231,7 +3231,7 @@ Object.assign(game, {
                     this.minions[locationName][color] = Math.max(0, (this.minions[locationName][color] || 0) - count);
                 }
                 state.remaining -= count;
-                this._trackQuestMinionDefeatsRaw(color, count);
+                this._trackQuestMinionDefeatsRaw(color, count, state.heroIndex);
                 const fName = factionNames[color] || color;
                 for (let i = 0; i < count; i++) {
                     state.results.push({ location: locationName, color, faction: fName });
@@ -3469,10 +3469,11 @@ Object.assign(game, {
     
     // ===== DEFEAT FACTION MINIONS QUEST TRACKING =====
     // Called after minion combat results are applied (colorResults format)
-    _trackQuestMinionDefeats(colorResults) {
-        for (let i = 0; i < this.heroes.length; i++) {
-            const hero = this.heroes[i];
-            if (!hero.questCards) continue;
+    _trackQuestMinionDefeats(colorResults, combatHeroIndex) {
+        if (combatHeroIndex === undefined) combatHeroIndex = this.currentPlayerIndex;
+        const hero = this.heroes[combatHeroIndex];
+        if (!hero || !hero.questCards) return;
+        const i = combatHeroIndex;
             hero.questCards.forEach(quest => {
                 if (quest.completed || quest.discarded) return;
                 if (!quest.mechanic) return;
@@ -3598,13 +3599,12 @@ Object.assign(game, {
                     }
                 }
             });
-        }
     },
     
     // Called from non-standard kill paths (e.g. Elven Archers) with raw faction + count
-    _trackQuestMinionDefeatsRaw(faction, count) {
+    _trackQuestMinionDefeatsRaw(faction, count, heroIndex) {
         if (count <= 0) return;
-        this._trackQuestMinionDefeats([{ color: faction, defeated: count, rolls: [] }]);
+        this._trackQuestMinionDefeats([{ color: faction, defeated: count, rolls: [] }], heroIndex);
     },
     
     // Find any hero with a completed faction hunter quest matching the given color

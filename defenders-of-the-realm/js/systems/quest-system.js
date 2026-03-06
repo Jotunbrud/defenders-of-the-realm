@@ -2055,32 +2055,39 @@ Object.assign(game, {
             return;
         }
         
-        let optionsHTML = '<div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 15px 0;">';
+        let optionsHTML = '';
         for (let i = 1; i <= Math.min(maxActions, 6); i++) {
-            optionsHTML += `
-                <div onclick="game._rollUnicornSteedDice(${i}, ${questIndex})" 
-                     style="cursor: pointer; width: 70px; height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-                            border: 3px solid #d4af37; border-radius: 10px; background: rgba(212,175,55,0.1); transition: all 0.2s;"
-                     onmouseover="this.style.background='rgba(212,175,55,0.3)'" onmouseout="this.style.background='rgba(212,175,55,0.1)'">
-                    <div style="font-size: 1.5em; font-weight: bold; color: #d4af37;">${i}</div>
-                    <div style="font-size: 0.7em; color: #999;">${i} action${i > 1 ? 's' : ''}</div>
-                </div>
-            `;
+            optionsHTML += `<button onclick="game._rollUnicornSteedDice(${i}, ${questIndex})" class="phase-btn" style="width:100%;margin-top:10px;">${i === 1 ? 'Spend 1 Action (roll 1 die)' : `Spend ${i} Actions (roll ${i} dice)`}</button>`;
         }
-        optionsHTML += '</div>';
-        
+
         const contentHTML = `
-            ${this._parchmentBoxOpen('📜 Choose Actions')}
+            ${this._parchmentBoxOpen('Quest Action')}
                 <div style="text-align:center;padding:8px 0;">
-                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">
+                    <div class="modal-desc-text" style="margin-bottom:8px;">
                         Spend actions to roll dice. Each action = 1 die. Need 5+ on any die to succeed.
                     </div>
-                    <div class="modal-desc-text" style="font-size:0.75em;color:#5c4a3a;margin-bottom:8px;">
-                        You have ${maxActions} action${maxActions > 1 ? 's' : ''} remaining. Choose how many to spend:
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f;margin-bottom:8px;">
+                        You have ${maxActions} action${maxActions > 1 ? 's' : ''} remaining.
                     </div>
-                    ${optionsHTML}
+                </div>
+                <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                    <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">📜 ${quest.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
+                    </div>
+                    <div style="padding:12px 14px;">
+                        <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
+                        <div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(202,138,4,0.15);border:1px solid #ca8a04;color:#a16207;">In Progress</span>
+                        </div>
+                    </div>
                 </div>
             ${this._parchmentBoxClose()}
+            ${optionsHTML}
         `;
         
         this.showInfoModal('📜 Unicorn Steed', contentHTML);

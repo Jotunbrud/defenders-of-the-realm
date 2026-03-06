@@ -230,30 +230,49 @@ Object.assign(game, {
             this._checkFindMagicGateCompletion(hero);
         }
         
-        // Show confirmation — include quest reward if applicable
-        const questBanner = questCompleted ? `
-            <div style="margin-top: 12px; padding: 10px; background: rgba(74,222,128,0.15); border: 2px solid #4ade80; border-radius: 8px;">
-                <div style="color: #4ade80; font-weight: bold; font-size: 1.1em;">📜 ✅ Quest Complete: Find Magic Gate!</div>
-                <div style="color: #a78bfa; font-size: 0.9em; margin-top: 6px;">🏆 Can be discarded for +2 dice in any combat!</div>
-            </div>
-        ` : '';
-        
+        // Show confirmation — include quest card if applicable
         const heroIndex = this.currentPlayerIndex;
+        let questCardHTML = '';
+        if (questCompleted) {
+            const quest = hero.questCards[questCompleted.questIndex];
+            if (quest) {
+                questCardHTML = `
+                    <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-top:10px;">
+                        <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                            <span class="hero-banner-name">📜 ${quest.name}</span>
+                            <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
+                        </div>
+                        <div style="padding:12px 14px;">
+                            <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
+                            <div>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                                <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d;">Completed</span>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        }
+        
         this.showInfoModal('💫 Magic Gate Built!', `
-            <div style="text-align: center;">
-                <div style="font-size: 2em; margin: 10px 0;">🌀</div>
-                <div style="color: #c084fc; font-size: 1.1em; margin-bottom: 10px;">
-                    A Magic Gate now stands at <strong>${locationName}</strong>!
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">${questCompleted ? 'Quest Complete' : 'Magic Gate'}</span></div>
+                <div style="text-align:center;padding:8px 0;">
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">
+                        A Magic Gate now stands at <strong>${locationName}</strong>!
+                    </div>
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;">
+                        Heroes can now travel to this location using Magic Gate cards.
+                    </div>
                 </div>
-                <div style="font-size: 0.9em; color: #999;">
-                    Heroes can now travel to this location using Magic Gate cards.
-                </div>
-                ${questBanner}
+                ${questCardHTML}
             </div>
         `, questCompleted ? () => {
             // Draw new quest card on quest completion
             this._drawAndShowNewQuest(heroIndex);
         } : null);
+        this._styleQuestModal();
     },
     
     healLandFromLocation(locationName) {

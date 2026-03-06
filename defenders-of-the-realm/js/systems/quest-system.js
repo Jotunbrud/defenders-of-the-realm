@@ -3471,6 +3471,7 @@ Object.assign(game, {
         const hero = this.heroes[combatHeroIndex];
         if (!hero || !hero.questCards) return;
         const i = combatHeroIndex;
+        const colorEmojis = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
             hero.questCards.forEach(quest => {
                 if (quest.completed || quest.discarded) return;
                 if (!quest.mechanic) return;

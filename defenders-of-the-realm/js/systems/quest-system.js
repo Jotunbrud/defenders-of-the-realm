@@ -444,24 +444,22 @@ Object.assign(game, {
                             if (quest.completed || quest.discarded || !quest.mechanic) return '';
                             const ce = { red: '🔴', black: '⚫', green: '🟢', blue: '🔵' };
                             if (quest.mechanic.type === 'multi_location_visit' && quest.mechanic.locations) {
-                                let h = '<div style="margin-top:8px;">';
+                                let h = '<div style="margin-top:8px;text-align:center;"><div style="display:inline-block;text-align:left;">';
                                 for (const [loc, data] of Object.entries(quest.mechanic.locations)) {
                                     const emoji = ce[data.color] || '⭕';
                                     const check = data.visited ? '✅' : '⬜';
-                                    const clr = data.visited ? '#15803d' : '#8b7355';
-                                    h += '<div style="color:' + clr + ';font-size:0.85em;padding:2px 0;">' + emoji + ' ' + loc + ' ' + check + '</div>';
+                                    h += '<div class="modal-desc-text" style="color:#3d2b1f;font-size:0.75em;line-height:1.5;margin:3px 0;display:flex;justify-content:space-between;gap:12px;"><span>' + emoji + ' ' + loc + '</span><span>' + check + '</span></div>';
                                 }
-                                return h + '</div>';
+                                return h + '</div></div>';
                             }
                             if (quest.mechanic.type === 'multi_location_action' && quest.mechanic.locations) {
-                                let h = '<div style="margin-top:8px;">';
+                                let h = '<div style="margin-top:8px;text-align:center;"><div style="display:inline-block;text-align:left;">';
                                 for (const [loc, data] of Object.entries(quest.mechanic.locations)) {
                                     const emoji = ce[data.color] || '⭕';
                                     const check = data.organized ? '✅' : '⬜';
-                                    const clr = data.organized ? '#15803d' : '#8b7355';
-                                    h += '<div style="color:' + clr + ';font-size:0.85em;padding:2px 0;">' + emoji + ' ' + loc + ' ' + check + '</div>';
+                                    h += '<div class="modal-desc-text" style="color:#3d2b1f;font-size:0.75em;line-height:1.5;margin:3px 0;display:flex;justify-content:space-between;gap:12px;"><span>' + emoji + ' ' + loc + '</span><span>' + check + '</span></div>';
                                 }
-                                return h + '</div>';
+                                return h + '</div></div>';
                             }
                             if (quest.mechanic.type === 'defeat_faction_minions') {
                                 const current = quest.mechanic.currentKills || 0;

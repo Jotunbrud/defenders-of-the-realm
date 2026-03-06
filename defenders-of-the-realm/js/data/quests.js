@@ -148,7 +148,7 @@ function createQuestDeck() {
     questDeck.push({
         id: questId++,
         name: 'Rumors',
-        description: 'Travel to 3 Inns<br>Place the appropriately colored minion on this card to mark each inn visited:<div style="text-align:center;margin-top:4px"><div style="display:inline-block;text-align:left">🔵 Visit Eagle Nest Inn<br>⚫ Chimera Inn<br>🔴 Gryphon Inn</div></div>',
+        description: '<div style="text-align:center">Travel to 3 Inns</div>Place the appropriately colored minion on this card to mark each inn visited:<div style="text-align:center;margin-top:4px"><div style="display:inline-block;text-align:left">🔵 Visit Eagle Nest Inn<br>⚫ Chimera Inn<br>🔴 Gryphon Inn</div></div>',
         difficulty: 'Medium',
         reward: 'Draw 4 Hero Cards when Quest is completed.',
         effect: 'active',

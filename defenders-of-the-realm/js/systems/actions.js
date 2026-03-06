@@ -450,7 +450,6 @@ Object.assign(game, {
                 <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
             </div>
             <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
-            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         this._rumorsSelectedColor = null;
@@ -458,8 +457,6 @@ Object.assign(game, {
         this.showInfoModal('🍺 Rumors — Results', summaryHTML);
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
-        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
     },
     
     // Rogue Crafty: Draw 5 cards at Inn, keep matching color + specials (like Local Information)
@@ -669,7 +666,6 @@ Object.assign(game, {
                 <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
             </div>
             <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
-            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         this._craftySelectedColor = null;
@@ -677,8 +673,6 @@ Object.assign(game, {
         this.showInfoModal('🗡️ Crafty — Results', summaryHTML);
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
-        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
     },
     
     showRumorsModal(card1, card2) {

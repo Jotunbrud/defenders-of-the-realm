@@ -1213,7 +1213,7 @@ Object.assign(game, {
                 <div class="hero-section-label" style="color:#2c1810;font-size:0.8em;margin-bottom:6px">${card.patrolName}</div>
                 ${!generalOnly
                     ? `<div style="margin-bottom:4px"><div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;margin-bottom:8px">${patrolDesc}</div></div>`
-                    : `<div class="hi-title" style="font-size:0.75em;margin-bottom:6px"><strong style="color:#1a0f0a;font-family:'Cinzel',Georgia,serif;font-weight:900">⏭️ Skipped:</strong> <span class="modal-desc-text" style="color:#3d2b1f;">Patrol skipped (General Only)</span></div>`
+                    : `<div class="hi-title" style="font-size:0.75em;margin-bottom:6px"><strong style="color:#1a0f0a;font-family:'Cinzel',Georgia,serif;font-weight:900">Skipped:</strong> <span class="modal-desc-text" style="color:#3d2b1f;">Patrol skipped (General Only)</span></div>`
                 }
                 <div style="display:flex;justify-content:center">${generalLocVisual}</div>
                 ${patrolEffectsHTML}
@@ -2141,7 +2141,7 @@ Object.assign(game, {
                         </div>`;
                     } else if (e.type === 'general_only_notice') {
                         minionHTML += `<div style="background:rgba(251,191,36,0.08);border:1px solid #fbbf24;border-radius:5px;padding:5px 10px;margin:4px 0">
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#a16207;margin-bottom:3px">⏭️ Minion Placements Skipped</div>
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#a16207;margin-bottom:3px">Minion Placements Skipped</div>
                             <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;text-decoration:line-through">${e.skippedFaction1}: ${e.skippedMinions1} → ${e.skippedLocation1} | ${e.skippedFaction2}: ${e.skippedMinions2} → ${e.skippedLocation2}</div>
                         </div>`;
                     } else if (e.type === 'monarch_city_special') {

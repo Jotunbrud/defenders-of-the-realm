@@ -100,6 +100,24 @@
 <div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div></div>
 
 <!-- ═══ 5 & 6. UNICORN STEED ═══ -->
+
+<!-- ═══ 5a. UNICORN STEED — CHOOSE ACTIONS ═══ -->
+<div class="st">5a. Unicorn Steed — Choose Actions</div>
+<div class="mg"><div class="ms"><div class="ml">_showUnicornSteedRollModal</div>
+<div class="mc"><h2 class="mh">📜 Unicorn Steed</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Action</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">Spend actions to roll dice. Each action = 1 die. Need 5+ on any die to succeed.</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f;margin-bottom:8px">You have 3 actions remaining.</div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Unicorn Steed</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to the Unicorn Forest and entice a unicorn to become your steed. Spend 1 action per die roll. A roll of 5 or 6 on any of the dice succeeds.</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">You may move as if you always have a Horse. Additionally, the Unicorn Steed grants 1 re-roll of all failed dice each combat.</span></div>
+  <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
+</div>
+<button class="phb" style="margin-top:14px">Spend 1 Action (roll 1 die)</button>
+<button class="phb">Spend 2 Actions (roll 2 dice)</button>
+<button class="phb">Spend 3 Actions (roll 3 dice)</button>
+<div style="text-align:center;margin-top:14px"><button class="phb">Continue</button></div></div></div></div>
+
 <div class="st">5 & 6. Unicorn Steed</div>
 <div class="mg">
 <div class="ms"><div class="ml">5. completeUnicornQuest → success</div>
@@ -196,7 +214,7 @@
   <div class="mdt" style="margin:4px 0;display:flex;justify-content:space-between;gap:12px"><span>🔴 Gryphon Inn</span><span>✅</span></div></div>
   <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f;margin-top:12px">Draw 4 Hero Cards</div></div>
   <div class="qci"><div class="qrb"><span class="hbn">📜 Rumors</span><span class="hbn" style="font-size:0.85em">✝️ Cleric</span></div>
-  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Travel to 3 Inns<br>Place the appropriately colored minion on this card to mark each inn visited:<div style="text-align:center;margin-top:4px"><div style="display:inline-block;text-align:left">🔵 Visit Eagle Nest Inn<br>⚫ Chimera Inn<br>🔴 Gryphon Inn</div></div></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px"><div style="text-align:center">Travel to 3 Inns</div>Place the appropriately colored minion on this card to mark each inn visited:<div style="text-align:center;margin-top:4px"><div style="display:inline-block;text-align:left">🔵 Visit Eagle Nest Inn<br>⚫ Chimera Inn<br>🔴 Gryphon Inn</div></div></div>
   <div><span class="rl">Reward:</span> <span class="mdt">Draw 4 Hero Cards when Quest is completed.</span></div>
   <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
 </div>
@@ -295,6 +313,31 @@
 </div>
 
 
+
+<!-- ═══ MAGIC GATE BUILT (with quest complete) ═══ -->
+<div class="st">Magic Gate Built (with Quest Complete)</div>
+<div class="mg">
+<div class="ms"><div class="ml">confirmBuildMagicGate — with Find Magic Gate quest</div>
+<div class="mc"><h2 class="mh">💫 Magic Gate Built!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Quest Complete</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">A Magic Gate now stands at <strong>Serpent Swamp</strong>!</div>
+  <div class="mdt">Heroes can now travel to this location using Magic Gate cards.</div></div>
+  <div class="qci"><div class="qrb"><span class="hbn">📜 Find Magic Gate</span><span class="hbn" style="font-size:0.85em">🧙 Wizard</span></div>
+  <div class="qbody"><div class="mdt" style="margin-bottom:8px">Build a Magic Gate on any Red Location. Spend 1 action and a matching location card to build the gate (standard gate rules apply).</div>
+  <div><span class="rl">Reward:</span> <span class="mdt">Discard this Quest Card to add 2 dice to any combat roll, including a battle against a General.</span></div>
+  <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+
+<div class="ms"><div class="ml">confirmBuildMagicGate — without quest</div>
+<div class="mc"><h2 class="mh">💫 Magic Gate Built!</h2>
+<div class="pb"><div class="pbn"><span class="hbn">Magic Gate</span></div>
+  <div style="text-align:center;padding:8px 0"><div class="mdt" style="margin-bottom:8px">A Magic Gate now stands at <strong>Serpent Swamp</strong>!</div>
+  <div class="mdt">Heroes can now travel to this location using Magic Gate cards.</div></div>
+</div>
+<div style="text-align:center;margin-top:20px"><button class="phb">Continue</button></div></div></div>
+</div>
+
 <!-- ═══ 16. ACTION TRAY QUEST CARDS MODAL ═══ -->
 <div class="st">16. Action Tray Quest Cards Modal</div>
 <div class="mg"><div class="ms"><div class="ml">_showQuestCardsForHeroes</div>
@@ -304,7 +347,7 @@
 <div class="pb"><div class="pbn"><span class="hbn">Active Quests</span></div>
 <div style="display:flex;flex-direction:column;gap:8px">
 
-  <!-- Active: Orc Hunter in progress with kill tracker -->
+  <!-- In Progress: Orc Hunter with kill tracker -->
   <div class="qci" style="cursor:pointer">
   <div class="qrb"><span class="hbn">📜 Orc Hunter</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
   <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Defeat 6 Orcs. As you fulfill this quest, place each Orc you defeat onto this card for reference.</div>
@@ -313,7 +356,7 @@
   <div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px">3 / 6 Orcs Defeated</div></div>
   <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
 
-  <!-- Active: Raids in progress with faction tracker -->
+  <!-- In Progress: Raids with faction tracker -->
   <div class="qci" style="cursor:pointer">
   <div class="qrb"><span class="hbn">📜 Raids</span><span class="hbn" style="font-size:0.85em">✝️ Cleric</span></div>
   <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Defeat 1 of each Minion: Dragonkin, Orc, Demon, and Undead. As you fulfill this quest, place each Minion you defeat onto this card for reference.</div>
@@ -322,52 +365,171 @@
   <div style="font-family:Cinzel,Georgia,serif;font-weight:900;font-size:0.75em;color:#3d2b1f;margin-top:4px">2 / 4 Factions Defeated</div></div>
   <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
 
-  <!-- Active: Rumors in progress with tavern tracker -->
+  <!-- In Progress: Rumors with tavern tracker -->
   <div class="qci" style="cursor:pointer">
   <div class="qrb"><span class="hbn">📜 Rumors</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
-  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Travel to 3 Inns<br>Place the appropriately colored minion on this card to mark each inn visited:<div style="text-align:center;margin-top:4px"><div style="display:inline-block;text-align:left">🔵 Visit Eagle Nest Inn<br>⚫ Chimera Inn<br>🔴 Gryphon Inn</div></div></div>
+  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px"><div style="text-align:center">Travel to 3 Inns</div>Place the appropriately colored minion on this card to mark each inn visited:<div style="text-align:center;margin-top:4px"><div style="display:inline-block;text-align:left">🔵 Visit Eagle Nest Inn<br>⚫ Chimera Inn<br>🔴 Gryphon Inn</div></div></div>
   <div style="margin-top:8px"><span class="rl">Reward:</span> <span class="mdt">Draw 4 Hero Cards when Quest is completed.</span></div>
-  <div style="margin-top:8px"><div style="color:#15803d;font-size:0.85em;padding:2px 0">🔵 Eagle Nest Inn ✅</div>
-  <div style="color:#8b7355;font-size:0.85em;padding:2px 0">⚫ Chimera Inn ⬜</div>
-  <div style="color:#8b7355;font-size:0.85em;padding:2px 0">🔴 Gryphon Inn ⬜</div></div>
+  <div style="margin-top:8px;text-align:center"><div style="display:inline-block;text-align:left"><div class="mdt" style="margin:3px 0;display:flex;justify-content:space-between;gap:12px"><span>🔵 Eagle Nest Inn</span><span>✅</span></div>
+  <div class="mdt" style="margin:3px 0;display:flex;justify-content:space-between;gap:12px"><span>⚫ Chimera Inn</span><span>⬜</span></div>
+  <div class="mdt" style="margin:3px 0;display:flex;justify-content:space-between;gap:12px"><span>🔴 Gryphon Inn</span><span>⬜</span></div></div></div>
   <div class="bc"><span class="bd bd-prog">In Progress</span></div></div></div>
 
-  <!-- Active: Amulet completed -->
+</div></div>
+
+<!-- Completed Quests section -->
+<div style="margin-top:12px">
+<div class="pb"><div class="pbn"><span class="hbn">Completed Quests</span></div>
+<div style="display:flex;flex-direction:column;gap:8px">
+
+  <!-- Completed: Amulet of the Gods -->
   <div class="qci" style="cursor:pointer">
   <div class="qrb"><span class="hbn">📜 Amulet of the Gods</span><span class="hbn" style="font-size:0.85em">🧙 Wizard</span></div>
   <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Seek the amulet buried deep inside the Dark Woods. Spend 1 action and roll 4 dice. A roll of 6 on any of the dice succeeds.</div>
   <div style="margin-top:8px"><span class="rl">Reward:</span> <span class="mdt">The power of the amulet adds +1 to all dice in combat, including Generals.</span></div>
   <div class="bc"><span class="bd bd-done">Completed</span></div></div></div>
 
-</div></div>
+</div></div></div>
 
-<!-- Quest History -->
+<!-- Discarded/Used Quests (completed only, no failed) -->
 <div style="margin-top:12px">
-<div class="pb"><div class="pbn"><span class="hbn">📋 Quest History</span></div>
-  <!-- Used quest -->
+<div class="pb"><div class="pbn"><span class="hbn">📋 Discarded/Used Quests</span></div>
+  <!-- Completed+used quest -->
   <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid rgba(139,115,85,0.5);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;opacity:0.7">
   <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid rgba(139,115,85,0.5);display:flex;align-items:center;justify-content:space-between">
   <span class="hbn">📜 Crystal of Light</span><span class="hbn" style="font-size:0.85em">🧝 Ranger</span></div>
   <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Seek the Crystal of Light in the Enchanted Glade. Spend 1 action and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.</div>
   <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3)"><span class="rl">Reward:</span> <span class="mdt">Remove 1 Tainted Crystal from your current location.</span></div>
-  <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:#8b7355">USED</span>
-  <span class="mdt" style="display:block;text-align:center;font-size:0.65em;color:#5c4a3a">Removed Taint Crystal at Dark Woods</span></div></div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d">Completed</span></div></div></div>
 
-  <!-- Failed quest -->
+  <!-- Another completed+discarded quest -->
   <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid rgba(139,115,85,0.5);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3),inset 0 0 0 1px rgba(139,115,85,0.3);margin-bottom:8px;opacity:0.7">
   <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid rgba(139,115,85,0.5);display:flex;align-items:center;justify-content:space-between">
-  <span class="hbn">📜 Helm of Power</span><span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span></div>
-  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Seek the legendary helm within the Ancient Ruins. Spend 1 action and roll 4 dice. A roll of 6 on any of the dice succeeds.</div>
-  <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3)"><span class="rl">Reward:</span> <span class="mdt">Draw +1 extra Hero Card each turn.</span></div>
-  <div class="mdt" style="font-size:0.7em;color:#b91c1c;margin-top:4px">Discard if Failed</div>
-  <span style="display:block;text-align:center;margin-top:6px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.7em;color:#dc2626">FAILED</span>
-  <span class="mdt" style="display:block;text-align:center;font-size:0.65em;color:#5c4a3a">Quest failed</span></div></div>
+  <span class="hbn">📜 Scout the General (Sapphire)</span><span class="hbn" style="font-size:0.85em">🦅 Eagle Rider</span></div>
+  <div style="padding:10px 14px"><div class="mdt" style="margin-bottom:6px">Travel to Sapphire's location and spend 1 action scouting.</div>
+  <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3)"><span class="rl">Reward:</span> <span class="mdt">Look through the Hero Card deck and take the first Blue Card and add it to your hand. Then reshuffle the Hero Cards.</span></div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d">Completed</span></div></div></div>
 </div></div>
 
 <div id="quest-use-context-hint" style="text-align:center"></div>
 <button class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px" disabled>Use</button>
 <button class="phb">Cancel</button>
 </div></div></div>
+
+<!-- ═══ 17 & 18. KING OF THE GRYPHONS — HERO PICKER ═══ -->
+<div class="st">17 & 18. King of the Gryphons — Hero Picker</div>
+<div style="display:flex;flex-wrap:wrap;gap:24px;justify-content:center">
+
+<div class="ms"><div class="ml">_gryphonShowHeroPicker — no selection</div>
+<div class="mc"><h2 class="mh">📜 King of the Gryphons</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hbn">Choose Hero to Move — 1 of 2</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">
+
+      <div style="border:2px solid #8b7355;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(92,61,46,0.08);display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.3em">⛏️</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Dwarf</div>
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</div>
+        </div>
+      </div>
+
+      <div style="border:2px solid #8b7355;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(92,61,46,0.08);display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.3em">🧙</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Wizard</div>
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</div>
+        </div>
+      </div>
+
+      <div style="border:2px solid #8b7355;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(92,61,46,0.08);display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.3em">🧝</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Ranger</div>
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Nest Inn</div>
+        </div>
+      </div>
+
+      <div style="border:2px solid #8b7355;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(92,61,46,0.08);display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.3em">⚔️</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Warrior</div>
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Windy Pass</div>
+        </div>
+      </div>
+
+    </div>
+    <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3)">
+      <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between">
+        <span class="hbn">📜 King of the Gryphons</span>
+        <span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span>
+      </div>
+      <div style="padding:12px 14px">
+        <div class="mdt" style="margin-bottom:8px">Travel to Gryphon Forest to request assistance from the Gryphon King. Spend 1 action and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.</div>
+        <div><span class="rl">Reward:</span> <span class="mdt"> Discard this Quest Card at any time to move up to 2 Heroes to any 2 locations. This move does not count as an action.</span></div>
+      </div>
+    </div>
+  </div>
+  <button class="phb" style="opacity:0.4;cursor:not-allowed" disabled>Confirm Hero</button>
+  <button class="phb" style="background:linear-gradient(135deg,#555,#444);border-color:#666;color:#ccc">Cancel</button>
+</div></div>
+
+<div class="ms"><div class="ml">_gryphonShowHeroPicker — Wizard selected</div>
+<div class="mc"><h2 class="mh">📜 King of the Gryphons</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hbn">Choose Hero to Move — 1 of 2</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">
+
+      <div style="border:2px solid #8b7355;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(92,61,46,0.08);display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.3em">⛏️</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Dwarf</div>
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</div>
+        </div>
+      </div>
+
+      <!-- SELECTED -->
+      <div style="border:2px solid #d4af37;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.35);display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.3em">🧙</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Wizard</div>
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</div>
+        </div>
+      </div>
+
+      <div style="border:2px solid #8b7355;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(92,61,46,0.08);display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.3em">🧝</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Ranger</div>
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Nest Inn</div>
+        </div>
+      </div>
+
+      <div style="border:2px solid #8b7355;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(92,61,46,0.08);display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.3em">⚔️</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Warrior</div>
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Windy Pass</div>
+        </div>
+      </div>
+
+    </div>
+    <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3)">
+      <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between">
+        <span class="hbn">📜 King of the Gryphons</span>
+        <span class="hbn" style="font-size:0.85em">⛏️ Dwarf</span>
+      </div>
+      <div style="padding:12px 14px">
+        <div class="mdt" style="margin-bottom:8px">Travel to Gryphon Forest to request assistance from the Gryphon King. Spend 1 action and roll 3 dice. A roll of 5 or 6 on any of the dice succeeds.</div>
+        <div><span class="rl">Reward:</span> <span class="mdt"> Discard this Quest Card at any time to move up to 2 Heroes to any 2 locations. This move does not count as an action.</span></div>
+      </div>
+    </div>
+  </div>
+  <button class="phb">Confirm Hero</button>
+  <button class="phb" style="background:linear-gradient(135deg,#555,#444);border-color:#666;color:#ccc">Cancel</button>
+</div></div>
+
+</div>
 
 <div style="height:60px"></div>
 </body></html>

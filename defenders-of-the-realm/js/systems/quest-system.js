@@ -2697,40 +2697,46 @@ Object.assign(game, {
         
         state._selectedHero = null;
         
-        let heroesHTML = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+        const moveNum = state.movesTotal - state.movesRemaining + 1;
+
+        let heroesHTML = '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">';
         this.heroes.forEach((hero, i) => {
             if (hero.health <= 0) return;
             heroesHTML += `
                 <div id="gryph-hero-${i}" onclick="game._gryphonSelectHero(${i})"
-                     style="border: 3px solid ${hero.color}; cursor: pointer; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.3); transition: all 0.2s; display: flex; align-items: center; gap: 12px;"
-                     onmouseover="if(!this.classList.contains('gryph-selected')) this.style.background='rgba(255,255,255,0.1)'"
-                     onmouseout="if(!this.classList.contains('gryph-selected')) this.style.background='rgba(0,0,0,0.3)'">
-                    <div style="font-size: 2em;">${hero.symbol}</div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: bold; color: ${hero.color}; font-size: 1.1em;">${hero.name}</div>
-                        <div style="font-size: 0.85em; color: #999;">Currently at: ${hero.location}</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 0.85em; color: #ef4444;">❤️ ${hero.health}/${hero.maxHealth}</div>
+                     style="border:2px solid #8b7355;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(92,61,46,0.08);transition:all 0.2s;display:flex;align-items:center;gap:10px;">
+                    <div style="font-size:1.3em;">${hero.symbol}</div>
+                    <div style="flex:1;display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;">${hero.name}</div>
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;">→ ${hero.location}</div>
                     </div>
                 </div>
             `;
         });
         heroesHTML += '</div>';
-        
-        const moveNum = state.movesTotal - state.movesRemaining + 1;
+
+        const questCardHTML = `
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                    <span class="hero-banner-name">📜 ${state.quest.name}</span>
+                    <span class="hero-banner-name" style="font-size:0.85em">${state.questHeroName || ''}</span>
+                </div>
+                <div style="padding:12px 14px;">
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${state.quest.description}</div>
+                    <div>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                        <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${state.quest.reward}</span>
+                    </div>
+                </div>
+            </div>
+        `;
         const contentHTML = `
-            <div style="color: #d4af37; margin-bottom: 12px;">
-                Using: <strong style="color: #ef4444;">📜 ${state.quest.name}</strong>
-            </div>
-            <div style="color: #a78bfa; margin-bottom: 10px;">Select hero ${moveNum} of ${state.movesTotal} to move:</div>
-            ${heroesHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game._gryphonFinishEarly()">
-                    ${state.results.length > 0 ? 'Finish' : 'Cancel'}
-                </button>
-                <button id="gryph-confirm-btn" class="btn" style="flex: 1; opacity: 0.5; cursor: not-allowed; background: #666;" disabled onclick="game._gryphonConfirmHero()">Confirm Hero</button>
-            </div>
+            ${this._parchmentBoxOpen(`Choose Hero to Move — ${moveNum} of ${state.movesTotal}`)}
+                ${heroesHTML}
+                ${questCardHTML}
+            ${this._parchmentBoxClose()}
+            <button id="gryph-confirm-btn" class="phase-btn" style="opacity:0.4;cursor:not-allowed;margin-top:12px;" disabled onclick="game._gryphonConfirmHero()">Confirm Hero</button>
+            <button class="phase-btn" onclick="game._gryphonFinishEarly()">${state.results.length > 0 ? 'Finish' : 'Cancel'}</button>
         `;
         
         this.showInfoModal('📜 ' + state.quest.name, contentHTML);
@@ -2750,8 +2756,9 @@ Object.assign(game, {
             const el = document.getElementById(`gryph-hero-${i}`);
             if (el) {
                 el.classList.remove('gryph-selected');
-                el.style.background = 'rgba(0,0,0,0.3)';
-                el.style.borderColor = h.color;
+                el.style.background = 'rgba(92,61,46,0.08)';
+                el.style.borderColor = '#8b7355';
+                el.style.boxShadow = '';
             }
         });
         
@@ -2759,8 +2766,9 @@ Object.assign(game, {
         const selected = document.getElementById(`gryph-hero-${heroIdx}`);
         if (selected) {
             selected.classList.add('gryph-selected');
-            selected.style.background = 'rgba(255,215,0,0.2)';
+            selected.style.background = 'rgba(212,175,55,0.2)';
             selected.style.borderColor = '#d4af37';
+            selected.style.boxShadow = '0 0 8px rgba(212,175,55,0.35)';
         }
         
         // Enable confirm button

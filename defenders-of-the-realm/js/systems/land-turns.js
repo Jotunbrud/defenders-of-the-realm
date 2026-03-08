@@ -256,7 +256,7 @@ Object.assign(game, {
             }
         }
         
-        this.showInfoModal('💫 Magic Gate Built!', `
+        this.showInfoModal('📜 Quest Complete!', `
             <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">${questCompleted ? 'Quest Complete' : 'Magic Gate'}</span></div>
                 <div style="text-align:center;padding:8px 0;">
                     <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">

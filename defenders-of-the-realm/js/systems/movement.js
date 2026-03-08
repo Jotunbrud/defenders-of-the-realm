@@ -311,14 +311,13 @@ Object.assign(game, {
             // Count and remove all minions at this green location
             const minionsHere = this.minions[locationName];
             let totalRemoved = 0;
-            const factionDetails = [];
+            const factionDetails = []; // { color, label, count }
             
             if (minionsHere) {
                 const factionNames = { 'red': 'Demons', 'blue': 'Dragonkin', 'green': 'Orcs', 'black': 'Undead' };
-                const factionColors = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#6b7280' };
                 for (let [color, count] of Object.entries(minionsHere)) {
                     if (count > 0) {
-                        factionDetails.push(`<span style="color: ${factionColors[color] || '#999'};">${count} ${factionNames[color] || color}</span>`);
+                        factionDetails.push({ color, label: factionNames[color] || color, count });
                         totalRemoved += count;
                         // Track kills for quest progress (e.g. Orc Hunter)
                         this._trackQuestMinionDefeatsRaw(color, count);
@@ -331,7 +330,8 @@ Object.assign(game, {
             
             state.results.push({
                 location: locationName,
-                details: totalRemoved > 0 ? `${totalRemoved} minion${totalRemoved !== 1 ? 's' : ''} removed (${factionDetails.join(', ')})` : 'No minions'
+                factions: factionDetails,
+                totalRemoved
             });
             state.usesRemaining--;
             

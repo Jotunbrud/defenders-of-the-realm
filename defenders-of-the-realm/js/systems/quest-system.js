@@ -1991,17 +1991,43 @@ Object.assign(game, {
             boardContainer.style.pointerEvents = 'auto';
         }
         
-        // Build results summary
-        let resultsHTML = '';
+        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
+        const factionBg    = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
+        
+        // Build pill rows — one per faction per location
+        let pillsHTML = '';
         if (state.results.length === 0) {
-            resultsHTML = '<div style="color: #999;">No locations were targeted.</div>';
+            pillsHTML = '<div style="font-size:0.8em;color:#3d2b1f;padding:6px 0">No locations were targeted.</div>';
         } else {
             state.results.forEach(r => {
-                resultsHTML += `<div style="margin: 8px 0; padding: 8px; background: rgba(22,163,74,0.15); border: 1px solid #16a34a; border-radius: 6px;">
-                    <strong style="color: #16a34a;">${r.location}</strong> — ${r.details}
-                </div>`;
+                if (!r.factions || r.factions.length === 0) {
+                    pillsHTML += `<div style="background:rgba(107,114,128,0.1);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin:4px 0">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280">No minions</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${r.location}</span>
+                        </div>
+                    </div>`;
+                } else {
+                    r.factions.forEach(f => {
+                        for (let i = 0; i < f.count; i++) {
+                            const fc = factionColors[f.color] || '#888';
+                            const fb = factionBg[f.color] || 'rgba(136,136,136,0.1)';
+                            pillsHTML += `<div style="background:${fb};border:1px solid ${fc};border-radius:5px;padding:5px 10px;margin:4px 0">
+                                <div style="display:flex;justify-content:space-between;align-items:center">
+                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc}"><span style="display:inline-block;width:14px;height:14px;background:${fc};border-radius:50%;margin-right:3px;vertical-align:middle"></span>${f.label}</span>
+                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${r.location}</span>
+                                </div>
+                            </div>`;
+                        }
+                    });
+                }
             });
         }
+        
+        // Green general for card body
+        const greenGeneral = this.generals ? this.generals.find(g => g.color === 'green') : null;
+        const generalName  = greenGeneral ? greenGeneral.name : 'Gorgutt';
+        const generalIcon  = this._generalIcons ? (this._generalIcons['green'] || '👺') : '👺';
         
         const locCount = state.results.length;
         this.addLog(`🏹 Special Card: ${state.heroName} plays Elven Archers — cleared minions from ${locCount} Green location${locCount !== 1 ? 's' : ''}! (No action used)`);
@@ -2014,16 +2040,31 @@ Object.assign(game, {
         this.updateMovementButtons();
         this.updateActionButtons();
         
-        this.showInfoModal('🏹 Elven Archers — Complete!', `
-            <div style="text-align: center;">
-                <div style="font-size: 2em; margin-bottom: 10px;">🏹</div>
-                <div style="color: #16a34a; font-size: 1.1em; font-weight: bold; margin-bottom: 10px;">
-                    ${locCount} Green location${locCount !== 1 ? 's' : ''} cleared!
+        const contentHTML = `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed</div>
+                    ${pillsHTML}
                 </div>
-                ${resultsHTML}
-                <div style="color: #d4af37; margin-top: 10px; font-size: 0.9em;">Card played from ${state.heroSymbol} ${state.heroName}'s hand — No action used</div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🏹 Elven Archers</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove all enemy minions from 2 Green locations</span></div>
+                        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                            <div class="modal-general-token" style="background:#16a34a">${generalIcon}</div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">${generalName}</span>
+                        </div>
+                        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                            <span class="die" style="background:#16a34a">🎲</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        `);
+            <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
+        `;
+        
+        this.showInfoModal('🌟 Special Card Details', contentHTML);
     },
     
     executeBattleStrategy(heroIndex, cardIndex) {

@@ -2181,10 +2181,10 @@ Object.assign(game, {
         const contentHTML = `
             ${this._parchmentBoxOpen('Quest Action')}
                 <div style="text-align:center;padding:8px 0;">
-                    <div class="modal-desc-text" style="margin-bottom:8px;">
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">
                         Spend actions to roll dice. Each action = 1 die. Need 5+ on any die to succeed.
                     </div>
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#3d2b1f;margin-bottom:8px;">
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">
                         You have ${maxActions} action${maxActions > 1 ? 's' : ''} remaining.
                     </div>
                 </div>
@@ -2280,7 +2280,7 @@ Object.assign(game, {
                             <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
                             <div>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
-                                <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> Permanent Horse Movement + Re-roll all failed dice once per combat</span>
+                                <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                             </div>
                             <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d;">Completed</span>
@@ -2314,7 +2314,7 @@ Object.assign(game, {
                             <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
                             <div>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
-                                <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> Permanent Horse Movement + Re-roll all failed dice once per combat</span>
+                                <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
                             </div>
                             <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(202,138,4,0.15);border:1px solid #ca8a04;color:#a16207;">In Progress</span>

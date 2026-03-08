@@ -161,12 +161,32 @@ Object.assign(game, {
             this.updateActionButtons();
             
             // Show confirmation
-            this.showInfoModal('💫 Magic Gate Placed!', `
-                <div style="text-align: center;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">🌀</div>
-                    <div style="color: #9333ea; font-size: 1.1em; font-weight: bold;">Magic Gate created at ${locationName}!</div>
-                    <div style="color: #d4af37; margin-top: 8px; font-size: 0.9em;">Card played from ${cardHero.symbol} ${cardHero.name}'s hand — No action used</div>
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                    <div style="margin-top:10px;margin-bottom:10px">
+                        <div style="background:rgba(147,51,234,0.1);border:1px solid #9333ea;border-radius:5px;padding:5px 10px;margin:4px 0">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">Magic Gate Created</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Magic Gate</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body">
+                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Place a Magic Gate at any location (no action used)</span></div>
+                            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                                <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
+                            </div>
+                            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                                <span class="die" style="background:#6d28a8">🎲</span><span class="die" style="background:#6d28a8">🎲</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
             
             return true;
@@ -220,13 +240,33 @@ Object.assign(game, {
             this.updateMovementButtons();
             this.updateActionButtons();
             
-            // Show confirmation
-            this.showInfoModal('🔨 Hero Moved!', `
-                <div style="text-align: center;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">${targetHero.symbol}</div>
-                    <div style="color: #9333ea; font-size: 1.1em; font-weight: bold;">${targetHero.name} moved to ${locationName}!</div>
-                    <div style="color: #d4af37; margin-top: 8px; font-size: 0.9em;">Card played from ${cardHero.symbol} ${cardHero.name}'s hand — No action used</div>
+            // Show confirmation — all heroes listed, moved one gold-highlighted
+            const heroRowsHTML = this.heroes.map((h, i) => {
+                const isMoved = (i === moveInfo.targetHeroIndex);
+                const dest = isMoved ? locationName : h.location;
+                const sel = isMoved ? ' style="border-color:#d4af37;background:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.35)"' : '';
+                return `<div class="hero-row"${sel}>
+                    <div style="font-size:1.3em">${h.symbol}</div>
+                    <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">${h.name}</div>
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${dest}</div>
+                    </div>
+                </div>`;
+            }).join('');
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">
+                        ${heroRowsHTML}
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Hammer of Valor</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body">
+                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Move any hero to any location</span></div>
+                        </div>
+                    </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
             
             // Check for combat at destination for the moved hero
@@ -287,12 +327,32 @@ Object.assign(game, {
             this.updateActionButtons();
             
             // Show confirmation
-            this.showInfoModal('✨ Land Purified!', `
-                <div style="text-align: center;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">✨</div>
-                    <div style="color: #9333ea; font-size: 1.1em; font-weight: bold;">${crystalsRemoved} Taint Crystal${crystalsRemoved !== 1 ? 's' : ''} removed from ${locationName}!</div>
-                    <div style="color: #d4af37; margin-top: 8px; font-size: 0.9em;">Card played from ${cardHero.symbol} ${cardHero.name}'s hand — No action used</div>
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                    <div style="margin-top:10px;margin-bottom:10px">
+                        <div style="background:rgba(147,51,234,0.1);border:1px solid #9333ea;border-radius:5px;padding:5px 10px;margin:4px 0">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">${crystalsRemoved} Taint Crystal${crystalsRemoved !== 1 ? 's' : ''} Removed</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Spell of Purity</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body">
+                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove all Taint Crystals from one location (no action used)</span></div>
+                            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                                <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
+                            </div>
+                            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                                <span class="die" style="background:#6d28a8">🎲</span><span class="die" style="background:#6d28a8">🎲</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
             
             return true;

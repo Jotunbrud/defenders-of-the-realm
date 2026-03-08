@@ -611,9 +611,9 @@ Object.assign(game, {
         
         const minionsObj = this.minions[locationName];
         const remaining = state.maxMinions - state.totalSelected;
-        const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
-        const factionIcons = { green: '🪓', black: '💀', red: '🔥', blue: '🐉' };
+        const factionLabels = { green: 'Orcs', black: 'Undead', red: 'Demons', blue: 'Dragonkin' };
+        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
+        const factionBg = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
         
         // Calculate pending removals at this location
         const pendingForLoc = {};
@@ -623,37 +623,37 @@ Object.assign(game, {
         
         this._kgSelected = new Set();
         
+        // Build pill list — one pill per available minion slot
         let minionId = 0;
-        let listHTML = '<div id="kg-minion-list" style="max-height: 280px; overflow-y: auto; padding-right: 5px;">';
-        
+        let pillsHTML = '<div id="kg-minion-list" style="max-height:240px;overflow-y:auto;padding-right:3px">';
         const factionOrder = ['green', 'red', 'black', 'blue'];
         factionOrder.forEach(color => {
             const totalCount = (minionsObj && minionsObj[color]) || 0;
             const alreadyPicked = pendingForLoc[color] || 0;
             const availableCount = Math.max(0, totalCount - alreadyPicked);
             if (availableCount === 0) return;
-            const fname = factionNames[color];
+            const label = factionLabels[color];
             const fcolor = factionColors[color];
-            const ficon = factionIcons[color];
-            
+            const fbg = factionBg[color];
             for (let i = 0; i < availableCount; i++) {
                 const id = `kg-m-${minionId}`;
-                listHTML += `
-                    <div id="${id}" data-color="${color}" data-mid="${minionId}"
-                         onclick="game._kingsGuardToggle(${minionId})"
-                         style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin: 3px 0; border: 2px solid ${fcolor}; border-radius: 6px; cursor: pointer; background: rgba(0,0,0,0.3); transition: all 0.15s;"
-                         onmouseover="if(!this.classList.contains('kg-sel')) this.style.background='rgba(255,255,255,0.08)'"
-                         onmouseout="if(!this.classList.contains('kg-sel')) this.style.background='rgba(0,0,0,0.3)'">
-                        <span style="font-size: 1.3em;">${ficon}</span>
-                        <span style="flex: 1; color: ${fcolor}; font-weight: bold;">${fname} Minion</span>
-                        <span id="${id}-check" style="font-size: 1.2em; opacity: 0.3;">☐</span>
+                pillsHTML += `<div id="${id}" data-color="${color}" data-mid="${minionId}"
+                    onclick="game._kingsGuardToggle(${minionId})"
+                    style="background:${fbg};border:1px solid ${fcolor};border-radius:5px;padding:5px 10px;margin:4px 0;cursor:pointer;transition:all 0.15s">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fcolor}"><span class="mdot" style="width:14px;height:14px;background:${fcolor};margin-right:3px"></span>${label}</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
                     </div>
-                `;
+                </div>`;
                 minionId++;
             }
         });
+        pillsHTML += '</div>';
         
-        listHTML += '</div>';
+        // Get general info for card body
+        const blueGeneral = this.generals.find(g => g.color === 'blue') || { name: 'Sapphire' };
+        const generalIcon = this._generalIcons ? (this._generalIcons['blue'] || '🐉') : '🐉';
+        const generalColor = '#3b82f6';
         
         const contentHTML = `
             <div class="parchment-box">
@@ -661,61 +661,63 @@ Object.assign(game, {
                 <div style="margin-top:10px;margin-bottom:10px">
                     <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Remaining minions to remove:</div>
                     <div style="text-align:center;margin-bottom:10px"><div class="die die-g" id="kg-remaining-die" style="display:inline-flex;align-items:center;justify-content:center">${remaining}</div></div>
-                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:6px">📍 ${locationName} — Select minions to remove:</div>
-                    <div id="kg-budget-display" style="font-family:'Cinzel',Georgia,serif;font-size:0.75em;color:#3d2b1f;margin-bottom:6px">Selected: 0 at this location</div>
-                    ${listHTML}
+                    ${pillsHTML}
                 </div>
                 <div class="card-wrap">
                     <div class="card-banner-inner"><span class="hero-banner-name">🌟 King's Guard Attack</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
-                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div>
+                        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                            <div class="modal-general-token" style="background:${generalColor}">${generalIcon}</div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${generalColor}">${blueGeneral.name}</span>
+                        </div>
+                        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                            <span class="die" style="background:${generalColor}">🎲</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button class="phb phb-cancel" onclick="game._kingsGuardFinishEarly()">Finish Early</button>
-            <button id="kg-confirm-btn" class="phb" onclick="game._kingsGuardConfirmLocation()">Skip Location</button>
+            <button id="kg-confirm-btn" class="phb" style="margin-top:12px" onclick="game._kingsGuardConfirmLocation()">Confirm</button>
+            <button class="phb phb-cancel" onclick="game.closeInfoModal(); game._finishKingsGuard();">Cancel</button>
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#kg-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
-    
     _kingsGuardToggle(minionId) {
         const state = this.kingsGuardState;
         if (!state) return;
         
         const el = document.getElementById(`kg-m-${minionId}`);
-        const check = document.getElementById(`kg-m-${minionId}-check`);
         if (!el) return;
         
         const remaining = state.maxMinions - state.totalSelected;
+        const color = el.getAttribute('data-color');
+        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
+        const fcolor = factionColors[color] || '#888';
         
         if (this._kgSelected.has(minionId)) {
-            // Deselect
+            // Deselect — restore pill to unselected state
             this._kgSelected.delete(minionId);
             el.classList.remove('kg-sel');
-            el.style.background = 'rgba(0,0,0,0.3)';
-            if (check) { check.textContent = '☐'; check.style.opacity = '0.3'; check.style.color = ''; }
+            el.style.border = `1px solid ${fcolor}`;
+            el.style.boxShadow = '';
         } else {
-            // Check total limit
+            // At limit — do nothing
             if (this._kgSelected.size >= remaining) return;
             this._kgSelected.add(minionId);
             el.classList.add('kg-sel');
-            el.style.background = 'rgba(255,215,0,0.2)';
-            if (check) { check.textContent = '☑'; check.style.opacity = '1'; check.style.color = '#4ade80'; }
+            el.style.border = `2px solid #d4af37`;
+            el.style.boxShadow = '0 0 8px rgba(212,175,55,0.5)';
         }
         
-        // Update display
+        // Update remaining die counter
         const newRemaining = remaining - this._kgSelected.size;
-        const display = document.getElementById('kg-budget-display');
-        if (display) display.textContent = `Remaining: ${newRemaining + (state.maxMinions - state.totalSelected - remaining)} / ${state.maxMinions} — Selected: ${this._kgSelected.size} at this location`;
+        const die = document.getElementById('kg-remaining-die');
+        if (die) die.textContent = newRemaining;
         
-        // Update confirm button
-        const btn = document.getElementById('kg-confirm-btn');
-        if (btn) {
-            btn.textContent = this._kgSelected.size > 0 ? `Confirm (${this._kgSelected.size})` : 'Skip Location';
-        }
-        
-        // Update affordability of unselected
+        // Dim unselectable pills when at limit
         document.querySelectorAll('#kg-minion-list > div').forEach(div => {
             const mid = parseInt(div.getAttribute('data-mid'));
             if (this._kgSelected.has(mid)) return;

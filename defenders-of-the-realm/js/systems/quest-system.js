@@ -2175,8 +2175,9 @@ Object.assign(game, {
         
         let optionsHTML = '';
         for (let i = 1; i <= Math.min(maxActions, 6); i++) {
-            optionsHTML += `<button onclick="game._rollUnicornSteedDice(${i}, ${questIndex})" class="phase-btn" style="width:100%;margin-top:10px;">${i === 1 ? 'Spend 1 Action (roll 1 die)' : `Spend ${i} Actions (roll ${i} dice)`}</button>`;
+            optionsHTML += `<button onclick="game.closeInfoModal(); game._rollUnicornSteedDice(${i}, ${questIndex})" class="phase-btn" style="width:100%;margin-top:10px;">${i === 1 ? 'Spend 1 Action (roll 1 die)' : `Spend ${i} Actions (roll ${i} dice)`}</button>`;
         }
+        optionsHTML += `<button onclick="game.closeInfoModal()" class="phase-btn" style="width:100%;margin-top:6px;background:linear-gradient(135deg,#6b6b6b,#4a4a4a);border-color:#6b6b6b;color:#f4e4c1;">Cancel</button>`;
 
         const contentHTML = `
             ${this._parchmentBoxOpen('Quest Action')}
@@ -2208,7 +2209,7 @@ Object.assign(game, {
             ${optionsHTML}
         `;
         
-        this.showInfoModal('📜 Unicorn Steed', contentHTML);
+        this.showInfoModal('📜 Quest Card', contentHTML);
         this._styleQuestModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
@@ -2356,7 +2357,7 @@ Object.assign(game, {
             return `<div class="modal-desc-text" style="color:#3d2b1f;font-size:0.75em;line-height:1.5;margin:3px 0;display:flex;justify-content:space-between;gap:12px;"><span>${e} ${loc}</span><span>${status}</span></div>`;
         }).join('');
         
-        this.showInfoModal('📜 Organize Militia', `
+        this.showInfoModal('📜 Quest Card', `
             <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Quest Action</span></div>
                 <div style="text-align:center;padding:8px 0;">
                     <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">Organize locals at ${hero.location}?</div>
@@ -2380,7 +2381,8 @@ Object.assign(game, {
                     </div>
                 </div>
             </div>
-            <button class="phase-btn" style="margin-top:14px;margin-bottom:-12px;" onclick="game.closeInfoModal(); game._organizeLocationAction(game.heroes[game.currentPlayerIndex], game.heroes[game.currentPlayerIndex].questCards[${questIndex}], ${questIndex})">Organizing the Locals (spend 1 action)</button>
+            <button class="phase-btn" style="margin-top:14px;" onclick="game.closeInfoModal(); game._organizeLocationAction(game.heroes[game.currentPlayerIndex], game.heroes[game.currentPlayerIndex].questCards[${questIndex}], ${questIndex})">Confirm</button>
+            <button class="phase-btn" style="margin-top:6px;background:linear-gradient(135deg,#6b6b6b,#4a4a4a);border-color:#6b6b6b;color:#f4e4c1;" onclick="game.closeInfoModal()">Cancel</button>
         `);
         this._styleQuestModal();
     },
@@ -2779,12 +2781,25 @@ Object.assign(game, {
         this.renderHeroes();
         this.updateActionButtons();
         
-        this.showInfoModal('📜 Raids Activated!', `
-            <div style="text-align:center;">
-                <div style="font-size:2em;margin-bottom:10px;">⚔️</div>
-                <div style="color:#4ade80;font-weight:bold;font-size:1.1em;margin-bottom:10px;">Darkness Spreads Skipped!</div>
-                <div style="color:#999;font-size:0.9em;">All Darkness Spreads cards will be skipped at the end of ${hero.name}'s turn.</div>
-                <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded.</div>
+        this.showInfoModal('📜 Quest Card', `
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Quest Used</span></div>
+                <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin:8px 0;">All Darkness Spreads cards will be skipped.</div>
+                <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-top:10px;">
+                    <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">📜 ${quest.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
+                    </div>
+                    <div style="padding:12px 14px;">
+                        <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
+                        <div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(220,38,38,0.15);border:1px solid #dc2626;color:#b91c1c;">Used</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         `);
         this._styleQuestModal();
@@ -2853,11 +2868,11 @@ Object.assign(game, {
                 ${heroesHTML}
                 ${questCardHTML}
             ${this._parchmentBoxClose()}
-            <button id="gryph-confirm-btn" class="phase-btn" style="opacity:0.4;cursor:not-allowed;margin-top:12px;" disabled onclick="game._gryphonConfirmHero()">Confirm Hero</button>
-            <button class="phase-btn" onclick="game._gryphonFinishEarly()">${state.results.length > 0 ? 'Finish' : 'Cancel'}</button>
+            <button id="gryph-confirm-btn" class="phase-btn" style="opacity:0.4;cursor:not-allowed;margin-top:12px;" disabled onclick="game._gryphonConfirmHero()">Confirm</button>
+            <button class="phase-btn" style="margin-top:6px;background:linear-gradient(135deg,#6b6b6b,#4a4a4a);border-color:#6b6b6b;color:#f4e4c1;" onclick="game._gryphonFinishEarly()">${state.results.length > 0 ? 'Finish' : 'Cancel'}</button>
         `;
         
-        this.showInfoModal('📜 ' + state.quest.name, contentHTML);
+        this.showInfoModal('📜 Quest Card', contentHTML);
         this._styleQuestModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#gryph-confirm-btn')) defaultBtnDiv.style.display = 'none';
@@ -3070,15 +3085,33 @@ Object.assign(game, {
         const heroIndex = state.heroIndex;
         this._gryphonState = null;
         
-        this.showInfoModal('📜 King of the Gryphons — Complete!', `
-            <div style="text-align:center;">
-                <div style="font-size:2em;margin-bottom:10px;">🦅</div>
-                <div style="color:#16a34a;font-size:1.1em;font-weight:bold;margin-bottom:10px;">
-                    ${state.results.length} hero${state.results.length !== 1 ? 'es' : ''} moved!
+        this.showInfoModal('📜 Quest Complete!', `
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Heroes Moved</span></div>
+                <div style="margin-top:10px;margin-bottom:10px;">
+                    ${state.results.map(r => `
+                        <div style="background:rgba(212,175,55,0.1);border:1px solid #d4af37;border-radius:5px;padding:5px 10px;margin:4px 0;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;">${r.heroSymbol} ${r.heroName}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;">→ ${r.to}</span>
+                            </div>
+                        </div>`).join('')}
                 </div>
-                ${resultsHTML}
-                ${unused > 0 ? `<div style="color:#999;font-size:0.85em;margin-top:8px;">${unused} move${unused !== 1 ? 's' : ''} unused</div>` : ''}
-                <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Quest card discarded — No action used</div>
+                <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
+                    <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                        <span class="hero-banner-name">📜 ${quest.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
+                    </div>
+                    <div style="padding:12px 14px;">
+                        <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
+                        <div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d;">Completed</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         `);
         this._styleQuestModal();
@@ -3180,7 +3213,7 @@ Object.assign(game, {
         const remaining = state.remaining;
         const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
         const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
-        const factionIcons = { green: '🪓', black: '💀', red: '🔥', blue: '🐉' };
+        const factionBg = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
         
         // Calculate already-picked minions at this location (from previous visits)
         const pendingForLoc = {};
@@ -3191,7 +3224,7 @@ Object.assign(game, {
         this._aeSelected = new Set();
         
         let minionId = 0;
-        let listHTML = '<div id="ae-minion-list" style="max-height: 280px; overflow-y: auto; padding-right: 5px;">';
+        let pillsHTML = '';
         
         const factionOrder = ['green', 'red', 'black', 'blue'];
         factionOrder.forEach(color => {
@@ -3201,42 +3234,64 @@ Object.assign(game, {
             if (availableCount === 0) return;
             const fname = factionNames[color];
             const fcolor = factionColors[color];
-            const ficon = factionIcons[color];
+            const fbg = factionBg[color];
             
             for (let i = 0; i < availableCount; i++) {
                 const id = `ae-m-${minionId}`;
-                listHTML += `
+                pillsHTML += `
                     <div id="${id}" data-color="${color}" data-mid="${minionId}"
                          onclick="game._amazonEnvoyToggle(${minionId})"
-                         style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin: 3px 0; border: 2px solid ${fcolor}; border-radius: 6px; cursor: pointer; background: rgba(0,0,0,0.3); transition: all 0.15s;"
-                         onmouseover="if(!this.classList.contains('ae-sel')) this.style.background='rgba(255,255,255,0.08)'"
-                         onmouseout="if(!this.classList.contains('ae-sel')) this.style.background='rgba(0,0,0,0.3)'">
-                        <span style="font-size: 1.3em;">${ficon}</span>
-                        <span style="flex: 1; color: ${fcolor}; font-weight: bold;">${fname} Minion</span>
-                        <span id="${id}-check" style="font-size: 1.2em; opacity: 0.3;">☐</span>
+                         style="background:${fbg};border:1px solid ${fcolor};border-radius:5px;padding:5px 10px;margin:4px 0;cursor:pointer;transition:border 0.15s,box-shadow 0.15s;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fcolor};">
+                                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${fcolor};margin-right:5px;vertical-align:middle;"></span>${fname} Minion
+                            </span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;">→ ${locationName}</span>
+                        </div>
                     </div>
                 `;
                 minionId++;
             }
         });
-        
-        listHTML += '</div>';
+
+        // Build quest card HTML
+        const hero = this.heroes[state.heroIndex];
+        const quest = hero ? hero.questCards.find(q => q.name === state.questName) : null;
+        const questCardHTML = quest ? `
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-top:10px;">
+                <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                    <span class="hero-banner-name">📜 ${quest.name}</span>
+                    <span class="hero-banner-name" style="font-size:0.85em">${state.heroSymbol || ''} ${state.heroName || ''}</span>
+                </div>
+                <div style="padding:12px 14px;">
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${quest.description}</div>
+                    <div>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                        <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${quest.reward}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(202,138,4,0.15);border:1px solid #ca8a04;color:#a16207;">In Progress</span>
+                    </div>
+                </div>
+            </div>` : '';
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 1.5em; margin-bottom: 3px;">⚔️</div>
-                <div style="color: #ffd700; font-weight: bold; font-size: 1.05em;">📍 ${locationName}</div>
-                <div style="color: #d4af37; margin-top: 4px; font-size: 0.9em;">Select minions to defeat at this location.</div>
-                <div id="ae-budget-display" style="color: #4ade80; font-weight: bold; margin-top: 6px;">Remaining: ${remaining} / ${state.sweepRoll} — Selected: 0 at this location</div>
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Select Minions to Defeat</span></div>
+                <div style="margin-top:10px;margin-bottom:10px;">
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px;">Remaining minions to remove:</div>
+                    <div style="text-align:center;margin-bottom:10px;">
+                        <div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;font-size:1.5em;font-weight:900;border-radius:8px;color:#fff;background:linear-gradient(145deg,#2563eb 0%,#1d4ed8 100%);border:2px solid rgba(0,0,0,0.3);box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4);" id="ae-die-display">${remaining}</div>
+                    </div>
+                    <div id="ae-minion-list">${pillsHTML}</div>
+                </div>
+                ${questCardHTML}
             </div>
-            ${listHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game._amazonEnvoyFinishEarly()">Finish</button>
-                <button id="ae-confirm-btn" class="btn btn-primary" style="flex: 1;" onclick="game._amazonEnvoyConfirmLocation()">Skip Location</button>
-            </div>
+            <button id="ae-confirm-btn" class="phase-btn" style="margin-top:14px;opacity:0.4;cursor:not-allowed;" disabled onclick="game._amazonEnvoyConfirmLocation()">Confirm</button>
+            <button class="phase-btn" style="margin-top:6px;background:linear-gradient(135deg,#6b6b6b,#4a4a4a);border-color:#6b6b6b;color:#f4e4c1;" onclick="game._amazonEnvoyFinishEarly()">Cancel</button>
         `;
         
-        this.showInfoModal('⚔️ ' + state.questName, contentHTML);
+        this.showInfoModal('📜 Quest Card', contentHTML);
+        this._styleQuestModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#ae-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -3252,28 +3307,33 @@ Object.assign(game, {
         const remaining = state.remaining;
         
         if (this._aeSelected.has(minionId)) {
-            // Deselect
+            // Deselect — restore faction border
             this._aeSelected.delete(minionId);
             el.classList.remove('ae-sel');
-            el.style.background = 'rgba(0,0,0,0.3)';
-            if (check) { check.textContent = '☐'; check.style.opacity = '0.3'; check.style.color = ''; }
+            const fcolor = el.querySelector('span[style*="border-radius:50%"]')?.style.background || '#888';
+            el.style.border = `1px solid ${fcolor}`;
+            el.style.boxShadow = '';
         } else {
             // Check total limit
             if (this._aeSelected.size >= remaining) return;
             this._aeSelected.add(minionId);
             el.classList.add('ae-sel');
-            el.style.background = 'rgba(255,215,0,0.2)';
-            if (check) { check.textContent = '☑'; check.style.opacity = '1'; check.style.color = '#4ade80'; }
+            el.style.border = '2px solid #d4af37';
+            el.style.boxShadow = '0 0 6px rgba(212,175,55,0.4)';
         }
         
-        // Update budget display
-        const display = document.getElementById('ae-budget-display');
-        if (display) display.textContent = `Remaining: ${remaining - this._aeSelected.size} / ${state.sweepRoll} — Selected: ${this._aeSelected.size} at this location`;
+        // Update die display
+        const die = document.getElementById('ae-die-display');
+        if (die) die.textContent = remaining - this._aeSelected.size;
         
         // Update confirm button
         const btn = document.getElementById('ae-confirm-btn');
         if (btn) {
-            btn.textContent = this._aeSelected.size > 0 ? `Confirm (${this._aeSelected.size})` : 'Skip Location';
+            const hasSelection = this._aeSelected.size > 0;
+            btn.textContent = 'Confirm';
+            btn.disabled = !hasSelection;
+            btn.style.opacity = hasSelection ? '1' : '0.4';
+            btn.style.cursor = hasSelection ? 'pointer' : 'not-allowed';
         }
         
         // Update affordability of unselected
@@ -3419,24 +3479,47 @@ Object.assign(game, {
         
         // Build results summary (removals already applied in _amazonEnvoyConfirmLocation)
         const totalDefeated = state.results.length;
-        let resultsHTML = '';
+        const factionColors = { Orcs: '#16a34a', Demons: '#ef4444', Dragonkin: '#3b82f6', Undead: '#6b7280' };
+        const factionBg = { Orcs: 'rgba(22,163,74,0.1)', Demons: 'rgba(239,68,68,0.1)', Dragonkin: 'rgba(59,130,246,0.1)', Undead: 'rgba(107,114,128,0.1)' };
+        let pillsHTML = '';
         if (totalDefeated === 0) {
-            resultsHTML = '<div style="color:#999;">No minions were defeated.</div>';
+            pillsHTML = `<div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;">No minions were defeated.</div>`;
         } else {
-            // Group by location
-            const byLoc = {};
             state.results.forEach(r => {
-                if (!byLoc[r.location]) byLoc[r.location] = {};
-                byLoc[r.location][r.faction] = (byLoc[r.location][r.faction] || 0) + 1;
+                const fc = factionColors[r.faction] || '#888';
+                const fb = factionBg[r.faction] || 'rgba(136,136,136,0.1)';
+                pillsHTML += `
+                    <div style="background:${fb};border:1px solid ${fc};border-radius:5px;padding:5px 10px;margin:4px 0;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc};">
+                                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${fc};margin-right:5px;vertical-align:middle;"></span>${r.faction}
+                            </span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;">→ ${r.location}</span>
+                        </div>
+                    </div>`;
             });
-            
-            for (const [loc, factions] of Object.entries(byLoc)) {
-                const details = Object.entries(factions).map(([fname, count]) => `${count} ${fname}`).join(', ');
-                resultsHTML += `<div style="margin:6px 0;padding:8px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;border-radius:6px;">
-                    <strong style="color:#16a34a;">${loc}</strong> — ${details}
-                </div>`;
-            }
         }
+
+        // Find quest card for the hero
+        const hero = this.heroes[state.heroIndex];
+        const retiredQuest = state.quest || (hero ? hero.questCards.find(q => q.name === state.questName) : null);
+        const questCardHTML = retiredQuest ? `
+            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-top:10px;">
+                <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                    <span class="hero-banner-name">📜 ${retiredQuest.name}</span>
+                    <span class="hero-banner-name" style="font-size:0.85em">${state.heroSymbol || ''} ${state.heroName || ''}</span>
+                </div>
+                <div style="padding:12px 14px;">
+                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px;">${retiredQuest.description}</div>
+                    <div>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c;">Reward:</span>
+                        <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;"> ${retiredQuest.reward}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d;">Completed</span>
+                    </div>
+                </div>
+            </div>` : '';
         
         const unused = state.sweepRoll - totalDefeated;
         this.addLog(`⚔️ ${state.questName}: ${state.heroName} deployed warriors — ${totalDefeated} minion${totalDefeated !== 1 ? 's' : ''} defeated!`);
@@ -3450,20 +3533,19 @@ Object.assign(game, {
         this.updateActionButtons();
         
         const heroIndex = state.heroIndex;
-        this.showInfoModal('⚔️ ' + state.questName + ' — Complete!', `
-            <div style="text-align:center;">
-                <div style="font-size:2em;margin-bottom:10px;">⚔️</div>
-                <div style="color:#16a34a;font-size:1.1em;font-weight:bold;margin-bottom:10px;">
-                    ${totalDefeated} minion${totalDefeated !== 1 ? 's' : ''} defeated!
+        this.showInfoModal('📜 Quest Complete!', `
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Quest Roll</span></div>
+                <div style="margin-top:10px;margin-bottom:10px;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px;">Minions Removed</div>
+                    ${pillsHTML}
                 </div>
-                ${resultsHTML}
-                ${unused > 0 ? `<div style="color:#999;font-size:0.85em;margin-top:8px;">${unused} warrior${unused !== 1 ? 's' : ''} unused (no more targets in range)</div>` : ''}
-                <div style="color:#d4af37;margin-top:10px;font-size:0.9em;">Rolled ${state.sweepRoll} on D6</div>
+                ${questCardHTML}
             </div>
         `, () => {
             // Draw new quest after sweep completes
             this._drawAndShowNewQuest(heroIndex);
         });
+        this._styleQuestModal();
     },
     
     // ===== SCOUT THE GENERAL QUEST =====

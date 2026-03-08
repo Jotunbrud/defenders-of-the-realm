@@ -113,22 +113,27 @@ Object.assign(game, {
         const boardContainer = document.getElementById('board-container');
         if (boardContainer) { boardContainer.style.cursor = 'grab'; boardContainer.style.pointerEvents = 'auto'; }
         
-        // Build results
+        // Build results — parchment pill style
+        const _fcMap = { green: '#16a34a', red: '#dc2626', blue: '#3b82f6', black: '#6b7280' };
+        const _fnMap = { green: 'Orcs', red: 'Demons', blue: 'Dragonkin', black: 'Undead' };
         let resultsHTML = '';
         if (state.minionResults.length > 0) {
-            resultsHTML += '<div style="font-weight: bold; color: #d4af37; margin-bottom: 6px;">Minions Defeated:</div>';
+            resultsHTML += `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed</div>`;
             state.minionResults.forEach(r => {
-                resultsHTML += `<div style="margin: 4px 0; padding: 6px 8px; background: rgba(255,255,255,0.05); border-radius: 4px;">
-                    ⚔️ <strong>${r.location}</strong> — ${r.details}
-                </div>`;
+                resultsHTML += `<div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;margin:4px 0;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#2c1810">📍 ${r.location}<span style="float:right;font-size:0.85em;color:#3d2b1f">${r.details.replace(/<[^>]*>/g, '')}</span></div>`;
             });
         }
         if (state.generalResult) {
-            resultsHTML += `<div style="margin-top: 10px; padding: 8px; background: rgba(147,51,234,0.15); border: 1px solid #9333ea; border-radius: 6px;">
-                🛡️ <strong style="color: ${this.getGeneralColor(state.generalResult.color)};">${state.generalResult.name}</strong> pushed back: ${state.generalResult.from} → ${state.generalResult.to}
-            </div>`;
-        } else {
-            resultsHTML += `<div style="margin-top: 10px; color: #999; font-style: italic;">No generals were pushed back.</div>`;
+            const gc = this.getGeneralColor(state.generalResult.color);
+            const gIcon = { red:'👹', blue:'🐉', green:'👺', black:'💀' }[state.generalResult.color] || '⚔️';
+            resultsHTML += `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-top:10px;margin-bottom:6px">General Movement</div>
+                <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;margin:3px 0;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="display:flex;align-items:center;gap:6px;color:#8b7355"><span class="modal-general-token" style="background:${gc};width:24px;height:24px;font-size:0.75em">${gIcon}</span>${state.generalResult.name}</span>
+                        <span style="color:#2c1810">${state.generalResult.from} → ${state.generalResult.to}</span>
+                    </div>
+                    <div style="font-size:0.85em;color:#8b7355;margin-top:3px;padding-left:30px">— Pushed Back</div>
+                </div>`;
         }
         
         const locCount = state.minionResults.length;
@@ -141,11 +146,19 @@ Object.assign(game, {
         this.updateMovementButtons();
         this.updateActionButtons();
         
-        this.showInfoModal('⚔️ Battle Strategy — Complete!', `
-            <div style="text-align: center;">
-                <div style="font-size: 2em; margin-bottom: 10px;">⚔️</div>
-                ${resultsHTML}
-                <div style="color: #d4af37; margin-top: 10px; font-size: 0.9em;">Card played from ${state.heroSymbol} ${state.heroName}'s hand — No action used</div>
+        this.showInfoModal('🌟 Special Card Details', `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">${resultsHTML}</div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner">
+                        <span class="hero-banner-name">🌟 ${state.cardName || 'Battle Strategy'}</span>
+                        <span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all minions on 3 locations and push 1 General back</span></div>
+                    </div>
+                </div>
             </div>
         `);
     },
@@ -163,15 +176,18 @@ Object.assign(game, {
         
         this.addLog(`🌅 Special Card: ${cardHero.name} plays All Is Quiet — No Darkness Spreads cards will be drawn this turn!`);
         
-        this.showInfoModal('🌅 All Is Quiet', `
-            <div style="text-align: center; padding: 10px;">
-                <div style="padding: 20px; border: 2px solid #4ade80; background: rgba(74,222,128,0.15); border-radius: 8px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">🌅</div>
-                    <div style="font-size: 1.3em; color: #4ade80; font-weight: bold;">All Is Quiet</div>
-                    <div style="color: #d4af37; margin-top: 8px;">No Darkness Spreads cards will be drawn this turn.</div>
-                    <div style="color: #d4af37; margin-top: 5px;">The land rests easy tonight.</div>
+        this.showInfoModal('🌟 Special Card Details', `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div class="card-wrap" style="margin-top:10px">
+                    <div class="card-banner-inner">
+                        <span class="hero-banner-name">🌟 All Is Quiet</span>
+                        <span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Do not draw any Darkness Spreads cards this turn</span></div>
+                    </div>
                 </div>
-                <div style="color: #a78bfa; margin-top: 12px; font-size: 0.9em;">Card played from ${cardHero.symbol} ${cardHero.name}'s hand — No action used</div>
             </div>
         `);
         
@@ -186,11 +202,14 @@ Object.assign(game, {
         
         // Must be played by the active hero only
         if (heroIndex !== this.currentPlayerIndex) {
-            this.showInfoModal('💥 Battle Fury', `
-                <div style="text-align: center; padding: 10px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">💥</div>
-                    <div style="color: #ef4444;">Battle Fury can only be played by the active hero!</div>
-                    <div style="color: #999; margin-top: 8px; font-size: 0.9em;">Currently active: ${activeHero.symbol} ${activeHero.name}</div>
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
+                    <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">Battle Fury can only be played by the active hero!</div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Battle Fury</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div></div>
+                    </div>
                 </div>
             `);
             return;
@@ -198,11 +217,14 @@ Object.assign(game, {
         
         // Requires 1 action
         if (this.actionsRemaining <= 0) {
-            this.showInfoModal('💥 Battle Fury', `
-                <div style="text-align: center; padding: 10px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">💥</div>
-                    <div style="color: #ef4444;">No actions remaining!</div>
-                    <div style="color: #999; margin-top: 8px; font-size: 0.9em;">Battle Fury requires 1 action to play.</div>
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
+                    <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No actions remaining! Battle Fury requires 1 action to play.</div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Battle Fury</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div></div>
+                    </div>
                 </div>
             `);
             return;
@@ -214,11 +236,14 @@ Object.assign(game, {
         const totalMinions = minionsObj ? Object.values(minionsObj).reduce((a, b) => a + b, 0) : 0;
         
         if (totalMinions === 0) {
-            this.showInfoModal('💥 Battle Fury', `
-                <div style="text-align: center; padding: 10px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">💥</div>
-                    <div style="color: #ef4444;">No minions at ${location}!</div>
-                    <div style="color: #999; margin-top: 8px; font-size: 0.9em;">There are no enemy minions to defeat.</div>
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
+                    <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No minions at ${location}! There are no enemy minions to defeat.</div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Battle Fury</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div></div>
+                    </div>
                 </div>
             `);
             return;
@@ -234,17 +259,13 @@ Object.assign(game, {
         // Collect minion details before clearing
         const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
         const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
-        let resultsHTML = '';
         const removedDetails = [];
         
         for (const [color, count] of Object.entries(minionsObj)) {
             if (count > 0) {
                 const fname = factionNames[color] || color;
                 const fcolor = factionColors[color] || '#d4af37';
-                removedDetails.push({ name: fname, color: fcolor, count: count });
-                resultsHTML += `<div style="margin: 6px 0; font-size: 1.05em;">
-                    <span style="color: ${fcolor}; font-weight: bold;">${count} ${fname}</span> minion${count !== 1 ? 's' : ''}
-                </div>`;
+                removedDetails.push({ name: fname, color: fcolor, count: count, colorKey: color });
             }
         }
         
@@ -253,22 +274,29 @@ Object.assign(game, {
             minionsObj[color] = 0;
         }
         
+        // Build parchment pill results
+        const _bfFcMap = { green: { bg: 'rgba(22,163,74,0.1)', border: '#16a34a', label: 'Orcs' }, red: { bg: 'rgba(239,68,68,0.1)', border: '#dc2626', label: 'Demons' }, blue: { bg: 'rgba(59,130,246,0.1)', border: '#3b82f6', label: 'Dragonkin' }, black: { bg: 'rgba(107,114,128,0.1)', border: '#6b7280', label: 'Undead' } };
+        let resultsHTML = '';
+        removedDetails.forEach(d => {
+            const fc2 = _bfFcMap[d.colorKey] || { bg: 'rgba(139,115,85,0.1)', border: '#8b7355', label: d.name };
+            for (let i = 0; i < d.count; i++) {
+                resultsHTML += `<div style="background:${fc2.bg};border:1px solid ${fc2.border};border-radius:5px;padding:5px 10px;margin:4px 0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc2.border}"><span class="mdot" style="width:14px;height:14px;background:${fc2.border};margin-right:3px"></span>${fc2.label}</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${location}</span></div></div>`;
+            }
+        });
+        
         this.addLog(`💥 Special Card: ${activeHero.name} plays Battle Fury at ${location} — ${totalMinions} minion(s) defeated!`);
         
-        this.showInfoModal('💥 Battle Fury', `
-            <div style="text-align: center; padding: 10px;">
-                <div style="padding: 20px; border: 2px solid #f59e0b; background: rgba(245,158,11,0.15); border-radius: 8px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">💥</div>
-                    <div style="font-size: 1.3em; color: #f59e0b; font-weight: bold;">Battle Fury</div>
-                    <div style="color: #d4af37; margin-top: 8px; font-size: 1.1em;">All minions at <strong>${location}</strong> defeated!</div>
-                    <div style="margin-top: 12px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
-                        ${resultsHTML}
-                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #555; color: #ffd700; font-weight: bold;">
-                            Total: ${totalMinions} minion${totalMinions !== 1 ? 's' : ''} removed
-                        </div>
-                    </div>
+        this.showInfoModal('🌟 Special Card Details', `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed at ${location}</div>
+                    ${resultsHTML}
                 </div>
-                <div style="color: #a78bfa; margin-top: 12px; font-size: 0.9em;">Card played from ${activeHero.symbol} ${activeHero.name}'s hand — 1 action used</div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Battle Fury</span><span class="hero-banner-name" style="font-size:0.8em">${activeHero.symbol} ${activeHero.name}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div></div>
+                </div>
             </div>
         `);
         
@@ -295,11 +323,14 @@ Object.assign(game, {
         
         // Must be at an Inn
         if (!locData || !locData.inn) {
-            this.showInfoModal('📜 Local Information', `
-                <div style="text-align: center; padding: 10px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">📜</div>
-                    <div style="color: #ef4444;">${cardHero.name} must be at an Inn to play this card!</div>
-                    <div style="color: #999; margin-top: 8px; font-size: 0.9em;">Current location: ${location}</div>
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
+                    <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">${cardHero.name} must be at an Inn to play this card!</div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div></div>
+                    </div>
                 </div>
             `);
             return;
@@ -331,20 +362,22 @@ Object.assign(game, {
         optionsHTML += '</div>';
         
         const contentHTML = `
-            <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 10px;">
-                Choose a color — you will draw 5 cards and keep all that match this color, plus any Special cards.
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Choose a Color</span></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;margin-bottom:10px">
+                    ${colorOptions.map(opt => `<div id="local-info-color-${opt.color}" onclick="game._localInfoSelectColor('${opt.color}')" style="border:3px solid ${opt.hex};cursor:pointer;padding:14px;border-radius:8px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);transition:all 0.2s;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3)" onmouseover="if(!this.classList.contains('li-selected')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)'" onmouseout="if(!this.classList.contains('li-selected')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.3)'"><div style="color:${opt.hex};font-weight:bold;font-family:'Cinzel',Georgia,serif">${opt.color.toUpperCase()}</div></div>`).join('')}
+                </div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div></div>
+                </div>
             </div>
-            ${optionsHTML}
-            <div id="local-info-confirm-btn-row">
-                <button id="local-info-confirm-btn" class="phase-btn" onclick="game._localInfoConfirmColor()" disabled style="opacity:0.4;cursor:not-allowed;">Confirm</button>
-            </div>
-            <button class="phase-btn" onclick="game._localInfoPending = null; game.closeInfoModal()">Cancel</button>
+            <button id="local-info-confirm-btn" class="phb" onclick="game._localInfoConfirmColor()" disabled>Confirm</button>
+            <button class="phb phb-cancel" onclick="game._localInfoPending = null; game.closeInfoModal()">Cancel</button>
         `;
         
         this._localInfoSelectedColor = null;
-        this.showInfoModal('📜 Local Information', contentHTML);
-        const titleEl = document.getElementById('info-modal-title');
-        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
+        this.showInfoModal('🌟 Special Card Details', contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#local-info-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -457,15 +490,14 @@ Object.assign(game, {
         });
         
         const summaryHTML = `
-            <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
-                Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong><br>
-                <span style="color: #d4af37;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</span>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;margin-bottom:10px">${cardsHTML}</div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">${hero.symbol} ${hero.name}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div></div>
+                </div>
             </div>
-            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
-            </div>
-            <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">Card played from ${hero.symbol} ${hero.name}'s hand — No action used</div>
-            <button class="phase-btn" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         this.addLog(`📜 Special Card: ${hero.name} plays Local Information at ${hero.location} — Called ${chosenName}, drew ${drawnCards.length} cards, kept ${kept.length}`);
@@ -477,11 +509,9 @@ Object.assign(game, {
         this.updateGameStatus();
         this.updateActionButtons();
         
-        this.showInfoModal('📜 Local Information — Results', summaryHTML);
-        const titleEl = document.getElementById('info-modal-title');
-        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
-        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv && defaultBtnDiv.querySelector('.btn-primary')) defaultBtnDiv.style.display = 'none';
+        this.showInfoModal('🌟 Special Card Details', summaryHTML);
+        const defaultBtnDiv2 = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv2 && defaultBtnDiv2.querySelector('.btn-primary')) defaultBtnDiv2.style.display = 'none';
     },
     
     
@@ -499,10 +529,14 @@ Object.assign(game, {
         });
         
         if (locsWithMinions.length === 0) {
-            this.showInfoModal('👑 King\'s Guard Attack', `
-                <div style="text-align: center; padding: 10px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">👑</div>
-                    <div style="color: #ef4444;">No minions on or adjacent to Monarch City!</div>
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
+                    <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No minions on or adjacent to Monarch City!</div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 King's Guard Attack</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div></div>
+                    </div>
                 </div>
             `);
             return;
@@ -622,20 +656,25 @@ Object.assign(game, {
         listHTML += '</div>';
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 1.5em; margin-bottom: 3px;">👑</div>
-                <div style="color: #ffd700; font-weight: bold; font-size: 1.05em;">📍 ${locationName}</div>
-                <div style="color: #d4af37; margin-top: 4px; font-size: 0.9em;">Select minions to remove at this location.</div>
-                <div id="kg-budget-display" style="color: #4ade80; font-weight: bold; margin-top: 6px;">Remaining: ${remaining} / ${state.maxMinions} — Selected: 0 at this location</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Remove Minions</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Remaining minions to remove:</div>
+                    <div style="text-align:center;margin-bottom:10px"><div class="die die-g" id="kg-remaining-die" style="display:inline-flex;align-items:center;justify-content:center">${remaining}</div></div>
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:6px">📍 ${locationName} — Select minions to remove:</div>
+                    <div id="kg-budget-display" style="font-family:'Cinzel',Georgia,serif;font-size:0.75em;color:#3d2b1f;margin-bottom:6px">Selected: 0 at this location</div>
+                    ${listHTML}
+                </div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 King's Guard Attack</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div></div>
+                </div>
             </div>
-            ${listHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game._kingsGuardFinishEarly()">Finish</button>
-                <button id="kg-confirm-btn" class="btn btn-primary" style="flex: 1;" onclick="game._kingsGuardConfirmLocation()">Skip Location</button>
-            </div>
+            <button class="phb phb-cancel" onclick="game._kingsGuardFinishEarly()">Finish Early</button>
+            <button id="kg-confirm-btn" class="phb" onclick="game._kingsGuardConfirmLocation()">Skip Location</button>
         `;
         
-        this.showInfoModal("👑 King's Guard Attack", contentHTML);
+        this.showInfoModal('🌟 Special Card Details', contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#kg-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -806,20 +845,20 @@ Object.assign(game, {
             totalRemoved += r.count;
         });
         
-        // Build results
+        // Build parchment pill results
+        const _kgFcMap = { green: { bg: 'rgba(22,163,74,0.1)', border: '#16a34a', label: 'Orcs' }, red: { bg: 'rgba(239,68,68,0.1)', border: '#dc2626', label: 'Demons' }, blue: { bg: 'rgba(59,130,246,0.1)', border: '#3b82f6', label: 'Dragonkin' }, black: { bg: 'rgba(107,114,128,0.1)', border: '#6b7280', label: 'Undead' } };
         let resultsHTML = '';
         if (totalRemoved === 0) {
-            resultsHTML = '<div style="color: #999; text-align: center; padding: 10px;">No minions were removed.</div>';
+            resultsHTML = `<div style="font-family:'Cinzel',Georgia,serif;font-size:0.8em;color:#8b7355;text-align:center;padding:8px">No minions were removed.</div>`;
         } else {
+            resultsHTML += `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed</div>`;
             for (const [locName, removals] of Object.entries(byLocation)) {
-                resultsHTML += `<div style="margin-bottom: 10px;">
-                    <div style="font-weight: bold; color: #ffd700; margin-bottom: 4px;">📍 ${locName}</div>`;
                 removals.forEach(r => {
-                    const fname = factionNames[r.color] || r.color;
-                    const fcolor = factionColors[r.color] || '#d4af37';
-                    resultsHTML += `<div style="margin: 3px 0 3px 15px; color: ${fcolor};">${r.count} ${fname} minion${r.count !== 1 ? 's' : ''} removed</div>`;
+                    const fc = _kgFcMap[r.color] || { bg: 'rgba(139,115,85,0.1)', border: '#8b7355', label: r.color };
+                    for (let i = 0; i < r.count; i++) {
+                        resultsHTML += `<div style="background:${fc.bg};border:1px solid ${fc.border};border-radius:5px;padding:5px 10px;margin:4px 0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc.border}"><span class="mdot" style="width:14px;height:14px;background:${fc.border};margin-right:3px"></span>${fc.label}</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locName}</span></div></div>`;
+                    }
                 });
-                resultsHTML += '</div>';
             }
         }
         
@@ -834,19 +873,14 @@ Object.assign(game, {
         this.updateMovementButtons();
         this.updateActionButtons();
         
-        this.showInfoModal("👑 King's Guard Attack — Results", `
-            <div style="text-align: center; padding: 10px;">
-                <div style="padding: 20px; border: 2px solid #f59e0b; background: rgba(245,158,11,0.15); border-radius: 8px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">👑</div>
-                    <div style="font-size: 1.3em; color: #f59e0b; font-weight: bold;">King's Guard Attack Complete</div>
-                    <div style="margin-top: 12px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; text-align: left;">
-                        ${resultsHTML}
-                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #555; color: #ffd700; font-weight: bold; text-align: center;">
-                            Total: ${totalRemoved} minion${totalRemoved !== 1 ? 's' : ''} removed
-                        </div>
-                    </div>
+        this.showInfoModal('🌟 Special Card Details', `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">${resultsHTML}</div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 King's Guard Attack</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div></div>
                 </div>
-                <div style="color: #a78bfa; margin-top: 12px; font-size: 0.9em;">Card played from ${state.heroSymbol} ${state.heroName}'s hand — No action used</div>
             </div>
         `);
     },
@@ -863,10 +897,14 @@ Object.assign(game, {
         }
         
         if (locsWithMinions.length === 0) {
-            this.showInfoModal('🐎 Cavalry Sweep', `
-                <div style="text-align: center; padding: 10px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">🐎</div>
-                    <div style="color: #ef4444;">No minions anywhere on the board!</div>
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
+                    <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No minions anywhere on the board!</div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Cavalry Sweep</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div></div>
+                    </div>
                 </div>
             `);
             return;
@@ -998,20 +1036,25 @@ Object.assign(game, {
         listHTML += '</div>';
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 1.5em; margin-bottom: 3px;">🐎</div>
-                <div style="color: #ffd700; font-weight: bold; font-size: 1.05em;">📍 ${locationName}</div>
-                <div style="color: #d4af37; margin-top: 4px; font-size: 0.9em;">Select up to 2 minions at this location. <span style="color: #ef4444;">Dragonkin cost 2.</span></div>
-                <div id="cs-budget-display" style="color: #4ade80; font-weight: bold; margin-top: 6px;">Budget: ${budgetLeft} / ${state.budgetMax} remaining — Selected: 0 at this location</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Remove Minions</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Budget remaining:</div>
+                    <div style="text-align:center;margin-bottom:10px"><div class="die die-g" id="cs-remaining-die" style="display:inline-flex;align-items:center;justify-content:center">${budgetLeft}</div></div>
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:6px">📍 ${locationName} — Select up to 2 minions (Dragonkin cost 2):</div>
+                    <div id="cs-budget-display" style="font-family:'Cinzel',Georgia,serif;font-size:0.75em;color:#3d2b1f;margin-bottom:6px">Selected: 0 at this location</div>
+                    ${listHTML}
+                </div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Cavalry Sweep</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div></div>
+                </div>
             </div>
-            ${listHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game._cavalrySweepFinishEarly()">Finish Sweep</button>
-                <button id="cs-confirm-btn" class="btn btn-primary" style="flex: 1;" onclick="game._cavalrySweepConfirmLocation()">Skip Location</button>
-            </div>
+            <button class="phb phb-cancel" onclick="game._cavalrySweepFinishEarly()">Finish Sweep</button>
+            <button id="cs-confirm-btn" class="phb" onclick="game._cavalrySweepConfirmLocation()">Skip Location</button>
         `;
         
-        this.showInfoModal('🐎 Cavalry Sweep', contentHTML);
+        this.showInfoModal('🌟 Special Card Details', contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#cs-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -1193,21 +1236,21 @@ Object.assign(game, {
             totalCost += r.cost;
         });
         
-        // Build results HTML
+        // Build parchment pill results
+        const _csFcMap = { green: { bg: 'rgba(22,163,74,0.1)', border: '#16a34a', label: 'Orcs' }, red: { bg: 'rgba(239,68,68,0.1)', border: '#dc2626', label: 'Demons' }, blue: { bg: 'rgba(59,130,246,0.1)', border: '#3b82f6', label: 'Dragonkin' }, black: { bg: 'rgba(107,114,128,0.1)', border: '#6b7280', label: 'Undead' } };
         let resultsHTML = '';
         if (totalRemoved === 0) {
-            resultsHTML = '<div style="color: #999; text-align: center; padding: 10px;">No minions were removed.</div>';
+            resultsHTML = `<div style="font-family:'Cinzel',Georgia,serif;font-size:0.8em;color:#8b7355;text-align:center;padding:8px">No minions were removed.</div>`;
         } else {
+            resultsHTML += `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed</div>`;
             for (const [locName, removals] of Object.entries(byLocation)) {
-                resultsHTML += `<div style="margin-bottom: 10px;">
-                    <div style="font-weight: bold; color: #ffd700; margin-bottom: 4px;">📍 ${locName}</div>`;
                 removals.forEach(r => {
-                    const fname = factionNames[r.color] || r.color;
-                    const fcolor = factionColors[r.color] || '#d4af37';
-                    const costNote = r.color === 'blue' ? ` <span style="color: #ef4444; font-size: 0.85em;">(cost: ${r.cost})</span>` : '';
-                    resultsHTML += `<div style="margin: 3px 0 3px 15px; color: ${fcolor};">${r.count} ${fname} minion${r.count !== 1 ? 's' : ''} removed${costNote}</div>`;
+                    const fc = _csFcMap[r.color] || { bg: 'rgba(139,115,85,0.1)', border: '#8b7355', label: r.color };
+                    const costBadge = r.color === 'blue' ? ` <span style="font-size:0.75em;color:#b91c1c">(×2)</span>` : '';
+                    for (let i = 0; i < r.count; i++) {
+                        resultsHTML += `<div style="background:${fc.bg};border:1px solid ${fc.border};border-radius:5px;padding:5px 10px;margin:4px 0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc.border}"><span class="mdot" style="width:14px;height:14px;background:${fc.border};margin-right:3px"></span>${fc.label}${costBadge}</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locName}</span></div></div>`;
+                    }
                 });
-                resultsHTML += '</div>';
             }
         }
         
@@ -1223,19 +1266,14 @@ Object.assign(game, {
         this.updateMovementButtons();
         this.updateActionButtons();
         
-        this.showInfoModal('🐎 Cavalry Sweep — Results', `
-            <div style="text-align: center; padding: 10px;">
-                <div style="padding: 20px; border: 2px solid #f59e0b; background: rgba(245,158,11,0.15); border-radius: 8px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">🐎</div>
-                    <div style="font-size: 1.3em; color: #f59e0b; font-weight: bold;">Cavalry Sweep Complete</div>
-                    <div style="margin-top: 12px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; text-align: left;">
-                        ${resultsHTML}
-                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #555; color: #ffd700; font-weight: bold; text-align: center;">
-                            Total: ${totalRemoved} minion${totalRemoved !== 1 ? 's' : ''} removed (budget: ${totalCost}/${state.budgetMax} used)
-                        </div>
-                    </div>
+        this.showInfoModal('🌟 Special Card Details', `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">${resultsHTML}</div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Cavalry Sweep</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div></div>
                 </div>
-                <div style="color: #a78bfa; margin-top: 12px; font-size: 0.9em;">Card played from ${state.heroSymbol} ${state.heroName}'s hand — No action used</div>
             </div>
         `);
     },
@@ -1254,7 +1292,16 @@ Object.assign(game, {
         }
         
         if (drawnCards.length === 0) {
-            this.showInfoModal('🔮 Dark Visions', '<div style="color: #ef4444; text-align: center;">The Darkness Spreads deck is empty!</div>');
+            this.showInfoModal('🌟 Special Card Details', `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
+                    <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">The Darkness Spreads deck is empty!</div>
+                    <div class="card-wrap">
+                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">${hero.symbol} ${hero.name}</span></div>
+                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, then return the rest in any order.</span></div></div>
+                    </div>
+                </div>
+            `);
             // Put card back (not consumed)
             return;
         }
@@ -1382,30 +1429,29 @@ Object.assign(game, {
         const totalDiscarded = discardedIndices.length;
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 12px;">
-                <div style="color: #d4af37; font-size: 0.95em;">
-                    ${state.heroSymbol} ${state.heroName} peers into the darkness...
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Darkness Spreads Discard Cards</span></div>
+                <div style="margin-top:10px">
+                    <div style="max-height: 340px; overflow-y: auto; padding: 2px;">
+                        ${cardsHTML}
+                    </div>
+                    <div style="margin-top: 8px; padding: 6px; background: rgba(0,0,0,0.1); border-radius: 6px; text-align: center; font-family:'Cinzel',Georgia,serif; font-size:0.8em; color:#3d2b1f;">
+                        <span style="color: #16a34a;">${totalKept} kept</span> &nbsp;|&nbsp; <span style="color: #dc2626;">${totalDiscarded} discarded</span>
+                    </div>
                 </div>
-                <div style="color: #999; font-size: 0.85em; margin-top: 4px;">
-                    Select cards to discard. Reorder kept cards with ▲▼ arrows. #1 is drawn first.
+                <div class="card-wrap" style="margin-top:10px">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, then return the rest in any order.</span></div></div>
                 </div>
             </div>
-            <div style="max-height: 380px; overflow-y: auto; padding: 2px;">
-                ${cardsHTML}
-            </div>
-            <div style="margin-top: 12px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 6px; text-align: center;">
-                <span style="color: #4ade80;">${totalKept} kept</span> &nbsp;|&nbsp; <span style="color: #ef4444;">${totalDiscarded} discarded</span>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 12px;">
-                <button class="btn" style="flex: 1; background: #dc2626;" onclick="game._darkVisionsDiscardAll()">Discard All ${state.drawnCards.length}</button>
-                <button class="btn btn-primary" style="flex: 1;" onclick="game._darkVisionsConfirm()">Confirm</button>
-            </div>
+            <button class="phb phb-cancel" onclick="game._darkVisionsDiscardAll()">Discard All ${state.drawnCards.length}</button>
+            <button id="dv-confirm-btn" class="phb" onclick="game._darkVisionsConfirm()">Confirm</button>
         `;
         
-        this.showInfoModal('🔮 Dark Visions', contentHTML);
+        this.showInfoModal('🌟 Special Card Details', contentHTML);
         // Hide the default OK button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtn && !defaultBtn.querySelector('.btn-primary[onclick*="darkVisions"]')) {
+        if (defaultBtn && !defaultBtn.querySelector('#dv-confirm-btn')) {
             defaultBtn.style.display = 'none';
         }
         // Hide the modal close X button
@@ -1519,24 +1565,37 @@ Object.assign(game, {
         const closeBtn = document.querySelector('#info-modal .modal-close-btn');
         if (closeBtn) closeBtn.style.display = '';
         
-        // Show summary
-        let summaryHTML = '<div style="text-align: left; max-height: 300px; overflow-y: auto;">';
-        if (keptIndices.length > 0) {
-            summaryHTML += '<div style="color: #4ade80; font-weight: bold; margin-bottom: 6px;">📥 Returned to deck (draw order):</div>';
-            keptNames.forEach((name, i) => {
-                summaryHTML += `<div style="margin: 3px 0 3px 10px; color: #ccc;"><span style="color: #888;">#${i + 1}</span> ${name}</div>`;
-            });
-        }
-        if (discardedIndices.length > 0) {
-            summaryHTML += `<div style="color: #ef4444; font-weight: bold; margin: ${keptIndices.length > 0 ? '10px' : '0'} 0 6px;">🗑️ Discarded:</div>`;
-            discardedNames.forEach(name => {
-                summaryHTML += `<div style="margin: 3px 0 3px 10px; color: #888; text-decoration: line-through;">${name}</div>`;
-            });
-        }
-        summaryHTML += '</div>';
+        // Build parchment-style summary
+        let keptRows = '';
+        keptIndices.forEach((idx, pos) => {
+            const summary = this._darkVisionsGetCardSummary(state.drawnCards[idx]);
+            keptRows += `<div style="display:flex;align-items:center;margin:4px 0;border:2px solid #8b7355;border-radius:6px;background:rgba(92,61,46,0.08);overflow:hidden"><div style="flex:1;padding:8px"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:${summary.color}"><span style="color:#8b7355;font-size:0.8em">#${pos+1}</span> ${summary.title}</div>${summary.lines.map(l=>`<div style="font-size:0.8em;color:#3d2b1f;padding:1px 0">${l}</div>`).join('')}</div></div>`;
+        });
+        let discardedRows = '';
+        discardedIndices.forEach(idx => {
+            const summary = this._darkVisionsGetCardSummary(state.drawnCards[idx]);
+            discardedRows += `<div style="display:flex;align-items:center;margin:4px 0;border:2px solid #8b7355;border-radius:6px;background:rgba(92,61,46,0.05);opacity:0.6;overflow:hidden"><div style="flex:1;padding:8px"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#888;text-decoration:line-through">${summary.title}</div></div></div>`;
+        });
+        
+        const dvHeroSymbol = state.heroSymbol;
+        const dvHeroName = state.heroName;
+        
+        const summaryHTML = `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="margin-top:10px;max-height:300px;overflow-y:auto">
+                    ${keptRows.length > 0 ? `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Kept:</div>${keptRows}` : ''}
+                    ${discardedRows.length > 0 ? `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-top:8px;margin-bottom:5px">Discarded:</div>${discardedRows}` : ''}
+                </div>
+                <div class="card-wrap" style="margin-top:10px">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">${dvHeroSymbol} ${dvHeroName}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, then return the rest in any order.</span></div></div>
+                </div>
+            </div>
+        `;
         
         setTimeout(() => {
-            this.showInfoModal('🔮 Dark Visions — Complete', summaryHTML);
+            this.showInfoModal('🌟 Special Card Details', summaryHTML);
         }, 300);
     },
     
@@ -1598,7 +1657,7 @@ Object.assign(game, {
             </div>
         `;
         
-        this.showInfoModal('🛡️ Militia Secures Area', pickerHTML);
+        this.showInfoModal('🌟 Special Card Details', pickerHTML);
         // Hide default OK button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtn && !defaultBtn.querySelector('.btn[onclick*="closeInfoModal"]')) {
@@ -1628,11 +1687,38 @@ Object.assign(game, {
         this.renderHeroes();
         this.updateDeckCounts();
         
-        // Re-render the preview with the secured slot shown
+        // Build faction pill colours
+        const _milFcMap = { green: { bg: 'rgba(22,163,74,0.1)', border: '#16a34a' }, red: { bg: 'rgba(239,68,68,0.1)', border: '#dc2626' }, blue: { bg: 'rgba(59,130,246,0.1)', border: '#3b82f6' }, black: { bg: 'rgba(107,114,128,0.1)', border: '#6b7280' } };
+        const _milLabels = { green: 'Orcs', red: 'Demons', blue: 'Dragonkin', black: 'Undead' };
+        const milPill = _milFcMap[faction] || { bg: 'rgba(139,115,85,0.1)', border: '#8b7355' };
+        const milGc = this.getGeneralColor(faction);
+        const milLabel = _milLabels[faction] || factionName;
+        
+        const milResultHTML = `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minion Placement Cancelled:</div>
+                    <div style="background:${milPill.bg};border:1px solid ${milPill.border};border-radius:5px;padding:5px 10px;margin:4px 0">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${milGc}"><span class="mdot" style="width:14px;height:14px;background:${milGc};margin-right:3px"></span>${milLabel}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${location}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Militia Secures Area</span><span class="hero-banner-name" style="font-size:0.8em">${militiaHolder.hero.symbol} ${militiaHolder.hero.name}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Night Phase: Cancel 1 minion placement from a Darkness Spreads card.</span></div></div>
+                </div>
+            </div>`;
+        
+        // Show result then resume darkness preview on continue
         const cardNum = this.darknessCardsDrawn;
         const totalCards = this.darknessCardsToDraw;
         const generalOnly = this.darknessCurrentGeneralOnly;
-        this.showDarknessCardPreview(card, cardNum, totalCards, generalOnly);
+        this.showInfoModal('🌟 Special Card Details', milResultHTML, () => {
+            this.showDarknessCardPreview(card, cardNum, totalCards, generalOnly);
+        });
     },
     
     // ===== STRONG DEFENSES =====
@@ -1914,7 +2000,7 @@ Object.assign(game, {
             </div>
         `;
         
-        this.showInfoModal('👤 Spy In The Camp', pickerHTML);
+        this.showInfoModal('🌟 Special Card Details', pickerHTML);
     },
     
     _spyInCampConfirm(generalColor) {
@@ -1963,10 +2049,38 @@ Object.assign(game, {
         this.renderHeroes();
         this.updateDeckCounts();
         
-        // Re-run the daytime modal to show updated state (healing won't re-process due to _daytimeHealingDone flag)
+        // Build result modal
+        const _spyGc = this.getGeneralColor(generalColor);
+        const _spyHeart = this._heartIcons[generalColor] || '🖤';
+        const _spyHpColor = general.health <= 2 ? '#b91c1c' : '#2c1810';
+        const _spyGIcon = this._generalIcons[generalColor] || '⚔️';
+        const _spyHolder = this._findSpyInCampCard()?.hero || { symbol: '⛏️', name: 'Dwarf' };
+        
+        const spyResultHTML = `
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Prevent General Healing:</div>
+                    <div style="background:rgba(239,68,68,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="display:flex;align-items:center;gap:6px;color:${_spyGc}"><span class="modal-general-token" style="background:${_spyGc};width:24px;height:24px;font-size:0.75em">${_spyGIcon}</span>${general.name}</span>
+                            <span style="color:${_spyHpColor}">${_spyHeart} ${general.health}/${general.maxHealth}</span>
+                        </div>
+                        <div style="font-size:0.85em;color:#b91c1c;margin-top:3px;padding-left:30px">— Healing Blocked</div>
+                    </div>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Spy In The Camp</span><span class="hero-banner-name" style="font-size:0.8em">${_spyHolder.symbol} ${_spyHolder.name}</span></div>
+                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Step 1: Prevent 1 General from healing its battle wounds for 1 player's turn.</span></div></div>
+                </div>
+            </div>`;
+        
+        // Show result then resume daytime modal on continue
         const hero = this.endOfTurnState.hero;
         const damageInfo = this.endOfTurnState.damageInfo;
-        this.showDaytimeModal(hero, damageInfo);
+        this.showInfoModal('🌟 Special Card Details', spyResultHTML, () => {
+            this.showDaytimeModal(hero, damageInfo);
+        });
     },
     
 

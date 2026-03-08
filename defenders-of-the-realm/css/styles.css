@@ -1206,6 +1206,45 @@
         }
         .parchment-banner .hero-banner-name { font-size: 0.9em; letter-spacing: 1px; }
 
+        /* ── SPECIAL CARD WRAP ── */
+        .card-wrap {
+          background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%);
+          border: 3px solid #6d28a8; border-radius: 10px; overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3);
+        }
+        .card-body { padding: 14px; }
+        .card-banner-inner {
+          background: linear-gradient(135deg, #6d28a8cc 0%, #6d28a899 100%);
+          padding: 6px 14px; border-bottom: 2px solid #8b7355;
+          display: flex; align-items: center; justify-content: space-between;
+        }
+
+        /* ── DIE VARIANTS ── */
+        .die-g {
+          width: 50px; height: 50px; font-size: 1.5em; font-weight: 900;
+          border-radius: 8px; color: #fff;
+          background: linear-gradient(145deg, #16a34a 0%, #15803d 100%);
+          border: 2px solid rgba(0,0,0,0.3);
+          box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+          display: inline-flex; align-items: center; justify-content: center;
+        }
+
+        /* ── PARCHMENT HERO BUTTON ── */
+        .phb {
+          display: block; width: 100%; margin-top: 14px; padding: 11px;
+          border-radius: 8px; font-weight: bold; font-size: 0.95em; cursor: pointer;
+          font-family: 'Cinzel', Georgia, serif; letter-spacing: 0.5px;
+          background: linear-gradient(135deg, #d4af37, #b8960c);
+          color: #1a0f0a; border: 2px solid #d4af37;
+          font-variant: small-caps; text-align: center;
+        }
+        .phb:hover:not(:disabled) { filter: brightness(1.1); }
+        .phb:disabled { opacity: 0.4; cursor: not-allowed; }
+        .phb-cancel {
+          background: linear-gradient(135deg, #6b6b6b, #4a4a4a);
+          color: #f4e4c1; border-color: #6b6b6b; margin-top: 6px;
+        }
+
         /* ── PHASE BUTTON ── */
         .phase-btn {
           width: 100%; margin-top: 14px; padding: 11px; border-radius: 8px;

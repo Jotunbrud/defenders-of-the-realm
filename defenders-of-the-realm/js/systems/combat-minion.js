@@ -749,7 +749,7 @@ Object.assign(game, {
                 }
             });
         } else {
-            html += `<div class="fx-note blocked" style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin:3px 0;border-radius:5px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;"><span style="color:#8b7355">No Minions Defeated</span></div>`;
+            html += `<div class="fx-note blocked" style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin:3px 0;border-radius:5px;background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;"><span style="color:#8b7355;">No Minions Defeated</span></div>`;
         }
 
         html += '</div>';

@@ -999,7 +999,7 @@ Object.assign(game, {
         
         if (state.type === 'minions') {
             this._battleLuckChecked = true;
-            this._applyMinionCombatResults(state.colorResults, state.totalDefeated);
+            this._applyMinionCombatResults(state.colorResults, state.totalDefeated, true);
         } else if (state.type === 'solo_general') {
             this._battleLuckChecked = true;
             this._finalizeSoloCombat(state.hero, state.general, state.cardsToUse, state.totalDice, state.hitReq, state.diceRolls, state.damage);
@@ -1095,7 +1095,7 @@ Object.assign(game, {
         document.getElementById('combat-results-modal').classList.remove('active');
         
         if (state.type === 'minions') {
-            this._applyMinionCombatResults(state.colorResults, state.totalDefeated);
+            this._applyMinionCombatResults(state.colorResults, state.totalDefeated, true);
         } else if (state.type === 'solo_general') {
             this._finalizeSoloCombat(state.hero, state.general, state.cardsToUse, state.damage, state.hitReq, state.diceRolls, state.damage);
         } else if (state.type === 'group_general') {
@@ -1104,7 +1104,7 @@ Object.assign(game, {
     },
     // ===== END UNICORN STEED RE-ROLL SYSTEM =====
     
-    _applyMinionCombatResults(colorResults, totalDefeated) {
+    _applyMinionCombatResults(colorResults, totalDefeated, skipModal = false) {
         // Check for Battle Luck re-roll opportunity
         if (!this._battleLuckChecked) {
             const blCard = this._findBattleLuckCard();
@@ -1168,12 +1168,14 @@ Object.assign(game, {
         this.addLog(`${hero.name} defeated ${totalDefeated} minions!`);
         
         // Show results modal
-        this.showCombatResults(
-            '⚔️ Engage Minions',
-            resultsHTML,
-            '',
-            `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`
-        );
+        if (!skipModal) {
+            this.showCombatResults(
+                '⚔️ Engage Minions',
+                resultsHTML,
+                '',
+                `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`
+            );
+        }
         
         this.closeCombat();
         this.renderTokens();

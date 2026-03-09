@@ -737,8 +737,8 @@ Object.assign(game, {
         });
 
         const totalDefeated = colorResults.reduce((sum, cr) => sum + cr.defeated, 0);
+        html += '<div class="combat-results-label">Defeated Minions:</div>';
         if (totalDefeated > 0) {
-            html += '<div class="combat-results-label">Defeated Minions:</div>';
             colorResults.forEach(cr => {
                 if (cr.defeated <= 0) return;
                 const factionLabel = cr.color === 'green' ? 'Orcs' : cr.color === 'black' ? 'Undead' : cr.color === 'red' ? 'Demons' : 'Dragonkin';
@@ -748,6 +748,8 @@ Object.assign(game, {
                     html += `<div class="faction-pill" style="background:${pillBg};border:1px solid ${pillColor};"><div class="faction-pill-row"><span class="faction-pill-left" style="color:${pillColor};"><span class="dot" style="background:${pillColor};"></span>${factionLabel}</span><span class="faction-pill-right">→ ${combatLocation}</span></div></div>`;
                 }
             });
+        } else {
+            html += `<div class="fx-note blocked" style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin:3px 0;border-radius:5px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;"><span style="color:#8b7355">No Minions Defeated</span></div>`;
         }
 
         html += '</div>';
@@ -1603,12 +1605,13 @@ Object.assign(game, {
                         </div>
                         ${this._getQuestCombatBonus(hero) > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
                         <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">${dicePreviewHTML}</div>
+                        ${this._buildGeneralResultsPip(general, damage)}
                     </div>
                 `;
                 this.showCombatResults(
                     '💥 Attack General',
                     rerollHTML,
-                    `${hero.name} vs ${general.name} — Battle Luck?`,
+                    '',
                     `<button class="phb" style="margin-top:8px;" onclick="game.useBattleLuck()">Battle Luck (Re-Roll ${failedCount} Failed Dice)</button>
                      <button class="phb" style="margin-top:6px;" onclick="game.declineBattleLuck()">Continue</button>`,
                     true
@@ -1638,12 +1641,13 @@ Object.assign(game, {
                                 ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                             </div>
                             <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">${dicePreviewHTML}</div>
+                            ${this._buildGeneralResultsPip(general, damage)}
                         </div>
                     `;
                     this.showCombatResults(
                         '💥 Attack General',
                         rerollHTML,
-                        `${hero.name} vs ${general.name} — Unicorn Steed?`,
+                        '',
                         `<button class="phb" style="margin-top:8px;" onclick="game._useUnicornSteedReroll()">Unicorn Steed (Re-Roll ${failedCount} Failed Dice)</button>
                          <button class="phb" style="margin-top:6px;" onclick="game._declineUnicornSteedReroll()">Continue</button>`,
                         true
@@ -1791,6 +1795,7 @@ Object.assign(game, {
                     ${diceHTML}
                 </div>
                 ${parryInlineMsg}
+                ${this._buildGeneralResultsPip(general, damage)}
                 ${noRerollWarning}
             </div>
         `;
@@ -1804,7 +1809,7 @@ Object.assign(game, {
             this.showCombatResults(
                 '💥 Attack General',
                 resultsHTML,
-                `🎉 ${general.name} DEFEATED! 🎉`,
+                '',
                 `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`
             );
             // Victory check handled by pendingVictory flag → closeGeneralRewardModal → showVictoryModal
@@ -1828,7 +1833,7 @@ Object.assign(game, {
                 if (hero.name === 'Eagle Rider' && this.eagleRiderAttackStyle === 'sky') {
                     combatSkillMessage += `<br><br><span style="color: #60a5fa; font-weight: bold;">☁️ SKY ATTACK</span><br><span style="color: #d4af37;">Eagle Rider soars away — no wounds or card loss!</span>`;
                     this.addLog(`☁️ Eagle Rider's Sky Attack negates all penalties from ${general.name}!`);
-                    this.showCombatResults('💥 Attack General', resultsHTML, message + combatSkillMessage, `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                    this.showCombatResults('💥 Attack General', resultsHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
                     return;
                 }
                 
@@ -1836,7 +1841,7 @@ Object.assign(game, {
                 if (this._hasWarBanner(hero)) {
                     combatSkillMessage += `<br><br><span style="color: #a78bfa; font-weight: bold;">🚩 WAR BANNER OF VALOR</span><br><span style="color: #d4af37;">${hero.name} ignores all wounds and penalties!</span>`;
                     this.addLog(`🚩 War Banner of Valor: ${hero.name} ignores Hero Defeated penalties from ${general.name}!`);
-                    this.showCombatResults('💥 Attack General', resultsHTML, message + combatSkillMessage, `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                    this.showCombatResults('💥 Attack General', resultsHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
                     return;
                 }
                 
@@ -1882,14 +1887,14 @@ Object.assign(game, {
                     this.soloFromGroupAttack = false;
                 }
                 
-                this.showCombatResults('💥 Attack General', resultsHTML, message + combatSkillMessage, `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                this.showCombatResults('💥 Attack General', resultsHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
                 return; // Skip immediate wound application - modal handles it
                 
                 // OLD CODE BELOW IS UNREACHABLE - Kept for reference only
                 // All penalty application now goes through group penalty modal
             }
             
-            this.showCombatResults('💥 Attack General', resultsHTML, message + combatSkillMessage, `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+            this.showCombatResults('💥 Attack General', resultsHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         }
         
         // IMPORTANT: Don't call closeCombat() - let the user close the results modal
@@ -1918,6 +1923,60 @@ Object.assign(game, {
         }
     },
     
+    _buildGeneralResultsPip(general, damage) {
+        const META = {
+            'Balazarg': { tokenColor:'#dc2626', majorWoundThreshold:1, combatSkillDesc:'Players must roll a die for each card to be played prior to the Battle. Discard a card for each 1 rolled.' },
+            'Gorgutt':  { tokenColor:'#16a34a', majorWoundThreshold:2, combatSkillDesc:'Gorgutt parries successful attacks for each 1 rolled. Eliminate 1 hit for each die with a 1 at the end of re-rolls.' },
+            'Varkolak': { tokenColor:'#1f2937', majorWoundThreshold:0, combatSkillDesc:'Player may not use any re-rolls or special skills against Varkolak.' },
+            'Sapphire': { tokenColor:'#2563eb', majorWoundThreshold:0, combatSkillDesc:'Returns to full health if not defeated in a single combat.' },
+        };
+        const meta = META[general.name] || { tokenColor:'#374151', majorWoundThreshold:0, combatSkillDesc:'' };
+        const tokenColor = meta.tokenColor;
+        const majorT = meta.majorWoundThreshold;
+        const currentHealth = Math.max(0, general.health);
+        const emoji = general.symbol || '⚔️';
+
+        // Life tracker: boxes from maxHealth → 1, then skull
+        let trackerHTML = '';
+        for (let n = general.maxHealth; n >= 1; n--) {
+            const isLost = n > currentHealth;
+            const isMajor = majorT > 0 && n <= majorT;
+            const isActive = !general.defeated && n === currentHealth;
+            let cls = 'lt-box';
+            if (isLost) cls += ' lost';
+            if (isMajor) cls += ' major';
+            const marker = isActive ? `<span class="lt-marker" style="background:${tokenColor}">${emoji}</span>` : '';
+            trackerHTML += `<div class="${cls}">${marker}${n}</div>`;
+        }
+        // Skull box
+        const skullMarker = general.defeated ? `<span class="lt-marker" style="background:${tokenColor}">${emoji}</span>` : '';
+        trackerHTML += `<div class="lt-box skull">${skullMarker}☠️</div>`;
+
+        // Wound type
+        let woundLabel, woundDesc;
+        if (general.defeated) {
+            woundLabel = 'Defeated:'; woundDesc = 'General removed from play.';
+        } else if (damage === 0) {
+            woundLabel = 'No Wound:'; woundDesc = 'No damage dealt.';
+        } else if (majorT > 0 && currentHealth <= majorT) {
+            woundLabel = 'Major Wound:'; woundDesc = 'Start healing after this hero\'s next turn.';
+        } else {
+            woundLabel = 'Minor Wound:'; woundDesc = 'Start Healing after the next hero\'s turn.';
+        }
+
+        const tokenCircle = `<span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:${tokenColor};border-radius:50%;border:2px solid rgba(0,0,0,0.4);box-shadow:0 1px 4px rgba(0,0,0,0.4),inset 0 0 6px rgba(255,255,255,0.15);font-size:0.7em;">${emoji}</span>`;
+        const woundCount = `${damage} wound${damage !== 1 ? 's' : ''}`;
+
+        return `
+            <div class="combat-results-label">Combat Results:</div>
+            <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;color:#2c1810;margin:4px 0;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:0.9em;">${tokenCircle}<span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${tokenColor};">${general.name}</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#b91c1c;">— ${woundCount}</span></div>
+                <div class="lt-tracker">${trackerHTML}</div>
+                <div style="margin-top:2px;font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.15em;color:#1a0f0a;">${woundLabel}</strong> ${woundDesc}</div>
+                <div style="margin-top:4px;font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.15em;color:#1a0f0a;">Combat Skill:</strong> ${meta.combatSkillDesc}</div>
+            </div>`;
+    },
+
     showCombatResults(title, resultsHTML, summaryText, buttonsHTML, hideClose) {
         console.log('showCombatResults called');
         

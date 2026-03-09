@@ -197,7 +197,8 @@ Object.assign(game, {
             currentSelectionHeroIndex: 0,
             totalDamage: 0,
             attackOrder: [], // Will determine who attacks when
-            initiatorPlayerIndex: this.currentPlayerIndex // Track who started the attack
+            initiatorPlayerIndex: this.currentPlayerIndex, // Track who started the attack
+            hitReq: null // Set when first attacker rolls
         };
         
         // Store general for modal
@@ -676,6 +677,7 @@ Object.assign(game, {
         const ambushBonusGroup = this._getAmbushBonus(hero, 'general', general.faction);
         const questBonusGroup = this._getQuestCombatBonus(hero);
         const hitReq = Math.max(2, getGeneralHitRequirement(general.faction) - this._getWoodsLoreBonus(hero) - ambushBonusGroup - questBonusGroup);
+        if (this.groupAttack && this.groupAttack.hitReq === null) this.groupAttack.hitReq = hitReq;
         if (this._getWoodsLoreBonus(hero) > 0) {
             this.addLog(`🏹 Woods Lore: ${hero.name} gains +1 to all attack rolls in ${hero.location}!`);
         }
@@ -883,7 +885,7 @@ Object.assign(game, {
                 return;
             }
         }
-        this._battleLuckChecked = false;
+        if (!this.groupAttack) this._battleLuckChecked = false;
         
         // Unicorn Steed: re-roll ALL failed dice once per combat (not against Varkolak)
         if (!this._unicornSteedRerollUsed && (general.combatSkill !== 'no_rerolls' || this._amarakBlessingActive)) {
@@ -915,7 +917,7 @@ Object.assign(game, {
                 }
             }
         }
-        this._unicornSteedRerollUsed = false;
+        if (!this.groupAttack) this._unicornSteedRerollUsed = false;
         
         // GORGUTT PARRY (applies to each hero individually)
         let parryMessage = '';
@@ -969,6 +971,8 @@ Object.assign(game, {
     
     resolveGroupAttack() {
         console.log('=== === === resolveGroupAttack CALLED === === ===');
+        this._battleLuckChecked = false;
+        this._unicornSteedRerollUsed = false;
         const general = this.groupAttack.general;
         const totalDamage = this.groupAttack.totalDamage;
         
@@ -978,9 +982,13 @@ Object.assign(game, {
         
         // Apply damage to general
         general.health -= totalDamage;
+        if (general.health <= 0) {
+            general.health = 0;
+            general.defeated = true;
+        }
         
         // Set wound info if general survived
-        if (general.health > 0 && totalDamage > 0) {
+        if (!general.defeated && totalDamage > 0) {
             const initiatorIdx = this.groupAttack.initiatorPlayerIndex !== undefined 
                 ? this.groupAttack.initiatorPlayerIndex : this.currentPlayerIndex;
             this._setGeneralWound(general, initiatorIdx);
@@ -992,7 +1000,7 @@ Object.assign(game, {
         const _grDieClass = { green: 'die-green', black: 'die-black', red: 'die-red', blue: 'die-blue' }[general.color] || 'die-black';
         const _grInlineBg = { 'die-green': 'linear-gradient(145deg,#16a34a,#15803d)', 'die-black': 'linear-gradient(145deg,#374151,#1f2937)', 'die-red': 'linear-gradient(145deg,#dc2626,#991b1b)', 'die-blue': 'linear-gradient(145deg,#3b82f6,#1d4ed8)' }[_grDieClass];
 
-        const hitReqForDisplay = general.hitRequirement || '?';
+        const hitReqForDisplay = this.groupAttack.hitReq || '?';
         let resultsHTML = `<div class="parchment-box" style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355;border-radius:8px;padding:10px;">
             <div class="parchment-banner" style="background:linear-gradient(135deg,#5c3d2ecc 0%,#4a2f20cc 100%);padding:6px 14px;margin:-10px -10px 10px -10px;border-radius:8px 8px 0 0;border-bottom:2px solid #8b7355;text-align:center;"><span class="hero-banner-name" style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9);letter-spacing:1.5px;">Combat Roll</span></div>
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">${general.name.toUpperCase()} — ${hitReqForDisplay}+ to Hit</div>`;
@@ -1021,9 +1029,7 @@ Object.assign(game, {
         resultsHTML += `</div>`;
 
         // Check if general defeated
-        if (general.health <= 0) {
-            general.health = 0;
-            general.defeated = true;
+        if (general.defeated) {
             delete this.generalWounds[general.color]; // Clear wounds on defeat
             this.updateWarStatus();
             const contributingHeroes = this.groupAttack.heroContributions

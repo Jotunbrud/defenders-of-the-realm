@@ -231,7 +231,10 @@ Object.assign(game, {
         const title = document.getElementById('combat-title');
         const content = document.getElementById('combat-content');
         
-
+        // Apply correct title styling (Cinzel 900, #d4af37, 1.15em — matches modal-title-bar in mockup)
+        if (title) {
+            title.style.cssText = "font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:1.15em;color:#d4af37;margin-bottom:8px;font-size:1.15em;";
+        }
         
         if (type === 'minions') {
 
@@ -291,8 +294,18 @@ Object.assign(game, {
             rollBtn.disabled = false;
             rollBtn.className = 'phb';
             rollBtn.textContent = 'Roll Dice';
-            rollBtn.style.opacity = '1';
-            rollBtn.style.cursor = 'pointer';
+            rollBtn.style.cssText = 'opacity:1;cursor:pointer;display:block;width:100%;margin-top:8px;';
+
+            // Restyle the Close/Cancel button to match gold phb design
+            const modalEl = document.getElementById('combat-modal');
+            if (modalEl) {
+                modalEl.querySelectorAll('button').forEach(btn => {
+                    if (btn !== rollBtn) {
+                        btn.className = 'phb';
+                        btn.style.cssText = 'opacity:1;cursor:pointer;display:block;width:100%;margin-top:6px;';
+                    }
+                });
+            }
 
         } else {
             title.textContent = `Attack ${target.name}`;
@@ -1925,11 +1938,11 @@ Object.assign(game, {
         }
         
         // Always hide default Continue button (buttons are injected inline)
-        // Hide X close button when a decision is required (hideClose=true)
+        // Always hide X close button — decision buttons are always injected inline
         const defaultBtn = modal.querySelector('.modal-content > .btn-primary');
         const closeBtn = modal.querySelector('.modal-close-btn');
         if (defaultBtn) defaultBtn.style.display = 'none';
-        if (closeBtn) closeBtn.style.display = hideClose ? 'none' : '';
+        if (closeBtn) closeBtn.style.display = 'none';
         
         modal.classList.add('active');
         console.log('Combat results modal activated, classList:', modal.classList.toString());
@@ -1944,11 +1957,9 @@ Object.assign(game, {
         const resultsModal = document.getElementById('combat-results-modal');
         resultsModal.classList.remove('active');
         
-        // Restore default button visibility
+        // Restore default button visibility (close btn stays hidden — never used in results modal)
         const defaultBtn = resultsModal.querySelector('.modal-content > .btn-primary');
-        const closeBtn = resultsModal.querySelector('.modal-close-btn');
         if (defaultBtn) defaultBtn.style.display = '';
-        if (closeBtn) closeBtn.style.display = '';
         
         // Update action buttons since minions/generals may have changed
         const mapModal = document.getElementById('map-modal');

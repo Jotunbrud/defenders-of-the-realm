@@ -293,7 +293,7 @@ Object.assign(game, {
             const rollBtn = document.getElementById('combat-roll-btn');
             rollBtn.disabled = false;
             rollBtn.className = 'phb';
-            rollBtn.textContent = 'Roll Dice';
+            rollBtn.textContent = 'Confirm';
             rollBtn.style.cssText = 'opacity:1;cursor:pointer;display:block;width:100%;margin-top:8px;';
 
             // Restyle the Close/Cancel button to match gold phb design
@@ -310,7 +310,7 @@ Object.assign(game, {
                     if (btn !== rollBtn && btn !== closeX) {
                         btn.className = 'phb';
                         btn.style.cssText = 'opacity:1;cursor:pointer;display:block;width:100%;margin-top:6px;';
-                        // Also force parent out of flex so buttons stack
+                        btn.textContent = 'Cancel';
                         if (btn.parentElement && btn.parentElement !== modalEl) {
                             btn.parentElement.style.cssText = 'display:block;width:100%;';
                         }

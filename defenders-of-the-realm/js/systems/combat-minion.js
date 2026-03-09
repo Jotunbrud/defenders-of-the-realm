@@ -1934,7 +1934,10 @@ Object.assign(game, {
         // Update modal chrome title dynamically
         if (title) {
             const titleEl = modal.querySelector('h2, .modal-title, [id*="title"], [class*="title"]');
-            if (titleEl) titleEl.textContent = title;
+            if (titleEl) {
+                titleEl.textContent = title;
+                titleEl.style.cssText = "font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:1.15em;color:#d4af37;margin-bottom:8px;";
+            }
         }
         
         // Always hide default Continue button (buttons are injected inline)

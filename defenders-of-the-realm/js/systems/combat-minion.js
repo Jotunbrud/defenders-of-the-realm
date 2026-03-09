@@ -299,12 +299,27 @@ Object.assign(game, {
             // Restyle the Close/Cancel button to match gold phb design
             const modalEl = document.getElementById('combat-modal');
             if (modalEl) {
+                // Hide close X and fix the extra padding it causes via :has() selector
+                const closeX = modalEl.querySelector('.modal-close-btn');
+                if (closeX) closeX.style.display = 'none';
+                const modalContent = modalEl.querySelector('.modal-content');
+                if (modalContent) modalContent.style.paddingTop = '20px';
+
+                // Force button container to stack vertically
                 modalEl.querySelectorAll('button').forEach(btn => {
-                    if (btn !== rollBtn) {
+                    if (btn !== rollBtn && btn !== closeX) {
                         btn.className = 'phb';
                         btn.style.cssText = 'opacity:1;cursor:pointer;display:block;width:100%;margin-top:6px;';
+                        // Also force parent out of flex so buttons stack
+                        if (btn.parentElement && btn.parentElement !== modalEl) {
+                            btn.parentElement.style.cssText = 'display:block;width:100%;';
+                        }
                     }
                 });
+                // Force rollBtn parent to block too
+                if (rollBtn.parentElement && rollBtn.parentElement !== modalEl) {
+                    rollBtn.parentElement.style.cssText = 'display:block;width:100%;';
+                }
             }
 
         } else {
@@ -1941,11 +1956,13 @@ Object.assign(game, {
         }
         
         // Always hide default Continue button (buttons are injected inline)
-        // Always hide X close button — decision buttons are always injected inline
+        // Always hide X close button and fix the extra padding-top its :has() selector causes
         const defaultBtn = modal.querySelector('.modal-content > .btn-primary');
         const closeBtn = modal.querySelector('.modal-close-btn');
+        const modalContent = modal.querySelector('.modal-content');
         if (defaultBtn) defaultBtn.style.display = 'none';
         if (closeBtn) closeBtn.style.display = 'none';
+        if (modalContent) modalContent.style.paddingTop = '20px';
         
         modal.classList.add('active');
         console.log('Combat results modal activated, classList:', modal.classList.toString());

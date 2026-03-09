@@ -1426,20 +1426,22 @@ Object.assign(game, {
             const rerollHTML = `
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${questBonusSolo > 0 ? '4px' : '6px'};">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
                         ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                     </div>
-                    ${questBonusSolo > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
+                    <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
+                    ${questBonusSolo > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
                     <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                         ${diceHTML}
                     </div>
+                    ${this._buildGeneralResultsPip(general, damage)}
                 </div>
             `;
             
             this.showCombatResults(
                 '💥 Attack General',
                 rerollHTML,
-                `🦅 Eagle Rider vs ${general.name}`,
+                '',
                 `<button class="phb" style="margin-top:8px;" onclick="game.eagleRerollSoloCombat()">Ground Attack (Re-Roll All Dice)</button>
                  <button class="phb" style="margin-top:6px;" onclick="game.acceptSoloCombatRoll()">Continue</button>`,
                 true
@@ -1473,20 +1475,22 @@ Object.assign(game, {
             const rerollHTML = `
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${questBonusSolo > 0 ? '4px' : '6px'};">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
                         ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                     </div>
-                    ${questBonusSolo > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
+                    <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
+                    ${questBonusSolo > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
                     <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                         ${diceHTML}
                     </div>
+                    ${this._buildGeneralResultsPip(general, damage)}
                 </div>
             `;
             
             this.showCombatResults(
                 '💥 Attack General',
                 rerollHTML,
-                `⛏️ Dwarf vs ${general.name}`,
+                '',
                 `<button class="phb" style="margin-top:8px;" onclick="game.dwarfRerollSoloCombat()">Dragon Slayer (Re-Roll ${failedCount} Failed Dice)</button>
                  <button class="phb" style="margin-top:6px;" onclick="game.acceptSoloCombatRoll()">Continue</button>`,
                 true
@@ -1600,10 +1604,11 @@ Object.assign(game, {
                 const rerollHTML = `
                     <div class="parchment-box">
                         <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${this._getQuestCombatBonus(hero) > 0 ? '4px' : '6px'};">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
                             ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                         </div>
-                        ${this._getQuestCombatBonus(hero) > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
+                        <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
+                        ${this._getQuestCombatBonus(hero) > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
                         <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">${dicePreviewHTML}</div>
                         ${this._buildGeneralResultsPip(general, damage)}
                     </div>
@@ -1640,6 +1645,7 @@ Object.assign(game, {
                             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
                                 ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                             </div>
+                            <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
                             <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">${dicePreviewHTML}</div>
                             ${this._buildGeneralResultsPip(general, damage)}
                         </div>
@@ -1786,11 +1792,12 @@ Object.assign(game, {
         const resultsHTML = `
             <div class="parchment-box">
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${this._getQuestCombatBonus(hero) > 0 ? '4px' : '6px'};">
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
                     ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                 </div>
-                ${this._getQuestCombatBonus(hero) > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
-                ${this._amarakBlessingActive && general.combatSkill ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amarak\'s Blessing:</strong> ' + general.combatSkillName + ' Ignored!</div>' : ''}
+                <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
+                ${this._getQuestCombatBonus(hero) > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
+                ${this._amarakBlessingActive && general.combatSkill ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amarak\'s Blessing:</strong> ' + general.combatSkillName + ' Ignored!</div>' : ''}
                 <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                     ${diceHTML}
                 </div>

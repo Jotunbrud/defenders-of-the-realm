@@ -610,23 +610,14 @@ Object.assign(game, {
             // Build results HTML with re-roll option
             const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
             
-            const rerollHTML = `
-                ${resultsHTML}
-                <div style="background: rgba(245, 158, 11, 0.2); padding: 14px; border: 2px solid #f59e0b; border-radius: 8px; margin-top: 10px;">
-                    <div style="color: #f59e0b; font-weight: bold; margin-bottom: 8px;">⚔️ Ground Attack — Re-roll Available!</div>
-                    <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">You may re-roll ALL dice once. This cannot be undone.</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.eagleRerollMinionCombat()">
-                            🎲 Re-roll All Dice
-                        </button>
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.acceptMinionCombatRoll()">
-                            ✓ Accept Roll
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            this.showCombatResults(rerollHTML, `${totalDefeated} minion(s) defeated — Re-roll?`, true);
+            this.showCombatResults(
+                '⚔️ Minion Combat',
+                resultsHTML,
+                `${totalDefeated} minion(s) defeated — Re-roll?`,
+                `<button class="phb" style="margin-top:8px;" onclick="game.eagleRerollMinionCombat()">Ground Attack (Re-Roll All Dice)</button>
+                 <button class="phb" style="margin-top:6px;" onclick="game.acceptMinionCombatRoll()">Continue</button>`,
+                true
+            );
             return;
         }
         
@@ -656,23 +647,14 @@ Object.assign(game, {
             const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
             const failedBlueCount = colorResults.filter(cr => cr.color === 'blue').reduce((sum, cr) => sum + cr.rolls.filter(r => !r.hit).length, 0);
             
-            const rerollHTML = `
-                ${resultsHTML}
-                <div style="background: rgba(180, 83, 9, 0.2); padding: 14px; border: 2px solid #b45309; border-radius: 8px; margin-top: 10px;">
-                    <div style="color: #b45309; font-weight: bold; margin-bottom: 8px;">⛏️ Dragon Slayer — Re-roll Available!</div>
-                    <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedBlueCount} failed dice against Dragonkin. This cannot be undone.</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.dwarfRerollMinionCombat()">
-                            🎲 Re-roll Failed Dice
-                        </button>
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.acceptMinionCombatRoll()">
-                            ✓ Accept Roll
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            this.showCombatResults(rerollHTML, `${totalDefeated} minion(s) defeated — Re-roll?`, true);
+            this.showCombatResults(
+                '⚔️ Minion Combat',
+                resultsHTML,
+                `${totalDefeated} minion(s) defeated — Re-roll?`,
+                `<button class="phb" style="margin-top:8px;" onclick="game.dwarfRerollMinionCombat()">Dragon Slayer (Re-Roll ${failedBlueCount} Failed Dice)</button>
+                 <button class="phb" style="margin-top:6px;" onclick="game.acceptMinionCombatRoll()">Continue</button>`,
+                true
+            );
             return;
         }
         // ================================
@@ -681,54 +663,62 @@ Object.assign(game, {
         this._applyMinionCombatResults(colorResults, totalDefeated);
     },
     
-    _buildMinionResultsHTML(colorResults, showTotal) {
+    _buildMinionResultsHTML(colorResults, showTotal, location) {
         const hero = this.heroes[this.currentPlayerIndex];
         const woodsBonus = this._getWoodsLoreBonus(hero);
-        let html = '<div style="margin: 20px 0;">';
-        if (this.rangedAttack) {
-            html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(21,128,61,0.2); border: 1px solid #15803d; border-radius: 5px;"><span style="color: #4ade80; font-weight: bold;">🏹 Archery: Ranged attack</span></div>';
-        }
-        if (woodsBonus > 0) {
-            html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(21,128,61,0.2); border: 1px solid #15803d; border-radius: 5px;"><span style="color: #4ade80; font-weight: bold;">🏹 Woods Lore: +1 to all rolls</span></div>';
-        }
-        if (hero.name === 'Cleric') {
-            const hasBlessed = colorResults.some(cr => cr.color === 'black' || cr.color === 'red');
-            if (hasBlessed) {
-                html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(30,58,122,0.15); border: 1px solid #1e3a7a; border-radius: 5px;"><span style="color: #6b9bd2; font-weight: bold;">✝️ Blessed Attacks: +1 vs Undead & Demons</span></div>';
-            }
-        }
-        if (this._getQuestCombatBonus(hero) > 0) {
-            html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>';
-        }
-        if (this._combatBonusDiceActive) {
-            html += '<div style="text-align: center; margin-bottom: 10px; padding: 6px; background: rgba(212,175,55,0.15); border: 1px solid #d4af37; border-radius: 5px;"><span style="color: #d4af37; font-weight: bold;">💫 Find Magic Gate: +2 bonus dice</span></div>';
-        }
+        const combatLocation = location || (this.currentCombat && this.currentCombat.target) || hero.location;
+        const hasAmulet = this._getQuestCombatBonus(hero) > 0;
+        const hasBonusDice = this._combatBonusDiceActive;
+        const hasRanged = this.rangedAttack;
+        const hasWoods = woodsBonus > 0;
+        const hasBlessed = hero.name === 'Cleric' && colorResults.some(cr => cr.color === 'black' || cr.color === 'red');
+        const dieClassMap = { green: 'die-green', black: 'die-black', red: 'die-red', blue: 'die-blue' };
+
+        let html = '<div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>';
+
         colorResults.forEach(cr => {
-            const factionName = cr.color === 'green' ? 'Orc' : 
-                               cr.color === 'black' ? 'Undead' : 
+            const factionName = cr.color === 'green' ? 'Orc' :
+                               cr.color === 'black' ? 'Undead' :
                                cr.color === 'red' ? 'Demon' : 'Dragon';
+            const dieColorClass = dieClassMap[cr.color] || 'die-black';
+
+            let bonusHTML = '';
+            if (hasRanged) bonusHTML += `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin-bottom:4px;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">🏹 Archery:</strong> Ranged attack</div>`;
+            if (hasWoods) bonusHTML += `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin-bottom:4px;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">🏹 Woods Lore:</strong> +1 to all rolls</div>`;
+            if (hasBlessed && (cr.color === 'black' || cr.color === 'red')) bonusHTML += `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin-bottom:4px;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">✝️ Blessed Attacks:</strong> +1 vs Undead & Demons</div>`;
+            if (hasAmulet) bonusHTML += `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin-bottom:4px;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>`;
+            if (hasBonusDice) bonusHTML += `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin-bottom:4px;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Find Magic Gate:</strong> +2 bonus dice</div>`;
+
             let diceHTML = '';
             cr.rolls.forEach(r => {
-                const bonusBorder = r.isBonus ? 'border: 2px solid #d4af37;' : '';
-                diceHTML += `<div class="die-result ${r.hit ? 'hit' : 'miss'}" 
-                                  style="background-color: ${r.hit ? '#4ade80' : cr.diceColor}; ${bonusBorder}">
-                                ${r.roll}${r.isBonus ? '✦' : ''}
-                            </div>`;
+                const fadeClass = r.hit ? '' : ' die-fade-miss';
+                const bonusClass = r.isBonus ? ' die-bonus' : '';
+                diceHTML += `<div class="die ${dieColorClass}${fadeClass}${bonusClass}">${r.roll}</div>`;
             });
-            html += `
-                <div style="margin: 15px 0;">
-                    <div style="color: #ffd700; margin-bottom: 8px;">
-                        <strong>${factionName.toUpperCase()} minions</strong> (${cr.hitReq}+ to hit)
+
+            html += `<div style="margin:10px 0;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${bonusHTML ? '4px' : '6px'};">
+                        ${factionName.toUpperCase()} MINIONS — ${cr.hitReq}+ to hit
                     </div>
-                    <div class="dice-result-container">
-                        ${diceHTML}
-                    </div>
-                    <div style="text-align: center; margin-top: 8px;">
-                        ${cr.defeated} of ${cr.count} defeated!
-                    </div>
-                </div>
-            `;
+                    ${bonusHTML}
+                    <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">${diceHTML}</div>
+                </div>`;
         });
+
+        const totalDefeated = colorResults.reduce((sum, cr) => sum + cr.defeated, 0);
+        if (totalDefeated > 0) {
+            html += '<div class="combat-results-label">Defeated Minions:</div>';
+            colorResults.forEach(cr => {
+                if (cr.defeated <= 0) return;
+                const factionLabel = cr.color === 'green' ? 'Orcs' : cr.color === 'black' ? 'Undead' : cr.color === 'red' ? 'Demons' : 'Dragonkin';
+                const pillColor = cr.color === 'green' ? '#16a34a' : cr.color === 'black' ? '#374151' : cr.color === 'red' ? '#dc2626' : '#3b82f6';
+                const pillBg = cr.color === 'green' ? 'rgba(22,163,74,0.1)' : cr.color === 'black' ? 'rgba(55,65,81,0.1)' : cr.color === 'red' ? 'rgba(220,38,38,0.1)' : 'rgba(59,130,246,0.1)';
+                for (let i = 0; i < cr.defeated; i++) {
+                    html += `<div class="faction-pill" style="background:${pillBg};border:1px solid ${pillColor};"><div class="faction-pill-row"><span class="faction-pill-left" style="color:${pillColor};"><span class="dot" style="background:${pillColor};"></span>${factionLabel}</span><span class="faction-pill-right">→ ${combatLocation}</span></div></div>`;
+                }
+            });
+        }
+
         html += '</div>';
         return html;
     },
@@ -842,18 +832,12 @@ Object.assign(game, {
     
     _buildBattleLuckHTML(blCard, failedCount) {
         return `
-            <div style="background: rgba(34,197,94,0.2); padding: 14px; border: 2px solid #22c55e; border-radius: 8px; margin-top: 10px;">
-                <div style="color: #22c55e; font-weight: bold; margin-bottom: 8px;">🍀 Battle Luck — Re-roll Available!</div>
-                <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 4px;">Re-roll ${failedCount} failed dice. Card from ${blCard.hero.symbol} ${blCard.hero.name}'s hand will be discarded.</div>
-                <div style="color: #999; font-size: 0.85em; margin-bottom: 12px;">This cannot be undone.</div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-primary" style="flex: 1; background: #16a34a;" onclick="game.useBattleLuck()">
-                        🍀 Use Battle Luck
-                    </button>
-                    <button class="btn btn-primary" style="flex: 1;" onclick="game.declineBattleLuck()">
-                        ✓ Accept Roll
-                    </button>
-                </div>
+            <div class="parchment-box" style="margin-top:10px;">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">🍀 Battle Luck — Re-roll Available</span></div>
+                <p style="font-family:'Comic Sans MS',cursive; font-size:0.9em; color:#3d2b1f; margin:8px 0 4px 0;">Re-roll ${failedCount} failed dice. Card from ${blCard.hero.symbol} ${blCard.hero.name}'s hand will be discarded.</p>
+                <p style="font-family:'Comic Sans MS',cursive; font-size:0.85em; color:#6b5a3e; margin-bottom:8px;">This cannot be undone.</p>
+                <button class="phb" onclick="game.useBattleLuck()">Battle Luck (Re-Roll All Failed Dice)</button>
+                <button class="phb" onclick="game.declineBattleLuck()">Continue</button>
             </div>
         `;
     },
@@ -1096,8 +1080,14 @@ Object.assign(game, {
                 const failedCount = colorResults.reduce((sum, cr) => sum + cr.rolls.filter(r => !r.hit).length, 0);
                 this._pendingBattleLuck = { type: 'minions', colorResults, totalDefeated, battleLuckCard: blCard };
                 const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
-                const rerollHTML = resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
-                this.showCombatResults(rerollHTML, `${totalDefeated} minion(s) defeated — Battle Luck?`, true);
+                this.showCombatResults(
+                    '⚔️ Minion Combat',
+                    resultsHTML,
+                    `${totalDefeated} minion(s) defeated — Battle Luck?`,
+                    `<button class="phb" style="margin-top:8px;" onclick="game.useBattleLuck()">Battle Luck (Re-Roll ${failedCount} Failed Dice)</button>
+                     <button class="phb" style="margin-top:6px;" onclick="game.declineBattleLuck()">Continue</button>`,
+                    true
+                );
                 return;
             }
         }
@@ -1112,21 +1102,14 @@ Object.assign(game, {
                     const failedCount = colorResults.reduce((sum, cr) => sum + cr.rolls.filter(r => !r.hit).length, 0);
                     this._pendingUnicornReroll = { type: 'minions', colorResults, totalDefeated };
                     const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
-                    const rerollHTML = resultsHTML + `
-                        <div style="background: rgba(212,175,55,0.2); padding: 14px; border: 2px solid #d4af37; border-radius: 8px; margin-top: 10px;">
-                            <div style="color: #d4af37; font-weight: bold; margin-bottom: 8px;">🦄 Unicorn Steed — Re-roll Available!</div>
-                            <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedCount} failed dice. This cannot be undone.</div>
-                            <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-primary" style="flex: 1; background: #b45309;" onclick="game._useUnicornSteedReroll()">
-                                    🦄 Re-roll Failed Dice
-                                </button>
-                                <button class="btn btn-primary" style="flex: 1;" onclick="game._declineUnicornSteedReroll()">
-                                    ✓ Accept Roll
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    this.showCombatResults(rerollHTML, `${totalDefeated} minion(s) defeated — Unicorn Steed?`, true);
+                    this.showCombatResults(
+                        '⚔️ Minion Combat',
+                        resultsHTML,
+                        `${totalDefeated} minion(s) defeated — Unicorn Steed?`,
+                        `<button class="phb" style="margin-top:8px;" onclick="game._useUnicornSteedReroll()">Unicorn Steed (Re-Roll ${failedCount} Failed Dice)</button>
+                         <button class="phb" style="margin-top:6px;" onclick="game._declineUnicornSteedReroll()">Continue</button>`,
+                        true
+                    );
                     return;
                 }
             }
@@ -1152,7 +1135,12 @@ Object.assign(game, {
         this.addLog(`${hero.name} defeated ${totalDefeated} minions!`);
         
         // Show results modal
-        this.showCombatResults(resultsHTML, `Total: ${totalDefeated} minions defeated!`);
+        this.showCombatResults(
+            '⚔️ Minion Combat',
+            resultsHTML,
+            `Total: ${totalDefeated} minions defeated!`,
+            `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`
+        );
         
         this.closeCombat();
         this.renderTokens();
@@ -1367,17 +1355,16 @@ Object.assign(game, {
         let diceHTML = '';
         const diceRolls = []; // Track rolls for logging
         
+        // Map general faction to die CSS class
+        const _factionDieClass = general.faction === 'Orc' ? 'die-green' : general.faction === 'Undead' ? 'die-black' : general.faction === 'Demon' ? 'die-red' : 'die-blue';
+
         // Roll all dice from all selected cards
         for (let i = 0; i < totalDice; i++) {
             const roll = Math.floor(Math.random() * 6) + 1;
             const hit = roll >= hitReq;
             if (hit) damage++;
-            
             diceRolls.push({roll, hit});
-            
-            diceHTML += `<div class="die-result ${hit ? 'hit' : 'miss'}">
-                            ${roll}
-                         </div>`;
+            diceHTML += `<div class="die ${_factionDieClass}${hit ? '' : ' die-fade-miss'}">${roll}</div>`;
         }
         
         // ===== EAGLE RIDER GROUND ATTACK RE-ROLL PHASE =====
@@ -1403,36 +1390,26 @@ Object.assign(game, {
             // Show dice results with re-roll option
             const cardNames = cardsToUse.map(c => c.name).join(', ');
             const rerollHTML = `
-                <div style="margin: 20px 0;">
-                    <div style="color: #ffd700; margin-bottom: 12px; font-size: 1.1em;">
-                        <strong>Used ${cardsToUse.length} card(s):</strong> ${cardNames}
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${questBonusSolo > 0 ? '4px' : '6px'};">
+                        ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                     </div>
-                    ${questBonusSolo > 0 ? '<div style="text-align: center; margin-bottom: 8px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>' : ''}
-                    <div style="color: #d4af37; margin-bottom: 8px;">
-                        Total Dice: ${totalDice} | Need: ${hitReq}+ to hit
-                    </div>
-                    <div class="dice-result-container">
+                    ${questBonusSolo > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
+                    <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                         ${diceHTML}
-                    </div>
-                    <div style="text-align: center; margin-top: 12px; color: #ffd700; font-size: 1.1em;">
-                        ${damage} hit(s) so far
-                    </div>
-                </div>
-                <div style="background: rgba(245, 158, 11, 0.2); padding: 14px; border: 2px solid #f59e0b; border-radius: 8px; margin-top: 10px;">
-                    <div style="color: #f59e0b; font-weight: bold; margin-bottom: 8px;">⚔️ Ground Attack — Re-roll Available!</div>
-                    <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">You may re-roll ALL dice once. This cannot be undone.</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.eagleRerollSoloCombat()">
-                            🎲 Re-roll All Dice
-                        </button>
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.acceptSoloCombatRoll()">
-                            ✓ Accept Roll
-                        </button>
                     </div>
                 </div>
             `;
             
-            this.showCombatResults(rerollHTML, `🦅 Eagle Rider vs ${general.name}`, true);
+            this.showCombatResults(
+                '⚔️ General Combat',
+                rerollHTML,
+                `🦅 Eagle Rider vs ${general.name}`,
+                `<button class="phb" style="margin-top:8px;" onclick="game.eagleRerollSoloCombat()">Ground Attack (Re-Roll All Dice)</button>
+                 <button class="phb" style="margin-top:6px;" onclick="game.acceptSoloCombatRoll()">Continue</button>`,
+                true
+            );
             return; // Wait for user decision
         }
         // ================================
@@ -1460,36 +1437,26 @@ Object.assign(game, {
             const cardNames = cardsToUse.map(c => c.name).join(', ');
             const failedCount = diceRolls.filter(r => !r.hit).length;
             const rerollHTML = `
-                <div style="margin: 20px 0;">
-                    <div style="color: #ffd700; margin-bottom: 12px; font-size: 1.1em;">
-                        <strong>Used ${cardsToUse.length} card(s):</strong> ${cardNames}
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${questBonusSolo > 0 ? '4px' : '6px'};">
+                        ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                     </div>
-                    ${questBonusSolo > 0 ? '<div style="text-align: center; margin-bottom: 8px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>' : ''}
-                    <div style="color: #d4af37; margin-bottom: 8px;">
-                        Total Dice: ${totalDice} | Need: ${hitReq}+ to hit
-                    </div>
-                    <div class="dice-result-container">
+                    ${questBonusSolo > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
+                    <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                         ${diceHTML}
-                    </div>
-                    <div style="text-align: center; margin-top: 12px; color: #ffd700; font-size: 1.1em;">
-                        ${damage} hit(s) so far
-                    </div>
-                </div>
-                <div style="background: rgba(180, 83, 9, 0.2); padding: 14px; border: 2px solid #b45309; border-radius: 8px; margin-top: 10px;">
-                    <div style="color: #b45309; font-weight: bold; margin-bottom: 8px;">⛏️ Dragon Slayer — Re-roll Available!</div>
-                    <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedCount} failed dice against ${general.name}. This cannot be undone.</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.dwarfRerollSoloCombat()">
-                            🎲 Re-roll Failed Dice
-                        </button>
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.acceptSoloCombatRoll()">
-                            ✓ Accept Roll
-                        </button>
                     </div>
                 </div>
             `;
             
-            this.showCombatResults(rerollHTML, `⛏️ Dwarf vs ${general.name}`, true);
+            this.showCombatResults(
+                '⚔️ General Combat',
+                rerollHTML,
+                `⛏️ Dwarf vs ${general.name}`,
+                `<button class="phb" style="margin-top:8px;" onclick="game.dwarfRerollSoloCombat()">Dragon Slayer (Re-Roll ${failedCount} Failed Dice)</button>
+                 <button class="phb" style="margin-top:6px;" onclick="game.acceptSoloCombatRoll()">Continue</button>`,
+                true
+            );
             return;
         }
         // ================================
@@ -1521,7 +1488,9 @@ Object.assign(game, {
             const hit = roll >= state.hitReq;
             if (hit) newDamage++;
             newRolls.push({roll, hit});
-            newDiceHTML += `<div class="die-result ${hit ? 'hit' : 'miss'}">${roll}</div>`;
+            const _bg = hit ? 'linear-gradient(145deg,#16a34a 0%,#15803d 100%)' : 'linear-gradient(145deg,#dc2626 0%,#b91c1c 100%)';
+            const _shadow = hit ? '0 3px 6px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(22,163,74,0.3)' : '0 3px 6px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(185,28,28,0.3)';
+            newDiceHTML += `<div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:900;border-radius:8px;color:#ffffff;background:${_bg};border:2px solid rgba(0,0,0,0.3);box-shadow:${_shadow};">${roll}</div>`;
         }
         
         this.addLog(`🦅 Eagle Rider re-rolls all dice! New result: ${newDamage} hit(s)`);
@@ -1587,25 +1556,29 @@ Object.assign(game, {
                 const failedCount = diceRolls.filter(r => !r.hit).length;
                 const cardNames = cardsToUse.map(c => c.name).join(', ');
                 let dicePreviewHTML = '';
+                const _generalFactionDieClass = general.faction === 'Orc' ? 'die-green' : general.faction === 'Undead' ? 'die-black' : general.faction === 'Demon' ? 'die-red' : 'die-blue';
                 diceRolls.forEach(d => {
-                    dicePreviewHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
                 });
                 this._pendingBattleLuck = { type: 'solo_general', hero, general, cardsToUse, totalDice, hitReq, diceRolls, damage, battleLuckCard: blCard };
+                const blCardNames = cardsToUse.map(c => c.name).join(', ');
                 const rerollHTML = `
-                    <div style="margin: 20px 0;">
-                        <div style="color: #ffd700; margin-bottom: 12px; font-size: 1.1em;">
-                            <strong>Used ${cardsToUse.length} card(s):</strong> ${cardNames}
+                    <div class="parchment-box">
+                        <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${this._getQuestCombatBonus(hero) > 0 ? '4px' : '6px'};">
+                            ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                         </div>
-                        ${this._getQuestCombatBonus(hero) > 0 ? '<div style="text-align: center; margin-bottom: 8px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>' : ''}
-                        <div style="color: #d4af37; margin-bottom: 8px;">
-                            Total Dice: ${totalDice} | Need: ${hitReq}+ to hit
-                        </div>
-                        <div class="dice-result-container">${dicePreviewHTML}</div>
-                        <div style="text-align: center; margin-top: 12px; color: #ffd700; font-size: 1.1em;">${damage} hit(s) so far</div>
+                        ${this._getQuestCombatBonus(hero) > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
+                        <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">${dicePreviewHTML}</div>
                     </div>
-                    ${this._buildBattleLuckHTML(blCard, failedCount)}
                 `;
-                this.showCombatResults(rerollHTML, `${hero.name} vs ${general.name} — Battle Luck?`, true);
+                this.showCombatResults(
+                    '⚔️ General Combat',
+                    rerollHTML,
+                    `${hero.name} vs ${general.name} — Battle Luck?`,
+                    `<button class="phb" style="margin-top:8px;" onclick="game.useBattleLuck()">Battle Luck (Re-Roll ${failedCount} Failed Dice)</button>
+                     <button class="phb" style="margin-top:6px;" onclick="game.declineBattleLuck()">Continue</button>`,
+                    true
+                );
                 return;
             }
         }
@@ -1617,67 +1590,61 @@ Object.assign(game, {
                 const hasFailedDice = diceRolls.some(r => !r.hit);
                 if (hasFailedDice) {
                     const failedCount = diceRolls.filter(r => !r.hit).length;
-                    const cardNames = cardsToUse.map(c => c.name).join(', ');
+                    const _generalFactionDieClass2 = general.faction === 'Orc' ? 'die-green' : general.faction === 'Undead' ? 'die-black' : general.faction === 'Demon' ? 'die-red' : 'die-blue';
                     let dicePreviewHTML = '';
                     diceRolls.forEach(d => {
-                        dicePreviewHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
+                        dicePreviewHTML += `<div class="die ${_generalFactionDieClass2}${d.hit ? '' : ' die-fade-miss'}">${d.roll}</div>`;
                     });
                     this._pendingUnicornReroll = { type: 'solo_general', hero, general, cardsToUse, totalDice, hitReq, diceRolls, damage };
                     const rerollHTML = `
-                        <div style="margin: 20px 0;">
-                            <div style="color: #ffd700; margin-bottom: 12px; font-size: 1.1em;">
-                                <strong>Used ${cardsToUse.length} card(s):</strong> ${cardNames}
+                        <div class="parchment-box">
+                            <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
+                                ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                             </div>
-                            <div style="color: #d4af37; margin-bottom: 8px;">
-                                Total Dice: ${totalDice} | Need: ${hitReq}+ to hit
-                            </div>
-                            <div class="dice-result-container">${dicePreviewHTML}</div>
-                            <div style="text-align: center; margin-top: 12px; color: #ffd700; font-size: 1.1em;">${damage} hit(s) so far</div>
-                        </div>
-                        <div style="background: rgba(212,175,55,0.2); padding: 14px; border: 2px solid #d4af37; border-radius: 8px; margin-top: 10px;">
-                            <div style="color: #d4af37; font-weight: bold; margin-bottom: 8px;">🦄 Unicorn Steed — Re-roll Available!</div>
-                            <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedCount} failed dice. This cannot be undone.</div>
-                            <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-primary" style="flex: 1; background: #b45309;" onclick="game._useUnicornSteedReroll()">
-                                    🦄 Re-roll Failed Dice
-                                </button>
-                                <button class="btn btn-primary" style="flex: 1;" onclick="game._declineUnicornSteedReroll()">
-                                    ✓ Accept Roll
-                                </button>
-                            </div>
+                            <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">${dicePreviewHTML}</div>
                         </div>
                     `;
-                    this.showCombatResults(rerollHTML, `${hero.name} vs ${general.name} — Unicorn Steed?`, true);
+                    this.showCombatResults(
+                        '⚔️ General Combat',
+                        rerollHTML,
+                        `${hero.name} vs ${general.name} — Unicorn Steed?`,
+                        `<button class="phb" style="margin-top:8px;" onclick="game._useUnicornSteedReroll()">Unicorn Steed (Re-Roll ${failedCount} Failed Dice)</button>
+                         <button class="phb" style="margin-top:6px;" onclick="game._declineUnicornSteedReroll()">Continue</button>`,
+                        true
+                    );
                     return;
                 }
             }
         }
         this._unicornSteedRerollUsed = false;
         
-        // Build dice HTML from final rolls
-        let diceHTML = '';
-        diceRolls.forEach(d => {
-            diceHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
-        });
-        
-        // GORGUTT COMBAT SKILL: Parry
-        // IMPORTANT: Parry happens AFTER re-roll phase is complete
-        // This ensures that each 1 rolled (after any re-rolls) eliminates one hit
-        let parryMessage = '';
+        // GORGUTT COMBAT SKILL: Parry — mark cancelled hits, then build final dice HTML
+        let hitsParried = 0;
+        let parryInlineMsg = '';
         if (general.combatSkill === 'parry' && !this._amarakBlessingActive) {
             const onesRolled = diceRolls.filter(d => d.roll === 1).length;
-            
             if (onesRolled > 0) {
-                const hitsParried = Math.min(onesRolled, damage);
+                hitsParried = Math.min(onesRolled, damage);
                 damage -= hitsParried;
-                
-                parryMessage = `<br><br><span style="color: #ef4444; font-weight: bold;">⚔️ PARRY!</span><br><span style="color: #d4af37;">Gorgutt parries ${hitsParried} hit(s) with his ${onesRolled} critical block(s)!</span>`;
-                
+                parryInlineMsg = `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#b91c1c;text-align:center;margin:-4px 0 6px 0;">Gorgutt parries: ${hitsParried} hit(s) eliminated</div>`;
                 this.addLog(`Gorgutt parries ${hitsParried} hit(s)! (${onesRolled} 1's rolled after re-rolls)`);
-                
-                // Note: Parry counts 1s in FINAL dice results (after re-rolls are done)
             }
         }
+
+        // Build final dice HTML (with parry-cancel overlay on last N hits)
+        const _finalDieClass = general.faction === 'Orc' ? 'die-green' : general.faction === 'Undead' ? 'die-black' : general.faction === 'Demon' ? 'die-red' : 'die-blue';
+        let remainingParryMarks = hitsParried;
+        // Mark from the end of hit dice
+        const _markedRolls = diceRolls.map(d => ({ ...d, parried: false }));
+        for (let _i = _markedRolls.length - 1; _i >= 0 && remainingParryMarks > 0; _i--) {
+            if (_markedRolls[_i].hit) { _markedRolls[_i].parried = true; remainingParryMarks--; }
+        }
+        let diceHTML = '';
+        _markedRolls.forEach(d => {
+            const cls = d.parried ? `die ${_finalDieClass} die-parry-cancel` : (d.hit ? `die ${_finalDieClass}` : `die ${_finalDieClass} die-fade-miss`);
+            diceHTML += `<div class="${cls}">${d.roll}</div>`;
+        });
         
         general.health -= damage;
         
@@ -1763,37 +1730,41 @@ Object.assign(game, {
         let noRerollWarning = '';
         if (general.combatSkill === 'no_rerolls' && !this._amarakBlessingActive) {
             noRerollWarning = `
-                <div style="background: rgba(139,0,0,0.2); padding: 10px; border-radius: 5px; margin-top: 10px; border: 2px solid #8b0000;">
-                    <div style="color: #ef4444; font-weight: bold; margin-bottom: 5px;">💀 UNDEAD CURSE</div>
-                    <div style="color: #d4af37; font-size: 0.9em;">Varkolak prevents all re-rolls and special skills in combat!</div>
+                <div class="parchment-box" style="margin-top:10px;">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">💀 Undead Curse</span></div>
+                    <p style="font-family:'Comic Sans MS',cursive; font-size:0.9em; color:#3d2b1f; margin:8px 0;">Varkolak prevents all re-rolls and special skills in combat!</p>
                 </div>
             `;
         }
         
         const resultsHTML = `
-            <div style="margin: 20px 0;">
-                <div style="color: #ffd700; margin-bottom: 12px; font-size: 1.1em;">
-                    <strong>Used ${cardsToUse.length} card(s):</strong> ${cardNames}
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:${this._getQuestCombatBonus(hero) > 0 ? '4px' : '6px'};">
+                    ${general.name.toUpperCase()} — ${hitReq}+ to Hit
                 </div>
-                ${this._getQuestCombatBonus(hero) > 0 ? '<div style="text-align: center; margin-bottom: 8px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>' : ''}
-                <div style="color: #d4af37; margin-bottom: 8px;">
-                    Total Dice: ${totalDice}
-                </div>
-                <div class="dice-result-container">
+                ${this._getQuestCombatBonus(hero) > 0 ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>' : ''}
+                ${this._amarakBlessingActive && general.combatSkill ? '<div style="font-size:0.75em;line-height:1.5;font-family:\'Comic Sans MS\',cursive;color:#3d2b1f;margin-bottom:6px;"><strong style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amarak\'s Blessing:</strong> ' + general.combatSkillName + ' Ignored!</div>' : ''}
+                <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                     ${diceHTML}
                 </div>
-                ${this._amarakBlessingActive && general.combatSkill ? `<div style="text-align: center; margin-top: 8px; padding: 6px; background: rgba(147,51,234,0.15); border: 1px solid #9333ea; border-radius: 5px;"><span style="color: #c084fc; font-weight: bold;">📜 Amarak's Blessing: ${general.combatSkillName} Ignored!</span></div>` : ''}
+                ${parryInlineMsg}
                 ${noRerollWarning}
             </div>
         `;
         
         const message = damage > 0 ? 
-            `${damage} damage dealt! ${general.name} has ${general.health}/${general.maxHealth} life tokens remaining.${parryMessage || ''}` :
-            `No damage dealt. ${general.name} still has ${general.health}/${general.maxHealth} life tokens.${parryMessage || ''}`;
+            `${damage} damage dealt! ${general.name} has ${general.health}/${general.maxHealth} life tokens remaining.` :
+            `No damage dealt. ${general.name} still has ${general.health}/${general.maxHealth} life tokens.`;
         
         // Show combat results BEFORE any other cleanup
         if (general.defeated) {
-            this.showCombatResults(resultsHTML, `🎉 ${general.name} DEFEATED! 🎉<br><span style="color: #d4af37; font-size: 0.9em;">${hero.name} draws 3 cards!</span>`);
+            this.showCombatResults(
+                '⚔️ General Combat',
+                resultsHTML,
+                `🎉 ${general.name} DEFEATED! 🎉`,
+                `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`
+            );
             // Victory check handled by pendingVictory flag → closeGeneralRewardModal → showVictoryModal
         } else {
             // General survived - check for combat skills
@@ -1815,7 +1786,7 @@ Object.assign(game, {
                 if (hero.name === 'Eagle Rider' && this.eagleRiderAttackStyle === 'sky') {
                     combatSkillMessage += `<br><br><span style="color: #60a5fa; font-weight: bold;">☁️ SKY ATTACK</span><br><span style="color: #d4af37;">Eagle Rider soars away — no wounds or card loss!</span>`;
                     this.addLog(`☁️ Eagle Rider's Sky Attack negates all penalties from ${general.name}!`);
-                    this.showCombatResults(resultsHTML, message + combatSkillMessage);
+                    this.showCombatResults('⚔️ General Combat', resultsHTML, message + combatSkillMessage, `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
                     return;
                 }
                 
@@ -1823,7 +1794,7 @@ Object.assign(game, {
                 if (this._hasWarBanner(hero)) {
                     combatSkillMessage += `<br><br><span style="color: #a78bfa; font-weight: bold;">🚩 WAR BANNER OF VALOR</span><br><span style="color: #d4af37;">${hero.name} ignores all wounds and penalties!</span>`;
                     this.addLog(`🚩 War Banner of Valor: ${hero.name} ignores Hero Defeated penalties from ${general.name}!`);
-                    this.showCombatResults(resultsHTML, message + combatSkillMessage);
+                    this.showCombatResults('⚔️ General Combat', resultsHTML, message + combatSkillMessage, `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
                     return;
                 }
                 
@@ -1869,14 +1840,14 @@ Object.assign(game, {
                     this.soloFromGroupAttack = false;
                 }
                 
-                this.showCombatResults(resultsHTML, message + combatSkillMessage);
+                this.showCombatResults('⚔️ General Combat', resultsHTML, message + combatSkillMessage, `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
                 return; // Skip immediate wound application - modal handles it
                 
                 // OLD CODE BELOW IS UNREACHABLE - Kept for reference only
                 // All penalty application now goes through group penalty modal
             }
             
-            this.showCombatResults(resultsHTML, message + combatSkillMessage);
+            this.showCombatResults('⚔️ General Combat', resultsHTML, message + combatSkillMessage, `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         }
         
         // IMPORTANT: Don't call closeCombat() - let the user close the results modal
@@ -1905,7 +1876,7 @@ Object.assign(game, {
         }
     },
     
-    showCombatResults(resultsHTML, summaryText, hideDefaultButtons) {
+    showCombatResults(title, resultsHTML, summaryText, buttonsHTML, hideClose) {
         console.log('showCombatResults called');
         console.log('summaryText:', summaryText);
         
@@ -1916,12 +1887,17 @@ Object.assign(game, {
             return;
         }
         
+        const titleHTML = title
+            ? `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:1.15em;color:#d4af37;margin-bottom:8px;">${title}</div>`
+            : '';
+        
         content.innerHTML = `
+            ${titleHTML}
             ${resultsHTML}
-            <div style="text-align: center; font-size: 1.1em; color: #ffd700; margin-top: 15px; 
-                        padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                ${summaryText}
+            <div style="margin-top:10px; padding:10px 14px; background:linear-gradient(135deg,#5c3d2e,#4a2f20); border:2px solid #8b7355; border-radius:8px; text-align:center;">
+                <span class="hero-banner-name" style="font-size:0.95em">${summaryText}</span>
             </div>
+            ${buttonsHTML || ''}
         `;
         
         const modal = document.getElementById('combat-results-modal');
@@ -1931,11 +1907,12 @@ Object.assign(game, {
             return;
         }
         
-        // Hide default Continue button and X close when re-roll prompt is active
+        // Always hide default Continue button (buttons are injected inline)
+        // Hide X close button when a decision is required (hideClose=true)
         const defaultBtn = modal.querySelector('.modal-content > .btn-primary');
         const closeBtn = modal.querySelector('.modal-close-btn');
-        if (defaultBtn) defaultBtn.style.display = hideDefaultButtons ? 'none' : '';
-        if (closeBtn) closeBtn.style.display = hideDefaultButtons ? 'none' : '';
+        if (defaultBtn) defaultBtn.style.display = 'none';
+        if (closeBtn) closeBtn.style.display = hideClose ? 'none' : '';
         
         modal.classList.add('active');
         console.log('Combat results modal activated, classList:', modal.classList.toString());

@@ -1945,12 +1945,15 @@ Object.assign(game, {
             let cls = 'lt-box';
             if (isLost) cls += ' lost';
             if (isMajor) cls += ' major';
-            const marker = isActive ? `<span class="lt-marker" style="background:${tokenColor}">${emoji}</span>` : '';
-            trackerHTML += `<div class="${cls}">${marker}${n}</div>`;
+            const bg = isLost ? 'rgba(139,115,85,0.1)' : isMajor ? 'rgba(220,38,38,0.2)' : 'rgba(139,115,85,0.1)';
+            const border = isLost ? '2px solid #8b7355' : isMajor ? '2px solid #b91c1c' : '2px solid #8b7355';
+            const opacity = isLost ? '0.35' : '1';
+            const marker = isActive ? `<span class="lt-marker" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;border:2px solid rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:1.05em;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,0.4);background:${tokenColor};">${emoji}</span>` : '';
+            trackerHTML += `<div class="${cls}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px;border:${border};background:${bg};font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.05em;color:#3d2b1f;position:relative;opacity:${opacity};flex-shrink:0;">${marker}${n}</div>`;
         }
         // Skull box
-        const skullMarker = general.defeated ? `<span class="lt-marker" style="background:${tokenColor}">${emoji}</span>` : '';
-        trackerHTML += `<div class="lt-box skull">${skullMarker}☠️</div>`;
+        const skullMarker = general.defeated ? `<span class="lt-marker" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;border:2px solid rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:1.05em;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,0.4);background:${tokenColor};">${emoji}</span>` : '';
+        trackerHTML += `<div class="lt-box skull" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px;border:2px solid #7c3aed;background:rgba(88,28,135,0.35);font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.05em;color:#3d2b1f;position:relative;flex-shrink:0;">${skullMarker}☠️</div>`;
 
         // Wound type
         let woundLabel, woundDesc;
@@ -1971,7 +1974,7 @@ Object.assign(game, {
             <div class="combat-results-label">Combat Results:</div>
             <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;color:#2c1810;margin:4px 0;">
                 <div style="display:flex;align-items:center;gap:6px;font-size:0.9em;">${tokenCircle}<span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${tokenColor};">${general.name}</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#b91c1c;">— ${woundCount}</span></div>
-                <div class="lt-tracker">${trackerHTML}</div>
+                <div class="lt-tracker" style="display:flex;gap:4px;justify-content:center;margin:6px 0 4px 0;flex-wrap:wrap;">${trackerHTML}</div>
                 <div style="margin-top:2px;font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.15em;color:#1a0f0a;">${woundLabel}</strong> ${woundDesc}</div>
                 <div style="margin-top:4px;font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.15em;color:#1a0f0a;">Combat Skill:</strong> ${meta.combatSkillDesc}</div>
             </div>`;

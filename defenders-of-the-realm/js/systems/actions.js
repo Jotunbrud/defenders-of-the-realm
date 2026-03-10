@@ -735,11 +735,12 @@ Object.assign(game, {
             : `${heroRewards.length} contributing heroes receive 3 cards each:`;
         
         let html = `
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">
-                ${generalName} has been vanquished!
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:1.15em;color:#d4af37;margin-bottom:4px;">
+                🎉 General Defeated — Rewards!
             </div>
-            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
-                ${rewardText}
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:0.85em;color:#d4af37;margin-bottom:12px;">
+                ${generalName.toUpperCase()} HAS BEEN VANQUISHED!<br>
+                <span style="font-weight:400;font-size:0.9em;">${rewardText}</span>
             </div>
         `;
         
@@ -774,7 +775,7 @@ Object.assign(game, {
             `;
         });
         
-        content.innerHTML = html;
+        content.innerHTML = html + `<button class="phb" style="margin-top:12px;width:100%;" onclick="game.closeGeneralRewardModal()">Continue</button>`;
         modal.classList.add('active');
     },
     

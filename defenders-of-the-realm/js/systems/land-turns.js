@@ -326,10 +326,10 @@ Object.assign(game, {
                 }
                 this.taintCrystalsRemaining++;
                 this.addLog(`${hero.name} removed taint crystal at ${locationName}! (${roll1}, ${roll2})`);
-                this.showCombatResults(diceHTML, `✨ SUCCESS! Taint Crystal Removed! ✨`);
+                this.showCombatResults('✨ Taint Removal', diceHTML, '✨ SUCCESS! Taint Crystal Removed! ✨', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
             } else {
                 this.addLog(`${hero.name} failed to heal the land at ${locationName}. (${roll1}, ${roll2})`);
-                this.showCombatResults(diceHTML, `❌ Failed - Taint remains`);
+                this.showCombatResults('❌ Taint Removal', diceHTML, '❌ Failed - Taint remains', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
             }
             
             this.actionsRemaining--;
@@ -472,10 +472,10 @@ Object.assign(game, {
             }
             this.taintCrystalsRemaining++;
             this.addLog(`Taint removed at ${locationName}! Discarded ${cardToRemove.name}. (${rolls.join(', ')})`);
-            this.showCombatResults(diceHTML, `✨ SUCCESS! Taint Crystal Removed! ✨`);
+            this.showCombatResults('✨ Taint Removal', diceHTML, '✨ SUCCESS! Taint Crystal Removed! ✨', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         } else {
             this.addLog(`Failed at ${locationName}! Lost ${cardToRemove.name}. (${rolls.join(', ')})`);
-            this.showCombatResults(diceHTML, `❌ Failed - Card Lost, Taint Remains`);
+            this.showCombatResults('❌ Taint Removal', diceHTML, '❌ Failed - Card Lost, Taint Remains', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         }
         
         // Close the card selection modal

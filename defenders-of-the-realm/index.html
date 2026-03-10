@@ -201,13 +201,13 @@
     <!-- General Card Selection Modal -->
     <div class="modal" id="general-card-selection-modal" style="z-index: 12000;">
         <div class="modal-content" style="max-width: 600px;">
-            <h2 class="modal-title">⚔️ Select Cards for Attack</h2>
+            <div class="modal-title-bar" id="general-card-selection-title">⚔️ Select Cards for Attack</div>
             <div id="general-card-selection-content"></div>
             <div id="general-card-selection-buttons" style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn btn-primary" style="flex: 1;" onclick="game.confirmGeneralAttack();">
+                <button class="phb" style="flex: 1;" onclick="game.confirmGeneralAttack();">
                     ⚔️ Attack
                 </button>
-                <button class="btn" style="flex: 1;" onclick="game.cancelGeneralAttack()">
+                <button class="phb" style="flex: 1;" onclick="game.cancelGeneralAttack()">
                     Cancel
                 </button>
             </div>
@@ -773,9 +773,8 @@
     <!-- General Defeat Reward Modal -->
     <div id="general-reward-modal" class="modal" style="z-index: 16000;">
         <div class="modal-content" style="max-width: 700px;">
-            <h2 class="modal-title">🎉 General Defeated - Rewards! 🎉</h2>
+            <div class="modal-title-bar">🎉 General Defeated — Rewards!</div>
             <div id="general-reward-content"></div>
-            <button class="btn btn-primary" onclick="game.closeGeneralRewardModal()" style="width: 100%; margin-top: 15px;">Continue</button>
         </div>
     </div>
     

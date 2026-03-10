@@ -197,7 +197,8 @@ Object.assign(game, {
             currentSelectionHeroIndex: 0,
             totalDamage: 0,
             attackOrder: [], // Will determine who attacks when
-            initiatorPlayerIndex: this.currentPlayerIndex // Track who started the attack
+            initiatorPlayerIndex: this.currentPlayerIndex, // Track who started the attack
+            hitReq: null // Set when first attacker rolls
         };
         
         // Store general for modal
@@ -220,68 +221,67 @@ Object.assign(game, {
         
         // Show modal for this hero to select cards
         const modal = document.getElementById('general-card-selection-modal');
-        const title = modal.querySelector('.modal-title');
+        const title = document.getElementById('general-card-selection-title');
         const cardsContent = document.getElementById('general-card-selection-content');
         
-        title.textContent = `🤝 Group Attack - ${hero.name}: Select ${general.color} Cards (${this.groupAttack.currentSelectionHeroIndex + 1}/${this.groupAttack.heroes.length})`;
+        title.textContent = `⚔️ Group Attack — ${hero.name} (${this.groupAttack.currentSelectionHeroIndex + 1}/${this.groupAttack.heroes.length})`;
         
         // Render cards
         const cardColorMap = {
             'red': '#dc2626',
             'blue': '#2563eb',
             'green': '#16a34a',
-            'black': '#1f2937'
+            'black': '#374151'
         };
         
         if (applicableCards.length === 0) {
             cardsContent.innerHTML = `
-                <div style="padding: 20px; background: rgba(255,0,0,0.2); border-radius: 8px; margin: 15px 0;">
-                    <strong>⚠️ ${hero.name} has no ${general.color} cards!</strong><br>
-                    <span style="font-size: 0.9em;">Cannot contribute to attack against ${general.name}.</span>
+                <div style="padding:14px;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.4);border-radius:6px;font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;">
+                    ⚠️ <strong>${hero.name}</strong> has no ${general.color} cards and cannot contribute to this attack.
                 </div>
             `;
         } else {
             // Check for Amarak's Blessing
             const amarakQuest = this._findAmarakBlessingQuest ? this._findAmarakBlessingQuest() : null;
-            const amarakHTML = amarakQuest && general.combatSkill && !this._amarakBlessingActive ? `
-                <div style="margin: 10px 0; padding: 10px; background: rgba(147,51,234,0.15); border: 2px solid #9333ea; border-radius: 6px; text-align: center;">
-                    <div style="color: #c084fc; font-weight: bold; margin-bottom: 6px;">📜 Amarak's Blessing Available</div>
-                    <div style="color: #d4af37; font-size: 0.85em; margin-bottom: 8px;">
-                        Ignore <strong>${general.name}'s</strong> combat skill: <strong>${general.combatSkillName}</strong>
-                    </div>
-                    <div style="color: #999; font-size: 0.8em; margin-bottom: 8px;">
-                        (Does not affect Hero Defeated penalty)
-                    </div>
-                    <button class="btn btn-primary" style="background: #9333ea; padding: 6px 16px;" onclick="game._useAmarakBlessing()">
-                        📜 Use Blessing
-                    </button>
-                </div>
-            ` : '';
-            const amarakActiveHTML = this._amarakBlessingActive && general.combatSkill ? `
-                <div style="margin: 10px 0; padding: 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 5px; text-align: center;">
-                    <span style="color: #c084fc; font-weight: bold;">📜 Amarak's Blessing Active — ${general.combatSkillName} Ignored!</span>
-                </div>
-            ` : '';
-            
+            let amarakHTML = '';
+            if (amarakQuest && general.combatSkill && !this._amarakBlessingActive) {
+                amarakHTML = `
+                    <div style="margin-bottom:10px;padding:8px 10px;background:rgba(147,51,234,0.15);border:2px solid #9333ea;border-radius:6px;text-align:center;">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#c084fc;margin-bottom:4px;">📜 Amarak's Blessing Available</div>
+                        <div style="font-family:'Comic Sans MS',cursive;font-size:0.75em;color:#d4af37;margin-bottom:6px;">Ignore <strong>${general.name}'s</strong> combat skill: <strong>${general.combatSkillName}</strong></div>
+                        <button class="phb" style="padding:4px 14px;font-size:0.8em;" onclick="game._useAmarakBlessing()">📜 Use Blessing</button>
+                    </div>`;
+            } else if (this._amarakBlessingActive && general.combatSkill) {
+                amarakHTML = `
+                    <div style="margin-bottom:10px;padding:6px 10px;background:rgba(147,51,234,0.2);border:1px solid #9333ea;border-radius:5px;text-align:center;">
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#c084fc;">📜 Amarak's Blessing Active — ${general.combatSkillName} Ignored!</span>
+                    </div>`;
+            }
+
             cardsContent.innerHTML = `
-                <div style="margin-bottom: 15px; color: #d4af37;">
-                    Select ${general.color} cards for ${hero.name} (vs ${general.name}):
+                <div style="font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;margin-bottom:8px;">
+                    Select <strong>${general.color}</strong> cards for <strong>${hero.name}</strong> (vs ${general.name}):
                 </div>
                 ${amarakHTML}
-                ${amarakActiveHTML}
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
                     ${applicableCards.map((card) => {
                         const actualIndex = hero.cards.indexOf(card);
                         const isSelected = this.selectedCardsForAttack.includes(actualIndex);
+                        const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[card.color] || '#8b7355', text: cardColorMap[card.color] || '#8b7355' };
+                        const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+                        const selectedStyle = isSelected ? 'outline:3px solid #d4af37;box-shadow:0 0 12px rgba(212,175,55,0.5);' : shadow;
+                        const diceHTML = Array.from({ length: card.dice }).map(() =>
+                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+                        ).join('');
                         return `
-                            <div class="card-select-item ${isSelected ? 'selected' : ''}"
-                                 onclick="game.toggleCardForGroupAttack(${actualIndex})"
-                                 style="border: 3px solid ${(card.special ? '#9333ea' : (cardColorMap[card.color] || '#666'))}; cursor: pointer; padding: 10px; border-radius: 8px; text-align: center; background: rgba(0,0,0,0.3); ${isSelected ? 'background: rgba(255,215,0,0.2);' : ''}">
-                                <div style="font-size: 2em; margin-bottom: 5px;">${card.icon}</div>
-                                <div style="font-weight: bold; color: ${(card.special ? '#9333ea' : (cardColorMap[card.color] || '#666'))};">${card.name}</div>
-                                <div style="font-size: 0.9em; color: #999;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'}</div>
-                            </div>
-                        `;
+                            <div onclick="game.toggleCardForGroupAttack(${actualIndex})"
+                                 style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${isSelected ? '#d4af37' : cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${selectedStyle}"
+                                 onmouseover="this.style.borderColor='#d4af37'"
+                                 onmouseout="this.style.borderColor='${isSelected ? '#d4af37' : cc.border}'">
+                                <div style="font-size:1.2em;margin-bottom:2px">${card.special ? '🌟' : (card.icon || '🎴')}</div>
+                                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                                <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                            </div>`;
                     }).join('')}
                 </div>
             `;
@@ -290,13 +290,13 @@ Object.assign(game, {
         // Update buttons for group attack mode
         const buttonsContainer = document.getElementById('general-card-selection-buttons');
         buttonsContainer.innerHTML = `
-            <button class="btn btn-primary" style="flex: 1;" onclick="game.confirmGroupCardSelection();">
+            <button class="phb" style="flex:1;" onclick="game.confirmGroupCardSelection();">
                 ✓ Commit Cards (${this.selectedCardsForAttack.length})
             </button>
-            <button class="btn btn-primary" style="flex: 1;" onclick="game.skipHeroInGroupAttack();">
+            <button class="phb" style="flex:1;" onclick="game.skipHeroInGroupAttack();">
                 ⏭️ Skip ${hero.name}
             </button>
-            <button class="btn" style="flex: 1;" onclick="game.cancelGeneralAttack()">
+            <button class="phb" style="flex:1;" onclick="game.cancelGeneralAttack()">
                 ✕ Cancel Attack
             </button>
         `;
@@ -577,12 +577,6 @@ Object.assign(game, {
         if (hero.name === 'Dwarf') {
             this.dwarfDragonSlayerUsed = false;
         }
-        // Reset Battle Luck check for each hero's roll
-        this._battleLuckChecked = false;
-        this._pendingBattleLuck = null;
-        // Reset Unicorn Steed re-roll for each hero's roll
-        this._unicornSteedRerollUsed = false;
-        this._pendingUnicornReroll = null;
         // Reset combat bonus dice for each hero
         this._combatBonusDiceActive = false;
         
@@ -676,6 +670,7 @@ Object.assign(game, {
         const ambushBonusGroup = this._getAmbushBonus(hero, 'general', general.faction);
         const questBonusGroup = this._getQuestCombatBonus(hero);
         const hitReq = Math.max(2, getGeneralHitRequirement(general.faction) - this._getWoodsLoreBonus(hero) - ambushBonusGroup - questBonusGroup);
+        if (this.groupAttack && this.groupAttack.hitReq === null) this.groupAttack.hitReq = hitReq;
         if (this._getWoodsLoreBonus(hero) > 0) {
             this.addLog(`🏹 Woods Lore: ${hero.name} gains +1 to all attack rolls in ${hero.location}!`);
         }
@@ -715,38 +710,28 @@ Object.assign(game, {
                 damage: damage
             };
             
+            const _erDieClass = { green: 'die-green', black: 'die-black', red: 'die-red', blue: 'die-blue' }[general.color] || 'die-black';
+            const _erInlineBg = { 'die-green': 'linear-gradient(145deg,#16a34a,#15803d)', 'die-black': 'linear-gradient(145deg,#374151,#1f2937)', 'die-red': 'linear-gradient(145deg,#dc2626,#991b1b)', 'die-blue': 'linear-gradient(145deg,#3b82f6,#1d4ed8)' }[_erDieClass];
             let diceHTML = '';
             diceRolls.forEach(d => {
-                diceHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
+                const missStyle = d.hit ? '' : ' die-fade-miss';
+                const opacity = d.hit ? '1' : '0.28';
+                diceHTML += `<div class="die ${_erDieClass}${missStyle}" style="background:${_erInlineBg};opacity:${opacity};">${d.roll}</div>`;
             });
-            
-            const rerollHTML = `
-                <div style="margin: 20px 0;">
-                    <div style="color: ${hero.color}; margin-bottom: 8px; font-weight: bold;">
-                        ${hero.symbol} ${hero.name}'s Roll
-                    </div>
-                    ${questBonusGroup > 0 ? '<div style="text-align: center; margin-bottom: 8px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>' : ''}
-                    <div style="color: #d4af37; margin-bottom: 8px;">
-                        ${totalDice} dice | Need: ${hitReq}+ to hit
-                    </div>
-                    <div class="dice-result-container">${diceHTML}</div>
-                    <div style="text-align: center; margin-top: 8px; color: #ffd700;">${damage} hit(s)</div>
-                </div>
-                <div style="background: rgba(245, 158, 11, 0.2); padding: 14px; border: 2px solid #f59e0b; border-radius: 8px;">
-                    <div style="color: #f59e0b; font-weight: bold; margin-bottom: 8px;">⚔️ Ground Attack — Re-roll Available!</div>
-                    <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">You may re-roll ALL dice once. This cannot be undone.</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.eagleRerollGroupCombat()">
-                            🎲 Re-roll All Dice
-                        </button>
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.acceptGroupCombatRoll()">
-                            ✓ Accept Roll
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            this.showCombatResults(rerollHTML, `🦅 Eagle Rider vs ${general.name} (Group Attack)`, true);
+
+            const rerollHTML = `<div class="parchment-box" style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355;border-radius:8px;padding:10px;">
+                <div class="parchment-banner" style="background:linear-gradient(135deg,#5c3d2ecc 0%,#4a2f20cc 100%);padding:6px 14px;margin:-10px -10px 10px -10px;border-radius:8px 8px 0 0;border-bottom:2px solid #8b7355;text-align:center;"><span class="hero-banner-name" style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9);letter-spacing:1.5px;">Combat Roll</span></div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">${general.name.toUpperCase()} — ${hitReq}+ to Hit</div>
+                <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
+                ${questBonusGroup > 0 ? `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>` : ''}
+                <div class="dice-row" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0;">${diceHTML}</div>
+                ${this._buildGeneralResultsPip(general, damage)}
+            </div>`;
+
+            this.showCombatResults('💥 Attack General', rerollHTML, '',
+                `<button class="phb" style="margin-top:8px;" onclick="game.eagleRerollGroupCombat()">Ground Attack (Re-Roll All Dice)</button>
+                 <button class="phb" style="margin-top:6px;" onclick="game.acceptGroupCombatRoll()">Continue</button>`,
+                true);
             return;
         }
         
@@ -770,39 +755,29 @@ Object.assign(game, {
                 damage: damage
             };
             
+            const _dsDieClass = { green: 'die-green', black: 'die-black', red: 'die-red', blue: 'die-blue' }[general.color] || 'die-black';
+            const _dsInlineBg = { 'die-green': 'linear-gradient(145deg,#16a34a,#15803d)', 'die-black': 'linear-gradient(145deg,#374151,#1f2937)', 'die-red': 'linear-gradient(145deg,#dc2626,#991b1b)', 'die-blue': 'linear-gradient(145deg,#3b82f6,#1d4ed8)' }[_dsDieClass];
             let dwarfDiceHTML = '';
             diceRolls.forEach(d => {
-                dwarfDiceHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
+                const missStyle = d.hit ? '' : ' die-fade-miss';
+                const opacity = d.hit ? '1' : '0.28';
+                dwarfDiceHTML += `<div class="die ${_dsDieClass}${missStyle}" style="background:${_dsInlineBg};opacity:${opacity};">${d.roll}</div>`;
             });
             const failedGroupCount = diceRolls.filter(r => !r.hit).length;
-            
-            const rerollHTML = `
-                <div style="margin: 20px 0;">
-                    <div style="color: ${hero.color}; margin-bottom: 8px; font-weight: bold;">
-                        ${hero.symbol} ${hero.name}'s Roll
-                    </div>
-                    ${questBonusGroup > 0 ? '<div style="text-align: center; margin-bottom: 8px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>' : ''}
-                    <div style="color: #d4af37; margin-bottom: 8px;">
-                        ${totalDice} dice | Need: ${hitReq}+ to hit
-                    </div>
-                    <div class="dice-result-container">${dwarfDiceHTML}</div>
-                    <div style="text-align: center; margin-top: 8px; color: #ffd700;">${damage} hit(s)</div>
-                </div>
-                <div style="background: rgba(180, 83, 9, 0.2); padding: 14px; border: 2px solid #b45309; border-radius: 8px;">
-                    <div style="color: #b45309; font-weight: bold; margin-bottom: 8px;">⛏️ Dragon Slayer — Re-roll Available!</div>
-                    <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedGroupCount} failed dice against ${general.name}. This cannot be undone.</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.dwarfRerollGroupCombat()">
-                            🎲 Re-roll Failed Dice
-                        </button>
-                        <button class="btn btn-primary" style="flex: 1;" onclick="game.acceptGroupCombatRoll()">
-                            ✓ Accept Roll
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            this.showCombatResults(rerollHTML, `⛏️ Dwarf vs ${general.name} (Group Attack)`, true);
+
+            const rerollHTML = `<div class="parchment-box" style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355;border-radius:8px;padding:10px;">
+                <div class="parchment-banner" style="background:linear-gradient(135deg,#5c3d2ecc 0%,#4a2f20cc 100%);padding:6px 14px;margin:-10px -10px 10px -10px;border-radius:8px 8px 0 0;border-bottom:2px solid #8b7355;text-align:center;"><span class="hero-banner-name" style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9);letter-spacing:1.5px;">Combat Roll</span></div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">${general.name.toUpperCase()} — ${hitReq}+ to Hit</div>
+                <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
+                ${questBonusGroup > 0 ? `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>` : ''}
+                <div class="dice-row" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0;">${dwarfDiceHTML}</div>
+                ${this._buildGeneralResultsPip(general, damage)}
+            </div>`;
+
+            this.showCombatResults('💥 Attack General', rerollHTML, '',
+                `<button class="phb" style="margin-top:8px;" onclick="game.dwarfRerollGroupCombat()">Dragon Slayer (Re-Roll ${failedGroupCount} Failed Dice)</button>
+                 <button class="phb" style="margin-top:6px;" onclick="game.acceptGroupCombatRoll()">Continue</button>`,
+                true);
             return;
         }
         // ================================
@@ -879,26 +854,31 @@ Object.assign(game, {
             const hasFailedDice = diceRolls.some(r => !r.hit);
             if (blCard && hasFailedDice) {
                 const failedCount = diceRolls.filter(r => !r.hit).length;
+                const _blDieClass = { green: 'die-green', black: 'die-black', red: 'die-red', blue: 'die-blue' }[general.color] || 'die-black';
+                const _blInlineBg = { 'die-green': 'linear-gradient(145deg,#16a34a,#15803d)', 'die-black': 'linear-gradient(145deg,#374151,#1f2937)', 'die-red': 'linear-gradient(145deg,#dc2626,#991b1b)', 'die-blue': 'linear-gradient(145deg,#3b82f6,#1d4ed8)' }[_blDieClass];
                 let dicePreviewHTML = '';
                 diceRolls.forEach(d => {
-                    dicePreviewHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
+                    const missStyle = d.hit ? '' : ' die-fade-miss';
+                    const opacity = d.hit ? '1' : '0.28';
+                    dicePreviewHTML += `<div class="die ${_blDieClass}${missStyle}" style="background:${_blInlineBg};opacity:${opacity};">${d.roll}</div>`;
                 });
                 this._pendingBattleLuck = { type: 'group_general', hero, general, cardsToUse, totalDice, hitReq, diceRolls, damage, battleLuckCard: blCard };
-                const rerollHTML = `
-                    <div style="margin: 20px 0;">
-                        <div style="color: ${hero.color}; margin-bottom: 8px; font-weight: bold;">${hero.symbol} ${hero.name}'s Roll</div>
-                        ${this._getQuestCombatBonus(hero) > 0 ? '<div style="text-align: center; margin-bottom: 8px; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>' : ''}
-                        <div style="color: #d4af37; margin-bottom: 8px;">${totalDice} dice | Need: ${hitReq}+ to hit</div>
-                        <div class="dice-result-container">${dicePreviewHTML}</div>
-                        <div style="text-align: center; margin-top: 8px; color: #ffd700;">${damage} hit(s)</div>
-                    </div>
-                    ${this._buildBattleLuckHTML(blCard, failedCount)}
-                `;
-                this.showCombatResults(rerollHTML, `${hero.name} vs ${general.name} — Battle Luck? (Group)`, true);
+                const rerollHTML = `<div class="parchment-box" style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355;border-radius:8px;padding:10px;">
+                    <div class="parchment-banner" style="background:linear-gradient(135deg,#5c3d2ecc 0%,#4a2f20cc 100%);padding:6px 14px;margin:-10px -10px 10px -10px;border-radius:8px 8px 0 0;border-bottom:2px solid #8b7355;text-align:center;"><span class="hero-banner-name" style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9);letter-spacing:1.5px;">Combat Roll</span></div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">${general.name.toUpperCase()} — ${hitReq}+ to Hit</div>
+                    <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
+                    ${this._getQuestCombatBonus(hero) > 0 ? `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>` : ''}
+                    <div class="dice-row" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0;">${dicePreviewHTML}</div>
+                    ${this._buildGeneralResultsPip(general, damage)}
+                </div>`;
+                this.showCombatResults('💥 Attack General', rerollHTML, '',
+                    `<button class="phb" style="margin-top:8px;" onclick="game.useBattleLuck()">Battle Luck (Re-Roll ${failedCount} Failed Dice)</button>
+                     <button class="phb" style="margin-top:6px;" onclick="game.declineBattleLuck()">Continue</button>`,
+                    true);
                 return;
             }
         }
-        this._battleLuckChecked = false;
+        if (!this.groupAttack) this._battleLuckChecked = false;
         
         // Unicorn Steed: re-roll ALL failed dice once per combat (not against Varkolak)
         if (!this._unicornSteedRerollUsed && (general.combatSkill !== 'no_rerolls' || this._amarakBlessingActive)) {
@@ -906,37 +886,31 @@ Object.assign(game, {
                 const hasFailedDice = diceRolls.some(r => !r.hit);
                 if (hasFailedDice) {
                     const failedCount = diceRolls.filter(r => !r.hit).length;
+                    const _usDieClass = { green: 'die-green', black: 'die-black', red: 'die-red', blue: 'die-blue' }[general.color] || 'die-black';
+                    const _usInlineBg = { 'die-green': 'linear-gradient(145deg,#16a34a,#15803d)', 'die-black': 'linear-gradient(145deg,#374151,#1f2937)', 'die-red': 'linear-gradient(145deg,#dc2626,#991b1b)', 'die-blue': 'linear-gradient(145deg,#3b82f6,#1d4ed8)' }[_usDieClass];
                     let dicePreviewHTML = '';
                     diceRolls.forEach(d => {
-                        dicePreviewHTML += `<div class="die-result ${d.hit ? 'hit' : 'miss'}">${d.roll}</div>`;
+                        const missStyle = d.hit ? '' : ' die-fade-miss';
+                        const opacity = d.hit ? '1' : '0.28';
+                        dicePreviewHTML += `<div class="die ${_usDieClass}${missStyle}" style="background:${_usInlineBg};opacity:${opacity};">${d.roll}</div>`;
                     });
                     this._pendingUnicornReroll = { type: 'group_general', hero, general, cardsToUse, totalDice, hitReq, diceRolls, damage };
-                    const rerollHTML = `
-                        <div style="margin: 20px 0;">
-                            <div style="color: ${hero.color}; margin-bottom: 8px; font-weight: bold;">${hero.symbol} ${hero.name}'s Roll</div>
-                            <div style="color: #d4af37; margin-bottom: 8px;">${totalDice} dice | Need: ${hitReq}+ to hit</div>
-                            <div class="dice-result-container">${dicePreviewHTML}</div>
-                            <div style="text-align: center; margin-top: 8px; color: #ffd700;">${damage} hit(s)</div>
-                        </div>
-                        <div style="background: rgba(212,175,55,0.2); padding: 14px; border: 2px solid #d4af37; border-radius: 8px; margin-top: 10px;">
-                            <div style="color: #d4af37; font-weight: bold; margin-bottom: 8px;">🦄 Unicorn Steed — Re-roll Available!</div>
-                            <div style="color: #d4af37; font-size: 0.9em; margin-bottom: 12px;">Re-roll ${failedCount} failed dice. This cannot be undone.</div>
-                            <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-primary" style="flex: 1; background: #b45309;" onclick="game._useUnicornSteedReroll()">
-                                    🦄 Re-roll Failed Dice
-                                </button>
-                                <button class="btn btn-primary" style="flex: 1;" onclick="game._declineUnicornSteedReroll()">
-                                    ✓ Accept Roll
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    this.showCombatResults(rerollHTML, `${hero.name} vs ${general.name} — Unicorn Steed? (Group)`, true);
+                    const rerollHTML = `<div class="parchment-box" style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355;border-radius:8px;padding:10px;">
+                        <div class="parchment-banner" style="background:linear-gradient(135deg,#5c3d2ecc 0%,#4a2f20cc 100%);padding:6px 14px;margin:-10px -10px 10px -10px;border-radius:8px 8px 0 0;border-bottom:2px solid #8b7355;text-align:center;"><span class="hero-banner-name" style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9);letter-spacing:1.5px;">Combat Roll</span></div>
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">${general.name.toUpperCase()} — ${hitReq}+ to Hit</div>
+                        <div style="background:linear-gradient(135deg,${hero.color}cc 0%,${hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${hero.symbol} ${hero.name.toUpperCase()}</span></div>
+                        <div class="dice-row" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0;">${dicePreviewHTML}</div>
+                        ${this._buildGeneralResultsPip(general, damage)}
+                    </div>`;
+                    this.showCombatResults('💥 Attack General', rerollHTML, '',
+                        `<button class="phb" style="margin-top:8px;" onclick="game._useUnicornSteedReroll()">Unicorn Steed (Re-Roll ${failedCount} Failed Dice)</button>
+                         <button class="phb" style="margin-top:6px;" onclick="game._declineUnicornSteedReroll()">Continue</button>`,
+                        true);
                     return;
                 }
             }
         }
-        this._unicornSteedRerollUsed = false;
+        if (!this.groupAttack) this._unicornSteedRerollUsed = false;
         
         // GORGUTT PARRY (applies to each hero individually)
         let parryMessage = '';
@@ -990,6 +964,8 @@ Object.assign(game, {
     
     resolveGroupAttack() {
         console.log('=== === === resolveGroupAttack CALLED === === ===');
+        this._battleLuckChecked = false;
+        this._unicornSteedRerollUsed = false;
         const general = this.groupAttack.general;
         const totalDamage = this.groupAttack.totalDamage;
         
@@ -999,76 +975,60 @@ Object.assign(game, {
         
         // Apply damage to general
         general.health -= totalDamage;
+        if (general.health <= 0) {
+            general.health = 0;
+            general.defeated = true;
+        }
         
         // Set wound info if general survived
-        if (general.health > 0 && totalDamage > 0) {
+        if (!general.defeated && totalDamage > 0) {
             const initiatorIdx = this.groupAttack.initiatorPlayerIndex !== undefined 
                 ? this.groupAttack.initiatorPlayerIndex : this.currentPlayerIndex;
             this._setGeneralWound(general, initiatorIdx);
         }
         
         this.addLog(`🤝 GROUP ATTACK TOTAL: ${totalDamage} damage to ${general.name}!`);
-        
-        // Build results message with dice rolls
-        let resultsHTML = '<div style="margin: 20px 0;"><h3 style="color: #ffd700;">🤝 Group Attack Results</h3>';
-        
-        // Show active bonus banners (consistent with minion combat)
-        const groupBonusHeroes = this.groupAttack.heroContributions.map(c => c.hero);
-        const anyWoodsLore = groupBonusHeroes.some(h => this._getWoodsLoreBonus(h) > 0);
-        const anyAmulet = groupBonusHeroes.some(h => this._getQuestCombatBonus(h) > 0);
-        const anyAmbush = groupBonusHeroes.some(h => h.name === 'Sorceress');
-        if (anyWoodsLore) {
-            resultsHTML += '<div style="text-align: center; margin: 8px 0; padding: 6px; background: rgba(21,128,61,0.2); border: 1px solid #15803d; border-radius: 5px;"><span style="color: #4ade80; font-weight: bold;">🏹 Woods Lore: +1 to all rolls</span></div>';
-        }
-        if (anyAmulet) {
-            resultsHTML += '<div style="text-align: center; margin: 8px 0; padding: 6px; background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; border-radius: 5px;"><span style="color: #a78bfa; font-weight: bold;">📜 Amulet of the Gods: +1 to all rolls</span></div>';
-        }
-        if (this._amarakBlessingActive && general.combatSkill) {
-            resultsHTML += `<div style="text-align: center; margin: 8px 0; padding: 6px; background: rgba(147,51,234,0.15); border: 1px solid #9333ea; border-radius: 5px;"><span style="color: #c084fc; font-weight: bold;">📜 Amarak's Blessing: ${general.combatSkillName} Ignored!</span></div>`;
-        }
-        
+
+        // Build results HTML — parchment-box with per-hero pips
+        const _grDieClass = { green: 'die-green', black: 'die-black', red: 'die-red', blue: 'die-blue' }[general.color] || 'die-black';
+        const _grInlineBg = { 'die-green': 'linear-gradient(145deg,#16a34a,#15803d)', 'die-black': 'linear-gradient(145deg,#374151,#1f2937)', 'die-red': 'linear-gradient(145deg,#dc2626,#991b1b)', 'die-blue': 'linear-gradient(145deg,#3b82f6,#1d4ed8)' }[_grDieClass];
+
+        const hitReqForDisplay = this.groupAttack.hitReq || '?';
+        let resultsHTML = `<div class="parchment-box" style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355;border-radius:8px;padding:10px;">
+            <div class="parchment-banner" style="background:linear-gradient(135deg,#5c3d2ecc 0%,#4a2f20cc 100%);padding:6px 14px;margin:-10px -10px 10px -10px;border-radius:8px 8px 0 0;border-bottom:2px solid #8b7355;text-align:center;"><span class="hero-banner-name" style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9);letter-spacing:1.5px;">Combat Roll</span></div>
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">${general.name.toUpperCase()} — ${hitReqForDisplay}+ to Hit</div>`;
+
         this.groupAttack.heroContributions.forEach(contrib => {
-            // Build per-hero bonus text
-            let heroBonuses = '';
-            if (this._getQuestCombatBonus(contrib.hero) > 0) heroBonuses += ' <span style="color: #a78bfa; font-size: 0.85em;">(Amulet +1)</span>';
-            if (this._getWoodsLoreBonus(contrib.hero) > 0) heroBonuses += ' <span style="color: #4ade80; font-size: 0.85em;">(Woods Lore +1)</span>';
-            
-            resultsHTML += `<div style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px;">
-                <strong style="color: ${contrib.hero.color};">${contrib.hero.symbol} ${contrib.hero.name}:</strong>${heroBonuses}`;
-            
-            // Show dice rolls if available
+            const hasAmulet = this._getQuestCombatBonus(contrib.hero) > 0;
+            const hasWoodsLore = this._getWoodsLoreBonus(contrib.hero) > 0;
+
+            resultsHTML += `<div style="background:linear-gradient(135deg,${contrib.hero.color}cc 0%,${contrib.hero.color}99 100%);padding:5px 10px;margin:6px 0 4px 0;border-radius:5px;border:1px solid rgba(0,0,0,0.3);"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">${contrib.hero.symbol} ${contrib.hero.name.toUpperCase()}</span></div>`;
+
+            if (hasAmulet) resultsHTML += `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">📜 Amulet of the Gods:</strong> +1 to all rolls</div>`;
+            if (hasWoodsLore) resultsHTML += `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin:2px 0 4px 0;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">🏹 Woods Lore:</strong> +1 to all rolls</div>`;
+
             if (contrib.diceRolls && contrib.diceRolls.length > 0) {
-                resultsHTML += `<div style="display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; justify-content: center;">`;
+                resultsHTML += `<div class="dice-row" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0;">`;
                 contrib.diceRolls.forEach(dice => {
-                    const bgColor = dice.hit ? '#4ade80' : '#ef4444';
-                    const textColor = dice.hit ? '#000' : '#fff';
-                    resultsHTML += `<div style="width: 35px; height: 35px; border: 2px solid #000; border-radius: 6px; 
-                        background: ${bgColor}; color: ${textColor}; display: flex; align-items: center; 
-                        justify-content: center; font-weight: bold; font-size: 1.2em;">${dice.roll}</div>`;
+                    const missStyle = dice.hit ? '' : ' die-fade-miss';
+                    const opacity = dice.hit ? '1' : '0.28';
+                    resultsHTML += `<div class="die ${_grDieClass}${missStyle}" style="background:${_grInlineBg};opacity:${opacity};">${dice.roll}</div>`;
                 });
                 resultsHTML += `</div>`;
             }
-            
-            resultsHTML += `<div style="margin-top: 5px;">
-                ${contrib.damage} damage
-                ${contrib.parryMessage || ''}
-            </div></div>`;
         });
-        
-        resultsHTML += `<div style="margin-top: 15px; padding: 15px; background: rgba(255,215,0,0.2); border-radius: 5px;">
-            <strong style="color: #ffd700; font-size: 1.2em;">Total Damage: ${totalDamage}</strong>
-        </div></div>`;
-        
+
+        resultsHTML += this._buildGeneralResultsPip(general, totalDamage);
+        resultsHTML += `</div>`;
+
         // Check if general defeated
-        if (general.health <= 0) {
-            general.health = 0;
-            general.defeated = true;
+        if (general.defeated) {
             delete this.generalWounds[general.color]; // Clear wounds on defeat
             this.updateWarStatus();
             const contributingHeroes = this.groupAttack.heroContributions
                 .filter(c => c.cardsUsed && c.cardsUsed.length > 0)
                 .map(c => c.hero);
-            
+
             const allDrawnCards = [];
             contributingHeroes.forEach(h => {
                 const drawnCards = [];
@@ -1081,12 +1041,13 @@ Object.assign(game, {
                 }
                 allDrawnCards.push({ hero: h, cards: drawnCards });
             });
-            
+
             this.pendingRewardCards = allDrawnCards;
             this.addLog(`${general.name} DEFEATED by group attack! ${contributingHeroes.length} contributing hero(es) draw 3 cards!`);
-            
-            this.showCombatResults(resultsHTML, `🎉 ${general.name} DEFEATED! 🎉<br><span style="color: #d4af37; font-size: 0.9em;">${contributingHeroes.length} contributing hero(es) draw 3 cards!</span>`);
-            
+
+            this.showCombatResults('💥 Attack General', resultsHTML, '',
+                `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+
             // Check victory condition
             const allGeneralsDefeated = this.generals.every(g => g.defeated);
             if (allGeneralsDefeated) {
@@ -1097,37 +1058,34 @@ Object.assign(game, {
             console.log('=== GENERAL SURVIVED - Setting up penalties ===');
             console.log('General:', general.name, 'Health:', general.health);
             console.log('Contributing heroes:', this.groupAttack.heroContributions.filter(c => c.cardsUsed && c.cardsUsed.length > 0).map(c => c.hero.name));
-            
+
             this.addLog(`${general.name} survived with ${general.health}/${general.maxHealth} life tokens`);
-            
+
             // Check Sapphire regeneration (group attack counts as single combat)
-            let combatSkillMessage = '';
             if (general.combatSkill === 'regeneration' && !this._amarakBlessingActive && totalDamage < general.maxHealth) {
                 const healedAmount = general.maxHealth - general.health;
                 general.health = general.maxHealth;
-                combatSkillMessage = `<br><br><span style="color: #ef4444; font-weight: bold;">⚡ REGENERATION!</span><br><span style="color: #d4af37;">${general.name} was not defeated and heals ${healedAmount} life token(s) back to full!</span>`;
                 this.addLog(`${general.name} regenerates to full health (${general.maxHealth}/${general.maxHealth})!`);
             }
-            
-            const message = `${totalDamage} total damage dealt! ${general.name} has ${general.health}/${general.maxHealth} life tokens remaining.${combatSkillMessage}`;
-            
+
             // Only heroes who contributed cards OR were cursed (committed cards but lost them all) suffer the penalty
             const penaltyHeroes = this.groupAttack.heroContributions
                 .filter(c => (c.cardsUsed && c.cardsUsed.length > 0) || c.cursedNoCards)
                 .map(c => c.hero);
-            
+
             // Store group for penalty application AND retreat
             this.pendingGroupPenalty = {
                 general: general,
                 heroes: penaltyHeroes,
                 retreatHeroes: penaltyHeroes // Only contributing heroes retreat
             };
-            
+
             console.log('=== pendingGroupPenalty SET ===');
             console.log('pendingGroupPenalty:', this.pendingGroupPenalty);
             console.log('pendingGroupPenalty.heroes:', this.pendingGroupPenalty.heroes);
-            
-            this.showCombatResults(resultsHTML, message);
+
+            this.showCombatResults('💥 Attack General', resultsHTML, '',
+                `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         }
         
         // Update UI
@@ -1248,89 +1206,64 @@ Object.assign(game, {
             'red': '#dc2626',
             'blue': '#2563eb',
             'green': '#16a34a',
-            'black': '#1f2937'
+            'black': '#374151'
         };
         
-        let html = `
-            <div style="margin-bottom: 20px;">
-                <div style="font-size: 1.2em; color: ${this.getGeneralColor(general.color)}; font-weight: bold;">
-                    Attacking ${general.name}
-                </div>
-                <div style="color: #d4af37; margin-top: 5px;">
-                    Select ${general.color} cards to use (you can use multiple cards to stack dice):
-                </div>
-            </div>
-        `;
         
-        // Amarak's Blessing button (any hero may hold it)
+        // Amarak's Blessing
         const amarakQuest = this._findAmarakBlessingQuest ? this._findAmarakBlessingQuest() : null;
+        let amarakHTML = '';
         if (amarakQuest && general.combatSkill && !this._amarakBlessingActive) {
-            html += `
-                <div style="margin: 0 0 12px 0; padding: 10px; background: rgba(147,51,234,0.15); border: 2px solid #9333ea; border-radius: 6px; text-align: center;">
-                    <div style="color: #c084fc; font-weight: bold; margin-bottom: 6px;">📜 Amarak's Blessing Available</div>
-                    <div style="color: #d4af37; font-size: 0.85em; margin-bottom: 8px;">
-                        Ignore <strong>${general.name}'s</strong> combat skill: <strong>${general.combatSkillName}</strong>
-                    </div>
-                    <div style="color: #999; font-size: 0.8em; margin-bottom: 8px;">
-                        (Does not affect Hero Defeated penalty)
-                    </div>
-                    <button class="btn btn-primary" style="background: #9333ea; padding: 6px 16px;" onclick="game._useAmarakBlessing()">
-                        📜 Use Blessing
-                    </button>
-                </div>
-            `;
+            amarakHTML = `
+                <div style="margin-bottom:10px;padding:8px 10px;background:rgba(147,51,234,0.15);border:2px solid #9333ea;border-radius:6px;text-align:center;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#c084fc;margin-bottom:4px;">📜 Amarak's Blessing Available</div>
+                    <div style="font-family:'Comic Sans MS',cursive;font-size:0.75em;color:#d4af37;margin-bottom:6px;">Ignore <strong>${general.name}'s</strong> combat skill: <strong>${general.combatSkillName}</strong></div>
+                    <button class="phb" style="padding:4px 14px;font-size:0.8em;" onclick="game._useAmarakBlessing()">📜 Use Blessing</button>
+                </div>`;
         } else if (this._amarakBlessingActive && general.combatSkill) {
-            html += `
-                <div style="margin: 0 0 12px 0; padding: 8px; background: rgba(147,51,234,0.2); border: 1px solid #9333ea; border-radius: 5px; text-align: center;">
-                    <span style="color: #c084fc; font-weight: bold;">📜 Amarak's Blessing Active — ${general.combatSkillName} Ignored!</span>
-                </div>
-            `; 
+            amarakHTML = `
+                <div style="margin-bottom:10px;padding:6px 10px;background:rgba(147,51,234,0.2);border:1px solid #9333ea;border-radius:5px;text-align:center;">
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#c084fc;">📜 Amarak's Blessing Active — ${general.combatSkillName} Ignored!</span>
+                </div>`;
         }
-        
+
+        let cardsHTML = '';
         if (applicableCards.length === 0) {
-            html += `
-                <div style="padding: 20px; background: rgba(255,0,0,0.2); border-radius: 8px; margin-bottom: 15px;">
-                    <strong>No ${general.color} cards for ${general.name}!</strong><br>
-                    You need ${general.color} cards to attack this general.
-                </div>
-            `;
+            cardsHTML = `
+                <div style="padding:14px;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.4);border-radius:6px;font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;">
+                    ⚠️ No ${general.color} cards available. You need ${general.color} cards to attack ${general.name}.
+                </div>`;
         } else {
-            const colorToGeneralWithFaction = {
-                'red': 'Balazarg (Demons)',
-                'blue': 'Sapphire (Dragonkin)',
-                'green': 'Gorgutt (Orcs)',
-                'black': 'Varkolak (Undead)'
-            };
-            
-            html += `<div style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">`;
-            
-            applicableCards.forEach((card, index) => {
-                const actualIndex = hero.cards.indexOf(card);
-                const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#8B7355'));
-                const generalName = colorToGeneralWithFaction[card.color] || 'Any General';
-                
-                html += `
-                    <div class="general-card-option" data-card-index="${actualIndex}" 
-                         style="padding: 12px; margin: 8px 0; border: 3px solid ${borderColor}; border-radius: 8px; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.2s;"
-                         onclick="game.toggleGeneralCardSelection(${actualIndex}, this)">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: bold; color: ${borderColor}; font-size: 1.1em;">
-                                    ${card.icon} ${card.name}
-                                </div>
-                                <div style="margin: 5px 0;">
-                                    ${Array(card.dice).fill(0).map(() => '🎲').join(' ')} (${card.dice} dice vs ${generalName})
-                                </div>
-                            </div>
-                            <div class="card-checkbox" style="width: 24px; height: 24px; border: 2px solid ${borderColor}; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += `</div>`;
+            cardsHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+                ${applicableCards.map((card) => {
+                    const actualIndex = hero.cards.indexOf(card);
+                    const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[card.color] || '#8b7355', text: cardColorMap[card.color] || '#8b7355' };
+                    const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+                    const diceHTML = Array.from({ length: card.dice }).map(() =>
+                        `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+                    ).join('');
+                    return `
+                        <div class="general-card-option" data-card-index="${actualIndex}"
+                             onclick="game.toggleGeneralCardSelection(${actualIndex}, this)"
+                             style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${shadow}"
+                             onmouseover="this.style.borderColor='#d4af37'"
+                             onmouseout="if(!this.classList.contains('selected'))this.style.borderColor='${cc.border}'">
+                            <div style="font-size:1.2em;margin-bottom:2px">${card.special ? '🌟' : (card.icon || '🎴')}</div>
+                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                            <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                            <div class="card-checkbox" style="display:none;"></div>
+                        </div>`;
+                }).join('')}
+            </div>`;
         }
+
+        const html = `
+            <div style="font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;margin-bottom:8px;">
+                Select <strong>${general.color}</strong> cards to attack <strong>${general.name}</strong> (stack multiple for more dice):
+            </div>
+            ${amarakHTML}
+            ${cardsHTML}
+        `;
         
         content.innerHTML = html;
         
@@ -1341,10 +1274,10 @@ Object.assign(game, {
         // Reset buttons to solo mode
         const buttonsContainer = document.getElementById('general-card-selection-buttons');
         buttonsContainer.innerHTML = `
-            <button class="btn btn-primary" style="flex: 1;" onclick="game.confirmGeneralAttack();">
+            <button class="phb" style="flex:1;" onclick="game.confirmGeneralAttack();">
                 ⚔️ Attack
             </button>
-            <button class="btn" style="flex: 1;" onclick="game.cancelGeneralAttack()">
+            <button class="phb" style="flex:1;" onclick="game.cancelGeneralAttack()">
                 Cancel
             </button>
         `;
@@ -1353,19 +1286,25 @@ Object.assign(game, {
     },
     
     toggleGeneralCardSelection(cardIndex, element) {
-        const checkbox = element.querySelector('.card-checkbox');
         const isSelected = this.selectedCardsForAttack.includes(cardIndex);
-        
+        const general = this.selectedGeneralForAttack;
+        const hero = this.heroes[this.currentPlayerIndex];
+        const card = hero ? hero.cards[cardIndex] : null;
+        const cardColorMap = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#374151' };
+        const baseColor = card && card.special ? '#6d28a8' : (card ? (cardColorMap[card.color] || '#8b7355') : '#8b7355');
+
         if (isSelected) {
-            // Deselect
             this.selectedCardsForAttack = this.selectedCardsForAttack.filter(i => i !== cardIndex);
-            checkbox.textContent = '';
-            element.style.background = 'rgba(0,0,0,0.3)';
+            element.classList.remove('selected');
+            element.style.borderColor = baseColor;
+            element.style.outline = '';
+            element.style.boxShadow = card && card.special ? '0 0 8px rgba(109,40,168,0.4)' : '0 2px 6px rgba(0,0,0,0.3)';
         } else {
-            // Select
             this.selectedCardsForAttack.push(cardIndex);
-            checkbox.textContent = '✓';
-            element.style.background = 'rgba(212,175,55,0.2)';
+            element.classList.add('selected');
+            element.style.borderColor = '#d4af37';
+            element.style.outline = '3px solid #d4af37';
+            element.style.boxShadow = '0 0 12px rgba(212,175,55,0.5)';
         }
     },
     

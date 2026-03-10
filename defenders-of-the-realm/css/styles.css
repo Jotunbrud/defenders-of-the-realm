@@ -558,7 +558,25 @@
             font-weight: bold;
             color: #000;
             animation: roll 0.5s ease-out;
+            position: relative;
         }
+        /* Faction-colored combat dice */
+        .die-green { background:linear-gradient(145deg,#16a34a,#15803d) !important; color:#fff !important; border-color:rgba(0,0,0,0.3) !important; box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(22,163,74,0.25); }
+        .die-blue  { background:linear-gradient(145deg,#3b82f6,#1d4ed8) !important; color:#fff !important; border-color:rgba(0,0,0,0.3) !important; box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(59,130,246,0.25); }
+        .die-red   { background:linear-gradient(145deg,#dc2626,#991b1b) !important; color:#fff !important; border-color:rgba(0,0,0,0.3) !important; box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25); }
+        .die-black { background:linear-gradient(145deg,#374151,#1f2937) !important; color:#fff !important; border-color:rgba(0,0,0,0.3) !important; box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25); }
+        .die-fade-miss { opacity: 0.28; }
+        .die-bonus { border-color: #d4af37 !important; }
+        /* Parry-cancelled hit */
+        .die-parry-cancel { opacity: 0.35; }
+        .die-parry-cancel::after { content:'✕'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.6em; color:#b91c1c; font-weight:900; text-shadow:0 1px 3px rgba(0,0,0,0.6); pointer-events:none; }
+        /* Minion defeat result pips */
+        .faction-pill { border-radius:5px; padding:5px 10px; margin:4px 0; }
+        .faction-pill-row { display:flex; justify-content:space-between; align-items:center; font-size:0.9em; }
+        .faction-pill-left { display:flex; align-items:center; gap:6px; font-family:'Cinzel',Georgia,serif; font-weight:900; }
+        .faction-pill-right { font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.85em; color:#2c1810; }
+        .dot { width:16px; height:16px; border-radius:50%; display:inline-block; border:1.5px solid rgba(0,0,0,0.3); box-shadow:0 1px 2px rgba(0,0,0,0.3); flex-shrink:0; }
+        .combat-results-label { font-family:'Cinzel',Georgia,serif; font-weight:900; font-size:0.85em; color:#2c1810; margin:8px 0 4px 0; }
 
         @keyframes roll {
             0% { transform: rotate(0deg); }

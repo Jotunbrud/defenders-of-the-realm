@@ -149,14 +149,8 @@ Object.assign(game, {
                 battleLuckCard: blCard
             };
             const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
-            const fireballBanner = `
-                <div style="background: rgba(239, 68, 68, 0.2); padding: 10px; border: 2px solid #ef4444; border-radius: 8px; margin-bottom: 10px; text-align: center;">
-                    <div style="font-size: 1.2em; color: #ef4444; font-weight: bold;">🔥 Fireball! 🔥</div>
-                    <div style="color: #d4af37; font-size: 0.9em;">Discarded: ${card.name} | All minions targeted (2+ to hit)</div>
-                </div>
-            `;
-            const rerollHTML = fireballBanner + resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
-            this.showCombatResults('🔥 Fireball', rerollHTML, `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, null, true);
+            const rerollHTML = resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
+            this.showCombatResults('🔥 Fireball', rerollHTML, '', null, true);
             return;
         }
         
@@ -180,18 +174,12 @@ Object.assign(game, {
         
         // Build results display
         const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
-        const fireballBanner = `
-            <div style="background: rgba(239, 68, 68, 0.2); padding: 10px; border: 2px solid #ef4444; border-radius: 8px; margin-bottom: 10px; text-align: center;">
-                <div style="font-size: 1.2em; color: #ef4444; font-weight: bold;">🔥 Fireball! 🔥</div>
-                <div style="color: #d4af37; font-size: 0.9em;">Discarded: ${cardName} | All minions targeted (2+ to hit)</div>
-            </div>
-        `;
         
         this.actionsRemaining--;
         this.addLog(`🔥 Fireball: ${hero.name} incinerated ${totalDefeated} of ${totalMinions} minions!`);
         
         // Show results
-        this.showCombatResults('🔥 Fireball', fireballBanner + resultsHTML, `🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`);
+        this.showCombatResults('🔥 Fireball', resultsHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         
         this.updateGameStatus();
         this.renderHeroes();

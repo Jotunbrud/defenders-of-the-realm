@@ -695,10 +695,11 @@ Object.assign(game, {
                 const id = `kg-m-${minionId}`;
                 pillsHTML += `<div id="${id}" data-color="${color}" data-mid="${minionId}"
                     onclick="game._kingsGuardToggle(${minionId})"
-                    style="background:${fbg};border:1px solid ${fcolor};border-radius:5px;padding:5px 10px;margin:4px 0;cursor:pointer;transition:all 0.15s">
-                    <div style="display:flex;justify-content:space-between;align-items:center">
+                    style="background:${fbg};border:1px solid ${fcolor};border-radius:5px;padding:5px 10px;margin:4px 0;cursor:pointer;transition:opacity 0.15s">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fcolor}"><span class="mdot" style="width:14px;height:14px;background:${fcolor};margin-right:3px"></span>${label}</span>
-                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810;flex:1;text-align:right">→ ${locationName}</span>
+                        <span id="kg-cb-${minionId}" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:2px solid ${fcolor};border-radius:3px;font-size:0.75em;font-weight:900;color:#fff;flex-shrink:0;"></span>
                     </div>
                 </div>`;
                 minionId++;
@@ -753,19 +754,18 @@ Object.assign(game, {
         const factionColors = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
         const fcolor = factionColors[color] || '#888';
         
+        const cb = document.getElementById(`kg-cb-${minionId}`);
         if (this._kgSelected.has(minionId)) {
-            // Deselect — restore pill to unselected state
+            // Deselect
             this._kgSelected.delete(minionId);
             el.classList.remove('kg-sel');
-            el.style.border = `1px solid ${fcolor}`;
-            el.style.boxShadow = '';
+            if (cb) { cb.textContent = ''; cb.style.background = ''; }
         } else {
             // At limit — do nothing
             if (this._kgSelected.size >= remaining) return;
             this._kgSelected.add(minionId);
             el.classList.add('kg-sel');
-            el.style.border = `2px solid #d4af37`;
-            el.style.boxShadow = '0 0 8px rgba(212,175,55,0.5)';
+            if (cb) { cb.textContent = '✓'; cb.style.background = fcolor; }
         }
         
         // Update remaining die counter

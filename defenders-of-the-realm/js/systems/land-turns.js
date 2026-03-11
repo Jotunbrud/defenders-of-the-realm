@@ -29,21 +29,20 @@ Object.assign(game, {
             return;
         }
         
-        // Check for minions blocking
+        // Check for minions/general blocking — only Cleric (Sanctify) is restricted
         const minionsHere = this.minions[location];
         const totalMinions = minionsHere ? Object.values(minionsHere).reduce((a, b) => a + b, 0) : 0;
-        
-        if (totalMinions > 0) {
-            this.showInfoModal('⚠️', '<div>You must defeat all minions before healing the land!</div>');
-            return;
-        }
-        
-        // Check for general blocking
         const generalHere = this.generals.find(g => g.location === location && !g.defeated);
         
-        if (generalHere) {
-            this.showInfoModal('⚠️', '<div>You must defeat the general before healing the land!</div>');
-            return;
+        if (hero.name === 'Cleric') {
+            if (totalMinions > 0) {
+                this.showInfoModal('⚠️', '<div>Sanctify Land requires no minions at this location!</div>');
+                return;
+            }
+            if (generalHere) {
+                this.showInfoModal('⚠️', '<div>Sanctify Land requires no generals at this location!</div>');
+                return;
+            }
         }
         
         this.healLandFromLocation(location);
@@ -301,22 +300,15 @@ Object.assign(game, {
             
             // Create dice display
             const diceHTML = `
-                <div style="margin: 20px 0;">
-                    <div style="color: #d4af37; margin-bottom: 12px; font-size: 1.1em;">
-                        <strong>${abilityLabel} at ${locationName}</strong>
-                    </div>
-                    <div style="color: #9333ea; margin-bottom: 8px;">
-                        Roll 2 dice - Need 5 or 6 on either die
-                    </div>
-                    <div style="display: flex; gap: 15px; justify-content: center; margin: 15px 0;">
-                        <div class="die-result ${roll1 >= 5 ? 'hit' : 'miss'}" style="font-size: 2em;">
-                            ${roll1}
-                        </div>
-                        <div class="die-result ${roll2 >= 5 ? 'hit' : 'miss'}" style="font-size: 2em;">
-                            ${roll2}
-                        </div>
-                    </div>
+                ${this._parchmentBoxOpen('Combat Roll')}
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
+                    ${abilityLabel.toUpperCase()} — 5+ TO REMOVE
                 </div>
+                <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
+                    <div class="die die-black" style="background:linear-gradient(145deg,#7c3d2e,#4a2515)">${roll1}</div>
+                    <div class="die die-black" style="background:linear-gradient(145deg,#7c3d2e,#4a2515)">${roll2}</div>
+                </div>
+                ${this._parchmentBoxClose()}
             `;
             
             if (success) {
@@ -326,10 +318,10 @@ Object.assign(game, {
                 }
                 this.taintCrystalsRemaining++;
                 this.addLog(`${hero.name} removed taint crystal at ${locationName}! (${roll1}, ${roll2})`);
-                this.showCombatResults('✨ Taint Removal', diceHTML, '✨ SUCCESS! Taint Crystal Removed! ✨', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                this.showCombatResults('✨ Taint Removal', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
             } else {
                 this.addLog(`${hero.name} failed to heal the land at ${locationName}. (${roll1}, ${roll2})`);
-                this.showCombatResults('❌ Taint Removal', diceHTML, '❌ Failed - Taint remains', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                this.showCombatResults('❌ Taint Removal', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
             }
             
             this.actionsRemaining--;
@@ -448,21 +440,15 @@ Object.assign(game, {
         
         // Create dice display
         const diceHTML = `
-            <div style="margin: 20px 0;">
-                <div style="color: #d4af37; margin-bottom: 12px; font-size: 1.1em;">
-                    <strong>Taint Removal at ${locationName}</strong>
-                </div>
-                <div style="color: #ffd700; margin-bottom: 8px;">
-                    Discarded: ${cardToRemove.name}
-                </div>
-                <div style="color: #9333ea; margin-bottom: 8px;">
-                    Roll ${totalDice} dice - Need 5 or 6 on any die
-                </div>
-                ${visionsNote}
-                <div style="display: flex; gap: 15px; justify-content: center; margin: 15px 0;">
-                    ${rolls.map(r => `<div class="die-result ${r >= 5 ? 'hit' : 'miss'}" style="font-size: 2em;">${r}</div>`).join('')}
-                </div>
+            ${this._parchmentBoxOpen('Combat Roll')}
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
+                TAINT REMOVAL — 5+ TO REMOVE
             </div>
+            ${visionsNote}
+            <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
+                ${rolls.map(r => `<div class="die die-black" style="background:linear-gradient(145deg,#7c3d2e,#4a2515)">${r}</div>`).join('')}
+            </div>
+            ${this._parchmentBoxClose()}
         `;
         
         if (success) {
@@ -472,10 +458,10 @@ Object.assign(game, {
             }
             this.taintCrystalsRemaining++;
             this.addLog(`Taint removed at ${locationName}! Discarded ${cardToRemove.name}. (${rolls.join(', ')})`);
-            this.showCombatResults('✨ Taint Removal', diceHTML, '✨ SUCCESS! Taint Crystal Removed! ✨', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+            this.showCombatResults('✨ Taint Removal', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         } else {
             this.addLog(`Failed at ${locationName}! Lost ${cardToRemove.name}. (${rolls.join(', ')})`);
-            this.showCombatResults('❌ Taint Removal', diceHTML, '❌ Failed - Card Lost, Taint Remains', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+            this.showCombatResults('❌ Taint Removal', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         }
         
         // Close the card selection modal

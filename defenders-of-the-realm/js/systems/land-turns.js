@@ -29,21 +29,8 @@ Object.assign(game, {
             return;
         }
         
-        // Check for minions/general blocking — only Cleric (Sanctify) is restricted
-        const minionsHere = this.minions[location];
-        const totalMinions = minionsHere ? Object.values(minionsHere).reduce((a, b) => a + b, 0) : 0;
-        const generalHere = this.generals.find(g => g.location === location && !g.defeated);
-        
-        if (hero.name === 'Cleric') {
-            if (totalMinions > 0) {
-                this.showInfoModal('⚠️', '<div>Sanctify Land requires no minions at this location!</div>');
-                return;
-            }
-            if (generalHere) {
-                this.showInfoModal('⚠️', '<div>Sanctify Land requires no generals at this location!</div>');
-                return;
-            }
-        }
+        // Check for minions/general blocking — only Cleric Sanctify is restricted,
+        // but that's handled by disabling the button in the UI before this is called.
         
         this.healLandFromLocation(location);
     },

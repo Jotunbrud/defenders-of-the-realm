@@ -198,9 +198,9 @@ Object.assign(game, {
         
         const borderColor = {
             'red': '#dc2626',
-            'blue': '#2563eb',
+            'blue': '#3b82f6',
             'green': '#16a34a',
-            'black': '#1f2937'
+            'black': '#374151'
         }[card.color] || '#8B7355';
         
         // Map color to general name
@@ -276,7 +276,7 @@ Object.assign(game, {
         
         // Show color selection modal
         const colorOptions = [
-            { color: 'black', label: 'Undead', hex: '#6b7280', icon: '💀' },
+            { color: 'black', label: 'Undead', hex: '#374151', icon: '💀' },
             { color: 'blue', label: 'Dragonkin', hex: '#3b82f6', icon: '🐉' },
             { color: 'green', label: 'Orcs', hex: '#16a34a', icon: '🪓' },
             { color: 'red', label: 'Demons', hex: '#dc2626', icon: '🔥' }
@@ -366,7 +366,7 @@ Object.assign(game, {
         }
         
         const colorNames = { black: 'Black', blue: 'Blue', green: 'Green', red: 'Red' };
-        const colorHexes = { black: '#6b7280', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
+        const colorHexes = { black: '#374151', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
         const chosenName = colorNames[color] || color;
         const chosenHex = colorHexes[color] || '#d4af37';
         
@@ -409,7 +409,7 @@ Object.assign(game, {
         
         // Build results HTML matching Evening modal card style
         const ccMap = {
-            blue: { border: '#3b82f6', text: '#2563eb' },
+            blue: { border: '#3b82f6', text: '#3b82f6' },
             red: { border: '#dc2626', text: '#dc2626' },
             green: { border: '#16a34a', text: '#16a34a' },
             black: { border: '#374151', text: '#374151' },
@@ -500,7 +500,7 @@ Object.assign(game, {
         
         // Show color selection modal (same as Local Information)
         const colorOptions = [
-            { color: 'black', label: 'Undead', hex: '#6b7280', icon: '💀' },
+            { color: 'black', label: 'Undead', hex: '#374151', icon: '💀' },
             { color: 'blue', label: 'Dragonkin', hex: '#3b82f6', icon: '🐉' },
             { color: 'green', label: 'Orcs', hex: '#16a34a', icon: '🪓' },
             { color: 'red', label: 'Demons', hex: '#dc2626', icon: '🔥' }
@@ -587,7 +587,7 @@ Object.assign(game, {
         }
         
         const colorNames = { black: 'Black', blue: 'Blue', green: 'Green', red: 'Red' };
-        const colorHexes = { black: '#6b7280', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
+        const colorHexes = { black: '#374151', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
         const chosenName = colorNames[color] || color;
         const chosenHex = colorHexes[color] || '#d4af37';
         
@@ -630,7 +630,7 @@ Object.assign(game, {
         
         // Build results HTML matching Evening modal card style
         const ccMap = {
-            blue: { border: '#3b82f6', text: '#2563eb' },
+            blue: { border: '#3b82f6', text: '#3b82f6' },
             red: { border: '#dc2626', text: '#dc2626' },
             green: { border: '#16a34a', text: '#16a34a' },
             black: { border: '#374151', text: '#374151' },
@@ -691,7 +691,7 @@ Object.assign(game, {
         const content = document.getElementById('rumors-content');
         
         const ccMap = {
-            blue: { border: '#3b82f6', text: '#2563eb' },
+            blue: { border: '#3b82f6', text: '#3b82f6' },
             red: { border: '#dc2626', text: '#dc2626' },
             green: { border: '#16a34a', text: '#16a34a' },
             black: { border: '#374151', text: '#374151' },
@@ -733,7 +733,7 @@ Object.assign(game, {
         const content = document.getElementById('general-reward-content');
         
         const ccMap = {
-            blue: { border: '#3b82f6', text: '#2563eb' },
+            blue: { border: '#3b82f6', text: '#3b82f6' },
             red: { border: '#dc2626', text: '#dc2626' },
             green: { border: '#16a34a', text: '#16a34a' },
             black: { border: '#374151', text: '#374151' },

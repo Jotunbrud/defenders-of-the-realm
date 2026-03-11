@@ -20,8 +20,6 @@ Object.assign(game, {
             titleEl.style.textAlign = 'center';
             titleEl.style.margin = '0 0 12px 0';
         }
-        const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtn && defaultBtn.querySelector('.btn-primary')) defaultBtn.style.display = 'none';
     },
     wizardFireball() {
         // Cancel any active movement

@@ -294,20 +294,32 @@ Object.assign(game, {
         
         // Druid always no-card; Cleric only no-card (Sanctify) when no enemies
         if (hero.name === 'Druid' || canSanctify) {
-            const abilityLabel = hero.name === 'Druid' ? 'Druid Taint Removal' : 'Cleric Sanctify Land';
             const roll1 = Math.floor(Math.random() * 6) + 1;
             const roll2 = Math.floor(Math.random() * 6) + 1;
             const success = (roll1 >= 5 || roll2 >= 5);
+            
+            const titleIcon = hero.name === 'Druid' ? '🌳' : '✝️';
+            const titleText = hero.name === 'Druid' ? 'Heal the Land' : 'Sanctify Land';
+            const rollLabel = hero.name === 'Druid' ? 'HEAL THE LAND' : 'SANCTIFY LAND';
+            const resultPillClass = success ? 'taint' : 'advance';
+            const resultLabel = success ? '💎 Taint Crystal Removed' : '❌ Taint Crystal Remains';
+            const resultColor = success ? '#7e22ce' : '#b91c1c';
             
             // Create dice display
             const diceHTML = `
                 ${this._parchmentBoxOpen('Combat Roll')}
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
-                    ${abilityLabel.toUpperCase()} — 5+ TO REMOVE
+                    ${rollLabel} — 5+ TO REMOVE
                 </div>
                 <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                     <div class="die ${factionDieClass}">${roll1}</div>
                     <div class="die ${factionDieClass}">${roll2}</div>
+                </div>
+                ${this._parchmentBoxClose()}
+                ${this._parchmentBoxOpen(`${titleText} Results`)}
+                <div class="fx-note ${resultPillClass}">
+                    <span class="fx-label" style="color:${resultColor}">${resultLabel}</span>
+                    <span style="color:#2c1810">→ ${locationName}</span>
                 </div>
                 ${this._parchmentBoxClose()}
             `;
@@ -319,10 +331,10 @@ Object.assign(game, {
                 }
                 this.taintCrystalsRemaining++;
                 this.addLog(`${hero.name} removed taint crystal at ${locationName}! (${roll1}, ${roll2})`);
-                this.showCombatResults('✨ Taint Removal', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                this.showCombatResults(`${titleIcon} ${titleText}`, diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
             } else {
                 this.addLog(`${hero.name} failed to heal the land at ${locationName}. (${roll1}, ${roll2})`);
-                this.showCombatResults('❌ Taint Removal', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                this.showCombatResults(`${titleIcon} ${titleText}`, diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
             }
             
             this.actionsRemaining--;
@@ -342,7 +354,7 @@ Object.assign(game, {
         const matchingCards = hero.cards.filter(card => card.color === locationColor);
         
         if (matchingCards.length === 0) {
-            this.showInfoModal('⚠️', `<div>Need a ${locationColor} card for this ${locationColor} location!</div>`);
+            return; // Button should be disabled — no matching card
             return;
         }
         
@@ -444,15 +456,25 @@ Object.assign(game, {
             'red': 'die-red', 'blue': 'die-blue', 'green': 'die-green', 'black': 'die-black'
         }[(locationData2 && locationData2.faction) || 'black'] || 'die-black';
         
+        const resultPillClass2 = success ? 'taint' : 'advance';
+        const resultLabel2 = success ? '💎 Taint Crystal Removed' : '❌ Taint Crystal Remains';
+        const resultColor2 = success ? '#7e22ce' : '#b91c1c';
+
         // Create dice display
         const diceHTML = `
             ${this._parchmentBoxOpen('Combat Roll')}
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
-                TAINT REMOVAL — 5+ TO REMOVE
+                HEAL THE LAND — 5+ TO REMOVE
             </div>
             ${visionsNote}
             <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                 ${rolls.map(r => `<div class="die ${factionDieClass2}">${r}</div>`).join('')}
+            </div>
+            ${this._parchmentBoxClose()}
+            ${this._parchmentBoxOpen('Heal the Land Results')}
+            <div class="fx-note ${resultPillClass2}">
+                <span class="fx-label" style="color:${resultColor2}">${resultLabel2}</span>
+                <span style="color:#2c1810">→ ${locationName}</span>
             </div>
             ${this._parchmentBoxClose()}
         `;
@@ -464,10 +486,10 @@ Object.assign(game, {
             }
             this.taintCrystalsRemaining++;
             this.addLog(`Taint removed at ${locationName}! Discarded ${cardToRemove.name}. (${rolls.join(', ')})`);
-            this.showCombatResults('✨ Taint Removal', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+            this.showCombatResults('🌳 Heal the Land', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         } else {
             this.addLog(`Failed at ${locationName}! Lost ${cardToRemove.name}. (${rolls.join(', ')})`);
-            this.showCombatResults('❌ Taint Removal', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+            this.showCombatResults('🌳 Heal the Land', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         }
         
         // Close the card selection modal

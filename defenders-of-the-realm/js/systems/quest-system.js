@@ -225,23 +225,23 @@ Object.assign(game, {
         
         this._selectedSpecialCard = null;
         
-        const factionName = (color) => color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[color] || 'Any General');
+        const factionLabel = (color) => color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[color] || 'Any General');
         let cardsHTML = '<div id="special-cards-list" style="display:flex;flex-direction:column;gap:8px;">';
         specialCards.forEach(({ hero, heroIndex, card, cardIndex }, i) => {
             const diceHTML = Array.from({ length: card.dice }).map(() =>
-                `<span class="die" style="background:#6d28a8;animation:none">🎲</span>`
+                `<span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none;">🎲</span>`
             ).join('');
             cardsHTML += `
                 <div id="special-card-option-${i}" class="card-wrap" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})" style="cursor:pointer;">
-                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;">
-                        <span class="hero-banner-name">${card.icon || '💫'} ${card.name}</span>
+                    <div class="card-banner-inner">
+                        <span class="hero-banner-name">🌟 ${card.name}</span>
                         <span class="hero-banner-name" style="font-size:0.8em">${hero.symbol} ${hero.name}</span>
                     </div>
                     <div class="card-body">
                         <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">${card.description || card.type}</span></div>
                         <div style="text-align:center;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;">
                             <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">${factionName(card.color)}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">${factionLabel(card.color)}</span>
                         </div>
                         <div style="text-align:center;margin:8px 0;display:flex;gap:4px;justify-content:center;">${diceHTML}</div>
                     </div>
@@ -258,7 +258,7 @@ Object.assign(game, {
                 ${cardsHTML}
             ${this._parchmentBoxClose()}
             <button id="use-special-card-btn" class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px;" disabled onclick="game.confirmSpecialCard()">Confirm</button>
-            <button class="phb" onclick="game.closeInfoModal()">Cancel</button>
+            <button class="phb phb-cancel" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal('🌟 Special Cards', contentHTML);

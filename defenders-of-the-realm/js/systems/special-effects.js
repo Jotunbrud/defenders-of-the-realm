@@ -147,6 +147,7 @@ Object.assign(game, {
         this.updateActionButtons();
         
         this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
             <div class="parchment-box">
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
                 <div style="margin-top:10px;margin-bottom:10px">${resultsHTML}</div>
@@ -185,6 +186,7 @@ Object.assign(game, {
         this.addLog(`🌅 Special Card: ${cardHero.name} plays All Is Quiet — No Darkness Spreads cards will be drawn this turn!`);
         
         this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
             <div class="parchment-box">
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
                 <div class="card-wrap" style="margin-top:10px">
@@ -219,6 +221,7 @@ Object.assign(game, {
         // Must be played by the active hero only
         if (heroIndex !== this.currentPlayerIndex) {
             this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">Battle Fury can only be played by the active hero!</div>
@@ -244,6 +247,7 @@ Object.assign(game, {
         // Requires 1 action
         if (this.actionsRemaining <= 0) {
             this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No actions remaining! Battle Fury requires 1 action to play.</div>
@@ -273,6 +277,7 @@ Object.assign(game, {
         
         if (totalMinions === 0) {
             this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No minions at ${location}! There are no enemy minions to defeat.</div>
@@ -333,6 +338,7 @@ Object.assign(game, {
         this.addLog(`💥 Special Card: ${activeHero.name} plays Battle Fury at ${location} — ${totalMinions} minion(s) defeated!`);
         
         this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
             <div class="parchment-box">
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
                 <div style="margin-top:10px;margin-bottom:10px">
@@ -380,6 +386,7 @@ Object.assign(game, {
         // Must be at an Inn
         if (!locData || !locData.inn) {
             this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">${cardHero.name} must be at an Inn to play this card!</div>
@@ -434,6 +441,7 @@ Object.assign(game, {
         
         this._localInfoSelectedColor = null;
         this.showInfoModal('🌟 Special Card Details', contentHTML);
+        this._styleSpecialCardModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#local-info-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -566,6 +574,7 @@ Object.assign(game, {
         this.updateActionButtons();
         
         this.showInfoModal('🌟 Special Card Details', summaryHTML);
+        this._styleSpecialCardModal();
         const defaultBtnDiv2 = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv2 && defaultBtnDiv2.querySelector('.btn-primary')) defaultBtnDiv2.style.display = 'none';
     },
@@ -586,6 +595,7 @@ Object.assign(game, {
         
         if (locsWithMinions.length === 0) {
             this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No minions on or adjacent to Monarch City!</div>
@@ -739,6 +749,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
+        this._styleSpecialCardModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#kg-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -932,6 +943,7 @@ Object.assign(game, {
         this.updateActionButtons();
         
         this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
             <div class="parchment-box">
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
                 <div style="margin-top:10px;margin-bottom:10px">${resultsHTML}</div>
@@ -965,6 +977,7 @@ Object.assign(game, {
         
         if (locsWithMinions.length === 0) {
             this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No minions anywhere on the board!</div>
@@ -1122,6 +1135,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
+        this._styleSpecialCardModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#cs-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -1334,6 +1348,7 @@ Object.assign(game, {
         this.updateActionButtons();
         
         this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
             <div class="parchment-box">
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
                 <div style="margin-top:10px;margin-bottom:10px">${resultsHTML}</div>
@@ -1360,6 +1375,7 @@ Object.assign(game, {
         
         if (drawnCards.length === 0) {
             this.showInfoModal('🌟 Special Card Details', `
+        this._styleSpecialCardModal();
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Play Not Allowed</span></div>
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">The Darkness Spreads deck is empty!</div>
@@ -1516,6 +1532,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
+        this._styleSpecialCardModal();
         // Hide the default OK button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtn && !defaultBtn.querySelector('#dv-confirm-btn')) {
@@ -1663,6 +1680,7 @@ Object.assign(game, {
         
         setTimeout(() => {
             this.showInfoModal('🌟 Special Card Details', summaryHTML);
+        this._styleSpecialCardModal();
         }, 300);
     },
     
@@ -1725,6 +1743,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', pickerHTML);
+        this._styleSpecialCardModal();
         // Hide default OK button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtn && !defaultBtn.querySelector('.btn[onclick*="closeInfoModal"]')) {
@@ -1784,6 +1803,7 @@ Object.assign(game, {
         const totalCards = this.darknessCardsToDraw;
         const generalOnly = this.darknessCurrentGeneralOnly;
         this.showInfoModal('🌟 Special Card Details', milResultHTML, () => {
+        this._styleSpecialCardModal();
             this.showDarknessCardPreview(card, cardNum, totalCards, generalOnly);
         });
     },
@@ -2068,6 +2088,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', pickerHTML);
+        this._styleSpecialCardModal();
     },
     
     _spyInCampConfirm(generalColor) {
@@ -2146,6 +2167,7 @@ Object.assign(game, {
         const hero = this.endOfTurnState.hero;
         const damageInfo = this.endOfTurnState.damageInfo;
         this.showInfoModal('🌟 Special Card Details', spyResultHTML, () => {
+        this._styleSpecialCardModal();
             this.showDaytimeModal(hero, damageInfo);
         });
     },

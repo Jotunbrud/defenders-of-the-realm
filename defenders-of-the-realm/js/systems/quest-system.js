@@ -10,6 +10,19 @@ Object.assign(game, {
         const contBtn = document.querySelector('#info-modal .modal-content > div:last-child .btn-primary');
         if (contBtn) { contBtn.className = 'phase-btn'; contBtn.style.marginTop = '8px'; }
     },
+    _styleSpecialCardModal() {
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) {
+            titleEl.style.fontFamily = "'Cinzel',Georgia,serif";
+            titleEl.style.fontWeight = '700';
+            titleEl.style.color = '#d4af37';
+            titleEl.style.fontSize = '1.2em';
+            titleEl.style.textAlign = 'center';
+            titleEl.style.margin = '0 0 12px 0';
+        }
+        const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtn && defaultBtn.querySelector('.btn-primary')) defaultBtn.style.display = 'none';
+    },
     wizardFireball() {
         // Cancel any active movement
         if (this.activeMovement) {
@@ -341,6 +354,9 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        this._styleSpecialCardModal();
+        const _bd1 = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_bd1 && _bd1.querySelector('.btn-primary')) _bd1.style.display = 'none';
         } else if (card.specialAction === 'battle_fury') {
             this.executeBattleFury(heroIndex, cardIndex);
         } else if (card.specialAction === 'local_information') {
@@ -371,6 +387,9 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        this._styleSpecialCardModal();
+        const _bd2 = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_bd2 && _bd2.querySelector('.btn-primary')) _bd2.style.display = 'none';
         } else if (card.specialAction === 'strong_defenses') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
@@ -391,6 +410,9 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        this._styleSpecialCardModal();
+        const _bd3 = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_bd3 && _bd3.querySelector('.btn-primary')) _bd3.style.display = 'none';
         } else if (card.specialAction === 'spy_in_camp') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
@@ -411,6 +433,9 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        this._styleSpecialCardModal();
+        const _bd4 = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_bd4 && _bd4.querySelector('.btn-primary')) _bd4.style.display = 'none';
         }
     },
     
@@ -1815,6 +1840,7 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
+        this._styleSpecialCardModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#hammer-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -2120,6 +2146,9 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
+        this._styleSpecialCardModal();
+        const _bd5 = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_bd5 && _bd5.querySelector('.btn-primary')) _bd5.style.display = 'none';
     },
     
     executeBattleStrategy(heroIndex, cardIndex) {

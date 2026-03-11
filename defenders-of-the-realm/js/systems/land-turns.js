@@ -569,10 +569,12 @@ Object.assign(game, {
             </div>
         `;
 
-        // Build hero grid including current hero (for respawn option)
+        // Build hero grid: current hero first (★ respawn), then all others not in play
         const allOptions = [
             { name: hero.name, symbol: hero.symbol, isCurrent: true },
-            ...availableHeroes.map(h => ({ ...h, isCurrent: false }))
+            ...availableHeroes
+                .filter(h => h.name !== hero.name)
+                .map(h => ({ ...h, isCurrent: false }))
         ];
 
         const grid = document.getElementById('hero-selection-grid');

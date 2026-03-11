@@ -1794,16 +1794,8 @@ Object.assign(game, {
         const rollsText = diceRolls.map(r => r.hit ? `[${r.roll}✓]` : `[${r.roll}✗]`).join(' ');
         this.addLog(`${hero.name} vs ${general.name}: ${cardNames} → ${rollsText} → ${damage} damage!`);
         
-        // Add Varkolak no-reroll message to results HTML if applicable
+        // Undead Curse note already shown inline in Combat Skill line — no extra box needed
         let noRerollWarning = '';
-        if (general.combatSkill === 'no_rerolls' && !this._amarakBlessingActive) {
-            noRerollWarning = `
-                <div class="parchment-box" style="margin-top:10px;">
-                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">💀 Undead Curse</span></div>
-                    <p style="font-family:'Comic Sans MS',cursive; font-size:0.9em; color:#3d2b1f; margin:8px 0;">Varkolak prevents all re-rolls and special skills in combat!</p>
-                </div>
-            `;
-        }
         
         const resultsHTML = `
             <div class="parchment-box">

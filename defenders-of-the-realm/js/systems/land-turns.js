@@ -313,6 +313,7 @@ Object.assign(game, {
                     <div class="die ${factionDieClass}">${roll2}</div>
                 </div>
                 <div style="margin-top:8px;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;margin-bottom:4px;">${titleText} Results</div>
                     ${success
                         ? `<div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
                         : `<div class="fx-note blocked"><span class="fx-label" style="color:#5a3e1b">Taint Crystal Not Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
@@ -464,6 +465,7 @@ Object.assign(game, {
                 ${rolls.map(r => `<div class="die ${factionDieClass2}">${r}</div>`).join('')}
             </div>
             <div style="margin-top:8px;">
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;margin-bottom:4px;">Heal the Land Results</div>
                 ${success
                     ? `<div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
                     : `<div class="fx-note blocked"><span class="fx-label" style="color:#5a3e1b">Taint Crystal Not Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`

@@ -224,7 +224,7 @@ Object.assign(game, {
         const title = document.getElementById('general-card-selection-title');
         const cardsContent = document.getElementById('general-card-selection-content');
         
-        title.textContent = `⚔️ Group Attack — ${hero.name} (${this.groupAttack.currentSelectionHeroIndex + 1}/${this.groupAttack.heroes.length})`;
+        title.textContent = `💥 Group Attacking A General`;
         
         // Render cards
         const cardColorMap = {
@@ -236,68 +236,73 @@ Object.assign(game, {
         
         if (applicableCards.length === 0) {
             cardsContent.innerHTML = `
-                <div style="padding:14px;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.4);border-radius:6px;font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;">
-                    ⚠️ <strong>${hero.name}</strong> has no ${general.color} cards and cannot contribute to this attack.
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name">Select Cards To Attack General</span></div>
+                    <div style="font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;padding:10px;text-align:center;">
+                        ${hero.name} has no matching cards to attack this general.
+                    </div>
                 </div>
             `;
         } else {
             // Check for Amarak's Blessing
             const amarakQuest = this._findAmarakBlessingQuest ? this._findAmarakBlessingQuest() : null;
-            let amarakHTML = '';
-            if (amarakQuest && general.combatSkill && !this._amarakBlessingActive) {
-                amarakHTML = `
-                    <div style="margin-bottom:10px;padding:8px 10px;background:rgba(147,51,234,0.15);border:2px solid #9333ea;border-radius:6px;text-align:center;">
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#c084fc;margin-bottom:4px;">📜 Amarak's Blessing Available</div>
-                        <div style="font-family:'Comic Sans MS',cursive;font-size:0.75em;color:#d4af37;margin-bottom:6px;">Ignore <strong>${general.name}'s</strong> combat skill: <strong>${general.combatSkillName}</strong></div>
-                        <button class="phb" style="padding:4px 14px;font-size:0.8em;" onclick="game._useAmarakBlessing()">📜 Use Blessing</button>
-                    </div>`;
-            } else if (this._amarakBlessingActive && general.combatSkill) {
-                amarakHTML = `
-                    <div style="margin-bottom:10px;padding:6px 10px;background:rgba(147,51,234,0.2);border:1px solid #9333ea;border-radius:5px;text-align:center;">
-                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#c084fc;">📜 Amarak's Blessing Active — ${general.combatSkillName} Ignored!</span>
-                    </div>`;
-            }
+            // Check for Find Magic Gate
+            const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
 
             cardsContent.innerHTML = `
-                <div style="font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;margin-bottom:8px;">
-                    Select <strong>${general.color}</strong> cards for <strong>${hero.name}</strong> (vs ${general.name}):
-                </div>
-                ${amarakHTML}
-                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-                    ${applicableCards.map((card) => {
-                        const actualIndex = hero.cards.indexOf(card);
-                        const isSelected = this.selectedCardsForAttack.includes(actualIndex);
-                        const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[card.color] || '#8b7355', text: cardColorMap[card.color] || '#8b7355' };
-                        const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
-                        const selectedStyle = isSelected ? 'outline:3px solid #d4af37;box-shadow:0 0 12px rgba(212,175,55,0.5);' : shadow;
-                        const diceHTML = Array.from({ length: card.dice }).map(() =>
-                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
-                        ).join('');
-                        return `
-                            <div onclick="game.toggleCardForGroupAttack(${actualIndex})"
-                                 style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${isSelected ? '#d4af37' : cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${selectedStyle}"
-                                 onmouseover="this.style.borderColor='#d4af37'"
-                                 onmouseout="this.style.borderColor='${isSelected ? '#d4af37' : cc.border}'">
-                                <div style="font-size:1.2em;margin-bottom:2px">${card.special ? '🌟' : (card.icon || '🎴')}</div>
-                                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
-                                <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
-                            </div>`;
-                    }).join('')}
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name">Select Cards To Attack General — ${hero.name} (${this.groupAttack.currentSelectionHeroIndex + 1}/${this.groupAttack.heroes.length})</span></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:4px 0;">
+                        ${applicableCards.map((card) => {
+                            const actualIndex = hero.cards.indexOf(card);
+                            const isSelected = this.selectedCardsForAttack.includes(actualIndex);
+                            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[card.color] || '#8b7355', text: cardColorMap[card.color] || '#8b7355' };
+                            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+                            ).join('');
+                            const selectedStyle = isSelected
+                                ? 'border:3px solid #dc2626;opacity:0.45;transform:scale(0.93);'
+                                : `border:3px solid ${cc.border};`;
+                            const badgeHTML = isSelected
+                                ? `<div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4);pointer-events:none;z-index:5;">✕</div>`
+                                : '';
+                            return `
+                                <div onclick="game.toggleCardForGroupAttack(${actualIndex})"
+                                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);${selectedStyle}border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+                                    ${badgeHTML}
+                                    <div style="font-size:1.2em;margin-bottom:2px">${card.special ? '🌟' : (card.icon || '🎴')}</div>
+                                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                                </div>`;
+                        }).join('')}
+                    </div>
                 </div>
             `;
         }
         
         // Update buttons for group attack mode
         const buttonsContainer = document.getElementById('general-card-selection-buttons');
+        const amarakQuestBtn = this._findAmarakBlessingQuest ? this._findAmarakBlessingQuest() : null;
+        const bonusDiceQuestBtn = this._findCombatBonusDiceQuest(hero);
+        const amarakBtnHTML = (amarakQuestBtn && general.combatSkill)
+            ? `<button class="phb${this._amarakBlessingActive ? ' checked' : ''}" onclick="game._useAmarakBlessing()">
+                ${this._amarakBlessingActive ? '☑' : '☐'} Amarak's Blessing</button>`
+            : '';
+        const magicGateBtnHTML = bonusDiceQuestBtn
+            ? `<button class="phb${this._findMagicGateToggled ? ' checked' : ''}" onclick="game._toggleFindMagicGate()">
+                ${this._findMagicGateToggled ? '☑' : '☐'} Find Magic Gate</button>`
+            : '';
         buttonsContainer.innerHTML = `
-            <button class="phb" style="flex:1;" onclick="game.confirmGroupCardSelection();">
-                ✓ Commit Cards (${this.selectedCardsForAttack.length})
+            ${amarakBtnHTML}
+            ${magicGateBtnHTML}
+            <button class="phb" onclick="game.confirmGroupCardSelection();">
+                Confirm
             </button>
-            <button class="phb" style="flex:1;" onclick="game.skipHeroInGroupAttack();">
-                ⏭️ Skip ${hero.name}
+            <button class="phb" onclick="game.skipHeroInGroupAttack();">
+                Skip ${hero.name}
             </button>
-            <button class="phb" style="flex:1;" onclick="game.cancelGeneralAttack()">
-                ✕ Cancel Attack
+            <button class="phb" onclick="game.cancelGeneralAttack()">
+                Cancel Attack
             </button>
         `;
         
@@ -332,6 +337,22 @@ Object.assign(game, {
         const heroIndex = this.groupAttack.currentSelectionHeroIndex;
         const hero = this.groupAttack.heroes[heroIndex];
         const heroGlobalIndex = this.heroes.indexOf(hero);
+
+        // If Find Magic Gate was toggled for this hero, retire the quest now
+        if (this._findMagicGateToggled) {
+            const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
+            if (bonusDiceQuest) {
+                const quest = hero.questCards[bonusDiceQuest.questIndex];
+                if (quest) this._retireQuest(hero, quest, '+2 bonus dice (group combat)');
+                this.addLog(`💫 ${hero.name} uses Find Magic Gate for +2 bonus dice!`);
+                this.updateDeckCounts();
+                this.renderHeroes();
+            }
+            // Store the bonus per hero in the groupAttack selections
+            if (!this.groupAttack.heroFindMagicGate) this.groupAttack.heroFindMagicGate = {};
+            this.groupAttack.heroFindMagicGate[heroGlobalIndex] = true;
+            this._findMagicGateToggled = false;
+        }
         
         // Check if hero selected any cards
         if (this.selectedCardsForAttack.length === 0) {
@@ -577,11 +598,18 @@ Object.assign(game, {
         if (hero.name === 'Dwarf') {
             this.dwarfDragonSlayerUsed = false;
         }
-        // Reset combat bonus dice for each hero
-        this._combatBonusDiceActive = false;
+        // Reset combat bonus dice for each hero — unless already set via card-selection checkbox
+        const heroGlobalIdx = this.heroes.indexOf(hero);
+        const preToggled = this.groupAttack && this.groupAttack.heroFindMagicGate && this.groupAttack.heroFindMagicGate[heroGlobalIdx];
+        if (!preToggled) {
+            this._combatBonusDiceActive = false;
+        } else {
+            this._combatBonusDiceActive = true;
+        }
         
-        // Check for Find Magic Gate quest (combat bonus dice) for THIS hero
-        const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
+        // Check for Find Magic Gate quest popup — skip if already handled via card-selection checkbox
+        if (!preToggled) {
+            const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
         if (bonusDiceQuest) {
             this._pendingCombatBonusDice = bonusDiceQuest;
             this._pendingGroupCombatArgs = { hero, general, cardsToUse };
@@ -609,6 +637,7 @@ Object.assign(game, {
             if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
             return;
         }
+        } // end !preToggled
         
         this._rollGroupAttackerDice(hero, general, cardsToUse);
     },
@@ -1208,86 +1237,73 @@ Object.assign(game, {
             'green': '#16a34a',
             'black': '#374151'
         };
-        
-        
-        // Amarak's Blessing
+
+
+        // Amarak's Blessing + Find Magic Gate quest checkboxes
         const amarakQuest = this._findAmarakBlessingQuest ? this._findAmarakBlessingQuest() : null;
-        let amarakHTML = '';
-        if (amarakQuest && general.combatSkill && !this._amarakBlessingActive) {
-            amarakHTML = `
-                <div style="margin-bottom:10px;padding:8px 10px;background:rgba(147,51,234,0.15);border:2px solid #9333ea;border-radius:6px;text-align:center;">
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#c084fc;margin-bottom:4px;">📜 Amarak's Blessing Available</div>
-                    <div style="font-family:'Comic Sans MS',cursive;font-size:0.75em;color:#d4af37;margin-bottom:6px;">Ignore <strong>${general.name}'s</strong> combat skill: <strong>${general.combatSkillName}</strong></div>
-                    <button class="phb" style="padding:4px 14px;font-size:0.8em;" onclick="game._useAmarakBlessing()">📜 Use Blessing</button>
-                </div>`;
-        } else if (this._amarakBlessingActive && general.combatSkill) {
-            amarakHTML = `
-                <div style="margin-bottom:10px;padding:6px 10px;background:rgba(147,51,234,0.2);border:1px solid #9333ea;border-radius:5px;text-align:center;">
-                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#c084fc;">📜 Amarak's Blessing Active — ${general.combatSkillName} Ignored!</span>
-                </div>`;
-        }
+        const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
 
         let cardsHTML = '';
         if (applicableCards.length === 0) {
             cardsHTML = `
-                <div style="padding:14px;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.4);border-radius:6px;font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;">
-                    ⚠️ No ${general.color} cards available. You need ${general.color} cards to attack ${general.name}.
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name">Select Cards To Attack General</span></div>
+                    <div style="font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;padding:10px;text-align:center;">
+                        ${hero.name} has no matching cards to attack this general.
+                    </div>
                 </div>`;
         } else {
-            cardsHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-                ${applicableCards.map((card) => {
-                    const actualIndex = hero.cards.indexOf(card);
-                    const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[card.color] || '#8b7355', text: cardColorMap[card.color] || '#8b7355' };
-                    const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
-                    const diceHTML = Array.from({ length: card.dice }).map(() =>
-                        `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
-                    ).join('');
-                    return `
-                        <div class="general-card-option" data-card-index="${actualIndex}"
-                             onclick="game.toggleGeneralCardSelection(${actualIndex}, this)"
-                             style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${shadow}"
-                             onmouseover="this.style.borderColor='#d4af37'"
-                             onmouseout="if(!this.classList.contains('selected'))this.style.borderColor='${cc.border}'">
-                            <div style="font-size:1.2em;margin-bottom:2px">${card.special ? '🌟' : (card.icon || '🎴')}</div>
-                            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
-                            <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
-                            <div class="card-checkbox" style="display:none;"></div>
-                        </div>`;
-                }).join('')}
-            </div>`;
+            cardsHTML = `
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name">Select Cards To Attack General</span></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:4px 0;">
+                        ${applicableCards.map((card) => {
+                            const actualIndex = hero.cards.indexOf(card);
+                            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : { border: cardColorMap[card.color] || '#8b7355', text: cardColorMap[card.color] || '#8b7355' };
+                            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+                            ).join('');
+                            return `
+                                <div class="general-card-option" data-card-index="${actualIndex}"
+                                     onclick="game.toggleGeneralCardSelection(${actualIndex}, this)"
+                                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+                                    <div style="font-size:1.2em;margin-bottom:2px">${card.special ? '🌟' : (card.icon || '🎴')}</div>
+                                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                                </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
         }
 
-        const html = `
-            <div style="font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;margin-bottom:8px;">
-                Select <strong>${general.color}</strong> cards to attack <strong>${general.name}</strong> (stack multiple for more dice):
-            </div>
-            ${amarakHTML}
-            ${cardsHTML}
-        `;
-        
-        content.innerHTML = html;
-        
+        content.innerHTML = cardsHTML;
+
         // Store general and reset selected cards
         this.selectedGeneralForAttack = general;
         this.selectedCardsForAttack = [];
-        
-        // Reset buttons to solo mode
+
+        // Buttons: quest checkboxes + Confirm + Cancel
         const buttonsContainer = document.getElementById('general-card-selection-buttons');
+        const amarakBtnHTML = (amarakQuest && general.combatSkill)
+            ? `<button class="phb${this._amarakBlessingActive ? ' checked' : ''}" onclick="game._useAmarakBlessing()">
+                ${this._amarakBlessingActive ? '☑' : '☐'} Amarak's Blessing</button>`
+            : '';
+        const magicGateBtnHTML = bonusDiceQuest
+            ? `<button class="phb${this._findMagicGateToggled ? ' checked' : ''}" onclick="game._toggleFindMagicGate()">
+                ${this._findMagicGateToggled ? '☑' : '☐'} Find Magic Gate</button>`
+            : '';
         buttonsContainer.innerHTML = `
-            <button class="phb" style="flex:1;" onclick="game.confirmGeneralAttack();">
-                ⚔️ Attack
-            </button>
-            <button class="phb" style="flex:1;" onclick="game.cancelGeneralAttack()">
-                Cancel
-            </button>
+            ${amarakBtnHTML}
+            ${magicGateBtnHTML}
+            <button class="phb" id="general-confirm-btn" onclick="game.confirmGeneralAttack();" disabled style="opacity:0.5;cursor:not-allowed;">Confirm</button>
+            <button class="phb" onclick="game.cancelGeneralAttack()">Cancel</button>
         `;
-        
+
         modal.classList.add('active');
     },
-    
+
     toggleGeneralCardSelection(cardIndex, element) {
         const isSelected = this.selectedCardsForAttack.includes(cardIndex);
-        const general = this.selectedGeneralForAttack;
         const hero = this.heroes[this.currentPlayerIndex];
         const card = hero ? hero.cards[cardIndex] : null;
         const cardColorMap = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#374151' };
@@ -1297,17 +1313,34 @@ Object.assign(game, {
             this.selectedCardsForAttack = this.selectedCardsForAttack.filter(i => i !== cardIndex);
             element.classList.remove('selected');
             element.style.borderColor = baseColor;
-            element.style.outline = '';
-            element.style.boxShadow = card && card.special ? '0 0 8px rgba(109,40,168,0.4)' : '0 2px 6px rgba(0,0,0,0.3)';
+            element.style.opacity = '';
+            element.style.transform = '';
+            const badge = element.querySelector('.card-badge-x');
+            if (badge) badge.remove();
         } else {
             this.selectedCardsForAttack.push(cardIndex);
             element.classList.add('selected');
-            element.style.borderColor = '#d4af37';
-            element.style.outline = '3px solid #d4af37';
-            element.style.boxShadow = '0 0 12px rgba(212,175,55,0.5)';
+            element.style.borderColor = '#dc2626';
+            element.style.opacity = '0.45';
+            element.style.transform = 'scale(0.93)';
+            if (!element.querySelector('.card-badge-x')) {
+                const badge = document.createElement('div');
+                badge.className = 'card-badge-x';
+                badge.style.cssText = 'position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4);pointer-events:none;z-index:5;';
+                badge.textContent = '\u2715';
+                element.appendChild(badge);
+            }
+        }
+        // Enable/disable Confirm based on selection
+        const confirmBtn = document.getElementById('general-confirm-btn');
+        if (confirmBtn) {
+            const hasCards = this.selectedCardsForAttack.length > 0;
+            confirmBtn.disabled = !hasCards;
+            confirmBtn.style.opacity = hasCards ? '1' : '0.5';
+            confirmBtn.style.cursor = hasCards ? 'pointer' : 'not-allowed';
         }
     },
-    
+
     confirmGeneralAttack() {
         console.log('=== confirmGeneralAttack called ===');
         console.log('groupAttack state:', this.groupAttack);
@@ -1328,9 +1361,7 @@ Object.assign(game, {
         
         // SOLO MODE: Require at least 1 card
         if (!this.selectedCardsForAttack || this.selectedCardsForAttack.length === 0) {
-            console.error('No cards selected in solo mode');
-            this.showInfoModal('⚠️', '<div>Please select at least one card!</div>');
-            return;
+            return; // Button should be disabled, but guard just in case
         }
         
         console.log('selectedGeneralForAttack:', this.selectedGeneralForAttack);
@@ -1370,6 +1401,17 @@ Object.assign(game, {
         this.selectedGeneralForAttack = null;
         this.selectedCardsForAttack = [];
         this._amarakBlessingActive = false;
+        this._findMagicGateToggled = false;
+    },
+
+    _toggleFindMagicGate() {
+        this._findMagicGateToggled = !this._findMagicGateToggled;
+        // Re-render the active card selection modal to show checked state
+        if (this.groupAttack) {
+            this.showGroupAttackCardSelection();
+        } else if (this.selectedGeneralForAttack) {
+            this.showGeneralCardSelection(this.selectedGeneralForAttack);
+        }
     },
     
     moveToLocation(locationName) {

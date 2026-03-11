@@ -225,20 +225,25 @@ Object.assign(game, {
         
         this._selectedSpecialCard = null;
         
-        let cardsHTML = '<div id="special-cards-list" style="display: flex; flex-direction: column; gap: 8px;">';
+        const factionName = (color) => color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[color] || 'Any General');
+        let cardsHTML = '<div id="special-cards-list" style="display:flex;flex-direction:column;gap:8px;">';
         specialCards.forEach(({ hero, heroIndex, card, cardIndex }, i) => {
+            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                `<span class="die" style="background:#6d28a8;animation:none">🎲</span>`
+            ).join('');
             cardsHTML += `
-                <div id="special-card-option-${i}" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})"
-                     style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #6d28a8;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(109,40,168,0.4);cursor:pointer;transition:all 0.2s;">
-                    <div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;display:flex;align-items:center;justify-content:space-between;">
+                <div id="special-card-option-${i}" class="card-wrap" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})" style="cursor:pointer;">
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;">
                         <span class="hero-banner-name">${card.icon || '💫'} ${card.name}</span>
-                        <span class="hero-banner-name" style="font-size:0.85em">${hero.symbol} ${hero.name}</span>
+                        <span class="hero-banner-name" style="font-size:0.8em">${hero.symbol} ${hero.name}</span>
                     </div>
-                    <div style="padding:10px 14px;">
-                        <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:6px;">${card.description || card.type}</div>
-                        <div style="padding-top:6px;border-top:1px solid rgba(139,115,85,0.3);display:flex;justify-content:space-between;align-items:center;">
-                            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'} vs ${card.color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[card.color] || 'Any')}</span>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">${card.description || card.type}</span></div>
+                        <div style="text-align:center;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;">
+                            <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">${factionName(card.color)}</span>
                         </div>
+                        <div style="text-align:center;margin:8px 0;display:flex;gap:4px;justify-content:center;">${diceHTML}</div>
                     </div>
                 </div>
             `;
@@ -252,8 +257,8 @@ Object.assign(game, {
             ${this._parchmentBoxOpen('Select a Card')}
                 ${cardsHTML}
             ${this._parchmentBoxClose()}
-            <button id="use-special-card-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmSpecialCard()">Use Card</button>
-            <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button>
+            <button id="use-special-card-btn" class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px;" disabled onclick="game.confirmSpecialCard()">Confirm</button>
+            <button class="phb" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal('🌟 Special Cards', contentHTML);

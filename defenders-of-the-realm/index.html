@@ -203,7 +203,7 @@
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-title-bar" id="general-card-selection-title">⚔️ Select Cards for Attack</div>
             <div id="general-card-selection-content"></div>
-            <div id="general-card-selection-buttons" style="display: flex; gap: 10px; margin-top: 15px;">
+            <div id="general-card-selection-buttons" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
                 <button class="phb" style="flex: 1;" onclick="game.confirmGeneralAttack();">
                     ⚔️ Attack
                 </button>
@@ -217,16 +217,12 @@
     <!-- Combat Modal -->
     <div class="modal" id="combat-modal" style="z-index: 15000;">
         <div class="modal-content">
-            <h2 class="modal-title" id="combat-title">Combat</h2>
+            <div class="modal-title-bar" id="combat-title">💥 Combat</div>
             <div id="combat-content"></div>
             <div class="dice-roll" id="dice-display"></div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn btn-primary" style="flex: 1;" id="combat-roll-btn" onclick="game.rollCombatDice()">
-                    🎲 Roll Dice
-                </button>
-                <button class="btn" style="flex: 1;" onclick="game.closeCombat()">
-                    Close
-                </button>
+            <div style="margin-top: 15px;">
+                <button class="phb" id="combat-roll-btn" onclick="game.rollCombatDice()">Roll Dice</button>
+                <button class="phb" onclick="game.closeCombat()">Close</button>
             </div>
         </div>
     </div>
@@ -408,11 +404,11 @@
     <!-- Hero Death Modal -->
     <div class="modal" id="hero-death-modal" style="z-index: 45000;">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-title" style="color: #ef4444;">💀 Hero Defeated!</h2>
+            <div class="modal-title-bar">☠️ Hero Defeated!</div>
             <div id="hero-death-content"></div>
-            <div id="hero-selection-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 20px 0;"></div>
-            <button class="btn" id="respawn-same-hero-btn" style="width: 100%; margin-top: 10px;" onclick="game.respawnSameHero()">
-                Respawn Same Hero
+            <div id="hero-selection-grid" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0;"></div>
+            <button class="phb" id="hero-death-confirm-btn" onclick="game.confirmHeroDeath()" disabled style="width: 100%; opacity: 0.5;">
+                Confirm
             </button>
         </div>
     </div>
@@ -420,9 +416,9 @@
     <!-- Retreat to Monarch City Modal -->
     <div class="modal" id="retreat-modal">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-title" style="color: #ef4444;">⚠️ Failed to Defeat General!</h2>
+            <div class="modal-title-bar">⚠️ Failed to Defeat General!</div>
             <div id="retreat-content"></div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="game.closeRetreatModal()">
+            <button class="phb" style="width: 100%; margin-top: 15px;" onclick="game.closeRetreatModal()">
                 Continue
             </button>
         </div>
@@ -455,9 +451,9 @@
     <!-- Group Penalty Modal -->
     <div class="modal" id="group-penalty-modal">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-title" style="color: #ef4444;">🤝 Group Defeated!</h2>
+            <div class="modal-title-bar">💥 Group Defeated!</div>
             <div id="group-penalty-content"></div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="game.closeGroupPenaltyModal()">
+            <button class="phb" style="width: 100%; margin-top: 15px;" onclick="game.closeGroupPenaltyModal()">
                 Continue
             </button>
         </div>
@@ -477,12 +473,10 @@
     <!-- Card Discard Modal -->
     <div class="modal" id="card-discard-modal">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-title" style="color: #ef4444;">Discard Cards</h2>
-            <div id="card-discard-reason" style="margin-bottom: 15px; color: #d4af37;"></div>
-            <div id="card-discard-instruction" style="margin-bottom: 15px;"></div>
-            <div id="card-discard-cards" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 15px;"></div>
-            <button class="btn btn-primary" id="confirm-discard-btn" onclick="game.confirmCardDiscard()" disabled style="width: 100%;">
-                Discard Selected Cards
+            <div class="modal-title-bar">💥 Discard Cards</div>
+            <div id="card-discard-content"></div>
+            <button class="phb" id="confirm-discard-btn" onclick="game.confirmCardDiscard()" disabled style="width: 100%; opacity: 0.5;">
+                Discard Cards
             </button>
         </div>
     </div>

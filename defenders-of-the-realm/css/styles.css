@@ -537,6 +537,16 @@
             text-align: center;
         }
 
+        .modal-title-bar {
+            font-family: 'Cinzel', Georgia, serif;
+            font-weight: 900;
+            text-align: center;
+            font-size: 1.15em;
+            color: #d4af37;
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+        }
+
         .dice-roll {
             display: flex;
             gap: 10px;

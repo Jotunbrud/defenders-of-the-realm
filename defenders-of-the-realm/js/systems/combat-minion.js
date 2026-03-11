@@ -1214,8 +1214,8 @@ Object.assign(game, {
                 this._combatBonusDiceActive = false;
             }
             
-            // Check for Find Magic Gate quest (combat bonus dice)
-            if (!this._generalBonusDiceChecked) {
+            // Check for Find Magic Gate quest (combat bonus dice) — skip if pre-toggled via card selection
+            if (!this._generalBonusDiceChecked && !this._findMagicGateToggled) {
                 this._generalBonusDiceChecked = true;
                 const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
                 if (bonusDiceQuest) {
@@ -1246,6 +1246,20 @@ Object.assign(game, {
                 }
             }
             this._generalBonusDiceChecked = false;
+
+            // If Find Magic Gate was pre-toggled via card selection, retire it now and set bonus dice active
+            if (this._findMagicGateToggled) {
+                const bonusDiceQuest = this._findCombatBonusDiceQuest(hero);
+                if (bonusDiceQuest) {
+                    const quest = hero.questCards[bonusDiceQuest.questIndex];
+                    if (quest) this._retireQuest(hero, quest, '+2 bonus dice (solo combat)');
+                    this.addLog(`💫 ${hero.name} uses Find Magic Gate for +2 bonus dice!`);
+                    this.updateDeckCounts();
+                    this.renderHeroes();
+                }
+                this._combatBonusDiceActive = true;
+                this._findMagicGateToggled = false;
+            }
             
             // Use selected cards from card selection modal
             // Filter out any undefined cards (in case indices are out of bounds)
@@ -1780,16 +1794,8 @@ Object.assign(game, {
         const rollsText = diceRolls.map(r => r.hit ? `[${r.roll}✓]` : `[${r.roll}✗]`).join(' ');
         this.addLog(`${hero.name} vs ${general.name}: ${cardNames} → ${rollsText} → ${damage} damage!`);
         
-        // Add Varkolak no-reroll message to results HTML if applicable
+        // Undead Curse note already shown inline in Combat Skill line — no extra box needed
         let noRerollWarning = '';
-        if (general.combatSkill === 'no_rerolls' && !this._amarakBlessingActive) {
-            noRerollWarning = `
-                <div class="parchment-box" style="margin-top:10px;">
-                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">💀 Undead Curse</span></div>
-                    <p style="font-family:'Comic Sans MS',cursive; font-size:0.9em; color:#3d2b1f; margin:8px 0;">Varkolak prevents all re-rolls and special skills in combat!</p>
-                </div>
-            `;
-        }
         
         const resultsHTML = `
             <div class="parchment-box">
@@ -2069,103 +2075,99 @@ Object.assign(game, {
             console.log('Heroes:', heroes.map(h => h.name));
             console.log('Penalty:', penalty);
             
-            // Build summary of all penalties
-            let summaryHTML = `<div style="background: rgba(239,68,68,0.2); padding: 20px; border-radius: 10px; margin: 20px 0;">`;
-            summaryHTML += `<h3 style="color: #ef4444; margin-bottom: 15px;">🤝 GROUP DEFEATED!</h3>`;
-            summaryHTML += `<p style="color: #d4af37; margin-bottom: 15px;">All ${heroes.length} heroes suffer ${general.name}'s penalty:</p>`;
-            
+            // Roll once for all heroes (shared penalty roll)
+            let sharedWoundRoll = null;
+            let sharedCardRoll = null;
+            if (penalty.woundsType === 'd3') sharedWoundRoll = Math.floor(Math.random() * 3) + 1;
+            else if (penalty.woundsType === 'd6') sharedWoundRoll = Math.floor(Math.random() * 6) + 1;
+            if (penalty.cardsLostType === 'd6') sharedCardRoll = Math.floor(Math.random() * 6) + 1;
+
+            const baseWounds = sharedWoundRoll !== null ? sharedWoundRoll : (penalty.wounds || 0);
+            const baseCards = penalty.cardsLost === 'all' ? 'all' : (sharedCardRoll !== null ? sharedCardRoll : (penalty.cardsLost || 0));
+
             const penaltyResults = [];
-            
-            // Calculate penalties for each hero
+
+            // Calculate per-hero penalties using shared rolls
             heroes.forEach(hero => {
-                let woundsTaken = 0;
-                let woundRoll = null;
-                let cardsToLose = 0;
-                let cardRoll = null;
-                
                 // Eagle Rider Sky Attack: No penalties
                 if (hero.name === 'Eagle Rider' && this.eagleRiderAttackStyle === 'sky') {
-                    summaryHTML += `<div style="margin: 5px 0; color: #60a5fa;">☁️ ${hero.name}: Sky Attack — No penalties!</div>`;
-                    penaltyResults.push({
-                        hero: hero,
-                        woundsTaken: 0,
-                        cardsToLose: 0,
-                        cardRoll: null,
-                        skyAttackProtected: true
-                    });
-                    return; // Skip to next hero
+                    this.addLog(`☁️ ${hero.name}: Sky Attack — No penalties!`);
+                    penaltyResults.push({ hero, woundsTaken: 0, woundRoll: sharedWoundRoll, cardsToLose: 0, cardRoll: sharedCardRoll, skyAttackProtected: true });
+                    return;
                 }
-                
                 // War Banner of Valor: Ignore Hero Defeated penalties
                 if (this._hasWarBanner(hero)) {
-                    summaryHTML += `<div style="margin: 5px 0; color: #a78bfa;">🚩 ${hero.name}: War Banner of Valor — No penalties!</div>`;
                     this.addLog(`🚩 War Banner of Valor: ${hero.name} ignores Hero Defeated penalties from ${general.name}!`);
-                    penaltyResults.push({
-                        hero: hero,
-                        woundsTaken: 0,
-                        cardsToLose: 0,
-                        cardRoll: null,
-                        warBannerProtected: true
-                    });
-                    return; // Skip to next hero
+                    penaltyResults.push({ hero, woundsTaken: 0, woundRoll: sharedWoundRoll, cardsToLose: 0, cardRoll: sharedCardRoll, warBannerProtected: true });
+                    return;
                 }
-                
-                // Calculate wounds
-                const woundDieType = penalty.woundsType === 'd3' ? 'D3' : penalty.woundsType === 'd6' ? 'D6' : null;
-                if (penalty.woundsType === 'd3') {
-                    woundRoll = Math.floor(Math.random() * 3) + 1;
-                    woundsTaken = woundRoll;
-                } else if (penalty.woundsType === 'd6') {
-                    woundRoll = Math.floor(Math.random() * 6) + 1;
-                    woundsTaken = woundRoll;
-                } else if (penalty.wounds > 0) {
-                    woundsTaken = penalty.wounds;
-                }
-                
-                // Paladin's Aura / Dwarf's Armor and Toughness
+
+                let woundsTaken = baseWounds;
+                let cardsToLose = baseCards;
+
+                // Paladin Aura / Dwarf Armor: reduce wounds by 1
                 if ((hero.name === 'Paladin' || hero.name === 'Dwarf') && woundsTaken > 0) {
-                    const original = woundsTaken;
                     woundsTaken = Math.max(0, woundsTaken - 1);
-                    const abilityName = hero.name === 'Paladin' ? 'Aura' : 'Armor';
-                    const rollText = woundDieType && woundRoll !== null ? ` (${woundDieType}: [${woundRoll}])` : '';
-                    summaryHTML += `<div style="margin: 5px 0; color: ${hero.color};">${hero.symbol} ${hero.name}: ${original} wounds${rollText} - 1 (${abilityName}) = ${woundsTaken} wounds</div>`;
-                } else {
-                    summaryHTML += `<div style="margin: 5px 0;">${hero.symbol} ${hero.name}: ${woundsTaken} wound${woundsTaken !== 1 ? 's' : ''}`;
-                    if (woundDieType && woundRoll !== null) summaryHTML += ` (${woundDieType}: [${woundRoll}])`;
-                    summaryHTML += `</div>`;
                 }
-                
-                // Calculate card loss
-                const cardDieType = penalty.cardsLostType === 'd6' ? 'D6' : null;
-                if (penalty.cardsLost === 'all') {
-                    cardsToLose = 'all';
-                } else if (penalty.cardsLostType === 'd6') {
-                    cardRoll = Math.floor(Math.random() * 6) + 1;
-                    cardsToLose = cardRoll;
-                } else if (penalty.cardsLost > 0) {
-                    cardsToLose = penalty.cardsLost;
-                }
-                
-                penaltyResults.push({
-                    hero: hero,
-                    woundsTaken: woundsTaken,
-                    cardsToLose: cardsToLose,
-                    cardRoll: cardRoll
-                });
+
+                penaltyResults.push({ hero, woundsTaken, woundRoll: sharedWoundRoll, cardsToLose, cardRoll: sharedCardRoll });
             });
-            
-            summaryHTML += `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #666;">`;
-            summaryHTML += `<strong>Card Loss:</strong><br>`;
-            penaltyResults.forEach(result => {
-                if (result.cardsToLose === 'all') {
-                    summaryHTML += `<div style="margin: 5px 0;">${result.hero.symbol} ${result.hero.name}: ALL cards</div>`;
-                } else if (result.cardRoll !== null) {
-                    summaryHTML += `<div style="margin: 5px 0;">${result.hero.symbol} ${result.hero.name}: ${result.cardsToLose} cards (D6: [${result.cardRoll}])</div>`;
-                } else if (result.cardsToLose > 0) {
-                    summaryHTML += `<div style="margin: 5px 0;">${result.hero.symbol} ${result.hero.name}: ${result.cardsToLose} cards</div>`;
-                }
-            });
-            summaryHTML += `</div></div>`;
+
+            // Build new parchment-style penalty HTML
+            const heroColorMap = { 'Paladin': '#6d28a8', 'Cleric': '#1e3a7a', 'Wizard': '#7c3aed', 'Sorceress': '#fbbf24', 'Eagle Rider': '#6b7b8d', 'Dwarf': '#b45309', 'Ranger': '#15803d', 'Rogue': '#374151' };
+
+            // Skill reduction lines
+            const skillLines = penaltyResults
+                .filter(r => !r.skyAttackProtected && !r.warBannerProtected && r.woundRoll !== null && r.woundsTaken < baseWounds)
+                .map(r => {
+                    const ab = r.hero.name === 'Paladin' ? 'Aura of Righteousness' : 'Armor of the Dwarves';
+                    return `<div class="hi-sub modal-desc-text" style="margin-top:3px;color:#3d2b1f;font-size:0.75em;line-height:1.5;">🛡️ <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">${r.hero.name}'s ${ab}:</strong> Reduced by ${baseWounds - r.woundsTaken}</div>`;
+                }).join('');
+
+            // Hero life token rows
+            const heroRows = heroes.map(h => {
+                const healthColor = h.health <= 1 ? '#b91c1c' : '#2c1810';
+                const hColor = heroColorMap[h.name] || '#374151';
+                return `<div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;color:#2c1810;display:flex;justify-content:space-between;align-items:center;font-size:0.9em;margin-bottom:4px;">
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;">${h.symbol} ${h.name}</span>
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${healthColor};">❤️ ${h.health}/${h.maxHealth}</span>
+                </div>`;
+            }).join('');
+
+            const cardsDieVal = baseCards === 'all' ? '★' : baseCards;
+            const cardsDesc = baseCards === 'all' ? 'All cards lost' : `${baseCards} card${baseCards !== 1 ? 's' : ''} lost`;
+
+            let summaryHTML = this._parchmentBoxOpen('Hero Defeated Penalty');
+            summaryHTML += `
+                <div style="padding:8px 10px;background:rgba(220,38,38,0.08);border:1px solid #dc2626;border-radius:6px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="color:#b91c1c;font-weight:900;font-family:'Cinzel',Georgia,serif;font-size:0.9em;">❤️ Life Token Loss</span>
+                        <div class="die die-black">${baseWounds}</div>
+                    </div>
+                    <div style="margin-top:5px;">
+                        <div class="hi-title modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;">⚔️ Heroes lose ${baseWounds} life token${baseWounds !== 1 ? 's' : ''} for failing to defeat ${general.name}</div>
+                    </div>
+                    ${skillLines}
+                </div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3);">
+                    <div class="hero-section-label" style="color:#2c1810;font-size:0.85em;margin-bottom:6px;">❤️ Hero Life Tokens</div>
+                    ${heroRows}
+                </div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3);">
+                    <div style="padding:8px 10px;background:rgba(220,38,38,0.08);border:1px solid #dc2626;border-radius:6px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="color:#b91c1c;font-weight:900;font-family:'Cinzel',Georgia,serif;font-size:0.9em;">🎴 Cards Lost</span>
+                            <div class="die die-black">${cardsDieVal}</div>
+                        </div>
+                        <div style="margin-top:5px;">
+                            <div class="hi-title modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;">⚔️ ${cardsDesc} from failing to defeat ${general.name}</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3);">
+                    <div class="parchment-text" style="text-align:center;font-style:italic;color:#3d2b1f;">All heroes have been moved to Monarch City</div>
+                </div>`;
+            summaryHTML += this._parchmentBoxClose();
             
             // Show penalty summary in modal instead of alert
             console.log('=== Showing GROUP PENALTY MODAL ===');
@@ -2231,26 +2233,14 @@ Object.assign(game, {
                     this.renderHeroes();
                     this.updateGameStatus();
                     
-                    // Check for retreat (no card modal shown)
+                    // Move hero to Monarch City silently
                     if (this.pendingGeneralPenalty.retreatHeroes) {
-                        this.pendingRetreat = {
-                            heroes: this.pendingGeneralPenalty.retreatHeroes,
-                            generalName: generalName
-                        };
-                        // Show retreat modal after a brief delay
-                        setTimeout(() => this.showRetreatModal(), 500);
+                        this._retreatHeroesToMonarchCity(this.pendingGeneralPenalty.retreatHeroes);
                     }
                 } else {
                     this.addLog(`${hero.name} has no cards to discard from failing to defeat ${generalName}`);
-                    
-                    // Check for retreat (no card modal shown)
                     if (this.pendingGeneralPenalty.retreatHeroes) {
-                        this.pendingRetreat = {
-                            heroes: this.pendingGeneralPenalty.retreatHeroes,
-                            generalName: generalName
-                        };
-                        // Show retreat modal immediately
-                        setTimeout(() => this.showRetreatModal(), 100);
+                        this._retreatHeroesToMonarchCity(this.pendingGeneralPenalty.retreatHeroes);
                     }
                 }
             } else if (cardsLostType === 'd6') {
@@ -2258,22 +2248,16 @@ Object.assign(game, {
                 if (hero.cards.length > 0) {
                     const cardRoll = Math.floor(Math.random() * 6) + 1; // 1-6
                     const actualCardsToLose = Math.min(cardRoll, hero.cards.length);
-                    
-                    // Update reason text with card roll
                     reasonText += ` (Rolled [${cardRoll}] for cards)`;
-                    
                     this.addLog(`${hero.name} rolls D6 for cards: [${cardRoll}] - must discard ${actualCardsToLose} card(s) from failing to defeat ${generalName}!`);
+                    if (this.pendingGeneralPenalty.retreatHeroes) {
+                        this.pendingRetreat = { heroes: this.pendingGeneralPenalty.retreatHeroes };
+                    }
                     this.showCardDiscardModal(actualCardsToLose, reasonText);
                 } else {
                     this.addLog(`${hero.name} has no cards to discard from failing to defeat ${generalName}`);
-                    
-                    // Check for retreat (no card modal shown)
                     if (this.pendingGeneralPenalty.retreatHeroes) {
-                        this.pendingRetreat = {
-                            heroes: this.pendingGeneralPenalty.retreatHeroes,
-                            generalName: generalName
-                        };
-                        setTimeout(() => this.showRetreatModal(), 100);
+                        this._retreatHeroesToMonarchCity(this.pendingGeneralPenalty.retreatHeroes);
                     }
                 }
             } else if (cardsToLose > 0) {
@@ -2281,27 +2265,16 @@ Object.assign(game, {
                 if (hero.cards.length > 0) {
                     const actualCardsToLose = Math.min(cardsToLose, hero.cards.length);
                     this.addLog(`${hero.name} must discard ${actualCardsToLose} card(s) from failing to defeat ${generalName}!`);
+                    if (this.pendingGeneralPenalty.retreatHeroes) {
+                        this.pendingRetreat = { heroes: this.pendingGeneralPenalty.retreatHeroes };
+                    }
                     this.showCardDiscardModal(actualCardsToLose, reasonText);
                 } else {
                     this.addLog(`${hero.name} has no cards to discard from failing to defeat ${generalName}`);
-                    
-                    // Check for retreat (no card modal shown)
                     if (this.pendingGeneralPenalty.retreatHeroes) {
-                        this.pendingRetreat = {
-                            heroes: this.pendingGeneralPenalty.retreatHeroes,
-                            generalName: generalName
-                        };
-                        setTimeout(() => this.showRetreatModal(), 100);
+                        this._retreatHeroesToMonarchCity(this.pendingGeneralPenalty.retreatHeroes);
                     }
                 }
-            }
-            
-            // Store retreat info for showing after card discard
-            if (this.pendingGeneralPenalty.retreatHeroes) {
-                this.pendingRetreat = {
-                    heroes: this.pendingGeneralPenalty.retreatHeroes,
-                    generalName: generalName
-                };
             }
             
             // Clear pending penalty
@@ -2353,62 +2326,46 @@ Object.assign(game, {
             selectedIndices: []
         };
         
-        // If hero has exactly the number of cards needed or fewer, auto-select all
+        // If hero has fewer cards than needed, auto-select all
         if (hero.cards.length <= numCards) {
             const allCardIndices = hero.cards.map((_, i) => i);
             this.pendingCardDiscard.selectedIndices = allCardIndices;
-            console.log('=== Auto-selected all', allCardIndices.length, 'cards ===');
-            // Don't auto-confirm - show the modal so player sees what's happening
         }
         
-        // Set reason text
-        const reasonElement = document.getElementById('card-discard-reason');
-        if (reasonElement) {
-            reasonElement.textContent = reason;
-        }
+        const cardColorMap = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#1f2937' };
+        const actualNum = Math.min(numCards, hero.cards.length);
         
-        // Set instruction text
-        const instructionElement = document.getElementById('card-discard-instruction');
-        if (instructionElement) {
-            if (hero.cards.length <= numCards) {
-                instructionElement.textContent = `All ${hero.cards.length} cards will be discarded:`;
-            } else {
-                instructionElement.textContent = `Select ${numCards} card(s) to discard:`;
-            }
-        }
-        
-        // Render cards
-        const cardsContainer = document.getElementById('card-discard-cards');
-        if (cardsContainer) {
-            const cardColorMap = {
-                'red': '#dc2626',
-                'blue': '#2563eb',
-                'green': '#16a34a',
-                'black': '#1f2937'
-            };
-            
-            cardsContainer.innerHTML = hero.cards.map((card, index) => {
-                const isSelected = this.pendingCardDiscard.selectedIndices.includes(index);
-                return `
-                <div class="card-select-item" 
-                     id="discard-card-${index}"
-                     onclick="game.toggleDiscardCard(${index})"
-                     style="
-                         border: 3px solid ${(card.special ? '#9333ea' : (cardColorMap[card.color] || '#666'))};
-                         padding: 10px;
-                         border-radius: 8px;
-                         cursor: pointer;
-                         background: ${isSelected ? '#4a4a4a' : '#1a1a1a'};
-                         opacity: ${isSelected ? '0.5' : '1'};
-                         min-width: 120px;
-                         text-align: center;
-                     ">
-                    <div style="font-size: 2em; margin-bottom: 5px;">${card.icon}</div>
-                    <div style="font-weight: bold; color: ${(card.special ? '#9333ea' : (cardColorMap[card.color] || '#666'))};">${card.name}</div>
-                    <div style="font-size: 0.9em; color: #999;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'}</div>
-                </div>
-            `;
-            }).join('');
+        // Render parchment card tiles
+        const cardsHTML = hero.cards.map((card, index) => {
+            const isSelected = this.pendingCardDiscard.selectedIndices.includes(index);
+            const cc = card.special ? '#9333ea' : (cardColorMap[card.color] || '#666');
+            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+            const badgeHTML = isSelected
+                ? `<div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4);pointer-events:none;z-index:5;">✕</div>`
+                : '';
+            const selStyle = isSelected ? 'border:3px solid #dc2626;opacity:0.45;transform:scale(0.93);' : `border:3px solid ${cc};`;
+            return `
+                <div id="discard-card-${index}" onclick="game.toggleDiscardCard(${index})"
+                     style="flex:1 1 90px;max-width:110px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);${selStyle}border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+                    ${badgeHTML}
+                    <div style="font-size:1.4em;margin-bottom:3px;">${card.icon || '🎴'}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.6em;color:${cc};line-height:1.2;">${card.name}</div>
+                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px;">${diceHTML}</div>
+                </div>`;
+        }).join('');
+
+        const contentEl = document.getElementById('card-discard-content');
+        if (contentEl) {
+            contentEl.innerHTML = `
+                <div class="parchment-box" style="margin-bottom:10px;">
+                    <div class="parchment-banner"><span class="hero-banner-name">Select ${actualNum} Card${actualNum !== 1 ? 's' : ''} To Discard</span></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">${cardsHTML}</div>
+                    <div style="text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3);">
+                        <span style="font-size:0.82em;color:#2c1810;font-family:'Cinzel',Georgia,serif;font-weight:900;">🎴 ${reason}</span>
+                    </div>
+                </div>`;
         }
         
         // Show modal
@@ -2425,13 +2382,30 @@ Object.assign(game, {
         if (indexPos > -1) {
             // Deselect
             selectedIndices.splice(indexPos, 1);
-            document.getElementById(`discard-card-${index}`).style.opacity = '1';
-            document.getElementById(`discard-card-${index}`).style.background = '#1a1a1a';
+            const el = document.getElementById(`discard-card-${index}`);
+            if (el) {
+                el.style.opacity = '';
+                el.style.transform = '';
+                el.style.borderColor = '';
+                const badge = el.querySelector('div[style*="position:absolute"]');
+                if (badge) badge.remove();
+            }
         } else {
             // Select (if not at limit)
             if (selectedIndices.length < this.pendingCardDiscard.numCards) {
                 selectedIndices.push(index);
-                document.getElementById(`discard-card-${index}`).style.opacity = '0.5';
+                const el = document.getElementById(`discard-card-${index}`);
+                if (el) {
+                    el.style.borderColor = '#dc2626';
+                    el.style.opacity = '0.45';
+                    el.style.transform = 'scale(0.93)';
+                    if (!el.querySelector('div[style*="position:absolute"]')) {
+                        const badge = document.createElement('div');
+                        badge.style.cssText = 'position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4);pointer-events:none;z-index:5;';
+                        badge.textContent = '\u2715';
+                        el.appendChild(badge);
+                    }
+                }
                 document.getElementById(`discard-card-${index}`).style.background = '#4a4a4a';
             }
         }
@@ -2441,11 +2415,14 @@ Object.assign(game, {
     
     updateDiscardButton() {
         const btn = document.getElementById('confirm-discard-btn');
-        if (btn) {
-            const canConfirm = this.pendingCardDiscard.selectedIndices.length === this.pendingCardDiscard.numCards;
+        if (btn && this.pendingCardDiscard) {
+            const selected = this.pendingCardDiscard.selectedIndices.length;
+            const needed = this.pendingCardDiscard.numCards;
+            const canConfirm = selected === needed;
             btn.disabled = !canConfirm;
             btn.style.opacity = canConfirm ? '1' : '0.5';
             btn.style.cursor = canConfirm ? 'pointer' : 'not-allowed';
+            btn.textContent = canConfirm ? `Discard ${needed} Card${needed !== 1 ? 's' : ''}` : `Select ${needed - selected} More`;
         }
     },
     
@@ -2522,12 +2499,109 @@ Object.assign(game, {
         this.renderHeroes();
         this.updateGameStatus();
         
-        // No queue - check if there's a pending retreat
+        // Move heroes to Monarch City silently if pending
         if (this.pendingRetreat) {
-            this.showRetreatModal();
+            this._retreatHeroesToMonarchCity(this.pendingRetreat.heroes);
+            this.pendingRetreat = null;
         }
     },
     
+    _retreatHeroesToMonarchCity(heroes) {
+        if (!heroes) return;
+        heroes.forEach(hero => {
+            if (hero.health > 0) {
+                hero.location = 'Monarch City';
+                this.addLog(`${hero.symbol} ${hero.name} retreats to Monarch City`);
+            }
+        });
+        this.renderHeroes();
+        this.renderTokens();
+        this.updateGameStatus();
+    },
+
+    closeGroupPenaltyModal() {
+        document.getElementById('group-penalty-modal').classList.remove('active');
+
+        if (!this.pendingGroupPenaltyResults) return;
+
+        const results = this.pendingGroupPenaltyResults;
+        const general = this.pendingGroupPenaltyGeneral;
+        const retreatData = this.pendingGroupPenaltyRetreat;
+
+        // Apply wounds and log
+        results.forEach(result => {
+            if (result.skyAttackProtected || result.warBannerProtected) return;
+            const hero = result.hero;
+            if (result.woundsTaken > 0) {
+                hero.health = Math.max(0, hero.health - result.woundsTaken);
+                this.addLog(`${hero.symbol} ${hero.name} loses ${result.woundsTaken} life token${result.woundsTaken !== 1 ? 's' : ''} (${hero.health}/${hero.maxHealth} remaining)`);
+            }
+        });
+
+        // Check hero deaths — handle first death then continue (simplified: heroes at 0 hp noted)
+        results.forEach(result => {
+            if (result.hero.health <= 0 && !result.skyAttackProtected && !result.warBannerProtected) {
+                this.addLog(`💀 ${result.hero.name} has been defeated by penalties!`);
+            }
+        });
+
+        // Build card discard queue for heroes with cards to lose
+        const cardDiscardQueue = [];
+        results.forEach(result => {
+            if (result.skyAttackProtected || result.warBannerProtected) return;
+            const hero = result.hero;
+            const heroIndex = this.heroes.indexOf(hero);
+            if (result.cardsToLose === 'all' && hero.cards.length > 0) {
+                cardDiscardQueue.push({ heroIndex, numCards: hero.cards.length, reason: `${hero.name} — All cards lost (defeated by ${general.name})` });
+            } else if (typeof result.cardsToLose === 'number' && result.cardsToLose > 0 && hero.cards.length > 0) {
+                const actual = Math.min(result.cardsToLose, hero.cards.length);
+                cardDiscardQueue.push({ heroIndex, numCards: actual, reason: `${hero.name} — Defeated by ${general.name}` });
+            }
+        });
+
+        // Move heroes to Monarch City directly — no separate retreat modal needed
+        if (retreatData) {
+            retreatData.heroes.forEach(hero => {
+                if (hero.health > 0) {
+                    hero.location = 'Monarch City';
+                    this.addLog(`${hero.symbol} ${hero.name} retreats to Monarch City`);
+                }
+            });
+        }
+
+        this.pendingGroupPenaltyResults = null;
+        this.pendingGroupPenaltyGeneral = null;
+        this.pendingGroupPenaltyRetreat = null;
+        this.pendingRetreat = null;
+
+        this.renderHeroes();
+        this.updateGameStatus();
+
+        if (cardDiscardQueue.length > 0) {
+            this.pendingCardDiscardQueue = cardDiscardQueue;
+            this.tempPlayerIndex = this.currentPlayerIndex;
+            this.processNextCardDiscard();
+        } else {
+            this.renderTokens();
+            this.updateGameStatus();
+        }
+    },
+
+    showRetreatModal() {
+        // Retreat modal removed — move heroes silently
+        if (!this.pendingRetreat) return;
+        this._retreatHeroesToMonarchCity(this.pendingRetreat.heroes);
+        this.pendingRetreat = null;
+    },
+
+    closeRetreatModal() {
+        document.getElementById('retreat-modal').classList.remove('active');
+        this.pendingRetreat = null;
+        this.groupAttack = null;
+        this.renderHeroes();
+        this.updateGameStatus();
+    },
+
     _findAmarakBlessingQuest() {
         // Find any hero with a completed Amarak's Blessing quest
         for (let i = 0; i < this.heroes.length; i++) {

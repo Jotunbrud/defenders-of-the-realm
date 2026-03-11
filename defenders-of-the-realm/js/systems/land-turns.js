@@ -29,22 +29,8 @@ Object.assign(game, {
             return;
         }
         
-        // Check for minions blocking
-        const minionsHere = this.minions[location];
-        const totalMinions = minionsHere ? Object.values(minionsHere).reduce((a, b) => a + b, 0) : 0;
-        
-        if (totalMinions > 0) {
-            this.showInfoModal('⚠️', '<div>You must defeat all minions before healing the land!</div>');
-            return;
-        }
-        
-        // Check for general blocking
-        const generalHere = this.generals.find(g => g.location === location && !g.defeated);
-        
-        if (generalHere) {
-            this.showInfoModal('⚠️', '<div>You must defeat the general before healing the land!</div>');
-            return;
-        }
+        // Check for minions/general blocking — only Cleric Sanctify is restricted,
+        // but that's handled by disabling the button in the UI before this is called.
         
         this.healLandFromLocation(location);
     },
@@ -292,31 +278,48 @@ Object.assign(game, {
         const locationData = this.locationCoords[locationName];
         const locationColor = locationData.faction;
         
-        // Druid and Cleric can remove without card
-        if (hero.name === 'Druid' || hero.name === 'Cleric') {
-            const abilityLabel = hero.name === 'Druid' ? 'Druid Taint Removal' : 'Cleric Sanctify Land';
+        // Dice color matches location faction
+        const factionDieClass = {
+            'red': 'die-red',
+            'blue': 'die-blue',
+            'green': 'die-green',
+            'black': 'die-black'
+        }[locationColor] || 'die-black';
+        
+        // Check enemies for Cleric Sanctify routing
+        const _minionsHereLand = this.minions[locationName] || {};
+        const _totalMinionsLand = Object.values(_minionsHereLand).reduce((a, b) => a + b, 0);
+        const _generalHereLand = this.generals.find(g => g.location === locationName && !g.defeated);
+        const canSanctify = hero.name === 'Cleric' && _totalMinionsLand === 0 && !_generalHereLand;
+        
+        // Druid always no-card; Cleric only no-card (Sanctify) when no enemies
+        if (hero.name === 'Druid' || canSanctify) {
             const roll1 = Math.floor(Math.random() * 6) + 1;
             const roll2 = Math.floor(Math.random() * 6) + 1;
             const success = (roll1 >= 5 || roll2 >= 5);
             
+            const titleIcon = hero.name === 'Druid' ? '🌳' : '✝️';
+            const titleText = hero.name === 'Druid' ? 'Heal the Land' : 'Sanctify Land';
+            const rollLabel = hero.name === 'Druid' ? 'HEAL THE LAND' : 'SANCTIFY LAND';
+            
             // Create dice display
             const diceHTML = `
-                <div style="margin: 20px 0;">
-                    <div style="color: #d4af37; margin-bottom: 12px; font-size: 1.1em;">
-                        <strong>${abilityLabel} at ${locationName}</strong>
-                    </div>
-                    <div style="color: #9333ea; margin-bottom: 8px;">
-                        Roll 2 dice - Need 5 or 6 on either die
-                    </div>
-                    <div style="display: flex; gap: 15px; justify-content: center; margin: 15px 0;">
-                        <div class="die-result ${roll1 >= 5 ? 'hit' : 'miss'}" style="font-size: 2em;">
-                            ${roll1}
-                        </div>
-                        <div class="die-result ${roll2 >= 5 ? 'hit' : 'miss'}" style="font-size: 2em;">
-                            ${roll2}
-                        </div>
-                    </div>
+                ${this._parchmentBoxOpen(`${titleText} Roll`)}
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
+                    ${rollLabel} — 5+ TO REMOVE
                 </div>
+                <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
+                    <div class="die ${factionDieClass}">${roll1}</div>
+                    <div class="die ${factionDieClass}">${roll2}</div>
+                </div>
+                <div style="margin-top:8px;">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;margin-bottom:4px;">${titleText} Results</div>
+                    ${success
+                        ? `<div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
+                        : `<div class="fx-note blocked"><span class="fx-label" style="color:#5a3e1b">Taint Crystal Not Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
+                    }
+                </div>
+                ${this._parchmentBoxClose()}
             `;
             
             if (success) {
@@ -326,10 +329,10 @@ Object.assign(game, {
                 }
                 this.taintCrystalsRemaining++;
                 this.addLog(`${hero.name} removed taint crystal at ${locationName}! (${roll1}, ${roll2})`);
-                this.showCombatResults('✨ Taint Removal', diceHTML, '✨ SUCCESS! Taint Crystal Removed! ✨', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                this.showCombatResults(`${titleIcon} ${titleText}`, diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
             } else {
                 this.addLog(`${hero.name} failed to heal the land at ${locationName}. (${roll1}, ${roll2})`);
-                this.showCombatResults('❌ Taint Removal', diceHTML, '❌ Failed - Taint remains', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+                this.showCombatResults(`${titleIcon} ${titleText}`, diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
             }
             
             this.actionsRemaining--;
@@ -349,7 +352,7 @@ Object.assign(game, {
         const matchingCards = hero.cards.filter(card => card.color === locationColor);
         
         if (matchingCards.length === 0) {
-            this.showInfoModal('⚠️', `<div>Need a ${locationColor} card for this ${locationColor} location!</div>`);
+            return; // Button should be disabled — no matching card
             return;
         }
         
@@ -377,18 +380,18 @@ Object.assign(game, {
         const cardsHTML = matchingCards.map((card, index) => {
             const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
             const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
-            const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const dieClass = card.special ? 'die-purple' : `die-${card.color}`;
             const diceHTML = Array.from({ length: card.dice }).map(() =>
-                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+                `<div class="die ${dieClass}" style="width:16px;height:16px;font-size:0.6em;"></div>`
             ).join('');
             return `
-                <div onclick="game.executeTaintRemoval('${locationName.replace(/'/g, "\\'")}', ${index})" 
-                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${shadow}"
-                     onmouseover="this.style.boxShadow='0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';this.style.borderColor='#d4af37'"
-                     onmouseout="this.style.boxShadow='${shadow.replace(/;$/,'')}';this.style.borderColor='${cc.border}'">
-                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
-                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                <div onclick="game.executeTaintRemoval('${locationName.replace(/'/g, "\\'")}', ${index})"
+                     style="position:relative;flex:1 1 90px;max-width:120px;min-width:80px;border:2px solid ${cc.border};cursor:pointer;padding:10px 8px 8px;border-radius:8px;text-align:center;background:rgba(245,230,200,0.92);transition:transform 0.15s,box-shadow 0.15s;"
+                     onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 0 10px ${cc.border}88'"
+                     onmouseout="this.style.transform='';this.style.boxShadow=''">
+                    <div style="font-size:1.8em;margin-bottom:4px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.72em;color:${cc.text};line-height:1.2;margin-bottom:5px">${card.name}</div>
+                    <div style="display:flex;gap:4px;justify-content:center">${diceHTML}</div>
                 </div>`;
         }).join('');
         
@@ -403,7 +406,7 @@ Object.assign(game, {
                         ${cardsHTML}
                     </div>
                 </div>
-                <button class="phase-btn" onclick="this.closest('.modal').remove()" style="margin-top:12px">
+                <button class="phb" onclick="this.closest('.modal').remove()" style="margin-top:12px">
                     Cancel
                 </button>
             </div>
@@ -446,23 +449,29 @@ Object.assign(game, {
         
         const visionsNote = visionsBonus > 0 ? `<div style="color: #ec4899; margin-bottom: 8px; font-size: 0.9em;">⚡ Visions: +1 bonus die!</div>` : '';
         
+        const locationData2 = this.locationCoords[locationName];
+        const factionDieClass2 = {
+            'red': 'die-red', 'blue': 'die-blue', 'green': 'die-green', 'black': 'die-black'
+        }[(locationData2 && locationData2.faction) || 'black'] || 'die-black';
+        
         // Create dice display
         const diceHTML = `
-            <div style="margin: 20px 0;">
-                <div style="color: #d4af37; margin-bottom: 12px; font-size: 1.1em;">
-                    <strong>Taint Removal at ${locationName}</strong>
-                </div>
-                <div style="color: #ffd700; margin-bottom: 8px;">
-                    Discarded: ${cardToRemove.name}
-                </div>
-                <div style="color: #9333ea; margin-bottom: 8px;">
-                    Roll ${totalDice} dice - Need 5 or 6 on any die
-                </div>
-                ${visionsNote}
-                <div style="display: flex; gap: 15px; justify-content: center; margin: 15px 0;">
-                    ${rolls.map(r => `<div class="die-result ${r >= 5 ? 'hit' : 'miss'}" style="font-size: 2em;">${r}</div>`).join('')}
-                </div>
+            ${this._parchmentBoxOpen('Heal the Land Roll')}
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
+                HEAL THE LAND — 5+ TO REMOVE
             </div>
+            ${visionsNote}
+            <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
+                ${rolls.map(r => `<div class="die ${factionDieClass2}">${r}</div>`).join('')}
+            </div>
+            <div style="margin-top:8px;">
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;margin-bottom:4px;">Heal the Land Results</div>
+                ${success
+                    ? `<div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
+                    : `<div class="fx-note blocked"><span class="fx-label" style="color:#5a3e1b">Taint Crystal Not Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
+                }
+            </div>
+            ${this._parchmentBoxClose()}
         `;
         
         if (success) {
@@ -472,10 +481,10 @@ Object.assign(game, {
             }
             this.taintCrystalsRemaining++;
             this.addLog(`Taint removed at ${locationName}! Discarded ${cardToRemove.name}. (${rolls.join(', ')})`);
-            this.showCombatResults('✨ Taint Removal', diceHTML, '✨ SUCCESS! Taint Crystal Removed! ✨', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+            this.showCombatResults('🌳 Heal the Land', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         } else {
             this.addLog(`Failed at ${locationName}! Lost ${cardToRemove.name}. (${rolls.join(', ')})`);
-            this.showCombatResults('❌ Taint Removal', diceHTML, '❌ Failed - Card Lost, Taint Remains', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+            this.showCombatResults('🌳 Heal the Land', diceHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
         }
         
         // Close the card selection modal

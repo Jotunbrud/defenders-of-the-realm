@@ -365,7 +365,7 @@ Object.assign(game, {
             return;
         }
         
-        const colorNames = { black: 'Undead', blue: 'Dragonkin', green: 'Orcs', red: 'Demons' };
+        const colorNames = { black: 'Black', blue: 'Blue', green: 'Green', red: 'Red' };
         const colorHexes = { black: '#6b7280', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
         const chosenName = colorNames[color] || color;
         const chosenHex = colorHexes[color] || '#d4af37';
@@ -416,7 +416,7 @@ Object.assign(game, {
             any: { border: '#6d28a8', text: '#6d28a8' },
         };
         
-        const renderCardTile = (c, statusLabel) => {
+        const renderKeptTile = (c) => {
             const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[c.color] || ccMap.any);
             const iconDisplay = c.special ? '🌟' : (c.icon || '🎴');
             const shadow = c.special ? 'box-shadow:0 0 10px rgba(109,40,168,0.5);' : 'box-shadow:0 2px 8px rgba(0,0,0,0.3);';
@@ -424,39 +424,44 @@ Object.assign(game, {
                 `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
             ).join('');
             return `<div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 10px;text-align:center;${shadow}">
-                ${statusLabel}
                 <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${c.name}</div>
                 <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
             </div>`;
         };
-        
+        const renderDiscardedTile = (c) => {
+            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[c.color] || ccMap.any);
+            const iconDisplay = c.special ? '🌟' : (c.icon || '🎴');
+            const diceHTML = Array.from({ length: c.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+            return `<div style="position:relative;flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 10px;text-align:center;opacity:0.45;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                <div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4);">✕</div>
+                <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${c.name}</div>
+                <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
+            </div>`;
+        };
+
         let cardsHTML = '';
-        kept.forEach(k => {
-            const label = `<div style="font-size:0.65em;color:#15803d;font-weight:bold;font-family:'Cinzel',Georgia,serif">✓ KEPT</div>`;
-            cardsHTML += renderCardTile(k.card, label);
-        });
-        discarded.forEach(c => {
-            const label = `<div style="font-size:0.65em;color:#b91c1c;font-weight:bold;font-family:'Cinzel',Georgia,serif">✗ DISCARDED</div>`;
-            cardsHTML += renderCardTile(c, label);
-        });
-        
+        kept.forEach(k => { cardsHTML += renderKeptTile(k.card); });
+        discarded.forEach(c => { cardsHTML += renderDiscardedTile(c); });
+
         const summaryHTML = `
-            <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
-                Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong><br>
-                <span style="color: #d4af37;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</span>
-            </div>
-            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;text-align:center;margin-bottom:6px;">Color Chosen: <span style="color:${chosenHex}">${chosenName}</span></div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
             </div>
-            <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
         `;
-        
+
         this._rumorsSelectedColor = null;
-        
+
         this.showInfoModal('🍺 Rumors — Results', summaryHTML);
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
+        const contBtn = document.querySelector('#info-modal .modal-content > div:last-child .btn-primary');
+        if (contBtn) { contBtn.className = 'phb'; contBtn.style.marginTop = '8px'; }
     },
     
     // Rogue Crafty: Draw 5 cards at Inn, keep matching color + specials (like Local Information)
@@ -581,7 +586,7 @@ Object.assign(game, {
             return;
         }
         
-        const colorNames = { black: 'Undead', blue: 'Dragonkin', green: 'Orcs', red: 'Demons' };
+        const colorNames = { black: 'Black', blue: 'Blue', green: 'Green', red: 'Red' };
         const colorHexes = { black: '#6b7280', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
         const chosenName = colorNames[color] || color;
         const chosenHex = colorHexes[color] || '#d4af37';
@@ -632,7 +637,7 @@ Object.assign(game, {
             any: { border: '#6d28a8', text: '#6d28a8' },
         };
         
-        const renderCardTile = (c, statusLabel) => {
+        const renderKeptTile = (c) => {
             const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[c.color] || ccMap.any);
             const iconDisplay = c.special ? '🌟' : (c.icon || '🎴');
             const shadow = c.special ? 'box-shadow:0 0 10px rgba(109,40,168,0.5);' : 'box-shadow:0 2px 8px rgba(0,0,0,0.3);';
@@ -640,39 +645,44 @@ Object.assign(game, {
                 `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
             ).join('');
             return `<div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 10px;text-align:center;${shadow}">
-                ${statusLabel}
                 <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${c.name}</div>
                 <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
             </div>`;
         };
-        
+        const renderDiscardedTile = (c) => {
+            const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[c.color] || ccMap.any);
+            const iconDisplay = c.special ? '🌟' : (c.icon || '🎴');
+            const diceHTML = Array.from({ length: c.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+            return `<div style="position:relative;flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 10px;text-align:center;opacity:0.45;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                <div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4);">✕</div>
+                <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${c.name}</div>
+                <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
+            </div>`;
+        };
+
         let cardsHTML = '';
-        kept.forEach(k => {
-            const label = `<div style="font-size:0.65em;color:#15803d;font-weight:bold;font-family:'Cinzel',Georgia,serif">✓ KEPT</div>`;
-            cardsHTML += renderCardTile(k.card, label);
-        });
-        discarded.forEach(c => {
-            const label = `<div style="font-size:0.65em;color:#b91c1c;font-weight:bold;font-family:'Cinzel',Georgia,serif">✗ DISCARDED</div>`;
-            cardsHTML += renderCardTile(c, label);
-        });
-        
+        kept.forEach(k => { cardsHTML += renderKeptTile(k.card); });
+        discarded.forEach(c => { cardsHTML += renderDiscardedTile(c); });
+
         const summaryHTML = `
-            <div class="modal-heading" style="text-align: center; font-size:0.85em; color:#d4af37; margin-bottom: 12px;">
-                Called color: <strong style="color: ${chosenHex};">${chosenName} (${color.toUpperCase()})</strong><br>
-                <span style="color: #d4af37;">${kept.length} card${kept.length !== 1 ? 's' : ''} kept · ${discarded.length} discarded</span>
-            </div>
-            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;text-align:center;margin-bottom:6px;">Color Chosen: <span style="color:${chosenHex}">${chosenName}</span></div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${cardsHTML}</div>
             </div>
-            <div class="modal-heading" style="text-align: center; font-size:0.78em; color:#d4af37; margin-top: 12px;">1 action used · ${2 - this.rumorsUsedThisTurn} Inn action${2 - this.rumorsUsedThisTurn !== 1 ? 's' : ''} remaining this turn</div>
         `;
-        
+
         this._craftySelectedColor = null;
-        
+
         this.showInfoModal('🗡️ Crafty — Results', summaryHTML);
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '12px'; }
+        const contBtn = document.querySelector('#info-modal .modal-content > div:last-child .btn-primary');
+        if (contBtn) { contBtn.className = 'phb'; contBtn.style.marginTop = '8px'; }
     },
     
     showRumorsModal(card1, card2) {

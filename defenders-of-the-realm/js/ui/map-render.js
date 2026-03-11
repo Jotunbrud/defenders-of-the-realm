@@ -397,7 +397,12 @@ Object.assign(game, {
                     if (isDruid) {
                         html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">🌳 Heal the Land (Druid - Free)</button>`;
                     } else if (isCleric) {
-                        html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">✝️ Sanctify Land</button>`;
+                        const canSanctifyHere = totalMinions === 0 && !generalHere;
+                        if (canSanctifyHere) {
+                            html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">✝️ Sanctify Land</button>`;
+                        } else {
+                            html += `<button class="phase-btn" disabled style="width: 100%; margin-bottom: 5px; background: #666; cursor: not-allowed; opacity: 0.5;">✝️ Sanctify Land (No Enemies)</button>`;
+                        }
                     } else if (hasMatchingCard) {
                         html += `<button class="phase-btn" onclick="event.stopPropagation(); game.healLandFromLocation('${escapedLocation}')" style="width: 100%; margin-bottom: 5px; background: #9333ea;">🌳 Heal the Land</button>`;
                     } else {
@@ -676,7 +681,10 @@ Object.assign(game, {
         const hasTaint = this.taintCrystals[hero.location] && this.taintCrystals[hero.location] > 0;
         const isDruid = hero.name === 'Druid';
         const isCleric = hero.name === 'Cleric';
-        const canRemoveTaint = (isDruid || isCleric) && hasTaint && this.actionsRemaining > 0;
+        const _minionsAtHeroLoc = this.minions[hero.location] || {};
+        const _totalMinionsAtHeroLoc = Object.values(_minionsAtHeroLoc).reduce((a, b) => a + b, 0);
+        const _generalAtHeroLoc = this.generals.find(g => g.location === hero.location && !g.defeated);
+        const canRemoveTaint = hasTaint && this.actionsRemaining > 0 && (isDruid || (isCleric && _totalMinionsAtHeroLoc === 0 && !_generalAtHeroLoc));
         
         let actionButtonsHTML = '';
         if (canRemoveTaint) {

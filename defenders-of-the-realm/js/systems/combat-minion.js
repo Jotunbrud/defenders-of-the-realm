@@ -2582,14 +2582,20 @@ Object.assign(game, {
             }
         });
 
-        // Set up retreat
+        // Move heroes to Monarch City directly — no separate retreat modal needed
         if (retreatData) {
-            this.pendingRetreat = { heroes: retreatData.heroes, generalName: retreatData.generalName };
+            retreatData.heroes.forEach(hero => {
+                if (hero.health > 0) {
+                    hero.location = 'Monarch City';
+                    this.addLog(`${hero.symbol} ${hero.name} retreats to Monarch City`);
+                }
+            });
         }
 
         this.pendingGroupPenaltyResults = null;
         this.pendingGroupPenaltyGeneral = null;
         this.pendingGroupPenaltyRetreat = null;
+        this.pendingRetreat = null;
 
         this.renderHeroes();
         this.updateGameStatus();
@@ -2598,8 +2604,9 @@ Object.assign(game, {
             this.pendingCardDiscardQueue = cardDiscardQueue;
             this.tempPlayerIndex = this.currentPlayerIndex;
             this.processNextCardDiscard();
-        } else if (this.pendingRetreat) {
-            this.showRetreatModal();
+        } else {
+            this.renderTokens();
+            this.updateGameStatus();
         }
     },
 

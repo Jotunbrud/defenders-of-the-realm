@@ -415,10 +415,19 @@ Object.assign(game, {
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">${cardHero.name} must be at an Inn to play this card!</div>
                     <div class="card-wrap">
                         <div class="card-banner-inner"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
-                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div></div>
+                        <div class="card-body">
+                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div>
+                            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+                            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+                        </div>
                     </div>
                 </div>
+                <button class="phb" onclick="game.closeInfoModal()">Continue</button>
             `);
+            const _sct_li_err = document.getElementById('info-modal-title');
+            if (_sct_li_err) { _sct_li_err.style.fontFamily="'Cinzel',Georgia,serif"; _sct_li_err.style.fontWeight='700'; _sct_li_err.style.color='#d4af37'; _sct_li_err.style.fontSize='1.2em'; _sct_li_err.style.textAlign='center'; _sct_li_err.style.margin='0 0 12px 0'; }
+            const _sbd_li_err = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_sbd_li_err && !_sbd_li_err.querySelector('.phb')) _sbd_li_err.style.display = 'none';
             return;
         }
         
@@ -596,8 +605,10 @@ Object.assign(game, {
         this.updateActionButtons();
         
         this.showInfoModal('🌟 Special Card Details', summaryHTML);
-        const defaultBtnDiv2 = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv2 && defaultBtnDiv2.querySelector('.btn-primary')) defaultBtnDiv2.style.display = 'none';
+        const _sct_li_res = document.getElementById('info-modal-title');
+        if (_sct_li_res) { _sct_li_res.style.fontFamily="'Cinzel',Georgia,serif"; _sct_li_res.style.fontWeight='700'; _sct_li_res.style.color='#d4af37'; _sct_li_res.style.fontSize='1.2em'; _sct_li_res.style.textAlign='center'; _sct_li_res.style.margin='0 0 12px 0'; }
+        const _sbd_li_res = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_sbd_li_res && !_sbd_li_res.querySelector('.phb')) _sbd_li_res.style.display = 'none';
     },
     
     
@@ -1767,34 +1778,75 @@ Object.assign(game, {
         if (closeBtn) closeBtn.style.display = '';
         
         // Build parchment-style summary
+        const _dvFc  = { green:'#16a34a', red:'#dc2626', blue:'#3b82f6', black:'#374151' };
+        const _dvGi  = { green:'👺', red:'👹', blue:'🐉', black:'💀' };
+
+        const _dvMiniCard = (card) => {
+            if (card.type === 'all_quiet') {
+                return `<div style="display:flex;flex-direction:column;justify-content:center;gap:3px">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#6d28a8">All is Quiet</div>
+                    <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">No minions spread. No generals move.</div>
+                </div>`;
+            }
+            if (card.type === 'monarch_city_special') {
+                return `<div style="display:flex;flex-direction:column;justify-content:center;gap:3px">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#7c3aed">Monarch City</div>
+                    <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">Place 1 minion of each adjacent color. Reshuffle all decks.</div>
+                </div>`;
+            }
+            if (card.type === 'patrol') {
+                const isWarParty = card.patrolType === 'orc_war_party';
+                return `<div style="display:flex;flex-direction:column;justify-content:center;gap:3px">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:${isWarParty?'#dc2626':'#16a34a'}">${isWarParty?'⚔️ Orc War Party':'🥾 Orc Patrols'}</div>
+                </div>`;
+            }
+            const c1 = _dvFc[card.faction1]||'#888', c2 = _dvFc[card.faction2]||'#888', gc = _dvFc[card.general]||'#888';
+            const gi = _dvGi[card.general]||'⚔️';
+            const gName = this.generals.find(g=>g.color===card.general)?.name||'Unknown';
+            const dots1 = Array.from({length:Math.min(card.minions1,4)}).map(()=>`<span class="modal-minion-dot" style="background:${c1};width:22px;height:22px"></span>`).join('');
+            const dots2 = Array.from({length:Math.min(card.minions2,4)}).map(()=>`<span class="modal-minion-dot" style="background:${c2};width:22px;height:22px"></span>`).join('');
+            return `<div style="overflow:hidden;height:52px;display:flex;align-items:center">
+                <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
+                    <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px">${dots1}</div><div class="location-ring" style="width:90px;height:90px;background:${c1}"><span class="location-ring-name" style="font-size:0.74em">${card.location1}</span></div></div>
+                    <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px">${dots2}</div><div class="location-ring" style="width:90px;height:90px;background:${c2}"><span class="location-ring-name" style="font-size:0.74em">${card.location2}</span></div></div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div style="display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:${gc};width:48px;height:48px;font-size:1.5em">${gi}</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${gc};white-space:nowrap">${gName}</span></div>
+                        <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
+                        <div class="location-ring" style="width:90px;height:90px;background:${gc}"><span class="location-ring-name" style="font-size:0.74em">${card.location3}</span></div>
+                    </div>
+                </div>
+            </div>`;
+        };
+
+        const _dvPill = (text, loc, bc, bg, tc) =>
+            `<div style="border:1px solid ${bc};background:${bg};border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:${tc}">${text}</span>${loc?`<span style="color:#2c1810">→ ${loc}</span>`:''}</div>`;
+
+        const _dvEffects = (card) => {
+            const pills = [];
+            if (card.type === 'all_quiet' || card.type === 'monarch_city_special') {
+                pills.push(_dvPill('General will not advance','','rgba(139,115,85,0.3)','rgba(139,115,85,0.1)','#8b7355'));
+            } else {
+                const w1 = this.predictMinionOutcome(card.faction1, card.minions1, card.location1);
+                w1.forEach(w => { const [bc,bg,tc]=w.type==='overrun'?['#ef4444','rgba(239,68,68,0.08)','#b91c1c']:w.type==='taint'?['#9333ea','rgba(147,51,234,0.08)','#7e22ce']:['rgba(139,115,85,0.3)','rgba(139,115,85,0.1)','#8b7355']; pills.push(_dvPill(w.text,w.location,bc,bg,tc)); });
+                const w2 = this.predictMinionOutcome(card.faction2, card.minions2, card.location2);
+                w2.forEach(w => { const [bc,bg,tc]=w.type==='overrun'?['#ef4444','rgba(239,68,68,0.08)','#b91c1c']:w.type==='taint'?['#9333ea','rgba(147,51,234,0.08)','#7e22ce']:['rgba(139,115,85,0.3)','rgba(139,115,85,0.1)','#8b7355']; pills.push(_dvPill(w.text,w.location,bc,bg,tc)); });
+                if (card.minions3 > 0) { pills.push(_dvPill('General will advance',card.location3,'#ef4444','rgba(239,68,68,0.08)','#b91c1c')); }
+                else { pills.push(_dvPill('General will not advance',card.location3,'rgba(139,115,85,0.3)','rgba(139,115,85,0.1)','#8b7355')); }
+            }
+            return pills.length>0 ? `<div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>${pills.join('')}</div>` : '';
+        };
+
         let keptRows = '';
         keptIndices.forEach((idx, pos) => {
-            const summary = this._darkVisionsGetCardSummary(state.drawnCards[idx]);
-            keptRows += `<div style="display:flex;align-items:center;margin:4px 0;border:2px solid #8b7355;border-radius:6px;background:rgba(92,61,46,0.08);overflow:hidden"><div style="flex:1;padding:8px"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:${summary.color}"><span style="color:#8b7355;font-size:0.8em">#${pos+1}</span> ${summary.title}</div>${summary.lines.map(l=>`<div style="font-size:0.8em;color:#3d2b1f;padding:1px 0">${l}</div>`).join('')}</div></div>`;
+            const card = state.drawnCards[idx];
+            keptRows += `<div class="dv-kept"><div style="flex:1;min-width:0;padding:8px">${_dvMiniCard(card)}${_dvEffects(card)}</div></div>`;
         });
         let discardedRows = '';
         discardedIndices.forEach(idx => {
-            const summary = this._darkVisionsGetCardSummary(state.drawnCards[idx]);
-            discardedRows += `<div style="display:flex;align-items:center;margin:4px 0;border:2px solid #8b7355;border-radius:6px;background:rgba(92,61,46,0.05);opacity:0.6;overflow:hidden"><div style="flex:1;padding:8px"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#888;text-decoration:line-through">${summary.title}</div></div></div>`;
+            const card = state.drawnCards[idx];
+            discardedRows += `<div class="dv-disc" style="display:flex;padding:0"><div style="flex:1;min-width:0;padding:8px">${_dvMiniCard(card)}${_dvEffects(card)}</div></div>`;
         });
-        
-        const dvHeroSymbol = state.heroSymbol;
-        const dvHeroName = state.heroName;
-        
-        const summaryHTML = `
-            <div class="parchment-box">
-                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
-                <div style="margin-top:10px;max-height:300px;overflow-y:auto">
-                    ${keptRows.length > 0 ? `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Kept:</div>${keptRows}` : ''}
-                    ${discardedRows.length > 0 ? `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-top:8px;margin-bottom:5px">Discarded:</div>${discardedRows}` : ''}
-                </div>
-                <div class="card-wrap" style="margin-top:10px">
-                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">${dvHeroSymbol} ${dvHeroName}</span></div>
-                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, then return the rest in any order.</span></div></div>
-                </div>
-            </div>
-        `;
-        
+
         setTimeout(() => {
             this.showInfoModal('🌟 Special Card Details', summaryHTML);
         }, 300);
@@ -1854,16 +1906,14 @@ Object.assign(game, {
                 </div>
             </div>
             <div style="text-align: center;">
-                <button class="btn" style="background: #666; min-width: 120px;" onclick="game.closeInfoModal()">Cancel</button>
             </div>
         `;
         
         this.showInfoModal('🌟 Special Card Details', pickerHTML);
-        // Hide default OK button
-        const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtn && !defaultBtn.querySelector('.btn[onclick*="closeInfoModal"]')) {
-            defaultBtn.style.display = 'none';
-        }
+        const _sct_mil = document.getElementById('info-modal-title');
+        if (_sct_mil) { _sct_mil.style.fontFamily="'Cinzel',Georgia,serif"; _sct_mil.style.fontWeight='700'; _sct_mil.style.color='#d4af37'; _sct_mil.style.fontSize='1.2em'; _sct_mil.style.textAlign='center'; _sct_mil.style.margin='0 0 12px 0'; }
+        const _sbd_mil = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_sbd_mil && !_sbd_mil.querySelector('.phb')) _sbd_mil.style.display = 'none';
     },
     
     _militiaSecuresConfirm(slot) {
@@ -2197,11 +2247,14 @@ Object.assign(game, {
                 ${generalsHTML}
             </div>
             <div style="text-align: center;">
-                <button class="btn" style="background: #666; min-width: 120px;" onclick="game.closeInfoModal()">Cancel</button>
             </div>
         `;
         
         this.showInfoModal('🌟 Special Card Details', pickerHTML);
+        const _sct_spy = document.getElementById('info-modal-title');
+        if (_sct_spy) { _sct_spy.style.fontFamily="'Cinzel',Georgia,serif"; _sct_spy.style.fontWeight='700'; _sct_spy.style.color='#d4af37'; _sct_spy.style.fontSize='1.2em'; _sct_spy.style.textAlign='center'; _sct_spy.style.margin='0 0 12px 0'; }
+        const _sbd_spy = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_sbd_spy && !_sbd_spy.querySelector('.phb')) _sbd_spy.style.display = 'none';
     },
     
     _spyInCampConfirm(generalColor) {

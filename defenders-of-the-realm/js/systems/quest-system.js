@@ -847,7 +847,7 @@ Object.assign(game, {
                     <div style="color:#d4af37;font-weight:bold;font-size:1.1em;margin-bottom:10px;">Discard ${quest.name}?</div>
                     <div style="color:#999;font-size:0.9em;margin-bottom:15px;">This will skip ALL Darkness Spreads cards at the end of your current turn.</div>
                     <div style="display:flex;gap:10px;">
-                        <button class="btn" style="flex:1;background:#666;" onclick="game.closeInfoModal()">Cancel</button>
+                        <button class="phb phb-cancel" onclick="game.closeInfoModal()">Cancel</button>
                         <button class="btn btn-primary" style="flex:1;" onclick="game.closeInfoModal(); game._confirmRaidsSkip(${heroIndex}, ${questIndex})">Confirm</button>
                     </div>
                 </div>
@@ -959,7 +959,7 @@ Object.assign(game, {
                 <div style="color: #d4af37; font-size: 0.8em; margin-bottom: 6px;">
                     Click a highlighted location to remove 1 Tainted Crystal
                 </div>
-                <button class="btn" onclick="game.clearQuestUseMode()" style="background: #666; padding: 5px 16px; font-size: 0.85em;">Cancel</button>
+                <button class="phb phb-cancel" onclick="game.clearQuestUseMode()">Cancel</button>
             `;
             document.body.appendChild(indicator);
         }

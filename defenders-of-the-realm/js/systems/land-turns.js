@@ -301,13 +301,10 @@ Object.assign(game, {
             const titleIcon = hero.name === 'Druid' ? '🌳' : '✝️';
             const titleText = hero.name === 'Druid' ? 'Heal the Land' : 'Sanctify Land';
             const rollLabel = hero.name === 'Druid' ? 'HEAL THE LAND' : 'SANCTIFY LAND';
-            const resultPillClass = success ? 'taint' : 'advance';
-            const resultLabel = success ? '💎 Taint Crystal Removed' : '❌ Taint Crystal Remains';
-            const resultColor = success ? '#7e22ce' : '#b91c1c';
             
             // Create dice display
             const diceHTML = `
-                ${this._parchmentBoxOpen('Combat Roll')}
+                ${this._parchmentBoxOpen(`${titleText} Roll`)}
                 <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
                     ${rollLabel} — 5+ TO REMOVE
                 </div>
@@ -315,11 +312,11 @@ Object.assign(game, {
                     <div class="die ${factionDieClass}">${roll1}</div>
                     <div class="die ${factionDieClass}">${roll2}</div>
                 </div>
-                ${this._parchmentBoxClose()}
-                ${this._parchmentBoxOpen(`${titleText} Results`)}
-                <div class="fx-note ${resultPillClass}">
-                    <span class="fx-label" style="color:${resultColor}">${resultLabel}</span>
-                    <span style="color:#2c1810">→ ${locationName}</span>
+                <div style="margin-top:8px;">
+                    ${success
+                        ? `<div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
+                        : `<div class="fx-note blocked"><span class="fx-label" style="color:#5a3e1b">Taint Crystal Not Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
+                    }
                 </div>
                 ${this._parchmentBoxClose()}
             `;
@@ -456,13 +453,9 @@ Object.assign(game, {
             'red': 'die-red', 'blue': 'die-blue', 'green': 'die-green', 'black': 'die-black'
         }[(locationData2 && locationData2.faction) || 'black'] || 'die-black';
         
-        const resultPillClass2 = success ? 'taint' : 'advance';
-        const resultLabel2 = success ? '💎 Taint Crystal Removed' : '❌ Taint Crystal Remains';
-        const resultColor2 = success ? '#7e22ce' : '#b91c1c';
-
         // Create dice display
         const diceHTML = `
-            ${this._parchmentBoxOpen('Combat Roll')}
+            ${this._parchmentBoxOpen('Heal the Land Roll')}
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px;">
                 HEAL THE LAND — 5+ TO REMOVE
             </div>
@@ -470,11 +463,11 @@ Object.assign(game, {
             <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
                 ${rolls.map(r => `<div class="die ${factionDieClass2}">${r}</div>`).join('')}
             </div>
-            ${this._parchmentBoxClose()}
-            ${this._parchmentBoxOpen('Heal the Land Results')}
-            <div class="fx-note ${resultPillClass2}">
-                <span class="fx-label" style="color:${resultColor2}">${resultLabel2}</span>
-                <span style="color:#2c1810">→ ${locationName}</span>
+            <div style="margin-top:8px;">
+                ${success
+                    ? `<div class="fx-note taint"><span class="fx-label" style="color:#7e22ce">Taint Crystal Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
+                    : `<div class="fx-note blocked"><span class="fx-label" style="color:#5a3e1b">Taint Crystal Not Removed</span><span style="color:#2c1810">→ ${locationName}</span></div>`
+                }
             </div>
             ${this._parchmentBoxClose()}
         `;

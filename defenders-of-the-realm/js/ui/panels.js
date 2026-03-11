@@ -772,15 +772,21 @@ Object.assign(game, {
         // Update Heal the Land button
         const healLandBtn = document.getElementById('heal-land-btn');
         if (healLandBtn) {
-            const canHealLand = hasActions && hasTaint;
+            const isDruidOrCleric = hero.name === 'Druid' || hero.name === 'Cleric';
+            const hasMatchingCard = isDruidOrCleric || (location && hero.cards.some(card => card.color === location.faction));
+            const canHealLand = hasActions && hasTaint && hasMatchingCard;
             console.log('[ACTION BUTTONS] Heal the Land should enable:', canHealLand, '(hasActions:', hasActions, 'hasTaint:', hasTaint, 'noMinions:', totalMinions === 0, 'noGeneral:', !generalHere, ')');
             if (canHealLand) {
                 healLandBtn.disabled = false;
                 healLandBtn.className = 'phase-btn';
                 healLandBtn.style.background = '';
+                healLandBtn.style.opacity = '';
+                healLandBtn.style.cursor = '';
             } else {
                 healLandBtn.disabled = true;
                 healLandBtn.className = 'phase-btn';
+                healLandBtn.style.opacity = '0.5';
+                healLandBtn.style.cursor = 'not-allowed';
             }
         }
         

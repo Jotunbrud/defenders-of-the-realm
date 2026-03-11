@@ -47,7 +47,7 @@ Object.assign(game, {
             return;
         }
         
-        // Build card selection UI
+        // Build card selection UI using parchment-box design
         const cardColorMap = {
             'red': '#dc2626',
             'blue': '#2563eb',
@@ -55,31 +55,36 @@ Object.assign(game, {
             'black': '#1f2937'
         };
         
-        let cardsHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">';
+        let cardsHTML = '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">';
         matchingCards.forEach(({ card, idx }) => {
             const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#666'));
+            const dieClass = card.special ? 'die-purple' : `die-${card.color}`;
             cardsHTML += `
-                <div onclick="game.executeFireball(${idx})" 
-                    style="border: 3px solid ${borderColor}; cursor: pointer; padding: 10px; border-radius: 8px; text-align: center; background: rgba(0,0,0,0.3); transition: background 0.2s;"
-                    onmouseover="this.style.background='rgba(255,215,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">
-                    <div style="font-size: 2em; margin-bottom: 5px;">${card.icon || '🎴'}</div>
-                    <div style="font-weight: bold; color: ${borderColor};">${card.name}</div>
-                    <div style="font-size: 0.9em; color: #999; margin-top: 3px;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'}</div>
+                <div onclick="game.executeFireball(${idx})"
+                    style="position:relative;border:2px solid ${borderColor};cursor:pointer;padding:10px 8px 8px;border-radius:8px;text-align:center;background:rgba(245,230,200,0.92);min-width:100px;max-width:120px;transition:transform 0.15s,box-shadow 0.15s;"
+                    onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 0 10px ${borderColor}88'"
+                    onmouseout="this.style.transform='';this.style.boxShadow=''">
+                    <div style="font-size:1.8em;margin-bottom:4px;">${card.icon || '🎴'}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.78em;color:${borderColor};margin-bottom:5px;">${card.name}</div>
+                    <div style="display:flex;gap:4px;justify-content:center;">
+                        ${Array.from({length: card.dice}, () => `<div class="die ${dieClass}" style="width:16px;height:16px;font-size:0.6em;"></div>`).join('')}
+                    </div>
                 </div>
             `;
         });
         cardsHTML += '</div>';
         
         const contentHTML = `
-            <div style="color: #d4af37; margin-bottom: 12px;">
+            <div style="font-family:'Comic Sans MS',cursive;font-size:0.88em;color:#3d2b1f;margin-bottom:12px;line-height:1.5;">
                 Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!
             </div>
-            <div style="margin-bottom: 8px; font-weight: bold; color: #ffd700;">Select a card to discard:</div>
-            ${cardsHTML}
+            ${this._parchmentBoxOpen('Select A Card To Discard')}
+                ${cardsHTML}
+            ${this._parchmentBoxClose()}
         `;
         
         this.showInfoModal('🔥 Fireball', contentHTML);
-        // Hide the Continue button div since we have card buttons
+        // Hide the Continue button since clicking a card immediately fires
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
     },
@@ -151,7 +156,7 @@ Object.assign(game, {
                 </div>
             `;
             const rerollHTML = fireballBanner + resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
-            this.showCombatResults(rerollHTML, `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, true);
+            this.showCombatResults('🔥 Fireball', rerollHTML, `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, null, true);
             return;
         }
         
@@ -186,7 +191,7 @@ Object.assign(game, {
         this.addLog(`🔥 Fireball: ${hero.name} incinerated ${totalDefeated} of ${totalMinions} minions!`);
         
         // Show results
-        this.showCombatResults(fireballBanner + resultsHTML, `🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`);
+        this.showCombatResults('🔥 Fireball', fireballBanner + resultsHTML, `🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`);
         
         this.updateGameStatus();
         this.renderHeroes();

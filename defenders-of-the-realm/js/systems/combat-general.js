@@ -1295,7 +1295,7 @@ Object.assign(game, {
         buttonsContainer.innerHTML = `
             ${amarakBtnHTML}
             ${magicGateBtnHTML}
-            <button class="phb" onclick="game.confirmGeneralAttack();">Confirm</button>
+            <button class="phb" id="general-confirm-btn" onclick="game.confirmGeneralAttack();" disabled style="opacity:0.5;cursor:not-allowed;">Confirm</button>
             <button class="phb" onclick="game.cancelGeneralAttack()">Cancel</button>
         `;
 
@@ -1331,6 +1331,14 @@ Object.assign(game, {
                 element.appendChild(badge);
             }
         }
+        // Enable/disable Confirm based on selection
+        const confirmBtn = document.getElementById('general-confirm-btn');
+        if (confirmBtn) {
+            const hasCards = this.selectedCardsForAttack.length > 0;
+            confirmBtn.disabled = !hasCards;
+            confirmBtn.style.opacity = hasCards ? '1' : '0.5';
+            confirmBtn.style.cursor = hasCards ? 'pointer' : 'not-allowed';
+        }
     },
 
     confirmGeneralAttack() {
@@ -1353,9 +1361,7 @@ Object.assign(game, {
         
         // SOLO MODE: Require at least 1 card
         if (!this.selectedCardsForAttack || this.selectedCardsForAttack.length === 0) {
-            console.error('No cards selected in solo mode');
-            this.showInfoModal('⚠️', '<div>Please select at least one card!</div>');
-            return;
+            return; // Button should be disabled, but guard just in case
         }
         
         console.log('selectedGeneralForAttack:', this.selectedGeneralForAttack);

@@ -2588,41 +2588,10 @@ Object.assign(game, {
     },
 
     showRetreatModal() {
+        // Retreat modal removed — move heroes silently
         if (!this.pendingRetreat) return;
-
-        const { heroes, generalName } = this.pendingRetreat;
-
-        // Move heroes to Monarch City
-        heroes.forEach(hero => {
-            if (hero.health > 0) {
-                hero.location = 'Monarch City';
-                this.addLog(`${hero.symbol} ${hero.name} retreats to Monarch City`);
-            }
-        });
-
-        this.renderHeroes();
-        this.renderTokens();
-        this.updateGameStatus();
-
-        const content = document.getElementById('retreat-content');
-        if (content) {
-            const heroList = heroes.filter(h => h.health > 0).map(h =>
-                `<div style="margin:4px 0;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;">${h.symbol} ${h.name}</div>`
-            ).join('');
-            content.innerHTML = `
-                ${this._parchmentBoxOpen('Failed to Defeat General')}
-                <div style="font-family:'Comic Sans MS',cursive;font-size:0.85em;color:#3d2b1f;margin-bottom:6px;">
-                    The heroes failed to defeat <strong>${generalName}</strong> and have retreated.
-                </div>
-                ${heroList}
-                <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3);font-family:'Comic Sans MS',cursive;font-size:0.82em;color:#3d2b1f;font-style:italic;text-align:center;">
-                    All heroes moved to Monarch City
-                </div>
-                ${this._parchmentBoxClose()}
-            `;
-        }
-
-        document.getElementById('retreat-modal').classList.add('active');
+        this._retreatHeroesToMonarchCity(this.pendingRetreat.heroes);
+        this.pendingRetreat = null;
     },
 
     closeRetreatModal() {

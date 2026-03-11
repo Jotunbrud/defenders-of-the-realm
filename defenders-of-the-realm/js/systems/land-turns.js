@@ -278,8 +278,22 @@ Object.assign(game, {
         const locationData = this.locationCoords[locationName];
         const locationColor = locationData.faction;
         
-        // Druid and Cleric can remove without card
-        if (hero.name === 'Druid' || hero.name === 'Cleric') {
+        // Dice color matches location faction
+        const factionDieClass = {
+            'red': 'die-red',
+            'blue': 'die-blue',
+            'green': 'die-green',
+            'black': 'die-black'
+        }[locationColor] || 'die-black';
+        
+        // Check enemies for Cleric Sanctify routing
+        const _minionsHereLand = this.minions[locationName] || {};
+        const _totalMinionsLand = Object.values(_minionsHereLand).reduce((a, b) => a + b, 0);
+        const _generalHereLand = this.generals.find(g => g.location === locationName && !g.defeated);
+        const canSanctify = hero.name === 'Cleric' && _totalMinionsLand === 0 && !_generalHereLand;
+        
+        // Druid always no-card; Cleric only no-card (Sanctify) when no enemies
+        if (hero.name === 'Druid' || canSanctify) {
             const abilityLabel = hero.name === 'Druid' ? 'Druid Taint Removal' : 'Cleric Sanctify Land';
             const roll1 = Math.floor(Math.random() * 6) + 1;
             const roll2 = Math.floor(Math.random() * 6) + 1;
@@ -292,8 +306,8 @@ Object.assign(game, {
                     ${abilityLabel.toUpperCase()} — 5+ TO REMOVE
                 </div>
                 <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
-                    <div class="die die-black" style="background:linear-gradient(145deg,#7c3d2e,#4a2515)">${roll1}</div>
-                    <div class="die die-black" style="background:linear-gradient(145deg,#7c3d2e,#4a2515)">${roll2}</div>
+                    <div class="die ${factionDieClass}">${roll1}</div>
+                    <div class="die ${factionDieClass}">${roll2}</div>
                 </div>
                 ${this._parchmentBoxClose()}
             `;
@@ -425,6 +439,11 @@ Object.assign(game, {
         
         const visionsNote = visionsBonus > 0 ? `<div style="color: #ec4899; margin-bottom: 8px; font-size: 0.9em;">⚡ Visions: +1 bonus die!</div>` : '';
         
+        const locationData2 = this.locationCoords[locationName];
+        const factionDieClass2 = {
+            'red': 'die-red', 'blue': 'die-blue', 'green': 'die-green', 'black': 'die-black'
+        }[(locationData2 && locationData2.faction) || 'black'] || 'die-black';
+        
         // Create dice display
         const diceHTML = `
             ${this._parchmentBoxOpen('Combat Roll')}
@@ -433,7 +452,7 @@ Object.assign(game, {
             </div>
             ${visionsNote}
             <div style="display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap;">
-                ${rolls.map(r => `<div class="die die-black" style="background:linear-gradient(145deg,#7c3d2e,#4a2515)">${r}</div>`).join('')}
+                ${rolls.map(r => `<div class="die ${factionDieClass2}">${r}</div>`).join('')}
             </div>
             ${this._parchmentBoxClose()}
         `;

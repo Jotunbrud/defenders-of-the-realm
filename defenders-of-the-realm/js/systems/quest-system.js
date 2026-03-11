@@ -47,7 +47,7 @@ Object.assign(game, {
             return;
         }
         
-        // Build card selection UI using parchment-box design
+        // Build card selection UI
         const cardColorMap = {
             'red': '#dc2626',
             'blue': '#2563eb',
@@ -55,36 +55,31 @@ Object.assign(game, {
             'black': '#1f2937'
         };
         
-        let cardsHTML = '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">';
+        let cardsHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">';
         matchingCards.forEach(({ card, idx }) => {
             const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#666'));
-            const dieClass = card.special ? 'die-purple' : `die-${card.color}`;
             cardsHTML += `
-                <div onclick="game.executeFireball(${idx})"
-                    style="position:relative;border:2px solid ${borderColor};cursor:pointer;padding:10px 8px 8px;border-radius:8px;text-align:center;background:rgba(245,230,200,0.92);min-width:100px;max-width:120px;transition:transform 0.15s,box-shadow 0.15s;"
-                    onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 0 10px ${borderColor}88'"
-                    onmouseout="this.style.transform='';this.style.boxShadow=''">
-                    <div style="font-size:1.8em;margin-bottom:4px;">${card.icon || '🎴'}</div>
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.78em;color:${borderColor};margin-bottom:5px;">${card.name}</div>
-                    <div style="display:flex;gap:4px;justify-content:center;">
-                        ${Array.from({length: card.dice}, () => `<div class="die ${dieClass}" style="width:16px;height:16px;font-size:0.6em;"></div>`).join('')}
-                    </div>
+                <div onclick="game.executeFireball(${idx})" 
+                    style="border: 3px solid ${borderColor}; cursor: pointer; padding: 10px; border-radius: 8px; text-align: center; background: rgba(0,0,0,0.3); transition: background 0.2s;"
+                    onmouseover="this.style.background='rgba(255,215,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">
+                    <div style="font-size: 2em; margin-bottom: 5px;">${card.icon || '🎴'}</div>
+                    <div style="font-weight: bold; color: ${borderColor};">${card.name}</div>
+                    <div style="font-size: 0.9em; color: #999; margin-top: 3px;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'}</div>
                 </div>
             `;
         });
         cardsHTML += '</div>';
         
         const contentHTML = `
-            <div style="font-family:'Comic Sans MS',cursive;font-size:0.88em;color:#3d2b1f;margin-bottom:12px;line-height:1.5;">
+            <div style="color: #d4af37; margin-bottom: 12px;">
                 Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!
             </div>
-            ${this._parchmentBoxOpen('Select A Card To Discard')}
-                ${cardsHTML}
-            ${this._parchmentBoxClose()}
+            <div style="margin-bottom: 8px; font-weight: bold; color: #ffd700;">Select a card to discard:</div>
+            ${cardsHTML}
         `;
         
         this.showInfoModal('🔥 Fireball', contentHTML);
-        // Hide the Continue button since clicking a card immediately fires
+        // Hide the Continue button div since we have card buttons
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
     },
@@ -149,8 +144,14 @@ Object.assign(game, {
                 battleLuckCard: blCard
             };
             const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
-            const rerollHTML = resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
-            this.showCombatResults('🔥 Fireball', rerollHTML, '', null, true);
+            const fireballBanner = `
+                <div style="background: rgba(239, 68, 68, 0.2); padding: 10px; border: 2px solid #ef4444; border-radius: 8px; margin-bottom: 10px; text-align: center;">
+                    <div style="font-size: 1.2em; color: #ef4444; font-weight: bold;">🔥 Fireball! 🔥</div>
+                    <div style="color: #d4af37; font-size: 0.9em;">Discarded: ${card.name} | All minions targeted (2+ to hit)</div>
+                </div>
+            `;
+            const rerollHTML = fireballBanner + resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
+            this.showCombatResults(rerollHTML, `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, true);
             return;
         }
         
@@ -174,12 +175,18 @@ Object.assign(game, {
         
         // Build results display
         const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
+        const fireballBanner = `
+            <div style="background: rgba(239, 68, 68, 0.2); padding: 10px; border: 2px solid #ef4444; border-radius: 8px; margin-bottom: 10px; text-align: center;">
+                <div style="font-size: 1.2em; color: #ef4444; font-weight: bold;">🔥 Fireball! 🔥</div>
+                <div style="color: #d4af37; font-size: 0.9em;">Discarded: ${cardName} | All minions targeted (2+ to hit)</div>
+            </div>
+        `;
         
         this.actionsRemaining--;
         this.addLog(`🔥 Fireball: ${hero.name} incinerated ${totalDefeated} of ${totalMinions} minions!`);
         
         // Show results
-        this.showCombatResults('🔥 Fireball', resultsHTML, '', `<button class="phb" style="margin-top:8px;" onclick="game.closeCombatResults()">Continue</button>`);
+        this.showCombatResults(fireballBanner + resultsHTML, `🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`);
         
         this.updateGameStatus();
         this.renderHeroes();
@@ -218,23 +225,25 @@ Object.assign(game, {
         
         this._selectedSpecialCard = null;
         
+        const factionName = (color) => color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[color] || 'Any General');
         let cardsHTML = '<div id="special-cards-list" style="display:flex;flex-direction:column;gap:8px;">';
         specialCards.forEach(({ hero, heroIndex, card, cardIndex }, i) => {
-            const generalLabel = card.color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[card.color] || 'Any General');
-            const diePips = Array.from({length: card.dice}, () => `<span class="die" style="background:#6d28a8;animation:none">🎲</span>`).join('');
+            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                `<span class="die" style="background:#6d28a8;animation:none">🎲</span>`
+            ).join('');
             cardsHTML += `
-                <div id="special-card-option-${i}" class="card-wrap" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})" style="cursor:pointer;transition:all 0.2s;">
-                    <div class="card-banner-inner">
-                        <span class="hero-banner-name">${card.icon || '🌟'} ${card.name}</span>
+                <div id="special-card-option-${i}" class="card-wrap" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})" style="cursor:pointer;">
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;">
+                        <span class="hero-banner-name">${card.icon || '💫'} ${card.name}</span>
                         <span class="hero-banner-name" style="font-size:0.8em">${hero.symbol} ${hero.name}</span>
                     </div>
                     <div class="card-body">
-                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a;">Special:</strong> <span class="modal-desc-text">${card.description || card.type}</span></div>
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">${card.description || card.type}</span></div>
                         <div style="text-align:center;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;">
                             <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">${generalLabel}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">${factionName(card.color)}</span>
                         </div>
-                        <div style="text-align:center;margin:8px 0;display:flex;gap:4px;justify-content:center;">${diePips}</div>
+                        <div style="text-align:center;margin:8px 0;display:flex;gap:4px;justify-content:center;">${diceHTML}</div>
                     </div>
                 </div>
             `;
@@ -242,10 +251,10 @@ Object.assign(game, {
         cardsHTML += '</div>';
         
         const contentHTML = `
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;text-align:center;font-size:0.85em;margin-bottom:12px;">
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">
                 Special cards can be played at any time without using an action.
             </div>
-            ${this._parchmentBoxOpen('Select Card')}
+            ${this._parchmentBoxOpen('Select a Card')}
                 ${cardsHTML}
             ${this._parchmentBoxClose()}
             <button id="use-special-card-btn" class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px;" disabled onclick="game.confirmSpecialCard()">Confirm</button>
@@ -334,7 +343,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                             </div>
                             <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8;animation:none">🎲</span>
+                                <span class="die" style="background:#6d28a8">🎲</span>
                             </div>
                         </div>
                     </div>
@@ -372,7 +381,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                             </div>
                             <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8;animation:none">🎲</span>
+                                <span class="die" style="background:#6d28a8">🎲</span>
                             </div>
                         </div>
                     </div>
@@ -400,7 +409,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                             </div>
                             <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8;animation:none">🎲</span>
+                                <span class="die" style="background:#6d28a8">🎲</span>
                             </div>
                         </div>
                     </div>
@@ -428,7 +437,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                             </div>
                             <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8;animation:none">🎲</span>
+                                <span class="die" style="background:#6d28a8">🎲</span>
                             </div>
                         </div>
                     </div>
@@ -1830,7 +1839,7 @@ Object.assign(game, {
                 </div>
             </div>
             <button id="hammer-confirm-btn" class="phb" style="margin-top:12px;opacity:0.4;cursor:not-allowed" disabled onclick="game.confirmHammerHero()">Confirm</button>
-            <button class="phb" onclick="game.closeInfoModal(); game._hammerCard = null; game._hammerSelectedHero = null;">Cancel</button>
+            <button class="phb phb-cancel" onclick="game.closeInfoModal(); game._hammerCard = null; game._hammerSelectedHero = null;">Cancel</button>
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
@@ -2129,7 +2138,7 @@ Object.assign(game, {
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">${generalName}</span>
                         </div>
                         <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                            <span class="die" style="background:#16a34a;animation:none">🎲</span>
+                            <span class="die" style="background:#16a34a">🎲</span>
                         </div>
                     </div>
                 </div>

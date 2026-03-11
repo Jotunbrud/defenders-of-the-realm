@@ -377,18 +377,18 @@ Object.assign(game, {
         const cardsHTML = matchingCards.map((card, index) => {
             const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || ccMap.any);
             const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
-            const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const dieClass = card.special ? 'die-purple' : `die-${card.color}`;
             const diceHTML = Array.from({ length: card.dice }).map(() =>
-                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+                `<div class="die ${dieClass}" style="width:16px;height:16px;font-size:0.6em;"></div>`
             ).join('');
             return `
-                <div onclick="game.executeTaintRemoval('${locationName.replace(/'/g, "\\'")}', ${index})" 
-                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${shadow}"
-                     onmouseover="this.style.boxShadow='0 0 12px rgba(212,175,55,0.5), 0 4px 12px rgba(0,0,0,0.4)';this.style.borderColor='#d4af37'"
-                     onmouseout="this.style.boxShadow='${shadow.replace(/;$/,'')}';this.style.borderColor='${cc.border}'">
-                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
-                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
-                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                <div onclick="game.executeTaintRemoval('${locationName.replace(/'/g, "\\'")}', ${index})"
+                     style="position:relative;flex:1 1 90px;max-width:120px;min-width:80px;border:2px solid ${cc.border};cursor:pointer;padding:10px 8px 8px;border-radius:8px;text-align:center;background:rgba(245,230,200,0.92);transition:transform 0.15s,box-shadow 0.15s;"
+                     onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 0 10px ${cc.border}88'"
+                     onmouseout="this.style.transform='';this.style.boxShadow=''">
+                    <div style="font-size:1.8em;margin-bottom:4px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;font-size:0.72em;color:${cc.text};line-height:1.2;margin-bottom:5px">${card.name}</div>
+                    <div style="display:flex;gap:4px;justify-content:center">${diceHTML}</div>
                 </div>`;
         }).join('');
         
@@ -403,7 +403,7 @@ Object.assign(game, {
                         ${cardsHTML}
                     </div>
                 </div>
-                <button class="phase-btn" onclick="this.closest('.modal').remove()" style="margin-top:12px">
+                <button class="phb" onclick="this.closest('.modal').remove()" style="margin-top:12px">
                     Cancel
                 </button>
             </div>
@@ -555,81 +555,43 @@ Object.assign(game, {
             cardCount: cardCount
         };
         
-        // Store selected hero for Confirm button
-        this._heroDeathSelection = null;
-
         const content = document.getElementById('hero-death-content');
         content.innerHTML = `
-            <div class="parchment-box" style="text-align:center;margin-bottom:10px;">
-                <div style="font-size:2.2em;margin-bottom:4px;">${hero.symbol}</div>
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#8b1a1a;">${hero.name} Has Fallen!</div>
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="font-size: 3em; margin-bottom: 10px;">${hero.symbol}</div>
+                <div style="font-size: 1.3em; color: #ef4444; font-weight: bold; margin-bottom: 10px;">
+                    ${hero.name} has fallen!
+                </div>
+                <div style="color: #d4af37; margin-bottom: 5px;">
+                    Health reduced to 0
+                </div>
+                <div style="color: #999;">
+                    ${cardCount} card(s) discarded
+                </div>
             </div>
-            <div style="text-align:center;margin-bottom:8px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#d4af37;">
-                ${availableHeroes.length > 0 ? 'Select a new hero or respawn the same hero:' : 'No new heroes available — respawn same hero'}
-            </div>
+            ${availableHeroes.length > 0 ? 
+                '<div style="color: #d4af37; text-align: center; margin: 15px 0; font-weight: bold;">Select a new hero or respawn the same hero:</div>' :
+                '<div style="color: #ef4444; text-align: center; margin: 15px 0;">No new heroes available - respawn same hero</div>'
+            }
         `;
-
-        // Build hero grid: current hero first (★ respawn), then all others not in play
-        const allOptions = [
-            { name: hero.name, symbol: hero.symbol, isCurrent: true },
-            ...availableHeroes
-                .filter(h => h.name !== hero.name)
-                .map(h => ({ ...h, isCurrent: false }))
-        ];
-
+        
         const grid = document.getElementById('hero-selection-grid');
-        grid.innerHTML = allOptions.map(h => `
-            <div id="hero-select-${h.name.replace(/[^a-zA-Z]/g, '')}"
-                 onclick="game._selectHeroDeathOption('${h.name}', ${h.isCurrent})"
-                 style="width:calc(25% - 6px);background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355;border-radius:8px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;color:#1a0f0a;">
-                <div style="font-size:1.8em;margin-bottom:4px;">${h.symbol}</div>
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;">${h.name}${h.isCurrent ? ' ★' : ''}</div>
-            </div>
-        `).join('');
-        grid.style.display = 'flex';
-
-        // Disable confirm button until a selection is made
-        const confirmBtn = document.getElementById('hero-death-confirm-btn');
-        if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.style.opacity = '0.5'; }
-
+        if (availableHeroes.length > 0) {
+            grid.innerHTML = availableHeroes.map(h => `
+                <div class="btn btn-primary" onclick="game.selectNewHero('${h.name}')" 
+                     style="padding: 20px; text-align: center; cursor: pointer;">
+                    <div style="font-size: 2em;">${h.symbol}</div>
+                    <div style="font-weight: bold; margin-top: 5px;">${h.name}</div>
+                </div>
+            `).join('');
+            grid.style.display = 'grid';
+        } else {
+            grid.style.display = 'none';
+        }
+        
         document.getElementById('hero-death-modal').classList.add('active');
     },
     
-    _selectHeroDeathOption(heroName, isCurrent) {
-        this._heroDeathSelection = { heroName, isCurrent };
-
-        // Highlight selected tile, clear others
-        const grid = document.getElementById('hero-selection-grid');
-        if (grid) {
-            grid.querySelectorAll('[id^="hero-select-"]').forEach(el => {
-                el.style.borderColor = '#8b7355';
-                el.style.outline = '';
-                el.style.boxShadow = '';
-            });
-            const key = heroName.replace(/[^a-zA-Z]/g, '');
-            const selected = document.getElementById(`hero-select-${key}`);
-            if (selected) {
-                selected.style.borderColor = '#d4af37';
-                selected.style.outline = '2px solid #d4af37';
-                selected.style.boxShadow = '0 0 10px rgba(212,175,55,0.4)';
-            }
-        }
-
-        const confirmBtn = document.getElementById('hero-death-confirm-btn');
-        if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.style.opacity = '1'; }
-    },
-
-    confirmHeroDeath() {
-        if (!this._heroDeathSelection) return;
-        const { heroName, isCurrent } = this._heroDeathSelection;
-        this._heroDeathSelection = null;
-        if (isCurrent) {
-            this.respawnSameHero();
-        } else {
-            this.selectNewHero(heroName);
-        }
-    },
-
     selectNewHero(heroName) {
         const heroIndex = this.defeatedHero.index;
         const hero = this.heroes[heroIndex];

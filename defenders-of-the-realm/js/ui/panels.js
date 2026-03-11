@@ -772,7 +772,7 @@ Object.assign(game, {
         // Update Heal the Land button
         const healLandBtn = document.getElementById('heal-land-btn');
         if (healLandBtn) {
-            const canHealLand = hasActions && hasTaint && totalMinions === 0 && !generalHere;
+            const canHealLand = hasActions && hasTaint;
             console.log('[ACTION BUTTONS] Heal the Land should enable:', canHealLand, '(hasActions:', hasActions, 'hasTaint:', hasTaint, 'noMinions:', totalMinions === 0, 'noGeneral:', !generalHere, ')');
             if (canHealLand) {
                 healLandBtn.disabled = false;

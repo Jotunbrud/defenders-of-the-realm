@@ -2233,26 +2233,14 @@ Object.assign(game, {
                     this.renderHeroes();
                     this.updateGameStatus();
                     
-                    // Check for retreat (no card modal shown)
+                    // Move hero to Monarch City silently
                     if (this.pendingGeneralPenalty.retreatHeroes) {
-                        this.pendingRetreat = {
-                            heroes: this.pendingGeneralPenalty.retreatHeroes,
-                            generalName: generalName
-                        };
-                        // Show retreat modal after a brief delay
-                        setTimeout(() => this.showRetreatModal(), 500);
+                        this._retreatHeroesToMonarchCity(this.pendingGeneralPenalty.retreatHeroes);
                     }
                 } else {
                     this.addLog(`${hero.name} has no cards to discard from failing to defeat ${generalName}`);
-                    
-                    // Check for retreat (no card modal shown)
                     if (this.pendingGeneralPenalty.retreatHeroes) {
-                        this.pendingRetreat = {
-                            heroes: this.pendingGeneralPenalty.retreatHeroes,
-                            generalName: generalName
-                        };
-                        // Show retreat modal immediately
-                        setTimeout(() => this.showRetreatModal(), 100);
+                        this._retreatHeroesToMonarchCity(this.pendingGeneralPenalty.retreatHeroes);
                     }
                 }
             } else if (cardsLostType === 'd6') {
@@ -2260,22 +2248,16 @@ Object.assign(game, {
                 if (hero.cards.length > 0) {
                     const cardRoll = Math.floor(Math.random() * 6) + 1; // 1-6
                     const actualCardsToLose = Math.min(cardRoll, hero.cards.length);
-                    
-                    // Update reason text with card roll
                     reasonText += ` (Rolled [${cardRoll}] for cards)`;
-                    
                     this.addLog(`${hero.name} rolls D6 for cards: [${cardRoll}] - must discard ${actualCardsToLose} card(s) from failing to defeat ${generalName}!`);
+                    if (this.pendingGeneralPenalty.retreatHeroes) {
+                        this.pendingRetreat = { heroes: this.pendingGeneralPenalty.retreatHeroes };
+                    }
                     this.showCardDiscardModal(actualCardsToLose, reasonText);
                 } else {
                     this.addLog(`${hero.name} has no cards to discard from failing to defeat ${generalName}`);
-                    
-                    // Check for retreat (no card modal shown)
                     if (this.pendingGeneralPenalty.retreatHeroes) {
-                        this.pendingRetreat = {
-                            heroes: this.pendingGeneralPenalty.retreatHeroes,
-                            generalName: generalName
-                        };
-                        setTimeout(() => this.showRetreatModal(), 100);
+                        this._retreatHeroesToMonarchCity(this.pendingGeneralPenalty.retreatHeroes);
                     }
                 }
             } else if (cardsToLose > 0) {
@@ -2283,27 +2265,16 @@ Object.assign(game, {
                 if (hero.cards.length > 0) {
                     const actualCardsToLose = Math.min(cardsToLose, hero.cards.length);
                     this.addLog(`${hero.name} must discard ${actualCardsToLose} card(s) from failing to defeat ${generalName}!`);
+                    if (this.pendingGeneralPenalty.retreatHeroes) {
+                        this.pendingRetreat = { heroes: this.pendingGeneralPenalty.retreatHeroes };
+                    }
                     this.showCardDiscardModal(actualCardsToLose, reasonText);
                 } else {
                     this.addLog(`${hero.name} has no cards to discard from failing to defeat ${generalName}`);
-                    
-                    // Check for retreat (no card modal shown)
                     if (this.pendingGeneralPenalty.retreatHeroes) {
-                        this.pendingRetreat = {
-                            heroes: this.pendingGeneralPenalty.retreatHeroes,
-                            generalName: generalName
-                        };
-                        setTimeout(() => this.showRetreatModal(), 100);
+                        this._retreatHeroesToMonarchCity(this.pendingGeneralPenalty.retreatHeroes);
                     }
                 }
-            }
-            
-            // Store retreat info for showing after card discard
-            if (this.pendingGeneralPenalty.retreatHeroes) {
-                this.pendingRetreat = {
-                    heroes: this.pendingGeneralPenalty.retreatHeroes,
-                    generalName: generalName
-                };
             }
             
             // Clear pending penalty
@@ -2528,12 +2499,26 @@ Object.assign(game, {
         this.renderHeroes();
         this.updateGameStatus();
         
-        // No queue - check if there's a pending retreat
+        // Move heroes to Monarch City silently if pending
         if (this.pendingRetreat) {
-            this.showRetreatModal();
+            this._retreatHeroesToMonarchCity(this.pendingRetreat.heroes);
+            this.pendingRetreat = null;
         }
     },
     
+    _retreatHeroesToMonarchCity(heroes) {
+        if (!heroes) return;
+        heroes.forEach(hero => {
+            if (hero.health > 0) {
+                hero.location = 'Monarch City';
+                this.addLog(`${hero.symbol} ${hero.name} retreats to Monarch City`);
+            }
+        });
+        this.renderHeroes();
+        this.renderTokens();
+        this.updateGameStatus();
+    },
+
     closeGroupPenaltyModal() {
         document.getElementById('group-penalty-modal').classList.remove('active');
 

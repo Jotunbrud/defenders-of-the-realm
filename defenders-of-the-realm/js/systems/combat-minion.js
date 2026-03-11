@@ -2173,7 +2173,7 @@ Object.assign(game, {
                     </div>
                 </div>
                 <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3);">
-                    <div class="parchment-text" style="text-align:center;font-style:italic;">All heroes will retreat to Monarch City</div>
+                    <div class="parchment-text" style="text-align:center;font-style:italic;color:#3d2b1f;">All heroes have been moved to Monarch City</div>
                 </div>`;
             summaryHTML += this._parchmentBoxClose();
             

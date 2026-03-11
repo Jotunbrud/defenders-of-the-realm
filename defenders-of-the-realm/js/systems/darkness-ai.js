@@ -1116,76 +1116,38 @@ Object.assign(game, {
     showRetreatModal() {
         if (!this.pendingRetreat) return;
         
-        console.log('=== showRetreatModal START ===');
-        console.log('currentPlayerIndex:', this.currentPlayerIndex);
-        console.log('Current hero:', this.heroes[this.currentPlayerIndex].name);
-        
         const heroes = this.pendingRetreat.heroes;
-        const generalName = this.pendingRetreat.generalName;
         
-        const content = document.getElementById('retreat-content');
-        content.innerHTML = `
-            <div style="text-align: center; margin: 20px 0;">
-                <div style="font-size: 1.2em; color: #ef4444; font-weight: bold; margin-bottom: 15px;">
-                    Failed to defeat ${generalName}!
-                </div>
-                <div style="color: #d4af37; margin-bottom: 20px;">
-                    ${heroes.length > 1 ? 'All heroes' : 'Hero'} must retreat to Monarch City
-                </div>
-                <div style="background: rgba(239,68,68,0.2); padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    <div style="font-weight: bold; color: #ffd700; margin-bottom: 10px;">
-                        ${heroes.length > 1 ? 'Retreating Heroes:' : 'Retreating Hero:'}
-                    </div>
-                    ${heroes.map(h => `
-                        <div style="margin: 5px 0; font-size: 1.1em;">
-                            ${h.symbol} ${h.name}
-                            <span style="color: #999; font-size: 0.9em;">(from ${h.location})</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div style="color: #d4af37; font-size: 0.9em; margin-top: 15px;">
-                    ${heroes.length > 1 ? 'All heroes have' : 'Hero has'} been moved to Monarch City
-                </div>
-            </div>
-        `;
-        
-        // Actually move the heroes
+        // Move heroes silently — no modal
         heroes.forEach(hero => {
             const oldLocation = hero.location;
             hero.location = 'Monarch City';
-            this.addLog(`${hero.name} retreats from ${oldLocation} to Monarch City`);
+            this.addLog(`${hero.symbol} ${hero.name} retreats from ${oldLocation} to Monarch City`);
         });
         
+        this.pendingRetreat = null;
         this.renderTokens();
         this.renderHeroes();
         this.updateMapStatus();
         
-        console.log('=== showRetreatModal AFTER RENDER ===');
-        console.log('currentPlayerIndex:', this.currentPlayerIndex);
-        console.log('Current hero:', this.heroes[this.currentPlayerIndex].name);
-        
-        document.getElementById('retreat-modal').classList.add('active');
+        // Update map UI if open
+        const mapModal = document.getElementById('map-modal');
+        if (mapModal && mapModal.classList.contains('active')) {
+            this.updateMovementButtons();
+            this.updateActionButtons();
+        }
     },
     
     closeRetreatModal() {
-        console.log('=== closeRetreatModal CALLED ===');
-        console.log('currentPlayerIndex:', this.currentPlayerIndex);
-        console.log('Current hero:', this.heroes[this.currentPlayerIndex].name);
-        
         document.getElementById('retreat-modal').classList.remove('active');
         this.pendingRetreat = null;
         
-        // Update ALL map UI elements after retreat (hero is now at Monarch City)
         const mapModal = document.getElementById('map-modal');
         if (mapModal && mapModal.classList.contains('active')) {
-            console.log('=== Updating full map UI after retreat ===');
             this.updateMapStatus();
             this.updateMovementButtons();
             this.updateActionButtons();
         }
-        
-        console.log('=== closeRetreatModal END ===');
-        console.log('currentPlayerIndex:', this.currentPlayerIndex);
     },
     
     completeMapTurnEnd() {

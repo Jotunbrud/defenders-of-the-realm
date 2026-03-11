@@ -647,25 +647,6 @@ Object.assign(game, {
             }
         }
         
-        // Update Sanctify Land button (Cleric only)
-        const sanctifyLandBtn = document.getElementById('sanctify-land-btn');
-        if (sanctifyLandBtn) {
-            if (hero.name === 'Cleric') {
-                sanctifyLandBtn.style.display = '';
-                const canSanctify = hasActions && hasTaint && totalMinions === 0 && !generalHere;
-                if (canSanctify) {
-                    sanctifyLandBtn.disabled = false;
-                    sanctifyLandBtn.className = 'phase-btn';
-                    sanctifyLandBtn.style.background = '';
-                } else {
-                    sanctifyLandBtn.disabled = true;
-                    sanctifyLandBtn.className = 'phase-btn';
-                }
-            } else {
-                sanctifyLandBtn.style.display = 'none';
-            }
-        }
-        
         // Update Special Cards button
         const specialCardsBtn = document.getElementById('special-cards-btn');
         if (specialCardsBtn) {
@@ -769,24 +750,38 @@ Object.assign(game, {
             }
         }
         
-        // Update Heal the Land button
+        // Update Heal the Land button (all heroes need matching color card + taint crystal)
         const healLandBtn = document.getElementById('heal-land-btn');
         if (healLandBtn) {
-            const isDruidOrCleric = hero.name === 'Druid' || hero.name === 'Cleric';
-            const hasMatchingCard = isDruidOrCleric || (location && hero.cards.some(card => card.color === location.faction));
+            const locationFaction = location && location.faction;
+            const hasMatchingCard = hero.cards.some(c => c.color === locationFaction);
             const canHealLand = hasActions && hasTaint && hasMatchingCard;
-            console.log('[ACTION BUTTONS] Heal the Land should enable:', canHealLand, '(hasActions:', hasActions, 'hasTaint:', hasTaint, 'noMinions:', totalMinions === 0, 'noGeneral:', !generalHere, ')');
             if (canHealLand) {
                 healLandBtn.disabled = false;
                 healLandBtn.className = 'phase-btn';
                 healLandBtn.style.background = '';
-                healLandBtn.style.opacity = '';
-                healLandBtn.style.cursor = '';
             } else {
                 healLandBtn.disabled = true;
                 healLandBtn.className = 'phase-btn';
-                healLandBtn.style.opacity = '0.5';
-                healLandBtn.style.cursor = 'not-allowed';
+            }
+        }
+
+        // Update Sanctify Land button (Cleric only: taint + no minions + no general, no card needed)
+        const sanctifyLandBtn = document.getElementById('sanctify-land-btn');
+        if (sanctifyLandBtn) {
+            if (hero.name === 'Cleric') {
+                sanctifyLandBtn.style.display = '';
+                const canSanctify = hasActions && hasTaint && totalMinions === 0 && !generalHere;
+                if (canSanctify) {
+                    sanctifyLandBtn.disabled = false;
+                    sanctifyLandBtn.className = 'phase-btn';
+                    sanctifyLandBtn.style.background = '';
+                } else {
+                    sanctifyLandBtn.disabled = true;
+                    sanctifyLandBtn.className = 'phase-btn';
+                }
+            } else {
+                sanctifyLandBtn.style.display = 'none';
             }
         }
         

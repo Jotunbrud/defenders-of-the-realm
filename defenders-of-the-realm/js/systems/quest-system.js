@@ -221,7 +221,7 @@ Object.assign(game, {
         let cardsHTML = '<div id="special-cards-list" style="display:flex;flex-direction:column;gap:8px;">';
         specialCards.forEach(({ hero, heroIndex, card, cardIndex }, i) => {
             const generalLabel = card.color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[card.color] || 'Any General');
-            const diePips = Array.from({length: card.dice}, () => `<span class="die" style="background:#6d28a8">🎲</span>`).join('');
+            const diePips = Array.from({length: card.dice}, () => `<span class="die" style="background:#6d28a8;animation:none">🎲</span>`).join('');
             cardsHTML += `
                 <div id="special-card-option-${i}" class="card-wrap" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})" style="cursor:pointer;transition:all 0.2s;">
                     <div class="card-banner-inner">
@@ -249,7 +249,7 @@ Object.assign(game, {
                 ${cardsHTML}
             ${this._parchmentBoxClose()}
             <button id="use-special-card-btn" class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px;" disabled onclick="game.confirmSpecialCard()">Confirm</button>
-            <button class="phb phb-cancel" onclick="game.closeInfoModal()">Cancel</button>
+            <button class="phb" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal('🌟 Special Cards', contentHTML);
@@ -334,7 +334,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                             </div>
                             <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8">🎲</span>
+                                <span class="die" style="background:#6d28a8;animation:none">🎲</span>
                             </div>
                         </div>
                     </div>
@@ -372,7 +372,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                             </div>
                             <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8">🎲</span>
+                                <span class="die" style="background:#6d28a8;animation:none">🎲</span>
                             </div>
                         </div>
                     </div>
@@ -400,7 +400,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                             </div>
                             <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8">🎲</span>
+                                <span class="die" style="background:#6d28a8;animation:none">🎲</span>
                             </div>
                         </div>
                     </div>
@@ -428,7 +428,7 @@ Object.assign(game, {
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                             </div>
                             <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8">🎲</span>
+                                <span class="die" style="background:#6d28a8;animation:none">🎲</span>
                             </div>
                         </div>
                     </div>
@@ -1830,7 +1830,7 @@ Object.assign(game, {
                 </div>
             </div>
             <button id="hammer-confirm-btn" class="phb" style="margin-top:12px;opacity:0.4;cursor:not-allowed" disabled onclick="game.confirmHammerHero()">Confirm</button>
-            <button class="phb phb-cancel" onclick="game.closeInfoModal(); game._hammerCard = null; game._hammerSelectedHero = null;">Cancel</button>
+            <button class="phb" onclick="game.closeInfoModal(); game._hammerCard = null; game._hammerSelectedHero = null;">Cancel</button>
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
@@ -2129,7 +2129,7 @@ Object.assign(game, {
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">${generalName}</span>
                         </div>
                         <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                            <span class="die" style="background:#16a34a">🎲</span>
+                            <span class="die" style="background:#16a34a;animation:none">🎲</span>
                         </div>
                     </div>
                 </div>

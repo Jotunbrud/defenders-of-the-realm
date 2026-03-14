@@ -268,6 +268,11 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default Continue (was causing double button) + center title per design system
+            const _hvDefaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_hvDefaultBtn && !_hvDefaultBtn.querySelector('.phb')) _hvDefaultBtn.style.display = 'none';
+            const _hvTitle = document.getElementById('info-modal-title');
+            if (_hvTitle) { _hvTitle.className = 'modal-heading'; _hvTitle.style.textAlign = 'center'; _hvTitle.style.marginBottom = '12px'; }
             
             // Check for combat at destination for the moved hero
             if (moveInfo.targetHeroIndex === this.currentPlayerIndex) {

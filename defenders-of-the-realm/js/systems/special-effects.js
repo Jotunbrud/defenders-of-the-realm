@@ -257,7 +257,12 @@ Object.assign(game, {
                     </div>
                 </div>
             </div>
-        `);
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
+            `);
+        const _aiqBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_aiqBtn) _aiqBtn.style.display = 'none';
+        const _aiqTitle = document.getElementById('info-modal-title');
+        if (_aiqTitle) { _aiqTitle.className = 'modal-heading'; _aiqTitle.style.textAlign = 'center'; _aiqTitle.style.marginBottom = '12px'; }
         
         this.updateGameStatus();
         this.updateActionButtons();
@@ -283,6 +288,7 @@ Object.assign(game, {
                     </div>
                     </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
             return;
         }
@@ -302,6 +308,7 @@ Object.assign(game, {
                     </div>
                     </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
             return;
         }
@@ -325,6 +332,7 @@ Object.assign(game, {
                     </div>
                     </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
             return;
         }
@@ -382,7 +390,12 @@ Object.assign(game, {
                     </div>
                 </div>
             </div>
-        `);
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
+            `);
+        const _errBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_errBtn) _errBtn.style.display = 'none';
+        const _errTitle = document.getElementById('info-modal-title');
+        if (_errTitle) { _errTitle.className = 'modal-heading'; _errTitle.style.textAlign = 'center'; _errTitle.style.marginBottom = '12px'; }
         
         this.renderTokens();
         this.renderHeroes();
@@ -420,6 +433,7 @@ Object.assign(game, {
                     </div>
                     </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
             return;
         }
@@ -648,7 +662,12 @@ Object.assign(game, {
                     </div>
                     </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        const _errBtn2 = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_errBtn2) _errBtn2.style.display = 'none';
+        const _errTitle2 = document.getElementById('info-modal-title');
+        if (_errTitle2) { _errTitle2.className = 'modal-heading'; _errTitle2.style.textAlign = 'center'; _errTitle2.style.marginBottom = '12px'; }
             return;
         }
         
@@ -1033,7 +1052,12 @@ Object.assign(game, {
                         <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div></div>
                     </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        const _errBtn2 = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_errBtn2) _errBtn2.style.display = 'none';
+        const _errTitle2 = document.getElementById('info-modal-title');
+        if (_errTitle2) { _errTitle2.className = 'modal-heading'; _errTitle2.style.textAlign = 'center'; _errTitle2.style.marginBottom = '12px'; }
             return;
         }
         
@@ -1449,7 +1473,12 @@ Object.assign(game, {
                         <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, then return the rest in any order.</span></div></div>
                     </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        const _dvErrBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_dvErrBtn) _dvErrBtn.style.display = 'none';
+        const _dvErrTitle = document.getElementById('info-modal-title');
+        if (_dvErrTitle) { _dvErrTitle.className = 'modal-heading'; _dvErrTitle.style.textAlign = 'center'; _dvErrTitle.style.marginBottom = '12px'; }
             // Put card back (not consumed)
             return;
         }
@@ -1895,6 +1924,7 @@ Object.assign(game, {
                     </div>
                 </div>
             </div>
+            <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         setTimeout(() => {
@@ -2078,9 +2108,9 @@ Object.assign(game, {
         const cardNum = this.darknessCardsDrawn;
         const totalCards = this.darknessCardsToDraw;
         const generalOnly = this.darknessCurrentGeneralOnly;
-        this.showInfoModal('🌟 Special Card Details', milResultHTML, () => {
-            this.showDarknessCardPreview(card, cardNum, totalCards, generalOnly);
-        });
+        // v2: inject phb Continue into milResultHTML — shell is hidden so button must be in content
+        const _milWithBtn = milResultHTML + `<button class="phb" style="margin-top:12px" onclick="game.closeInfoModal();game.showDarknessCardPreview(game.darknessCurrentCard,game.darknessCardsDrawn,game.darknessCardsToDraw,game.darknessCurrentGeneralOnly)">Continue</button>`;
+        this.showInfoModal('🌟 Special Card Details', _milWithBtn);
         // v2: hide shell default, center title per design system
         const _milResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_milResBtn) _milResBtn.style.display = 'none';
@@ -2487,9 +2517,9 @@ Object.assign(game, {
         // Show result then resume daytime modal on continue
         const hero = this.endOfTurnState.hero;
         const damageInfo = this.endOfTurnState.damageInfo;
-        this.showInfoModal('🌟 Special Card Details', spyResultHTML, () => {
-            this.showDaytimeModal(hero, damageInfo);
-        });
+        // v2: inject phb Continue into spyResultHTML before showing — shell is hidden so button must be in content
+        const _spyWithBtn = spyResultHTML + `<button class="phb" style="margin-top:12px" onclick="game.closeInfoModal();game.showDaytimeModal(game.endOfTurnState.hero,game.endOfTurnState.damageInfo)">Continue</button>`;
+        this.showInfoModal('🌟 Special Card Details', _spyWithBtn);
         // v2: hide shell default, center title per design system
         const _spyResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_spyResBtn) _spyResBtn.style.display = 'none';

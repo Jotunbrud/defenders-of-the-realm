@@ -180,18 +180,13 @@ Object.assign(game, {
                 battleLuckCard: blCard
             };
             const resultsHTML = this._buildMinionResultsHTML(colorResults, true);
-            const fireballBanner = `
-                <div style="background: rgba(239, 68, 68, 0.2); padding: 10px; border: 2px solid #ef4444; border-radius: 8px; margin-bottom: 10px; text-align: center;">
-                    <div style="font-size: 1.2em; color: #ef4444; font-weight: bold;">🔥 Fireball! 🔥</div>
-                    <div style="color: #d4af37; font-size: 0.9em;">Discarded: ${card.name} | All minions targeted (2+ to hit)</div>
-                </div>
-            `;
-            const rerollHTML = fireballBanner + resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
+            // v2: Battle Luck button injected via buildBattleLuckHTML, Continue passed separately
             this.showCombatResults(
-                `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`,
-                rerollHTML,
+                '🔥 Fireball',
+                resultsHTML,
                 '',
-                '',
+                this._buildBattleLuckHTML(blCard, failedCount)
+                    + `<button class="phb" style="margin-top:6px" onclick="game.declineBattleLuck()">Continue</button>`,
                 true
             );
             return;

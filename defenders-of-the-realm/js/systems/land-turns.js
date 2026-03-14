@@ -565,37 +565,40 @@ Object.assign(game, {
         };
         
         const content = document.getElementById('hero-death-content');
+        // v2: fallen hero details + hero selection both inside one parchment box
         content.innerHTML = `
-            <div style="text-align: center; margin: 20px 0;">
-                <div style="font-size: 3em; margin-bottom: 10px;">${hero.symbol}</div>
-                <div style="font-size: 1.3em; color: #ef4444; font-weight: bold; margin-bottom: 10px;">
-                    ${hero.name} has fallen!
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Hero Fallen</span></div>
+                <div style="text-align:center;margin:10px 0 12px">
+                    <div style="font-size:2.5em;margin-bottom:6px">${hero.symbol}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#dc2626;margin-bottom:6px">${hero.name} has fallen!</div>
+                    <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f;margin-bottom:2px">Health reduced to 0</div>
+                    <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">${cardCount} card(s) discarded</div>
                 </div>
-                <div style="color: #d4af37; margin-bottom: 5px;">
-                    Health reduced to 0
-                </div>
-                <div style="color: #999;">
-                    ${cardCount} card(s) discarded
-                </div>
+                ${availableHeroes.length > 0
+                    ? '<div style="border-top:1px solid rgba(139,115,85,0.4);padding-top:10px;margin-top:4px"><div style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Select a new hero or respawn the same hero:</div>'
+                    : '<div style="border-top:1px solid rgba(139,115,85,0.4);padding-top:10px;margin-top:4px"><div style="font-family:\'Cinzel\',Georgia,serif;font-weight:900;font-size:0.82em;color:#ef4444;margin-bottom:8px">No new heroes available — respawn same hero</div>'
+                }
             </div>
-            ${availableHeroes.length > 0 ? 
-                '<div style="color: #d4af37; text-align: center; margin: 15px 0; font-weight: bold;">Select a new hero or respawn the same hero:</div>' :
-                '<div style="color: #ef4444; text-align: center; margin: 15px 0;">No new heroes available - respawn same hero</div>'
-            }
         `;
-        
+
         const grid = document.getElementById('hero-selection-grid');
         if (availableHeroes.length > 0) {
+            // v2: hero-row tiles inside parchment box, closed after grid
             grid.innerHTML = availableHeroes.map(h => `
-                <div class="btn btn-primary" onclick="game.selectNewHero('${h.name}')" 
-                     style="padding: 20px; text-align: center; cursor: pointer;">
-                    <div style="font-size: 2em;">${h.symbol}</div>
-                    <div style="font-weight: bold; margin-top: 5px;">${h.name}</div>
+                <div id="hero-death-option-${h.name}" onclick="game.selectNewHero('${h.name}')" class="hero-row" style="cursor:pointer">
+                    <div style="font-size:1.3em">${h.symbol}</div>
+                    <div style="flex:1">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">${h.name}</div>
+                    </div>
                 </div>
-            `).join('');
-            grid.style.display = 'grid';
+            `).join('') + '</div></div>'; // close the open divs from hero-death-content
+            grid.style.display = 'flex';
+            grid.style.flexDirection = 'column';
+            grid.style.gap = '6px';
         } else {
-            grid.style.display = 'none';
+            grid.innerHTML = '</div></div>'; // close open divs even with no heroes
+            grid.style.display = 'block';
         }
         
         document.getElementById('hero-death-modal').classList.add('active');
@@ -604,7 +607,38 @@ Object.assign(game, {
     selectNewHero(heroName) {
         const heroIndex = this.defeatedHero.index;
         const hero = this.heroes[heroIndex];
-        
+
+        // v2: hero-row selection highlight matching Hammer of Valor pattern
+        document.querySelectorAll('[id^="hero-death-option-"]').forEach(el => {
+            el.style.border = '';
+            el.style.background = '';
+            el.style.boxShadow = '';
+        });
+        const selected = document.getElementById(`hero-death-option-${heroName}`);
+        if (selected) {
+            selected.style.border = '2px solid #d4af37';
+            selected.style.background = 'rgba(212,175,55,0.2)';
+            selected.style.boxShadow = '0 0 8px rgba(212,175,55,0.35)';
+        }
+
+        // Enable confirm button
+        const confirmBtn = document.getElementById('hero-death-confirm-btn');
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.style.opacity = '1';
+            confirmBtn.style.cursor = 'pointer';
+        }
+
+        this._selectedNewHeroName = heroName;
+        // v2: selection only — game state applied in confirmHeroDeath()
+    },
+
+    confirmHeroDeath() {
+        const heroName = this._selectedNewHeroName;
+        if (!heroName) return;
+        const heroIndex = this.defeatedHero.index;
+        const hero = this.heroes[heroIndex];
+
         const heroTemplate = {
             'Paladin': { health: 5, maxHealth: 5, color: '#6d28a8', symbol: '🛡️', ability: '<strong>Noble Steed:</strong> May spend an action to travel on horseback (2 spaces) without discarding a horse travel card<br><br><strong>Bravery:</strong> If ending a turn in a location with Undead minions, do not suffer any penalties from fear<br><br><strong>Aura of Righteousness:</strong> Ignore 1 wound from minions and Generals' },
             'Cleric': { health: 6, maxHealth: 6, color: '#1e3a7a', symbol: '✝️', ability: '<strong>Blessed Attacks:</strong> Add +1 to each die roll in attacks against Undead and Demon minions.<br><span style="color: #ef4444;">May not be used in combat with a General.</span><br><br><strong>Turn Undead:</strong> If ending a turn in a location with Undead, move all Undead minions to any adjacent location(s).<br><br><strong>Sanctify Land:</strong> May spend an action in a location with no enemy minions present that is Tainted to heal the land (no cards required). On a roll of 5+ remove the Tainted Crystal.' },
@@ -1786,11 +1820,6 @@ Object.assign(game, {
             
             // Reshuffle all decks
             this.darknessDeck = this.createDarknessDeck();
-            // v2: clear heroDeck before rebuild so undrawn special cards in the old deck
-            // are not counted as "unavailable" by createHeroDeckFromDiscard and excluded
-            // from the new deck. Bug: Monarch City reshuffle was removing 10-14 specials
-            // because createHeroDeckFromDiscard counted this.heroDeck contents as held/played.
-            this.heroDeck = [];
             this.heroDeck = this.createHeroDeckFromDiscard();
             this.heroDiscardPile = 0;
             this.updateDeckCounts();

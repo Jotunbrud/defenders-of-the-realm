@@ -1269,8 +1269,8 @@
         .phb:hover:not(:disabled) { filter: brightness(1.1); }
         .phb:disabled { opacity: 0.4; cursor: not-allowed; }
         .phb-cancel {
-          background: linear-gradient(135deg, #6b6b6b, #4a4a4a);
-          color: #f4e4c1; border-color: #6b6b6b; margin-top: 6px;
+          background: linear-gradient(135deg, #d4af37, #b8960c);
+          color: #1a0f0a; border-color: #d4af37; margin-top: 6px;
         }
 
         /* ── PHASE BUTTON ── */

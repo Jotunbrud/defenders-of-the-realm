@@ -25,6 +25,12 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 
 /* ── Dice ── */
 .die{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-size:0.8em;border:1.5px solid rgba(0,0,0,0.3)}
+
+.die-red{background:linear-gradient(145deg,#dc2626,#991b1b);box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)}
+.die-green{background:linear-gradient(145deg,#16a34a,#15803d);box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(22,163,74,0.25)}
+.die-black{background:linear-gradient(145deg,#374151,#1f2937);box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25)}
+.die-blue{background:linear-gradient(145deg,#3b82f6,#1d4ed8);box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(59,130,246,0.25)}
+.die-purple{background:linear-gradient(145deg,#7c3aed,#5b21b6);box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(124,58,237,0.25)}
 .die-g{width:50px;height:50px;font-size:1.5em;font-weight:900;border-radius:8px;color:#fff;background:linear-gradient(145deg,#16a34a 0%,#15803d 100%);border:2px solid rgba(0,0,0,0.3);box-shadow:0 3px 6px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(22,163,74,0.3)}
 
 /* ── Parchment box (quest modal style) ── */
@@ -33,7 +39,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 
 /* ── Button ── */
 .phb{width:100%;margin-top:10px;padding:11px;border-radius:8px;font-weight:bold;font-size:0.95em;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;font-variant:small-caps;cursor:pointer;display:block;text-align:center}
-.phb-cancel{background:linear-gradient(135deg,#6b6b6b,#4a4a4a);color:#f4e4c1;border-color:#6b6b6b;margin-top:6px}
+.phb-cancel{background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border-color:#d4af37;margin-top:6px}
 
 /* ── Layout ── */
 .section{font-family:'Cinzel',Georgia,serif;font-size:1.3em;font-weight:900;text-align:center;margin:36px 0 16px;padding-bottom:10px;border-bottom:2px solid #d4af37;color:#d4af37}
@@ -505,6 +511,8 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">🧝 Ranger</span></div>
     <div class="card-body">
       <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8">🎲</span></div>
     </div>
   </div>
   </div><button class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px" disabled>Confirm</button>
@@ -515,37 +523,38 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 <div class="mc">
   <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
   <div class="pb">
-    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:10px">
-    <div style="flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column">
-      <div style="font-size:0.6em;color:#15803d;font-weight:bold;font-family:'Cinzel',Georgia,serif">✓ KEPT</div>
+    <div class="pbn"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;text-align:center;margin-top:6px;margin-bottom:6px;">Color Chosen: <span style="color:#16a34a">Green</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px">
+    <div style="flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,0.3)">
       <div style="font-size:1.4em;margin:2px 0">🎴</div>
       <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.65em;color:#16a34a;flex:1">Thorny Woods</div>
       <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
     </div>
-    <div style="flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #6d28a8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column">
-      <div style="font-size:0.6em;color:#15803d;font-weight:bold;font-family:'Cinzel',Georgia,serif">✓ KEPT</div>
+    <div style="flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #6d28a8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;box-shadow:0 0 10px rgba(109,40,168,0.5)">
       <div style="font-size:1.4em;margin:2px 0">🌟</div>
       <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.65em;color:#6d28a8;flex:1">Battle Luck</div>
       <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#6d28a8;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
     </div>
-    <div style="flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px;text-align:center;opacity:0.6;display:flex;flex-direction:column">
-      <div style="font-size:0.6em;color:#b91c1c;font-weight:bold;font-family:'Cinzel',Georgia,serif">✗ DISCARDED</div>
+    <div style="position:relative;flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px;text-align:center;opacity:0.45;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,0.3)">
+      <div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4)">✕</div>
       <div style="font-size:1.4em;margin:2px 0">🎴</div>
       <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.65em;color:#dc2626;flex:1">Fire River</div>
       <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#dc2626;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
     </div>
-    <div style="flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #3b82f6;border-radius:8px;padding:8px;text-align:center;opacity:0.6;display:flex;flex-direction:column">
-      <div style="font-size:0.6em;color:#b91c1c;font-weight:bold;font-family:'Cinzel',Georgia,serif">✗ DISCARDED</div>
+    <div style="position:relative;flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #3b82f6;border-radius:8px;padding:8px;text-align:center;opacity:0.45;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,0.3)">
+      <div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4)">✕</div>
       <div style="font-size:1.4em;margin:2px 0">🎴</div>
       <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.65em;color:#3b82f6;flex:1">Crystal Hills</div>
       <div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#3b82f6;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#3b82f6;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
     </div>
   </div>
-  <div class="card-wrap">
+    <div class="card-wrap">
     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">🧝 Ranger</span></div>
     <div class="card-body">
       <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8">🎲</span></div>
     </div>
   </div>
   </div><button class="phb" style="margin-top:12px">Continue</button>
@@ -567,43 +576,50 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Remove Minions</span></div>
   <div style="margin-top:10px;margin-bottom:10px">
     <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Remaining minions to remove:</div>
-    <div style="text-align:center;margin-bottom:10px"><div class="die die-g" style="display:inline-flex;align-items:center;justify-content:center">6</div></div>
-    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</span>
+    <div style="text-align:center;margin-bottom:10px"><div class="die die-purple" style="width:50px;height:50px;font-size:1.5em;font-weight:900;border-radius:8px;display:inline-flex;align-items:center;justify-content:center">5</div></div>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0;cursor:pointer;">
+      <div style="flex:1;background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</span>
+        </div>
       </div>
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
     </div>
-    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Greenleaf Village</span>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0;cursor:pointer;">
+      <div style="flex:1;background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Greenleaf Village</span>
+        </div>
       </div>
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
     </div>
-    <div style="background:rgba(239,68,68,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626"><span class="mdot" style="width:14px;height:14px;background:#dc2626;margin-right:3px"></span> Demons</span>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</span>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0;cursor:pointer;">
+      <div style="flex:1;background:rgba(239,68,68,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626"><span class="mdot" style="width:14px;height:14px;background:#dc2626;margin-right:3px"></span>Demons</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</span>
+        </div>
       </div>
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:#6d28a8;font-size:0.85em;font-weight:900;color:#fff">✓</span>
     </div>
-    <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin:4px 0">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Ancient Ruins</span>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0;cursor:pointer;opacity:0.4;">
+      <div style="flex:1;background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span>Dragonkin</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Ancient Ruins</span>
+        </div>
       </div>
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
     </div>
   </div>
   <div class="card-wrap">
     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 King's Guard Attack</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
     <div class="card-body">
       <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div>
-      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <div class="modal-general-token" style="background:#3b82f6">🐉</div>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#3b82f6">Sapphire</span>
-      </div>
-      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-        <span class="die" style="background:#3b82f6">🎲</span>
-      </div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#3b82f6">🐉</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#3b82f6">Sapphire</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#3b82f6">🎲</span></div>
     </div>
   </div>
   </div><button class="phb" style="margin-top:12px">Confirm</button>
@@ -619,31 +635,31 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed</div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</span>
       </div>
     </div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Greenleaf Village</span>
       </div>
     </div>
     <div style="background:rgba(239,68,68,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626"><span class="mdot" style="width:14px;height:14px;background:#dc2626;margin-right:3px"></span> Demons</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626"><span class="mdot" style="width:14px;height:14px;background:#dc2626;margin-right:3px"></span>Demons</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</span>
       </div>
     </div>
     <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span>Dragonkin</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Ancient Ruins</span>
       </div>
     </div>
     <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span> Dragonkin</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span>Dragonkin</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Heaven's Glade</span>
       </div>
     </div>
@@ -652,19 +668,62 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 King's Guard Attack</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
     <div class="card-body">
       <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div>
-      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <div class="modal-general-token" style="background:#3b82f6">🐉</div>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#3b82f6">Sapphire</span>
-      </div>
-      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-        <span class="die" style="background:#3b82f6">🎲</span>
-      </div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#3b82f6">🐉</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#3b82f6">Sapphire</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#3b82f6">🎲</span></div>
     </div>
   </div>
   </div><button class="phb" style="margin-top:12px">Continue</button>
 </div></div>
 
 </div>
+<div class="col"><div class="tag">F3 · _cavalrySweepShowPicker — minion selection</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Remove Minions</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Remaining minions to remove:</div>
+    <div style="text-align:center;margin-bottom:10px"><div class="die die-purple" style="width:50px;height:50px;font-size:1.5em;font-weight:900;border-radius:8px;display:inline-flex;align-items:center;justify-content:center">3</div></div>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0;cursor:pointer;">
+      <div style="flex:1;background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Peak Pass</span>
+        </div>
+      </div>
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:#6d28a8;font-size:0.85em;font-weight:900;color:#fff">✓</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0;cursor:pointer;">
+      <div style="flex:1;background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span>Dragonkin</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Peak Pass</span>
+        </div>
+      </div>
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0;cursor:pointer;opacity:0.4;">
+      <div style="flex:1;background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span>Dragonkin</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Peak Pass</span>
+        </div>
+      </div>
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Cavalry Sweep</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
+</div></div>
+
 
 
 <!-- ═══════════════════════════════════════
@@ -683,46 +742,41 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed</div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
       </div>
     </div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
       </div>
     </div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
       </div>
     </div>
-    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+    <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span>Dragonkin</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Land of Amazons</span>
       </div>
     </div>
-    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+    <div style="background:rgba(239,68,68,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626"><span class="mdot" style="width:14px;height:14px;background:#dc2626;margin-right:3px"></span>Demons</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Land of Amazons</span>
       </div>
     </div>
   </div>
   <div class="card-wrap">
-    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Elven Archers</span><span class="hero-banner-name" style="font-size:0.8em">🧝 Ranger</span></div>
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🏹 Elven Archers</span><span class="hero-banner-name" style="font-size:0.8em">🧝 Ranger</span></div>
     <div class="card-body">
       <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove all enemy minions from 2 Green locations</span></div>
-      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <div class="modal-general-token" style="background:#16a34a">👺</div>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">Gorgutt</span>
-      </div>
-      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-        <span class="die" style="background:#16a34a">🎲</span>
-      </div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#16a34a">👺</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">Gorgutt</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#16a34a">🎲</span></div>
     </div>
   </div>
   </div><button class="phb" style="margin-top:12px">Continue</button>
@@ -737,60 +791,55 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed</div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Windy Pass</span>
       </div>
     </div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Windy Pass</span>
       </div>
     </div>
-    <div style="background:rgba(107,114,128,0.1);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin:4px 0">
+    <div style="background:rgba(55,65,81,0.1);border:1px solid #374151;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span> Undead</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span>
       </div>
     </div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Nest Inn</span>
       </div>
     </div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Nest Inn</span>
       </div>
     </div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Nest Inn</span>
       </div>
     </div>
-    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-top:10px;margin-bottom:6px">General Movement</div>
-    <div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;margin:3px 0;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em">
+  </div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-top:8px;margin-bottom:6px">General Movement</div>
+    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="display:flex;align-items:center;gap:6px;color:#8b7355"><span class="modal-general-token" style="background:#16a34a;width:24px;height:24px;font-size:0.75em">👺</span>Gorgutt</span>
-        <span style="color:#2c1810">Eagle Peak Pass → Amarak Peak</span>
+        <span style="display:flex;align-items:center;gap:6px;color:#16a34a"><span class="modal-general-token" style="background:#16a34a;width:24px;height:24px;font-size:0.75em">👺</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em">Gorgutt</span></span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Eagle Peak Pass → Amarak Peak</span>
       </div>
       <div style="font-size:0.85em;color:#8b7355;margin-top:3px;padding-left:30px">— Pushed Back</div>
     </div>
-  </div>
-  <div class="card-wrap">
+    <div class="card-wrap">
     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Battle Strategy</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
     <div class="card-body">
       <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all minions on 3 locations and push 1 General back</span></div>
-      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
-      </div>
-      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-        <span class="die" style="background:#6d28a8">🎲</span><span class="die" style="background:#6d28a8">🎲</span>
-      </div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8">🎲</span><span class="die" style="background:#6d28a8">🎲</span></div>
     </div>
   </div>
   </div><button class="phb" style="margin-top:12px">Continue</button>
@@ -819,18 +868,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
       <div class="dv-kept">
         <div class="dv-ctrl"><button class="dv-btn" style="background:#ccc;color:#999" disabled>▲</button><button class="dv-btn" style="background:#8b7355;color:#fff" >▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:52px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Crystal Hills</span></div></div><div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;flex-direction:column;align-items:center">
-                  <div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div>
-                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a;white-space:nowrap">Gorgutt</span>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="margin-left:-18px;z-index:10;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
             <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Thorny Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Amarak Peak</span></div>
           </div>
@@ -838,18 +876,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
       </div>      <div class="dv-kept">
         <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff" >▲</button><button class="dv-btn" style="background:#8b7355;color:#fff" >▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:52px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#ef4444;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#ef4444;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#ef4444;"><span class="location-ring-name" style="font-size:0.74em">Ember Peaks</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#1c1917;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#1c1917;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;flex-direction:column;align-items:center">
-                  <div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div>
-                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;white-space:nowrap">Balazarg</span>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="margin-left:-18px;z-index:9;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;outline:3px solid #374151;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #37415199;"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
             <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Angel Tear Falls</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Angel Tear Falls</span></div>
           </div>
@@ -868,18 +895,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
       </div>      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 4px">Discard:</div>      <div class="dv-disc" style="display:flex;padding:0">
         <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#ccc;color:#999" disabled>▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:52px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Dark Woods</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;flex-direction:column;align-items:center">
-                  <div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div>
-                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a;white-space:nowrap">Gorgutt</span>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div><div style="margin-left:-18px;z-index:8;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;outline:3px solid #dc2626;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #dc262699;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
             <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Dark Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Orc Valley</span></div>
           </div>
@@ -887,18 +903,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
       </div>      <div class="dv-disc" style="display:flex;padding:0">
         <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#ccc;color:#999" disabled>▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:52px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Shadow Vale</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;flex-direction:column;align-items:center">
-                  <div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div>
-                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;white-space:nowrap">Balazarg</span>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Bone Crypt</span></div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="margin-left:-18px;z-index:8;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
             <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Ghost Marsh</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Ghost Marsh</span></div>
           </div>
@@ -974,7 +979,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
                     <div style="display:flex;align-items:center;padding:6px">
                       <div style="z-index:6;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;outline:3px solid #7c3aed;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #7c3aed99;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div>
                     </div>
-                    <div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed">Monarch City</div>
+                    <div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed">Next Location</div>
                   </div>
                 </div>
               </div>
@@ -1038,36 +1043,14 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
       <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:4px">Kept:</div>
       <div class="dv-kept">
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:52px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Crystal Hills</span></div></div><div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;flex-direction:column;align-items:center">
-                  <div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div>
-                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a;white-space:nowrap">Gorgutt</span>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="margin-left:-18px;z-index:10;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
             <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Thorny Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Amarak Peak</span></div>
           </div>
         </div>
       </div>      <div class="dv-kept">
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:52px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#ef4444;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#ef4444;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#ef4444;"><span class="location-ring-name" style="font-size:0.74em">Ember Peaks</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;flex-direction:column;align-items:center">
-                  <div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div>
-                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;white-space:nowrap">Balazarg</span>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="margin-left:-18px;z-index:9;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;outline:3px solid #374151;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #37415199;"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
             <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Angel Tear Falls</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Angel Tear Falls</span></div>
           </div>
@@ -1084,36 +1067,14 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
         </div>
       </div>      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 4px">Discarded:</div>      <div class="dv-disc" style="display:flex;padding:0">
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:52px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Dark Woods</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;flex-direction:column;align-items:center">
-                  <div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div>
-                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a;white-space:nowrap">Gorgutt</span>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div><div style="margin-left:-18px;z-index:8;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;outline:3px solid #dc2626;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #dc262699;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
             <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Dark Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Orc Valley</span></div>
           </div>
         </div>
       </div>      <div class="dv-disc" style="display:flex;padding:0">
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:52px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Shadow Vale</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;flex-direction:column;align-items:center">
-                  <div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div>
-                  <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;white-space:nowrap">Balazarg</span>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Bone Crypt</span></div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="margin-left:-18px;z-index:8;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
             <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Ghost Marsh</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Ghost Marsh</span></div>
           </div>
@@ -1156,7 +1117,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minion Placement Cancelled:</div>
     <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span> Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
       </div>
     </div>
@@ -1184,12 +1145,11 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
   <div style="margin-top:10px;margin-bottom:10px">
     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Prevent General Healing:</div>
-    <div style="background:rgba(239,68,68,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em">
+    <div style="background:rgba(220,38,38,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="display:flex;align-items:center;gap:6px;color:#dc2626"><span class="modal-general-token" style="background:#dc2626;width:24px;height:24px;font-size:0.75em">👹</span>Balazarg</span>
-        <span style="color:#b91c1c">❤️ 4/10</span>
+        <span style="display:flex;align-items:center;gap:6px;color:#dc2626"><span class="modal-general-token" style="background:#dc2626;width:24px;height:24px;font-size:0.75em">👹</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em">Balazarg</span></span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#b91c1c">❤️ 4/10 — Healing Blocked</span>
       </div>
-      <div style="font-size:0.85em;color:#b91c1c;margin-top:3px;padding-left:30px">— Healing Blocked</div>
     </div>
   </div>
   <div class="card-wrap">
@@ -1212,7 +1172,332 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 </div>
 
 <div style="height:60px"></div>
-</body></html>
-<!-- ═══════════════ H. DARK VISIONS ═══════════════ -->
 
+<!-- COMMENTED OUT: Fireball is a Wizard hero ability (game.wizardFireball() via map panel button) — uses showInfoModal with old btn styling, not special card parchment modal
+<!- - ═══════════════════════════════════════════════
+     J. FIREBALL (Wizard ability)
+════════════════════════════════════════════════ - ->
+<div class="section">J. Fireball (Wizard Ability)</div>
+<div class="grid">
+
+<div class="col"><div class="tag">J1 · showFireballModal — card picker</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Choose Card to Discard</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Discard a card matching any minion color present. Roll 2+ to incinerate each minion, regardless of type.</div>
+    <div style="background:rgba(139,115,85,0.08);border:1px solid #16a34a;border-radius:5px;padding:7px 10px;margin:4px 0;cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:6px"></span>Orc Skirmish</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">🎲 2 dice</span>
+      <span style="color:#15803d;font-weight:900;font-size:1.05em;margin-left:6px">✓</span>
+      </div>
+    </div>
+    <div style="background:rgba(139,115,85,0.08);border:1px solid #dc2626;border-radius:5px;padding:7px 10px;margin:4px 0;cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626"><span class="mdot" style="width:14px;height:14px;background:#dc2626;margin-right:6px"></span>Demon's Fury</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">🎲 3 dice</span>
+      <span style="color:#15803d;font-weight:900;font-size:1.05em;margin-left:6px">✓</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🔥 Fireball</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Incinerate all minions at your location (2+ to hit each)</span></div>
+    </div>
+  </div>
+  </div>
+</div></div>
+
+</div>
+
+
+END COMMENTED OUT -->
+
+<!-- ═══════════════════════════════════════════════
+     K. AUTO-USE CARD INFO (Battle Luck / Militia / Strong Defenses / Spy)
+════════════════════════════════════════════════ -->
+<div class="section">K. Auto-Use Card Info Modals</div>
+<div class="grid">
+
+<div class="col"><div class="tag">K1 · Battle Luck — auto-use info</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Auto-Use Card</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f">This card is used automatically during combat. When dice are rolled, a <strong>Battle Luck</strong> button will appear to re-roll all failed dice.</div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Battle Luck</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Re-roll all failed dice once during combat</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+<div class="col"><div class="tag">K2 · Militia Secures Area — auto-use info</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Auto-Use Card</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f">This card is used automatically during the Night Phase. When a Darkness Spreads card is drawn, a <strong>Militia Secures Area</strong> button will appear to cancel one minion placement.</div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Militia Secures Area</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Cancel one minion placement during the Night Phase</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+<div class="col"><div class="tag">K3 · Strong Defenses — auto-use info</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Auto-Use Card</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f">This card is used automatically during the Night Phase. When a Darkness Spreads card is drawn, a <strong>Strong Defenses</strong> button will appear to prevent the General from moving.</div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Strong Defenses</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Prevent the General from advancing during the Night Phase</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+<div class="col"><div class="tag">K4 · Spy In The Camp — auto-use info</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Auto-Use Card</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f">This card is used during Step 1 — Daytime. When a wounded General would heal, a <strong>Spy In The Camp</strong> button will appear to block their healing for that turn.</div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spy In The Camp</span><span class="hero-banner-name" style="font-size:0.8em">⛏️ Dwarf</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Block a wounded General's healing during the Daytime phase</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     L. HAMMER OF VALOR (picker + result)
+════════════════════════════════════════════════ -->
+<div class="section">L. Hammer of Valor</div>
+<div class="grid">
+
+<div class="col"><div class="tag">L1 · executeSpecialMoveHero — hero picker</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Choose a Hero</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="hero-row" style="cursor:pointer">
+      <div style="font-size:1.3em">⚔️</div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Warrior</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Scorpion Canyon</div>
+      </div>
+    </div>
+    <div class="hero-row" style="cursor:pointer;border-color:#d4af37;background:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.35)">
+      <div style="font-size:1.3em">🧙</div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Wizard</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Monarch City</div>
+      </div>
+    </div>
+    <div class="hero-row" style="cursor:pointer">
+      <div style="font-size:1.3em">🧝</div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Ranger</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Hammer of Valor</span><span class="hero-banner-name" style="font-size:0.8em">⛏️ Dwarf</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Move any hero to any location (no action used)</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
+</div></div>
+<div class="col"><div class="tag">L2 · movement.js — hero moved result</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div style="background:rgba(147,51,234,0.1);border:1px solid #9333ea;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">🧙 Wizard</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Hammer of Valor</span><span class="hero-banner-name" style="font-size:0.8em">⛏️ Dwarf</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Move any hero to any location (no action used)</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+                      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     M. SPELL OF PURITY / MAGIC GATE PLACED
+════════════════════════════════════════════════ -->
+<div class="section">M. Spell of Purity &amp; Magic Gate Placed</div>
+<div class="grid">
+
+<div class="col"><div class="tag">M1 · movement.js — Land Purified result</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div style="background:rgba(147,51,234,0.1);border:1px solid #9333ea;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">💎 3 Taint Crystals Removed</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spell of Purity</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove all Taint Crystals from one location (no action used)</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#dc2626">👹</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#dc2626">Balazarg</span></div>
+                      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#dc2626;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span><span class="die" style="background:#dc2626;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+<div class="col"><div class="tag">M2 · movement.js — Magic Gate Placed result</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div style="background:rgba(147,51,234,0.1);border:1px solid #9333ea;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">🌀 Magic Gate Created</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Peak Pass</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Magic Gate</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Place a Magic Gate at any location (no action used)</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#374151">💀</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#374151">Varkolak</span></div>
+                      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#374151;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span><span class="die" style="background:#374151;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+</div>
+
+<!-- COMMENTED OUT: Turn Undead is a Cleric hero ability (showTurnUndeadModal() at end of turn) — uses showInfoModal with old btn/btn-primary styling, not special card parchment modal
+<!- - ═══════════════════════════════════════════════
+     N. TURN UNDEAD (Cleric ability)
+════════════════════════════════════════════════ - ->
+<div class="section">N. Turn Undead (Cleric Ability)</div>
+<div class="grid">
+
+<div class="col"><div class="tag">N1 · _showTurnUndeadTargetModal — destination picker</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Move Undead</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:6px">📍 Destination: <strong>Windy Pass</strong></div>
+    <div style="background:rgba(139,115,85,0.08);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="font-family:'Cinzel',Georgia,serif;font-size:0.8em;color:#6b7280">1/3 minions present — Space available: 2</div>
+    </div>
+    <div style="margin:12px 0">
+      <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">How many Undead to move here? (max 2)</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <div style="width:45px;height:45px;border-radius:8px;font-size:1.2em;font-weight:bold;display:flex;align-items:center;justify-content:center;background:#1e3a7a;color:#fff;border:2px solid #6b9bd2;cursor:pointer">1</div>
+        <div style="width:45px;height:45px;border-radius:8px;font-size:1.2em;font-weight:bold;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);color:#6b9bd2;border:2px solid #666;cursor:pointer">2</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">✝️ Turn Undead</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move Undead minions to adjacent locations at end of turn</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Move 1 Undead</button>
+  <button class="phb phb-cancel">Back</button>
+</div></div>
+
+<div class="col"><div class="tag">N2 · _finishTurnUndead — results</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Undead Moved from Dark Woods</div>
+    <div style="background:rgba(139,115,85,0.08);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span>2 Undead</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Windy Pass</span>
+      <span style="color:#15803d;font-weight:900;font-size:1.05em;margin-left:6px">✓</span>
+      </div>
+    </div>
+    <div style="background:rgba(139,115,85,0.08);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280"><span class="mdot" style="width:14px;height:14px;background:#6b7280;margin-right:3px"></span>1 Undead</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Sea Bird Port</span>
+      <span style="color:#15803d;font-weight:900;font-size:1.05em;margin-left:6px">✓</span>
+      </div>
+    </div>
+    <div style="background:rgba(139,115,85,0.08);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="font-family:'Cinzel',Georgia,serif;font-size:0.8em;color:#dc2626">⚠️ 1 Undead could not be moved — all adjacent locations full</div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">✝️ Turn Undead</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move Undead minions to adjacent locations at end of turn</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+</div>
+
+END COMMENTED OUT -->
+<div style="height:60px"></div>
 </body></html>

@@ -10,17 +10,6 @@ Object.assign(game, {
         const contBtn = document.querySelector('#info-modal .modal-content > div:last-child .btn-primary');
         if (contBtn) { contBtn.className = 'phase-btn'; contBtn.style.marginTop = '8px'; }
     },
-    _styleSpecialCardModal() {
-        const titleEl = document.getElementById('info-modal-title');
-        if (titleEl) {
-            titleEl.style.fontFamily = "'Cinzel',Georgia,serif";
-            titleEl.style.fontWeight = '700';
-            titleEl.style.color = '#d4af37';
-            titleEl.style.fontSize = '1.2em';
-            titleEl.style.textAlign = 'center';
-            titleEl.style.margin = '0 0 12px 0';
-        }
-    },
     wizardFireball() {
         // Cancel any active movement
         if (this.activeMovement) {
@@ -236,38 +225,39 @@ Object.assign(game, {
         
         this._selectedSpecialCard = null;
         
-        const factionLabel = (color) => color === 'any' ? 'Any General' : ({'red':'Demons','blue':'Dragonkin','green':'Orcs','black':'Undead'}[color] || 'Any General');
-        let cardsHTML = '<div id="special-cards-list" style="display:flex;flex-direction:column;gap:8px;">';
+        let cardsHTML = '<div style="display:flex;flex-direction:column;gap:8px">';
         specialCards.forEach(({ hero, heroIndex, card, cardIndex }, i) => {
-            const diceHTML = Array.from({ length: card.dice }).map(() =>
-                `<span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none;">🎲</span>`
-            ).join('');
+            const gc = card.color === 'any' ? '#6d28a8' : ({'red':'#dc2626','blue':'#3b82f6','green':'#16a34a','black':'#374151'}[card.color] || '#6d28a8');
+            const gIcon = card.color === 'any' ? '⚔️' : ({'red':'👹','blue':'🐉','green':'👺','black':'💀'}[card.color] || '⚔️');
+            const gName = card.color === 'any' ? 'Any General' : ({'red':'Balazarg','blue':'Sapphire','green':'Gorgutt','black':'Varkolak'}[card.color] || 'Any General');
+            const dice = Array(card.dice || 1).fill(0).map(() => `<span class="die" style="background:${gc};width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>`).join('');
             cardsHTML += `
-                <div id="special-card-option-${i}" class="card-wrap" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})" style="cursor:pointer;">
-                    <div class="card-banner-inner">
+                <div id="special-card-option-${i}" class="card-wrap" style="cursor:pointer" onclick="game.selectSpecialCard(${i}, ${heroIndex}, ${cardIndex})">
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px">
                         <span class="hero-banner-name">🌟 ${card.name}</span>
                         <span class="hero-banner-name" style="font-size:0.8em">${hero.symbol} ${hero.name}</span>
                     </div>
                     <div class="card-body">
                         <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">${card.description || card.type}</span></div>
-                        <div style="text-align:center;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;">
-                            <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">${factionLabel(card.color)}</span>
+                        <div style="text-align:center;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px">
+                            <div class="modal-general-token" style="background:${gc}">${gIcon}</div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${gc}">${gName}</span>
                         </div>
-                        <div style="text-align:center;margin:8px 0;display:flex;gap:4px;justify-content:center;">${diceHTML}</div>
+                        <div style="text-align:center;margin:8px 0;display:flex;gap:4px;justify-content:center">${dice}</div>
                     </div>
                 </div>
             `;
         });
         cardsHTML += '</div>';
-        
+
         const contentHTML = `
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;text-align:center;font-size:0.85em;margin-bottom:12px">Special cards can be played at any time without using an action.</div>
-            <div class="parchment-box">
-                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Select Card</span></div>
-                ${cardsHTML}
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;text-align:center;font-size:0.85em;margin-bottom:12px">
+                Special cards can be played at any time without using an action.
             </div>
-            <button id="use-special-card-btn" class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px;" disabled onclick="game.confirmSpecialCard()">Confirm</button>
+            ${this._parchmentBoxOpen('Select Card')}
+                ${cardsHTML}
+            ${this._parchmentBoxClose()}
+            <button id="use-special-card-btn" class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px" disabled onclick="game.confirmSpecialCard()">Confirm</button>
             <button class="phb phb-cancel" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
@@ -283,10 +273,10 @@ Object.assign(game, {
         this._selectedSpecialCard = { heroIndex, cardIndex };
         
         // Clear all selections
-        document.querySelectorAll('#special-cards-list > div').forEach(el => {
+        document.querySelectorAll('[id^="special-card-option-"]').forEach(el => {
             el.classList.remove('selected-special');
-            el.style.borderColor = '#6d28a8';
-            el.style.boxShadow = '0 0 8px rgba(109,40,168,0.4)';
+            el.style.borderColor = '';
+            el.style.boxShadow = '';
         });
         
         // Highlight selected
@@ -335,11 +325,14 @@ Object.assign(game, {
         } else if (card.specialAction === 'battle_luck') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
-                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Details</span></div>
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Auto-Use Card</span></div>
+                    <div style="margin-top:10px;margin-bottom:10px">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f">This card is used automatically during combat. When dice are rolled, a <strong>Battle Luck</strong> button will appear to re-roll all failed dice.</div>
+                    </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Battle Luck</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Battle Luck</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
-                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Re-roll all failed dice in combat</span></div>
+                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Re-roll all failed dice once during combat</span></div>
                             <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
                                 <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
@@ -352,9 +345,6 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
-        this._styleSpecialCardModal();
-        const _bd1 = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (_bd1 && _bd1.querySelector('.btn-primary')) _bd1.style.display = 'none';
         } else if (card.specialAction === 'battle_fury') {
             this.executeBattleFury(heroIndex, cardIndex);
         } else if (card.specialAction === 'local_information') {
@@ -368,11 +358,14 @@ Object.assign(game, {
         } else if (card.specialAction === 'militia_secures') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
-                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Details</span></div>
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Auto-Use Card</span></div>
+                    <div style="margin-top:10px;margin-bottom:10px">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f">This card is used automatically during the Night Phase. When a Darkness Spreads card is drawn, a <strong>Militia Secures Area</strong> button will appear to cancel one minion placement.</div>
+                    </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Militia Secures Area</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Militia Secures Area</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
-                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Night Phase: Cancel 1 minion placement from a Darkness Spreads card.</span></div>
+                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Cancel one minion placement during the Night Phase</span></div>
                             <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
                                 <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
@@ -385,17 +378,17 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
-        this._styleSpecialCardModal();
-        const _bd2 = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (_bd2 && _bd2.querySelector('.btn-primary')) _bd2.style.display = 'none';
         } else if (card.specialAction === 'strong_defenses') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
-                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Details</span></div>
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Auto-Use Card</span></div>
+                    <div style="margin-top:10px;margin-bottom:10px">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f">This card is used automatically during the Night Phase. When a Darkness Spreads card is drawn, a <strong>Strong Defenses</strong> button will appear to prevent the General from moving.</div>
+                    </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Strong Defenses</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Strong Defenses</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
-                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Night Phase: Prevent the General from moving on a Darkness Spreads card.</span></div>
+                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Prevent the General from advancing during the Night Phase</span></div>
                             <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
                                 <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
@@ -408,15 +401,15 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
-        this._styleSpecialCardModal();
-        const _bd3 = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (_bd3 && _bd3.querySelector('.btn-primary')) _bd3.style.display = 'none';
         } else if (card.specialAction === 'spy_in_camp') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
-                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Details</span></div>
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Auto-Use Card</span></div>
+                    <div style="margin-top:10px;margin-bottom:10px">
+                        <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f">This card is used during Step 1 — Daytime. When a wounded General would heal, a <strong>Spy In The Camp</strong> button will appear to block their healing for that turn.</div>
+                    </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Spy In The Camp</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spy In The Camp</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
                             <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Block a wounded General's healing during the Daytime phase</span></div>
                             <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
@@ -431,9 +424,6 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
-        this._styleSpecialCardModal();
-        const _bd4 = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (_bd4 && _bd4.querySelector('.btn-primary')) _bd4.style.display = 'none';
         }
     },
     
@@ -847,7 +837,7 @@ Object.assign(game, {
                     <div style="color:#d4af37;font-weight:bold;font-size:1.1em;margin-bottom:10px;">Discard ${quest.name}?</div>
                     <div style="color:#999;font-size:0.9em;margin-bottom:15px;">This will skip ALL Darkness Spreads cards at the end of your current turn.</div>
                     <div style="display:flex;gap:10px;">
-                        <button class="phb phb-cancel" onclick="game.closeInfoModal()">Cancel</button>
+                        <button class="btn" style="flex:1;background:#666;" onclick="game.closeInfoModal()">Cancel</button>
                         <button class="btn btn-primary" style="flex:1;" onclick="game.closeInfoModal(); game._confirmRaidsSkip(${heroIndex}, ${questIndex})">Confirm</button>
                     </div>
                 </div>
@@ -959,7 +949,7 @@ Object.assign(game, {
                 <div style="color: #d4af37; font-size: 0.8em; margin-bottom: 6px;">
                     Click a highlighted location to remove 1 Tainted Crystal
                 </div>
-                <button class="phb phb-cancel" onclick="game.clearQuestUseMode()">Cancel</button>
+                <button class="btn" onclick="game.clearQuestUseMode()" style="background: #666; padding: 5px 16px; font-size: 0.85em;">Cancel</button>
             `;
             document.body.appendChild(indicator);
         }
@@ -1801,10 +1791,10 @@ Object.assign(game, {
         this._hammerCard = { heroIndex, cardIndex };
         this._hammerSelectedHero = null;
         
-        let heroesHTML = '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">';
+        let heroesHTML = '<div style="display:flex;flex-direction:column;gap:6px">';
         this.heroes.forEach((hero, i) => {
             if (hero.health <= 0) return;
-            heroesHTML += `<div id="hammer-hero-${i}" class="hero-row" onclick="game.selectHammerHero(${i})" style="cursor:pointer;">
+            heroesHTML += `<div id="hammer-hero-${i}" onclick="game.selectHammerHero(${i})" class="hero-row" style="cursor:pointer">
                 <div style="font-size:1.3em">${hero.symbol}</div>
                 <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
                     <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">${hero.name}</div>
@@ -1817,18 +1807,19 @@ Object.assign(game, {
         const contentHTML = `
             <div class="parchment-box">
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Choose a Hero</span></div>
-                ${heroesHTML}
+                <div style="margin-top:10px;margin-bottom:10px">
+                    ${heroesHTML}
+                </div>
                 <div class="card-wrap">
-                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Hammer of Valor</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Hammer of Valor</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                     <div class="card-body">
-                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Move any hero to any location</span></div>
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Move any hero to any location (no action used)</span></div>
                         <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
                             <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
                         </div>
                         <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                            <span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
-                            <span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
+                            <span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
                         </div>
                     </div>
                 </div>
@@ -1838,7 +1829,6 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
-        this._styleSpecialCardModal();
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#hammer-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
@@ -1850,18 +1840,17 @@ Object.assign(game, {
         this.heroes.forEach((h, i) => {
             const el = document.getElementById(`hammer-hero-${i}`);
             if (el) {
-                el.style.borderColor = '';
-                el.style.background = '';
-                el.style.boxShadow = '';
+                el.classList.remove('hammer-selected');
+                el.style.border = `1px solid ${h.color}`;
             }
         });
         
         // Highlight selected
         const selected = document.getElementById(`hammer-hero-${heroIdx}`);
         if (selected) {
-            selected.style.borderColor = '#d4af37';
-            selected.style.background = 'rgba(212,175,55,0.2)';
-            selected.style.boxShadow = '0 0 8px rgba(212,175,55,0.35)';
+            selected.classList.add('hammer-selected');
+            selected.style.border = '2px solid #d4af37';
+            selected.style.boxShadow = '0 0 8px rgba(212,175,55,0.5)';
         }
         
         // Enable confirm button
@@ -2093,7 +2082,7 @@ Object.assign(game, {
                             const fb = factionBg[f.color] || 'rgba(136,136,136,0.1)';
                             pillsHTML += `<div style="background:${fb};border:1px solid ${fc};border-radius:5px;padding:5px 10px;margin:4px 0">
                                 <div style="display:flex;justify-content:space-between;align-items:center">
-                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc}"><span class="mdot" style="width:14px;height:14px;background:${fc};margin-right:3px"></span>${f.label}</span>
+                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc}"><span style="display:inline-block;width:14px;height:14px;background:${fc};border-radius:50%;margin-right:3px;vertical-align:middle"></span>${f.label}</span>
                                     <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${r.location}</span>
                                 </div>
                             </div>`;
@@ -2127,7 +2116,7 @@ Object.assign(game, {
                     ${pillsHTML}
                 </div>
                 <div class="card-wrap">
-                    <div class="card-banner-inner"><span class="hero-banner-name">🌟 Elven Archers</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🏹 Elven Archers</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
                     <div class="card-body">
                         <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove all enemy minions from 2 Green locations</span></div>
                         <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
@@ -2135,7 +2124,7 @@ Object.assign(game, {
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">${generalName}</span>
                         </div>
                         <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                            <span class="die" style="background:#16a34a;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
+                            <span class="die" style="background:#16a34a">🎲</span>
                         </div>
                     </div>
                 </div>
@@ -2144,9 +2133,6 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
-        this._styleSpecialCardModal();
-        const _bd5 = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (_bd5 && _bd5.querySelector('.btn-primary')) _bd5.style.display = 'none';
     },
     
     executeBattleStrategy(heroIndex, cardIndex) {

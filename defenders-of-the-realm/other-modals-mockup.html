@@ -436,28 +436,43 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 </div>
 </div>
 
-<div class="section">J. Fireball (quest-system.js: 81) — Card Picker</div>
+<div class="section">J. Fireball (quest-system.js: wizardFireball)</div>
 <div class="grid">
+
 <div class="col">
-<div class="old-tag">CURRENT — old grid style, no parchment</div>
-<div class="mc-old">
-  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🔥 Fireball</h2>
-  <div style="color:#d4af37;margin-bottom:12px">Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!</div>
-  <div style="margin-bottom:8px;font-weight:bold;color:#ffd700">Select a card to discard:</div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px">
-    <div style="background:rgba(0,0,0,0.3);border:3px solid #16a34a;border-radius:8px;padding:10px;text-align:center;cursor:pointer">
-      <div style="font-size:2em;margin-bottom:5px">🌀</div>
-      <div style="font-weight:bold;color:#16a34a;font-family:'Cinzel',Georgia,serif;font-size:0.8em">Thorny Woods</div>
-      <div style="font-size:0.9em;color:#999;margin-top:3px">🎲 1 die</div>
-    </div>
-    <div style="background:rgba(0,0,0,0.3);border:3px solid #dc2626;border-radius:8px;padding:10px;text-align:center;cursor:pointer">
-      <div style="font-size:2em;margin-bottom:5px">🌀</div>
-      <div style="font-weight:bold;color:#dc2626;font-family:'Cinzel',Georgia,serif;font-size:0.8em">Withered Hills</div>
-      <div style="font-size:0.9em;color:#999;margin-top:3px">🎲 1 die</div>
+<div class="tag">J1 · No card selected (Confirm disabled)</div>
+<div class="mc">
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:4px">🔥 Fireball</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:0.85em;text-align:center;margin-bottom:12px">Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">Select a Card to Discard</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#16a34a;line-height:1.2">Thorny Woods</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#16a34a;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#dc2626;line-height:1.2">Withered Hills</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#dc2626;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
     </div>
   </div>
+  <button style="width:100%;padding:11px;border-radius:8px;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:#444;color:#888;border:2px solid #666;opacity:0.4;cursor:not-allowed;margin-top:12px" disabled>Confirm</button>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Cancel</button>
 </div>
 </div>
+
+<div class="col">
+<div class="tag">J2 · Thorny Woods selected (Confirm enabled)</div>
+<div class="mc">
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:4px">🔥 Fireball</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:0.85em;text-align:center;margin-bottom:12px">Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">Select a Card to Discard</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #d4af37;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 0 12px rgba(212,175,55,0.5),0 4px 12px rgba(0,0,0,0.4)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#16a34a;line-height:1.2">Thorny Woods</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#16a34a;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#dc2626;line-height:1.2">Withered Hills</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#dc2626;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+    </div>
+  </div>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:12px">Confirm</button>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Cancel</button>
+</div>
+</div>
+
 </div>
 
 <div class="section">K. Quest Modals Missing Parchment (quest-system.js)</div>
@@ -618,6 +633,65 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     </div>
   </div>
   <button class="phb" style="margin-top:12px">Confirm</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">N. Turn Undead — Picker (hero-abilities.js: _turnUndeadShowPicker)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">N1 · 1 undead — unchecked (Confirm disabled)</div>
+<div class="mc">
+  <div class="modal-title-bar">✝️ Turn Undead</div>
+  <div class="pb" style="margin-top:8px">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Move to Location</span></div>
+    <div style="margin-top:10px;margin-bottom:10px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Move Undead:</div>
+      <div style="text-align:center;margin-bottom:10px"><div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;background:linear-gradient(145deg,#374151,#1f2937);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25)">0</div></div>
+      <div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.1);border:1px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span></div>
+    </div>
+    <div class="card-wrap" style="border-color:#1e3a7a"><div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:linear-gradient(135deg,#1e3a7acc 0%,#1e3a7a99 100%)"><span class="hero-banner-name">✝️ Turn Undead</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div><div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move all Undead minions at your location to any adjacent location(s).</span></div></div></div>
+  </div>
+  <button style="width:100%;padding:11px;border-radius:8px;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:#444;color:#888;border:2px solid #666;opacity:0.4;cursor:not-allowed;margin-top:12px" disabled>Confirm</button>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Back</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">N1b · 1 undead — checked (Confirm enabled)</div>
+<div class="mc">
+  <div class="modal-title-bar">✝️ Turn Undead</div>
+  <div class="pb" style="margin-top:8px">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Move to Location</span></div>
+    <div style="margin-top:10px;margin-bottom:10px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Move Undead:</div>
+      <div style="text-align:center;margin-bottom:10px"><div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;background:linear-gradient(145deg,#374151,#1f2937);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25)">1</div></div>
+      <div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.2);border:2px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:#374151;font-size:0.85em;font-weight:900;color:#fff">✓</span></div>
+    </div>
+    <div class="card-wrap" style="border-color:#1e3a7a"><div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:linear-gradient(135deg,#1e3a7acc 0%,#1e3a7a99 100%)"><span class="hero-banner-name">✝️ Turn Undead</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div><div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move all Undead minions at your location to any adjacent location(s).</span></div></div></div>
+  </div>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:12px">Confirm</button>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Back</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">N2 · 3 undead — 2 checked</div>
+<div class="mc">
+  <div class="modal-title-bar">✝️ Turn Undead</div>
+  <div class="pb" style="margin-top:8px">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Move to Location</span></div>
+    <div style="margin-top:10px;margin-bottom:10px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Move Undead:</div>
+      <div style="text-align:center;margin-bottom:10px"><div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;background:linear-gradient(145deg,#374151,#1f2937);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25)">2</div></div>
+      <div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.2);border:2px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Wolf Pass</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:#374151;font-size:0.85em;font-weight:900;color:#fff">✓</span></div><div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.2);border:2px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Wolf Pass</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:#374151;font-size:0.85em;font-weight:900;color:#fff">✓</span></div><div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.1);border:1px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Wolf Pass</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span></div>
+    </div>
+    <div class="card-wrap" style="border-color:#1e3a7a"><div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:linear-gradient(135deg,#1e3a7acc 0%,#1e3a7a99 100%)"><span class="hero-banner-name">✝️ Turn Undead</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div><div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move all Undead minions at your location to any adjacent location(s).</span></div></div></div>
+  </div>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:12px">Confirm</button>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Back</button>
 </div>
 </div>
 

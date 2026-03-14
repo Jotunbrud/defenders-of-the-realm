@@ -69,7 +69,7 @@ Object.assign(game, {
             if (el) {
                 el.classList.remove('ss-active');
                 el.style.background = 'rgba(0,0,0,0.3)';
-                const factionHex = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
+                const factionHex = { green: '#16a34a', black: '#374151', red: '#dc2626', blue: '#3b82f6' };
                 el.style.borderColor = factionHex[c];
             }
         });
@@ -120,7 +120,7 @@ Object.assign(game, {
                 el.classList.remove('ss-active');
                 el.style.background = 'rgba(0,0,0,0.3)';
                 // Reset border to faction color
-                const factionHex = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
+                const factionHex = { green: '#16a34a', black: '#374151', red: '#dc2626', blue: '#3b82f6' };
                 el.style.borderColor = factionHex[c];
             }
         });
@@ -349,54 +349,65 @@ Object.assign(game, {
         
         // Show target location info
         let targetInfo = '';
+        // v2: minimal - no extra verbiage
         if (targetTotal > 0) {
             const parts = [];
             if (targetMinions.green > 0) parts.push(`${targetMinions.green} Orc`);
             if (targetMinions.black > 0) parts.push(`${targetMinions.black} Undead`);
             if (targetMinions.red > 0) parts.push(`${targetMinions.red} Demon`);
             if (targetMinions.blue > 0) parts.push(`${targetMinions.blue} Dragon`);
-            targetInfo = `<div style="color: #999; font-size: 0.9em;">Currently: ${parts.join(', ')} (${targetTotal}/${maxCapacity})</div>`;
-        } else {
-            targetInfo = `<div style="color: #4ade80; font-size: 0.9em;">Currently empty (0/${maxCapacity})</div>`;
+            targetInfo = `<div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">${parts.join(', ')} (${targetTotal}/${maxCapacity})</div>`;
         }
         
-        const spaceNote = `<div style="color: #d4af37; font-size: 0.85em; margin-top: 4px;">Space available: ${spaceAvailable}</div>`;
+        const spaceNote = '';
         
         // Build quantity selector
         this._turnUndeadTarget = targetLocation;
-        this._turnUndeadMoveCount = 1;
-        
-        let quantityHTML = '';
-        if (maxToMove === 1) {
-            quantityHTML = `<div style="color: #6b9bd2; font-size: 1.3em; font-weight: bold; margin: 15px 0;">Moving 1 Undead minion</div>`;
-        } else {
-            const buttons = [];
-            for (let i = 1; i <= maxToMove; i++) {
-                buttons.push(`<button id="tu-qty-${i}" onclick="game._turnUndeadSetQuantity(${i}, ${maxToMove})" 
-                    style="width: 45px; height: 45px; border-radius: 8px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: all 0.15s; ${i === 1 ? 'background: #1e3a7a; color: #fff; border: 2px solid #6b9bd2;' : 'background: rgba(0,0,0,0.4); color: #6b9bd2; border: 2px solid #666;'}">${i}</button>`);
-            }
-            quantityHTML = `
-                <div style="margin: 15px 0;">
-                    <div style="color: #d4af37; margin-bottom: 8px;">How many Undead to move here? (max ${maxToMove})</div>
-                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                        ${buttons.join('')}
+        this._turnUndeadMoveCount = 0;
+        this._turnUndeadSelected = new Set();
+
+        // v2: one pill per undead with checkbox OUTSIDE pill — matching KG outer-flex pattern
+        const undeadColor = '#374151';
+        const undeadBg = 'rgba(55,65,81,0.1)';
+        let pillsHTML = '<div id="tu-minion-list">';
+        for (let i = 0; i < maxToMove; i++) {
+            pillsHTML += `<div style="display:flex;align-items:center;gap:8px;margin:4px 0">
+                    <div id="tu-m-${i}" data-mid="${i}"
+                         onclick="game._turnUndeadToggle(${i})"
+                         style="flex:1;background:${undeadBg};border:1px solid ${undeadColor};border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${undeadColor}"><span class="mdot" style="width:14px;height:14px;background:${undeadColor};margin-right:3px"></span>Undead</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${targetLocation}</span>
+                        </div>
                     </div>
-                </div>
-            `;
+                    <span id="tu-m-${i}-check" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid ${undeadColor};border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
+                </div>`;
         }
+        pillsHTML += '</div>';
+
+        const dieStyle = 'display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;background:linear-gradient(145deg,#374151,#1f2937);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25)';
         
         const contentHTML = `
-            <div style="text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 1.5em; margin-bottom: 3px;">✝️</div>
-                <div style="color: #ffd700; font-weight: bold; font-size: 1.05em;">📍 ${targetLocation}</div>
-                ${targetInfo}
-                ${spaceNote}
+            <div class="modal-title-bar" style="margin-bottom:8px">✝️ Turn Undead</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Move to Location</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Move Undead:</div>
+                    <div style="text-align:center;margin-bottom:10px"><div id="tu-remaining-die" style="${dieStyle}">0</div></div>
+                    ${pillsHTML}
+                </div>
+                <div class="card-wrap" style="border-color:#1e3a7a">
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:linear-gradient(135deg,#1e3a7acc 0%,#1e3a7a99 100%)">
+                        <span class="hero-banner-name">✝️ Turn Undead</span>
+                        <span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move all Undead minions at your location to any adjacent location(s).</span></div>
+                    </div>
+                </div>
             </div>
-            ${quantityHTML}
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" style="flex: 1; background: #666;" onclick="game._turnUndeadCancelPick()">Back</button>
-                <button id="tu-confirm-btn" class="btn btn-primary" style="flex: 1;" onclick="game._turnUndeadConfirm()">Move 1 Undead</button>
-            </div>
+            <button id="tu-confirm-btn" class="phb" style="margin-top:12px;opacity:0.4;cursor:not-allowed" disabled onclick="game._turnUndeadConfirm()">Confirm</button>
+            <button class="phb phb-cancel" onclick="game._turnUndeadCancelPick()">Back</button>
         `;
         
         this.showInfoModal('✝️ Turn Undead', contentHTML);
@@ -405,31 +416,49 @@ Object.assign(game, {
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#tu-confirm-btn')) defaultBtnDiv.style.display = 'none';
     },
     
-    _turnUndeadSetQuantity(count, maxToMove) {
+    // v2: toggle individual undead pill selection (replaces qty buttons)
+    _turnUndeadToggle(minionId) {
+        const el = document.getElementById(`tu-m-${minionId}`);
+        const check = document.getElementById(`tu-m-${minionId}-check`);
+        if (!el) return;
+
+        const undeadColor = '#374151';
+        const undeadBg = 'rgba(55,65,81,0.1)';
+
+        if (this._turnUndeadSelected.has(minionId)) {
+            // Deselect
+            this._turnUndeadSelected.delete(minionId);
+            el.style.border = `1px solid ${undeadColor}`;
+            el.style.background = undeadBg;
+            if (check) { check.textContent = ''; check.style.background = 'transparent'; }
+        } else {
+            // Select
+            this._turnUndeadSelected.add(minionId);
+            el.style.border = `2px solid ${undeadColor}`;
+            el.style.background = `rgba(55,65,81,0.2)`;
+            if (check) { check.textContent = '✓'; check.style.background = undeadColor; }
+        }
+
+        const count = this._turnUndeadSelected.size;
         this._turnUndeadMoveCount = count;
-        
-        // Update button styles
-        for (let i = 1; i <= maxToMove; i++) {
-            const btn = document.getElementById(`tu-qty-${i}`);
-            if (btn) {
-                if (i === count) {
-                    btn.style.background = '#1e3a7a';
-                    btn.style.color = '#fff';
-                    btn.style.border = '2px solid #6b9bd2';
-                } else {
-                    btn.style.background = 'rgba(0,0,0,0.4)';
-                    btn.style.color = '#6b9bd2';
-                    btn.style.border = '2px solid #666';
-                }
+
+        // Update die
+        const die = document.getElementById('tu-remaining-die');
+        if (die) die.textContent = count;
+
+        // Enable/disable confirm button
+        const btn = document.getElementById('tu-confirm-btn');
+        if (btn) {
+            if (count > 0) {
+                btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+            } else {
+                btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed';
             }
         }
-        
-        // Update confirm button
-        const confirmBtn = document.getElementById('tu-confirm-btn');
-        if (confirmBtn) confirmBtn.textContent = `Move ${count} Undead`;
     },
     
     _turnUndeadCancelPick() {
+        this._turnUndeadSelected = new Set();
         this.closeInfoModal();
         // Re-highlight locations
         this.showTurnUndeadModal();
@@ -528,7 +557,7 @@ Object.assign(game, {
             resultsHTML = '<div style="color: #999; text-align: center; padding: 10px;">No Undead were moved — all adjacent locations at capacity.</div>';
         } else {
             state.movements.forEach(m => {
-                resultsHTML += `<div style="margin: 5px 0 5px 15px; color: #6b7280;">
+                resultsHTML += `<div style="margin: 5px 0 5px 15px; color: #374151;">
                     💀 ${m.count} Undead minion${m.count !== 1 ? 's' : ''} → <span style="color: #ffd700;">${m.targetLocation}</span>
                 </div>`;
             });

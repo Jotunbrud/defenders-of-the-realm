@@ -47,43 +47,76 @@ Object.assign(game, {
             return;
         }
         
-        // Build card selection UI
-        const cardColorMap = {
-            'red': '#dc2626',
-            'blue': '#2563eb',
-            'green': '#16a34a',
-            'black': '#1f2937'
+        // v2: card selection UI matching showMovementCardSelection pattern
+        // v2: added selection state + phb Confirm/Cancel (was click-to-fire immediately)
+        this._pendingFireballCard = null;
+
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#2563eb' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
         };
-        
-        let cardsHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">';
+
+        let cardsHTML = '';
         matchingCards.forEach(({ card, idx }) => {
-            const borderColor = (card.special ? '#9333ea' : (cardColorMap[card.color] || '#666'));
+            const cc = card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[card.color] || { border: '#6d28a8', text: '#6d28a8' });
+            const iconDisplay = card.special ? '🌟' : (card.icon || '🎴');
+            const shadow = card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: card.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
             cardsHTML += `
-                <div onclick="game.executeFireball(${idx})" 
-                    style="border: 3px solid ${borderColor}; cursor: pointer; padding: 10px; border-radius: 8px; text-align: center; background: rgba(0,0,0,0.3); transition: background 0.2s;"
-                    onmouseover="this.style.background='rgba(255,215,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">
-                    <div style="font-size: 2em; margin-bottom: 5px;">${card.icon || '🎴'}</div>
-                    <div style="font-weight: bold; color: ${borderColor};">${card.name}</div>
-                    <div style="font-size: 0.9em; color: #999; margin-top: 3px;">🎲 ${card.dice} ${card.dice === 1 ? 'die' : 'dice'}</div>
-                </div>
-            `;
+                <div id="fireball-card-${idx}" onclick="game._selectFireballCard(${idx}, '${cc.border}')"
+                     style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.2s;${shadow}">
+                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${card.name}</div>
+                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                </div>`;
         });
-        cardsHTML += '</div>';
-        
+
         const contentHTML = `
-            <div style="color: #d4af37; margin-bottom: 12px;">
-                Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:1.15em;margin-bottom:4px">🔥 Fireball</div>
+            <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!</div>
+            <div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name">Select a Card to Discard</span></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                    ${cardsHTML}
+                </div>
             </div>
-            <div style="margin-bottom: 8px; font-weight: bold; color: #ffd700;">Select a card to discard:</div>
-            ${cardsHTML}
+            <button id="fireball-confirm-btn" class="phase-btn" disabled onclick="game._confirmFireball()" style="opacity:0.4;cursor:not-allowed;margin-top:12px">Confirm</button>
+            <button class="phase-btn" onclick="game._pendingFireballCard = null; game.closeInfoModal()" style="margin-top:6px">Cancel</button>
         `;
-        
-        this.showInfoModal('🔥 Fireball', contentHTML);
-        // Hide the Continue button div since we have card buttons
-        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
+
+        this.showInfoModal('', contentHTML);
     },
     
+    // v2: selection helper for fireball card picker
+    _selectFireballCard(cardIndex, origBorderColor) {
+        this._pendingFireballCard = cardIndex;
+        // Clear all card selections
+        document.querySelectorAll('[id^="fireball-card-"]').forEach(el => {
+            el.style.borderColor = '';
+            el.style.boxShadow = '';
+        });
+        // Highlight selected
+        const selected = document.getElementById(`fireball-card-${cardIndex}`);
+        if (selected) {
+            selected.style.borderColor = '#d4af37';
+            selected.style.boxShadow = '0 0 12px rgba(212,175,55,0.5),0 4px 12px rgba(0,0,0,0.4)';
+        }
+        // Enable confirm button
+        const btn = document.getElementById('fireball-confirm-btn');
+        if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+    },
+
+    _confirmFireball() {
+        const cardIndex = this._pendingFireballCard;
+        if (cardIndex == null) return;
+        this._pendingFireballCard = null;
+        this.closeInfoModal();
+        this.executeFireball(cardIndex);
+    },
+
     executeFireball(cardIndex) {
         const hero = this.heroes[this.currentPlayerIndex];
         const card = hero.cards[cardIndex];

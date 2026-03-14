@@ -1911,47 +1911,92 @@ Object.assign(game, {
         const w1 = this.predictMinionOutcome(card.faction1, card.minions1, card.location1);
         const w2 = this.predictMinionOutcome(card.faction2, card.minions2, card.location2);
         
-        const warn1 = w1.length > 0 ? `<div style="margin-top: 4px;">${this.renderPredictionTags(w1)}</div>` : '';
-        const warn2 = w2.length > 0 ? `<div style="margin-top: 4px;">${this.renderPredictionTags(w2)}</div>` : '';
+        // v1: renderPredictionTags used left-border style
+        // v2: inline fx-note border-box pill per mockup standard
+        const _buildWarnPills = (warnings) => warnings.map(w => {
+            const s = w.type === 'overrun' || w.type === 'monarch' || w.type === 'exhausted'
+                ? { border: '#ef4444', bg: 'rgba(239,68,68,0.08)', color: '#b91c1c' }
+                : w.type === 'taint'
+                ? { border: '#9333ea', bg: 'rgba(147,51,234,0.08)', color: '#7e22ce' }
+                : w.type === 'advance' || w.type === 'defeated'
+                ? { border: 'rgba(220,38,38,0.3)', bg: 'rgba(220,38,38,0.06)', color: '#dc2626' }
+                : { border: 'rgba(139,115,85,0.3)', bg: 'rgba(139,115,85,0.1)', color: '#8b7355' };
+            return `<div style="border:1px solid ${s.border};background:${s.bg};border-radius:5px;padding:4px 8px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;margin-top:4px;overflow:hidden"><span style="color:${s.color}">${w.text}</span></div>`;
+        }).join('');
+        const warn1 = w1.length > 0 ? _buildWarnPills(w1) : '';
+        const warn2 = w2.length > 0 ? _buildWarnPills(w2) : '';
         
         const militiaHolder = this._findMilitiaSecuresCard();
         const holderText = militiaHolder ? `${militiaHolder.hero.symbol} ${militiaHolder.hero.name}` : '';
         
+        // v1: dark-bg rows, old .btn, emoji header — unstyled
+        // v2: parchment picker matching design system per mockup I1
+        const bg1 = card.faction1 === 'green' ? 'rgba(22,163,74,0.1)' : card.faction1 === 'red' ? 'rgba(239,68,68,0.1)' : card.faction1 === 'blue' ? 'rgba(59,130,246,0.1)' : 'rgba(55,65,81,0.1)';
+        const bg2 = card.faction2 === 'green' ? 'rgba(22,163,74,0.1)' : card.faction2 === 'red' ? 'rgba(239,68,68,0.1)' : card.faction2 === 'blue' ? 'rgba(59,130,246,0.1)' : 'rgba(55,65,81,0.1)';
+        const lbl1 = { green: 'Orcs', red: 'Demons', blue: 'Dragonkin', black: 'Undead' }[card.faction1] || f1Name;
+        const lbl2 = { green: 'Orcs', red: 'Demons', blue: 'Dragonkin', black: 'Undead' }[card.faction2] || f2Name;
+        const milHolder = this._findMilitiaSecuresCard();
         const pickerHTML = `
-            <div style="text-align: center; margin-bottom: 15px;">
-                <div style="font-size: 1.5em; margin-bottom: 8px;">🛡️</div>
-                <div style="color: #d4af37; margin-bottom: 4px;">Choose which minion placement to cancel:</div>
-                <div style="color: #888; font-size: 0.85em;">Card from ${holderText}'s hand will be consumed</div>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin: 15px 0;">
-                <div onclick="game._militiaSecuresConfirm(1)" 
-                     style="cursor: pointer; padding: 14px; border: 2px solid ${c1}; border-radius: 8px; background: rgba(0,0,0,0.3); transition: all 0.2s;"
-                     onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">
-                    <div style="color: ${c1}; font-weight: bold; font-size: 1.05em;">Minion 1: ${f1Name}</div>
-                    <div style="color: #ccc; margin-top: 4px;">${card.minions1} minion${card.minions1 > 1 ? 's' : ''} → ${card.location1}</div>
-                    ${warn1}
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Choose Placement to Cancel</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Select which minion placement to cancel:</div>
+                    <!-- v2: hero-row, select-then-confirm like D2, individual mdot per minion -->
+                    <div id="mil-slot-1" onclick="game._militiaSelectSlot(1)" class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="display:flex;align-items:center;gap:4px">${Array(card.minions1||1).fill(0).map(()=>`<span class="mdot" style="width:14px;height:14px;background:${c1}"></span>`).join('')}<span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${c1};margin-left:4px">${lbl1}</span></span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${card.location1}</span>
+                        </div>
+                        ${warn1}
+                    </div>
+                    <div id="mil-slot-2" onclick="game._militiaSelectSlot(2)" class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="display:flex;align-items:center;gap:4px">${Array(card.minions2||1).fill(0).map(()=>`<span class="mdot" style="width:14px;height:14px;background:${c2}"></span>`).join('')}<span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${c2};margin-left:4px">${lbl2}</span></span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${card.location2}</span>
+                        </div>
+                        ${warn2}
+                    </div>
                 </div>
-                <div onclick="game._militiaSecuresConfirm(2)" 
-                     style="cursor: pointer; padding: 14px; border: 2px solid ${c2}; border-radius: 8px; background: rgba(0,0,0,0.3); transition: all 0.2s;"
-                     onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">
-                    <div style="color: ${c2}; font-weight: bold; font-size: 1.05em;">Minion 2: ${f2Name}</div>
-                    <div style="color: #ccc; margin-top: 4px;">${card.minions2} minion${card.minions2 > 1 ? 's' : ''} → ${card.location2}</div>
-                    ${warn2}
+                <div class="card-wrap">
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Militia Secures Area</span><span class="hero-banner-name" style="font-size:0.8em">${milHolder ? milHolder.hero.symbol + ' ' + milHolder.hero.name : ''}</span></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Night Phase: Cancel 1 minion placement from a Darkness Spreads card.</span></div>
+                        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                            <div class="modal-general-token" style="background:${c1}">${this._generalIcons[card.faction1] || '⚔️'}</div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${c1}">${f1Name}</span>
+                        </div>
+                        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                            <span class="die" style="background:${c1};width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div style="text-align: center;">
-                <button class="btn" style="background: #666; min-width: 120px;" onclick="game.closeInfoModal()">Cancel</button>
-            </div>
+            <button id="mil-confirm-btn" class="phb" style="margin-top:12px;opacity:0.4;cursor:not-allowed" disabled onclick="game._militiaSecuresConfirm(game._militiaSelectedSlot)">Confirm</button>
+            <button class="phb phb-cancel" onclick="game._militiaSelectedSlot=null;game.closeInfoModal()">Cancel</button>
         `;
         
+        this._militiaSelectedSlot = null;
         this.showInfoModal('🌟 Special Card Details', pickerHTML);
-        // Hide default OK button
+        // v2: hide shell default, center title
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtn && !defaultBtn.querySelector('.btn[onclick*="closeInfoModal"]')) {
-            defaultBtn.style.display = 'none';
-        }
+        if (defaultBtn) defaultBtn.style.display = 'none';
+        const _milPickTitle = document.getElementById('info-modal-title');
+        if (_milPickTitle) { _milPickTitle.className = 'modal-heading'; _milPickTitle.style.textAlign = 'center'; _milPickTitle.style.marginBottom = '12px'; }
     },
     
+    // v2: select-then-confirm pattern for militia picker (like D2 Hammer picker)
+    _militiaSelectSlot(slot) {
+        this._militiaSelectedSlot = slot;
+        [1, 2].forEach(s => {
+            const el = document.getElementById(`mil-slot-${s}`);
+            if (el) { el.style.borderColor = ''; el.style.background = ''; el.style.boxShadow = ''; }
+        });
+        const sel = document.getElementById(`mil-slot-${slot}`);
+        if (sel) { sel.style.borderColor = '#d4af37'; sel.style.background = 'rgba(212,175,55,0.2)'; sel.style.boxShadow = '0 0 8px rgba(212,175,55,0.35)'; }
+        const btn = document.getElementById('mil-confirm-btn');
+        if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+    },
+
     _militiaSecuresConfirm(slot) {
         const militiaHolder = this._findMilitiaSecuresCard();
         if (!militiaHolder) return;
@@ -2278,30 +2323,65 @@ Object.assign(game, {
             const statusColor = wound.healingCountdown > 0 ? '#999' : '#4ade80';
             
             generalsHTML += `
-                <div onclick="game._spyInCampConfirm('${g.color}')" 
-                     style="cursor: pointer; padding: 14px; border: 2px solid ${gc}; border-radius: 8px; background: rgba(0,0,0,0.3); transition: all 0.2s; margin-bottom: 8px;"
-                     onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">
-                    <div style="color: ${gc}; font-weight: bold; font-size: 1.05em;">${g.symbol} ${g.name}</div>
-                    <div style="color: #ccc; margin-top: 4px;">${g.health}/${g.maxHealth} HP — <span style="color: ${woundColor};">${woundLabel}</span></div>
-                    <div style="color: ${statusColor}; font-size: 0.9em; margin-top: 2px;">${healStatus}</div>
+                // v2: hero-row, select-then-confirm like D2; hearts all #ef4444 per user req
+                <div id="spy-gen-${g.color}" onclick="game._spySelectGeneral('${g.color}')" class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="display:flex;align-items:center;gap:6px">
+                            <span class="modal-general-token" style="background:${gc};width:24px;height:24px;font-size:0.75em">${this._generalIcons[g.color] || '⚔️'}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">${g.name}</span>
+                        </span>
+                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#ef4444">${woundLabel} ❤️ ${g.health}/${g.maxHealth}</span>
+                    </div>
                 </div>`;
         });
         
+        // v1: dark-bg rows, old .btn, emoji header — unstyled
+        // v2: parchment picker matching design system per mockup I2
+        const spyPickerHolder = this._findSpyInCampCard();
         const pickerHTML = `
-            <div style="text-align: center; margin-bottom: 15px;">
-                <div style="font-size: 1.5em; margin-bottom: 8px;">👤</div>
-                <div style="color: #d4af37; margin-bottom: 4px;">Choose a General to block healing:</div>
-                <div style="color: #888; font-size: 0.85em;">Card from ${holderText}'s hand will be consumed</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Choose General to Block</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Select a wounded General to block their healing:</div>
+                    ${generalsHTML}
+                </div>
+                <div class="card-wrap">
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spy In The Camp</span><span class="hero-banner-name" style="font-size:0.8em">${spyPickerHolder ? spyPickerHolder.hero.symbol + ' ' + spyPickerHolder.hero.name : ''}</span></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Step 1: Prevent 1 General from healing its battle wounds for 1 player's turn.</span></div>
+                        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                            <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
+                        </div>
+                        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                            <span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 0; margin: 15px 0;">
-                ${generalsHTML}
-            </div>
-            <div style="text-align: center;">
-                <button class="btn" style="background: #666; min-width: 120px;" onclick="game.closeInfoModal()">Cancel</button>
-            </div>
+            <button id="spy-confirm-btn" class="phb" style="margin-top:12px;opacity:0.4;cursor:not-allowed" disabled onclick="game._spyInCampConfirm(game._spySelectedGeneral)">Confirm</button>
+            <button class="phb phb-cancel" onclick="game._spySelectedGeneral=null;game.closeInfoModal()">Cancel</button>
         `;
         
+        this._spySelectedGeneral = null;
         this.showInfoModal('🌟 Special Card Details', pickerHTML);
+        // v2: hide shell default, center title
+        const _spyPickBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_spyPickBtn) _spyPickBtn.style.display = 'none';
+        const _spyPickTitle = document.getElementById('info-modal-title');
+        if (_spyPickTitle) { _spyPickTitle.className = 'modal-heading'; _spyPickTitle.style.textAlign = 'center'; _spyPickTitle.style.marginBottom = '12px'; }
+    },
+
+    // v2: select-then-confirm pattern for spy picker (like D2 Hammer picker)
+    _spySelectGeneral(color) {
+        this._spySelectedGeneral = color;
+        document.querySelectorAll('[id^="spy-gen-"]').forEach(el => {
+            el.style.borderColor = ''; el.style.background = ''; el.style.boxShadow = '';
+        });
+        const sel = document.getElementById(`spy-gen-${color}`);
+        if (sel) { sel.style.borderColor = '#d4af37'; sel.style.background = 'rgba(212,175,55,0.2)'; sel.style.boxShadow = '0 0 8px rgba(212,175,55,0.35)'; }
+        const btn = document.getElementById('spy-confirm-btn');
+        if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
     },
     
     _spyInCampConfirm(generalColor) {

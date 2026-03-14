@@ -177,13 +177,8 @@ Object.assign(game, {
                         <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Magic Gate</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
                             <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Place a Magic Gate at any location (no action used)</span></div>
-                            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-                                <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
-                            </div>
-                            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8">🎲</span><span class="die" style="background:#6d28a8">🎲</span>
-                            </div>
+                            <!-- v1: hardcoded Any General purple — v2: faction-specific via _cardGeneralDiceHTML -->
+                            ${this._cardGeneralDiceHTML(card)}
                         </div>
                     </div>
                 </div>
@@ -356,13 +351,8 @@ Object.assign(game, {
                         <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spell of Purity</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
                             <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove all Taint Crystals from one location (no action used)</span></div>
-                            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-                                <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
-                            </div>
-                            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8">🎲</span><span class="die" style="background:#6d28a8">🎲</span>
-                            </div>
+                            <!-- v1: hardcoded Any General purple — v2: faction-specific via _cardGeneralDiceHTML -->
+                            ${this._cardGeneralDiceHTML(card)}
                         </div>
                     </div>
                 </div>

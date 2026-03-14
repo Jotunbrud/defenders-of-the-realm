@@ -1557,11 +1557,12 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
-        // Hide the default OK button
+        // v1: if (defaultBtn && !defaultBtn.querySelector('#dv-confirm-btn')) — condition unreliable
+        // v2: always hide unconditionally, center title per design system
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtn && !defaultBtn.querySelector('#dv-confirm-btn')) {
-            defaultBtn.style.display = 'none';
-        }
+        if (defaultBtn) defaultBtn.style.display = 'none';
+        const _dvTitle = document.getElementById('info-modal-title');
+        if (_dvTitle) { _dvTitle.className = 'modal-heading'; _dvTitle.style.textAlign = 'center'; _dvTitle.style.marginBottom = '12px'; }
         // Hide the modal close X button
         const closeBtn = document.querySelector('#info-modal .modal-close-btn');
         if (closeBtn) closeBtn.style.display = 'none';

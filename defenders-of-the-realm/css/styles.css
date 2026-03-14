@@ -1246,6 +1246,28 @@
           padding: 6px 14px; border-bottom: 2px solid #8b7355;
           display: flex; align-items: center; justify-content: space-between;
         }
+        /* v2: Dark Visions card row classes — only used by Dark Visions special card */
+        .dv-kept {
+          display: flex; align-items: stretch; margin: 4px 0;
+          border: 2px solid #8b7355; border-radius: 6px;
+          background: rgba(92,61,46,0.08); overflow: hidden;
+        }
+        .dv-disc {
+          display: flex; align-items: center; margin: 4px 0;
+          border: 2px solid #8b7355; border-radius: 6px;
+          background: rgba(92,61,46,0.05);
+        }
+        .dv-ctrl {
+          display: flex; flex-direction: column; gap: 3px;
+          padding: 6px 4px; background: rgba(92,61,46,0.1);
+          border-right: 1px solid rgba(139,115,85,0.3);
+        }
+        .dv-btn {
+          width: 24px; height: 24px; border: none; border-radius: 4px;
+          cursor: pointer; font-size: 0.85em;
+          display: flex; align-items: center; justify-content: center;
+        }
+
         /* v2: .hero-row — special card hero picker rows (Hammer of Valor / L-section only) */
         .hero-row {
           border-radius: 8px; padding: 8px 12px;

@@ -188,7 +188,7 @@ Object.assign(game, {
             const _mgBtn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_mgBtn) _mgBtn.style.display = 'none';
             const _mgTitle = document.getElementById('info-modal-title');
-            if (_mgTitle) { _mgTitle.className = 'modal-heading'; _mgTitle.style.textAlign = 'center'; _mgTitle.style.marginBottom = '12px'; }
+            if (_mgTitle) { _mgTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _mgTitle.style.marginBottom = '8px'; }
             
             return true;
         }
@@ -275,7 +275,7 @@ Object.assign(game, {
             const _hvDefaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_hvDefaultBtn) _hvDefaultBtn.style.display = 'none';
             const _hvTitle = document.getElementById('info-modal-title');
-            if (_hvTitle) { _hvTitle.className = 'modal-heading'; _hvTitle.style.textAlign = 'center'; _hvTitle.style.marginBottom = '12px'; }
+            if (_hvTitle) { _hvTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _hvTitle.style.marginBottom = '8px'; }
             
             // Check for combat at destination for the moved hero
             if (moveInfo.targetHeroIndex === this.currentPlayerIndex) {
@@ -362,7 +362,7 @@ Object.assign(game, {
             const _spBtn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_spBtn) _spBtn.style.display = 'none';
             const _spTitle = document.getElementById('info-modal-title');
-            if (_spTitle) { _spTitle.className = 'modal-heading'; _spTitle.style.textAlign = 'center'; _spTitle.style.marginBottom = '12px'; }
+            if (_spTitle) { _spTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _spTitle.style.marginBottom = '8px'; }
             
             return true;
         }

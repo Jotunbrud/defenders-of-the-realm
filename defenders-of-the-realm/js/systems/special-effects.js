@@ -194,7 +194,7 @@ Object.assign(game, {
         // v2: always hide unconditionally
         if (_bsBtn) _bsBtn.style.display = 'none';
         const _bsTitle = document.getElementById('info-modal-title');
-        if (_bsTitle) { _bsTitle.className = 'modal-heading'; _bsTitle.style.textAlign = 'center'; _bsTitle.style.marginBottom = '12px'; }
+        if (_bsTitle) { _bsTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _bsTitle.style.marginBottom = '8px'; }
     },
     
     // v2: Validation helper — call after every special card showInfoModal to:
@@ -212,9 +212,8 @@ Object.assign(game, {
         }
         const titleEl = document.getElementById('info-modal-title');
         if (titleEl) {
-            titleEl.className = 'modal-heading';
-            titleEl.style.textAlign = 'center';
-            titleEl.style.marginBottom = '12px';
+            titleEl.className = 'modal-title-bar'; /* v2: modal-title-bar per Attack General heading standard */
+            titleEl.style.marginBottom = '8px';
         }
     },
 
@@ -262,7 +261,7 @@ Object.assign(game, {
         const _aiqBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_aiqBtn) _aiqBtn.style.display = 'none';
         const _aiqTitle = document.getElementById('info-modal-title');
-        if (_aiqTitle) { _aiqTitle.className = 'modal-heading'; _aiqTitle.style.textAlign = 'center'; _aiqTitle.style.marginBottom = '12px'; }
+        if (_aiqTitle) { _aiqTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _aiqTitle.style.marginBottom = '8px'; }
         
         this.updateGameStatus();
         this.updateActionButtons();
@@ -290,7 +289,7 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
-        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-heading'; _eTtl.style.textAlign = 'center'; _eTtl.style.marginBottom = '12px'; } }
+        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _eTtl.style.marginBottom = '8px'; } }
             return;
         }
         
@@ -311,7 +310,7 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
-        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-heading'; _eTtl.style.textAlign = 'center'; _eTtl.style.marginBottom = '12px'; } }
+        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _eTtl.style.marginBottom = '8px'; } }
             return;
         }
         
@@ -336,7 +335,7 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
-        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-heading'; _eTtl.style.textAlign = 'center'; _eTtl.style.marginBottom = '12px'; } }
+        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _eTtl.style.marginBottom = '8px'; } }
             return;
         }
         
@@ -398,7 +397,7 @@ Object.assign(game, {
         const _errBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_errBtn) _errBtn.style.display = 'none';
         const _errTitle = document.getElementById('info-modal-title');
-        if (_errTitle) { _errTitle.className = 'modal-heading'; _errTitle.style.textAlign = 'center'; _errTitle.style.marginBottom = '12px'; }
+        if (_errTitle) { _errTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _errTitle.style.marginBottom = '8px'; }
         
         this.renderTokens();
         this.renderHeroes();
@@ -438,7 +437,7 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
-        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-heading'; _eTtl.style.textAlign = 'center'; _eTtl.style.marginBottom = '12px'; } }
+        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _eTtl.style.marginBottom = '8px'; } }
             return;
         }
         
@@ -671,7 +670,7 @@ Object.assign(game, {
         const _errBtn2 = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_errBtn2) _errBtn2.style.display = 'none';
         const _errTitle2 = document.getElementById('info-modal-title');
-        if (_errTitle2) { _errTitle2.className = 'modal-heading'; _errTitle2.style.textAlign = 'center'; _errTitle2.style.marginBottom = '12px'; }
+        if (_errTitle2) { _errTitle2.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _errTitle2.style.marginBottom = '8px'; }
             return;
         }
         
@@ -1068,7 +1067,7 @@ Object.assign(game, {
         const _errBtn2 = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_errBtn2) _errBtn2.style.display = 'none';
         const _errTitle2 = document.getElementById('info-modal-title');
-        if (_errTitle2) { _errTitle2.className = 'modal-heading'; _errTitle2.style.textAlign = 'center'; _errTitle2.style.marginBottom = '12px'; }
+        if (_errTitle2) { _errTitle2.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _errTitle2.style.marginBottom = '8px'; }
             return;
         }
         
@@ -1458,7 +1457,7 @@ Object.assign(game, {
         const _csResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_csResBtn) _csResBtn.style.display = 'none';
         const _csResTitle = document.getElementById('info-modal-title');
-        if (_csResTitle) { _csResTitle.className = 'modal-heading'; _csResTitle.style.textAlign = 'center'; _csResTitle.style.marginBottom = '12px'; }
+        if (_csResTitle) { _csResTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _csResTitle.style.marginBottom = '8px'; }
     },
     
     
@@ -1489,7 +1488,7 @@ Object.assign(game, {
         const _dvErrBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_dvErrBtn) _dvErrBtn.style.display = 'none';
         const _dvErrTitle = document.getElementById('info-modal-title');
-        if (_dvErrTitle) { _dvErrTitle.className = 'modal-heading'; _dvErrTitle.style.textAlign = 'center'; _dvErrTitle.style.marginBottom = '12px'; }
+        if (_dvErrTitle) { _dvErrTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _dvErrTitle.style.marginBottom = '8px'; }
             // Put card back (not consumed)
             return;
         }
@@ -1640,7 +1639,7 @@ Object.assign(game, {
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtn) defaultBtn.style.display = 'none';
         const _dvTitle = document.getElementById('info-modal-title');
-        if (_dvTitle) { _dvTitle.className = 'modal-heading'; _dvTitle.style.textAlign = 'center'; _dvTitle.style.marginBottom = '12px'; }
+        if (_dvTitle) { _dvTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _dvTitle.style.marginBottom = '8px'; }
         // Hide the modal close X button
         const closeBtn = document.querySelector('#info-modal .modal-close-btn');
         if (closeBtn) closeBtn.style.display = 'none';
@@ -1951,7 +1950,7 @@ Object.assign(game, {
             const _dvResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_dvResBtn) _dvResBtn.style.display = 'none';
             const _dvResTitle = document.getElementById('info-modal-title');
-            if (_dvResTitle) { _dvResTitle.className = 'modal-heading'; _dvResTitle.style.textAlign = 'center'; _dvResTitle.style.marginBottom = '12px'; }
+            if (_dvResTitle) { _dvResTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _dvResTitle.style.marginBottom = '8px'; }
         }, 300);
     },
     
@@ -2050,7 +2049,7 @@ Object.assign(game, {
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtn) defaultBtn.style.display = 'none';
         const _milPickTitle = document.getElementById('info-modal-title');
-        if (_milPickTitle) { _milPickTitle.className = 'modal-heading'; _milPickTitle.style.textAlign = 'center'; _milPickTitle.style.marginBottom = '12px'; }
+        if (_milPickTitle) { _milPickTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _milPickTitle.style.marginBottom = '8px'; }
     },
     
     // v2: select-then-confirm pattern for militia picker (like D2 Hammer picker)
@@ -2133,7 +2132,7 @@ Object.assign(game, {
         const _milResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_milResBtn) _milResBtn.style.display = 'none';
         const _milResTitle = document.getElementById('info-modal-title');
-        if (_milResTitle) { _milResTitle.className = 'modal-heading'; _milResTitle.style.textAlign = 'center'; _milResTitle.style.marginBottom = '12px'; }
+        if (_milResTitle) { _milResTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _milResTitle.style.marginBottom = '8px'; }
     },
     
     // ===== STRONG DEFENSES =====
@@ -2437,7 +2436,7 @@ Object.assign(game, {
         const _spyPickBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_spyPickBtn) _spyPickBtn.style.display = 'none';
         const _spyPickTitle = document.getElementById('info-modal-title');
-        if (_spyPickTitle) { _spyPickTitle.className = 'modal-heading'; _spyPickTitle.style.textAlign = 'center'; _spyPickTitle.style.marginBottom = '12px'; }
+        if (_spyPickTitle) { _spyPickTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _spyPickTitle.style.marginBottom = '8px'; }
     },
 
     // v2: select-then-confirm pattern for spy picker (like D2 Hammer picker)
@@ -2542,7 +2541,7 @@ Object.assign(game, {
         const _spyResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (_spyResBtn) _spyResBtn.style.display = 'none';
         const _spyResTitle = document.getElementById('info-modal-title');
-        if (_spyResTitle) { _spyResTitle.className = 'modal-heading'; _spyResTitle.style.textAlign = 'center'; _spyResTitle.style.marginBottom = '12px'; }
+        if (_spyResTitle) { _spyResTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _spyResTitle.style.marginBottom = '8px'; }
     },
     
 

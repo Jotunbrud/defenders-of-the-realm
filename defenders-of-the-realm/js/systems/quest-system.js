@@ -263,7 +263,7 @@ Object.assign(game, {
         
         this.showInfoModal('🌟 Special Cards', contentHTML);
         const titleEl = document.getElementById('info-modal-title');
-        if (titleEl) { titleEl.className = 'modal-heading'; titleEl.style.textAlign = 'center'; titleEl.style.fontSize = '1.15em'; titleEl.style.marginBottom = '4px'; }
+        if (titleEl) { titleEl.className = 'modal-title-bar'; /* v2: modal-title-bar per Attack General heading standard */ titleEl.style.marginBottom = '8px'; }
         // Hide the default Continue button
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#use-special-card-btn')) defaultBtnDiv.style.display = 'none';
@@ -349,7 +349,7 @@ Object.assign(game, {
             const _k1Btn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_k1Btn) _k1Btn.style.display = 'none';
             const _k1Title = document.getElementById('info-modal-title');
-            if (_k1Title) { _k1Title.className = 'modal-heading'; _k1Title.style.textAlign = 'center'; _k1Title.style.marginBottom = '12px'; }
+            if (_k1Title) { _k1Title.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _k1Title.style.marginBottom = '8px'; }
         } else if (card.specialAction === 'battle_fury') {
             this.executeBattleFury(heroIndex, cardIndex);
         } else if (card.specialAction === 'local_information') {
@@ -387,7 +387,7 @@ Object.assign(game, {
             const _k2Btn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_k2Btn) _k2Btn.style.display = 'none';
             const _k2Title = document.getElementById('info-modal-title');
-            if (_k2Title) { _k2Title.className = 'modal-heading'; _k2Title.style.textAlign = 'center'; _k2Title.style.marginBottom = '12px'; }
+            if (_k2Title) { _k2Title.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _k2Title.style.marginBottom = '8px'; }
         } else if (card.specialAction === 'strong_defenses') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
@@ -415,7 +415,7 @@ Object.assign(game, {
             const _k3Btn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_k3Btn) _k3Btn.style.display = 'none';
             const _k3Title = document.getElementById('info-modal-title');
-            if (_k3Title) { _k3Title.className = 'modal-heading'; _k3Title.style.textAlign = 'center'; _k3Title.style.marginBottom = '12px'; }
+            if (_k3Title) { _k3Title.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _k3Title.style.marginBottom = '8px'; }
         } else if (card.specialAction === 'spy_in_camp') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
@@ -443,7 +443,7 @@ Object.assign(game, {
             const _k4Btn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_k4Btn) _k4Btn.style.display = 'none';
             const _k4Title = document.getElementById('info-modal-title');
-            if (_k4Title) { _k4Title.className = 'modal-heading'; _k4Title.style.textAlign = 'center'; _k4Title.style.marginBottom = '12px'; }
+            if (_k4Title) { _k4Title.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _k4Title.style.marginBottom = '8px'; }
         }
     },
     
@@ -2170,7 +2170,7 @@ Object.assign(game, {
         // v2: always hide unconditionally
         if (_eaBtn) _eaBtn.style.display = 'none';
         const _eaTitle = document.getElementById('info-modal-title');
-        if (_eaTitle) { _eaTitle.className = 'modal-heading'; _eaTitle.style.textAlign = 'center'; _eaTitle.style.marginBottom = '12px'; }
+        if (_eaTitle) { _eaTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _eaTitle.style.marginBottom = '8px'; }
     },
     
     executeBattleStrategy(heroIndex, cardIndex) {

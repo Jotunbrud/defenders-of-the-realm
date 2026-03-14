@@ -801,8 +801,8 @@
             <div id="info-modal-content" style="color: #f4e4c1;"></div>
             <div style="text-align: center; margin-top: 20px;">
                 <!-- v1: <button class="btn btn-primary" onclick="game.closeInfoModal()">Continue</button> -->
-                <!-- v2: Use .phb gold button per design system -->
-                <button class="phb" onclick="game.closeInfoModal()">Continue</button>
+                <!-- v2 REVERTED: phb here affected all modals globally — special card modals inject their own buttons -->
+                <button class="btn btn-primary" onclick="game.closeInfoModal()">Continue</button>
             </div>
         </div>
     </div>

@@ -745,9 +745,7 @@ Object.assign(game, {
             : `${heroRewards.length} contributing heroes receive 3 cards each:`;
         
         let html = `
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:1.15em;color:#d4af37;margin-bottom:4px;">
-                🎉 General Defeated — Rewards!
-            </div>
+            <!-- v1: duplicate title removed — shell modal-title-bar already shows "🎉 General Defeated — Rewards!" -->
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:0.85em;color:#d4af37;margin-bottom:12px;">
                 ${generalName.toUpperCase()} HAS BEEN VANQUISHED!<br>
                 <span style="font-weight:400;font-size:0.9em;">${rewardText}</span>

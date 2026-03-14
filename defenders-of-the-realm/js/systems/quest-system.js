@@ -151,8 +151,7 @@ Object.assign(game, {
                 </div>
             `;
             const rerollHTML = fireballBanner + resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
-            // v2: fixed arg order — was (resultsHTML, summaryText, hideClose), signature is (title, resultsHTML, summaryText, buttonsHTML, hideClose)
-            this.showCombatResults('💥 Attack General', rerollHTML, `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, '', true);
+            this.showCombatResults(rerollHTML, `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, true);
             return;
         }
         
@@ -187,8 +186,7 @@ Object.assign(game, {
         this.addLog(`🔥 Fireball: ${hero.name} incinerated ${totalDefeated} of ${totalMinions} minions!`);
         
         // Show results
-        // v2: fixed arg order — was (resultsHTML, summaryText), signature is (title, resultsHTML, summaryText)
-        this.showCombatResults('💥 Attack General', fireballBanner + resultsHTML, `🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`);
+        this.showCombatResults(fireballBanner + resultsHTML, `🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`);
         
         this.updateGameStatus();
         this.renderHeroes();
@@ -856,16 +854,25 @@ Object.assign(game, {
         const m = quest.mechanic;
         if (m.rewardType === 'use_quest_card_anytime' && m.rewardValue === 'raids_skip_darkness') {
             // Confirm usage
+            // v2: parchment design — quest card display, phb Confirm/Cancel
             this.showInfoModal('📜 Use Raids?', `
-                <div style="text-align:center;">
-                    <div style="font-size:2em;margin-bottom:10px;">⚔️</div>
-                    <div style="color:#d4af37;font-weight:bold;font-size:1.1em;margin-bottom:10px;">Discard ${quest.name}?</div>
-                    <div style="color:#999;font-size:0.9em;margin-bottom:15px;">This will skip ALL Darkness Spreads cards at the end of your current turn.</div>
-                    <div style="display:flex;gap:10px;">
-                        <button class="btn" style="flex:1;background:#666;" onclick="game.closeInfoModal()">Cancel</button>
-                        <button class="btn btn-primary" style="flex:1;" onclick="game.closeInfoModal(); game._confirmRaidsSkip(${heroIndex}, ${questIndex})">Confirm</button>
+                <div class="modal-title-bar" style="margin-bottom:8px">📜 Use Raids?</div>
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Use Quest Card</span></div>
+                    <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-top:8px">
+                        <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center">
+                            <span class="hero-banner-name">📜 ${quest.name}</span>
+                        </div>
+                        <div style="padding:14px">
+                            <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px">${quest.description || ''}</div>
+                            <div style="margin-top:8px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">Reward:</span><span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5"> ${quest.reward || ''}</span></div>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d">Completed</span></div>
+                        </div>
                     </div>
+                    <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f;margin-top:10px">This will skip ALL Darkness Spreads cards at the end of your current turn.</div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal(); game._confirmRaidsSkip(${heroIndex}, ${questIndex})">Confirm</button>
+                <button class="phb phb-cancel" onclick="game.closeInfoModal()">Cancel</button>
             `);
             this._styleQuestModal();
             const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
@@ -1661,10 +1668,6 @@ Object.assign(game, {
         }
 
         const contentHTML = `
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">📜 Quest Details</h2>
-                <button onclick="game.closeInfoModal()" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Close">×</button>
-            </div>
             <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">
                 <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
                     <div class="hero-banner-name">📜 ${quest.name}</div>
@@ -1687,11 +1690,10 @@ Object.assign(game, {
                     ${useButtonHTML}
                 </div>
             </div>
-            <div style="text-align:center;margin-top:10px;">
-                <button class="btn btn-primary" onclick="game.closeInfoModal()" style="padding:8px 24px;">Close</button>
-            </div>
+            <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Close</button>
         `;
 
+        // v2: modal-title-bar set via showInfoModal title arg (already modal-title-bar in shell)
         this.showInfoModal('📜 Quest Details', contentHTML);
         this._styleQuestModal();
         // Hide the default Continue button since we have our own Close button

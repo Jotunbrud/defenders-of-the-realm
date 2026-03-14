@@ -399,25 +399,18 @@ Object.assign(game, {
         
         // Show color selection modal
         const colorOptions = [
-            { color: 'black', label: 'Undead', hex: '#6b7280', icon: '💀' },
+            // v1: { color: 'black', label: 'Undead', hex: '#6b7280', icon: '💀' },
+            // v2: black hex updated to #374151 to match mockup E1
+            { color: 'black', label: 'Undead', hex: '#374151', icon: '💀' },
             { color: 'blue', label: 'Dragonkin', hex: '#3b82f6', icon: '🐉' },
             { color: 'green', label: 'Orcs', hex: '#16a34a', icon: '🪓' },
             { color: 'red', label: 'Demons', hex: '#dc2626', icon: '🔥' }
         ];
         
-        let optionsHTML = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0;">';
-        colorOptions.forEach(opt => {
-            optionsHTML += `
-                <div id="local-info-color-${opt.color}" 
-                     onclick="game._localInfoSelectColor('${opt.color}')"
-                     style="border: 3px solid ${opt.hex}; cursor: pointer; padding: 14px; border-radius: 8px; background: linear-gradient(135deg, #f0e6d3 0%, #ddd0b8 50%, #c8bb9f 100%); transition: all 0.2s; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"
-                     onmouseover="if(!this.classList.contains('li-selected')) this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)'"
-                     onmouseout="if(!this.classList.contains('li-selected')) this.style.boxShadow='0 2px 8px rgba(0,0,0,0.3)'">
-                    <div style="color: ${opt.hex}; font-weight: bold; font-family:'Cinzel',Georgia,serif;">${opt.color.toUpperCase()}</div>
-                </div>
-            `;
-        });
-        optionsHTML += '</div>';
+        // v1: dead optionsHTML variable — built but never used, superseded by inline colorOptions.map() below
+        // let optionsHTML = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0;">';
+        // colorOptions.forEach(opt => { optionsHTML += `...`; });
+        // optionsHTML += '</div>';
         
         const contentHTML = `
             <div class="parchment-box">
@@ -434,7 +427,9 @@ Object.assign(game, {
                     </div>
                 </div>
             </div>
-            <button id="local-info-confirm-btn" class="phb" onclick="game._localInfoConfirmColor()" disabled>Confirm</button>
+            <!-- v1: <button id="local-info-confirm-btn" class="phb" onclick="game._localInfoConfirmColor()" disabled>Confirm</button> -->
+            <!-- v2: added opacity/cursor to match mockup E1 disabled state -->
+            <button id="local-info-confirm-btn" class="phb" style="opacity:0.4;cursor:not-allowed;margin-top:12px" onclick="game._localInfoConfirmColor()" disabled>Confirm</button>
             <button class="phb phb-cancel" onclick="game._localInfoPending = null; game.closeInfoModal()">Cancel</button>
         `;
         
@@ -526,35 +521,40 @@ Object.assign(game, {
             any: { border: '#6d28a8', text: '#6d28a8' },
         };
         
-        const renderCardTile = (c, statusLabel) => {
+        // v1: renderCardTile used statusLabel text inside tile, larger flex sizing
+        // v2: per mockup E2 — no text labels, discarded = opacity 0.45 + red ✕ badge, tile size matched to mockup
+        const renderCardTile = (c, isDiscarded) => {
             const cc = c.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[c.color] || ccMap.any);
             const iconDisplay = c.special ? '🌟' : (c.icon || '🎴');
             const shadow = c.special ? 'box-shadow:0 0 10px rgba(109,40,168,0.5);' : 'box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+            const opacityStyle = isDiscarded ? 'opacity:0.45;' : '';
+            const badge = isDiscarded ? `<div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4)">✕</div>` : '';
             const diceHTML = Array.from({ length: c.dice }).map(() =>
                 `<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:${cc.border};border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
             ).join('');
-            return `<div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 10px;text-align:center;${shadow}">
-                ${statusLabel}
-                <div style="font-size:1.4em;margin-bottom:2px">${iconDisplay}</div>
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:${cc.text}">${c.name}</div>
+            return `<div style="position:relative;flex:1 1 85px;max-width:110px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;${shadow}${opacityStyle}">
+                ${badge}
+                <div style="font-size:1.4em;margin:2px 0">${iconDisplay}</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.65em;color:${cc.text};flex:1">${c.name}</div>
                 <div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${diceHTML}</div>
             </div>`;
         };
         
         let cardsHTML = '';
         kept.forEach(k => {
-            const label = `<div style="font-size:0.65em;color:#15803d;font-weight:bold;font-family:'Cinzel',Georgia,serif">✓ KEPT</div>`;
-            cardsHTML += renderCardTile(k.card, label);
+            cardsHTML += renderCardTile(k.card, false);
         });
         discarded.forEach(c => {
-            const label = `<div style="font-size:0.65em;color:#b91c1c;font-weight:bold;font-family:'Cinzel',Georgia,serif">✗ DISCARDED</div>`;
-            cardsHTML += renderCardTile(c, label);
+            cardsHTML += renderCardTile(c, true);
         });
         
         const summaryHTML = `
             <div class="parchment-box">
-                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;margin-bottom:10px">${cardsHTML}</div>
+                <!-- v1: <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div> -->
+                <!-- v2: banner updated to "🎴 Cards Drawn" + Color Chosen line per mockup E2 -->
+                <div class="parchment-banner"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;text-align:center;margin-top:6px;margin-bottom:6px">Color Chosen: <span style="color:${chosenHex}">${chosenName}</span></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px">${cardsHTML}</div>
                 <div class="card-wrap">
                     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">${hero.symbol} ${hero.name}</span></div>
                     <div class="card-body">
@@ -564,6 +564,8 @@ Object.assign(game, {
                     </div>
                 </div>
             </div>
+            <!-- v2: explicit phb Continue button injected per mockup E2 -->
+            <button id="li-continue-btn" class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
         `;
         
         this.addLog(`📜 Special Card: ${hero.name} plays Local Information at ${hero.location} — Called ${chosenName}, drew ${drawnCards.length} cards, kept ${kept.length}`);
@@ -576,8 +578,10 @@ Object.assign(game, {
         this.updateActionButtons();
         
         this.showInfoModal('🌟 Special Card Details', summaryHTML);
+        // v1: relied on shell default button; only hid it if .btn-primary found (unreliable)
+        // v2: hide shell default, inject phb Continue is already in summaryHTML above
         const defaultBtnDiv2 = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (defaultBtnDiv2 && defaultBtnDiv2.querySelector('.btn-primary')) defaultBtnDiv2.style.display = 'none';
+        if (defaultBtnDiv2 && !defaultBtnDiv2.querySelector('#li-continue-btn')) defaultBtnDiv2.style.display = 'none';
     },
     
     

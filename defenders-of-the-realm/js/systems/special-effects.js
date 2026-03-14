@@ -2344,7 +2344,6 @@ Object.assign(game, {
             const statusColor = wound.healingCountdown > 0 ? '#999' : '#4ade80';
             
             generalsHTML += `
-                // v2: hero-row, select-then-confirm like D2; hearts all #ef4444 per user req
                 <div id="spy-gen-${g.color}" onclick="game._spySelectGeneral('${g.color}')" class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
                     <div style="display:flex;justify-content:space-between;align-items:center">
                         <span style="display:flex;align-items:center;gap:6px">

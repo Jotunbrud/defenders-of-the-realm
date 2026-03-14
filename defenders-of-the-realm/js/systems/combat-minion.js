@@ -2125,12 +2125,16 @@ Object.assign(game, {
                 }).join('');
 
             // Hero life token rows
-            const heroRows = heroes.map(h => {
-                const healthColor = h.health <= 1 ? '#b91c1c' : '#2c1810';
+            // v2: use penaltyResults instead of heroes.map(h) so health reflects post-penalty values
+            // v1: heroes.map(h => h.health) showed pre-penalty health — penalties only applied in closeGroupPenaltyModal
+            const heroRows = penaltyResults.map(r => {
+                const h = r.hero;
+                const postHealth = Math.max(0, h.health - r.woundsTaken);
+                const healthColor = postHealth <= 1 ? '#b91c1c' : '#2c1810';
                 const hColor = heroColorMap[h.name] || '#374151';
                 return `<div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;color:#2c1810;display:flex;justify-content:space-between;align-items:center;font-size:0.9em;margin-bottom:4px;">
                     <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;">${h.symbol} ${h.name}</span>
-                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${healthColor};">❤️ ${h.health}/${h.maxHealth}</span>
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${healthColor};">❤️ ${postHealth}/${h.maxHealth}</span>
                 </div>`;
             }).join('');
 

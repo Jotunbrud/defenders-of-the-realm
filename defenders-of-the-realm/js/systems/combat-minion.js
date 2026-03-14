@@ -2134,7 +2134,9 @@ Object.assign(game, {
                 </div>`;
             }).join('');
 
-            const cardsDieVal = baseCards === 'all' ? '★' : baseCards;
+            // v1: const cardsDieVal = baseCards === 'all' ? '★' : baseCards;
+            // v2: 'ALL' is clearer than a star for players reading the penalty die
+            const cardsDieVal = baseCards === 'all' ? '<span style="font-size:0.55em;letter-spacing:-0.5px">ALL</span>' : baseCards;
             const cardsDesc = baseCards === 'all' ? 'All cards lost' : `${baseCards} card${baseCards !== 1 ? 's' : ''} lost`;
 
             let summaryHTML = this._parchmentBoxOpen('Hero Defeated Penalty');

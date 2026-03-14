@@ -1680,9 +1680,35 @@ Object.assign(game, {
             </div>`;
         }
         if (card.type === 'monarch_city_special') {
-            return `<div style="display:flex;flex-direction:column;justify-content:center;gap:3px;margin-bottom:4px">
-                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#7c3aed">Monarch City</div>
-                <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">Place 1 minion of each adjacent color. Reshuffle all decks.</div>
+            // v2: show purple MC location ring with corner faction tokens (matching normal darkness spreads card display)
+            // was: plain text "Monarch City / Place 1 minion of each adjacent color" description
+            const mcFactionColors = { green: '#16a34a', blue: '#3b82f6', red: '#dc2626', black: '#374151' };
+            // Determine which colors have minions adjacent to Monarch City at the time DV is played
+            const monarchConnected = (this.locationConnections && this.locationConnections['Monarch City']) || [];
+            const colorsPresent = new Set();
+            monarchConnected.forEach(loc => {
+                const mo = this.minions && this.minions[loc];
+                if (!mo) return;
+                for (const [color, count] of Object.entries(mo)) {
+                    if (count > 0) colorsPresent.add(color);
+                }
+            });
+            // Fall back to all 4 colors if no live data
+            const showColors = colorsPresent.size > 0 ? colorsPresent : new Set(['green', 'blue', 'red', 'black']);
+            const ctMap = { black: 'tl', green: 'tr', red: 'bl', blue: 'br' };
+            let cornerTokens = '';
+            for (const [color, pos] of Object.entries(ctMap)) {
+                if (showColors.has(color)) {
+                    cornerTokens += `<div class="ct ${pos}" style="background:${mcFactionColors[color]}"></div>`;
+                }
+            }
+            const mcRing = `<div style="position:relative;display:inline-block"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div>${cornerTokens}</div>`;
+            return `<div style="overflow:hidden;height:52px;display:flex;align-items:center">
+                <div style="padding-left:8px">
+                    <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
+                        ${mcRing}
+                    </div>
+                </div>
             </div>`;
         }
         

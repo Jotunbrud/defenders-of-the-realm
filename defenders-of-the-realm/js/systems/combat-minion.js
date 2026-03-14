@@ -441,24 +441,24 @@ Object.assign(game, {
             if (bonusDiceQuest) {
                 this._pendingCombatBonusDice = bonusDiceQuest;
                 
+                // v2: parchment design — quest card display, phb Confirm/Cancel
                 this.showInfoModal('💫 Find Magic Gate', `
-                    <div style="text-align: center;">
-                        <div style="font-size: 2em; margin-bottom: 8px;">💫</div>
-                        <div style="color: #d4af37; margin-bottom: 12px;">
-                            Discard <strong>Find Magic Gate</strong> quest card to add <strong>+2 bonus dice</strong> to this minion combat?
-                        </div>
-                        <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">
-                            This quest card will be permanently discarded.
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game._useCombatBonusDice()">
-                                💫 Use (+2 Dice)
-                            </button>
-                            <button class="btn" style="flex: 1; background: #666;" onclick="game._skipCombatBonusDice()">
-                                Skip
-                            </button>
+                    <div class="modal-title-bar" style="margin-bottom:8px">💫 Find Magic Gate</div>
+                    <div class="parchment-box">
+                        <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Use Quest Card</span></div>
+                        <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-top:8px">
+                            <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center">
+                                <span class="hero-banner-name">📜 Find Magic Gate</span>
+                            </div>
+                            <div style="padding:14px">
+                                <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px">Build a Magic Gate on any Red Location. Spend 1 action and a matching location card to build the gate (standard gate rules apply).</div>
+                                <div style="margin-top:8px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">Reward:</span><span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5"> Discard this Quest Card to add 2 dice to any combat roll, including a battle against a General.</span></div>
+                                <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d">Completed</span></div>
+                            </div>
                         </div>
                     </div>
+                    <button class="phb" style="margin-top:12px" onclick="game._useCombatBonusDice()">Confirm</button>
+                    <button class="phb phb-cancel" onclick="game._skipCombatBonusDice()">Cancel</button>
                 `);
                 const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
                 if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
@@ -1221,24 +1221,24 @@ Object.assign(game, {
                 if (bonusDiceQuest) {
                     this._pendingCombatBonusDice = bonusDiceQuest;
                     
+                    // v2: parchment design — quest card display, phb Confirm/Cancel
                     this.showInfoModal('💫 Find Magic Gate', `
-                        <div style="text-align: center;">
-                            <div style="font-size: 2em; margin-bottom: 8px;">💫</div>
-                            <div style="color: #d4af37; margin-bottom: 12px;">
-                                Discard <strong>Find Magic Gate</strong> quest card to add <strong>+2 bonus dice</strong> to this general combat?
-                            </div>
-                            <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">
-                                This quest card will be permanently discarded.
-                            </div>
-                            <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game._useGeneralBonusDice()">
-                                    💫 Use (+2 Dice)
-                                </button>
-                                <button class="btn" style="flex: 1; background: #666;" onclick="game._skipGeneralBonusDice()">
-                                    Skip
-                                </button>
+                        <div class="modal-title-bar" style="margin-bottom:8px">💫 Find Magic Gate</div>
+                        <div class="parchment-box">
+                            <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Use Quest Card</span></div>
+                            <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-top:8px">
+                                <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center">
+                                    <span class="hero-banner-name">📜 Find Magic Gate</span>
+                                </div>
+                                <div style="padding:14px">
+                                    <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px">Build a Magic Gate on any Red Location. Spend 1 action and a matching location card to build the gate (standard gate rules apply).</div>
+                                    <div style="margin-top:8px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">Reward:</span><span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5"> Discard this Quest Card to add 2 dice to any combat roll, including a battle against a General.</span></div>
+                                    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d">Completed</span></div>
+                                </div>
                             </div>
                         </div>
+                        <button class="phb" style="margin-top:12px" onclick="game._useGeneralBonusDice()">Confirm</button>
+                        <button class="phb phb-cancel" onclick="game._skipGeneralBonusDice()">Cancel</button>
                     `);
                     const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
                     if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
@@ -1290,12 +1290,18 @@ Object.assign(game, {
                     }
                 });
                 
-                // Build styled curse results
-                let curseHTML = `<div style="margin-bottom: 12px;">Balazarg forces you to test each card!</div>`;
+                // v2: parchment design — inline red die + blocked pill per card, parchment-box wrapper
+                const _dieStyle = 'display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;'
+                    + 'background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);'
+                    + 'border-radius:5px;font-size:0.85em;font-weight:bold;margin-right:6px;'
+                    + 'box-shadow:0 2px 4px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.3)';
+                let curseHTML = `<div class="modal-title-bar" style="margin-bottom:8px">General Combat Skill</div>`
+                    + `<div class="parchment-box"><div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Discarded Cards</span></div>`
+                    + `<div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f;margin:8px 0 10px">Discard a card for each 1 rolled.</div>`;
                 curseRolls.forEach(result => {
-                    const icon = result.lost ? '💀' : '✅';
-                    const color = result.lost ? '#ef4444' : '#4ade80';
-                    curseHTML += `<div style="padding: 4px 0; color: ${color};">${result.card}: [${result.roll}] ${result.lost ? 'LOST!' : 'Survived'} ${icon}</div>`;
+                    const resultColor = result.lost ? '#b91c1c' : '#2c1810';
+                    const resultText = result.lost ? 'Lost' : 'Kept';
+                    curseHTML += `<div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355;display:flex;align-items:center"><span style="${_dieStyle}">${result.roll}</span>${result.card}</span><span style="color:${resultColor}">${resultText}</span></div>`;
                 });
                 
                 if (cardsLost.length > 0) {
@@ -1319,7 +1325,7 @@ Object.assign(game, {
                     this.addLog(`${hero.name} loses ${cardsLost.length} card(s) to Balazarg's Demonic Curse!`);
                     this.renderHeroes();
                 } else {
-                    curseHTML += `<div style="margin-top: 10px; color: #4ade80; font-weight: bold;">All cards survived the curse!</div>`;
+                    curseHTML += `<div style="margin-top:8px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#4ade80">All cards survived the curse!</div></div>`;
                 }
                 
                 // Rebuild cardsToUse after curse
@@ -1328,7 +1334,7 @@ Object.assign(game, {
                     .filter(card => card !== undefined);
                 
                 if (remainingCards.length === 0) {
-                    curseHTML += `<div style="margin-top: 10px; color: #ef4444; font-weight: bold;">All cards were destroyed! ${hero.name} must still face ${general.name} unarmed!</div>`;
+                    curseHTML += `<div style="margin-top:8px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#dc2626">All cards were destroyed! ${hero.name} must still face ${general.name} unarmed!</div></div>`;
                     this.showInfoModal('🔥 Demonic Curse! 🔥', curseHTML, () => {
                         // Hero must still attack with 0 cards = 0 dice = 0 damage
                         // Proceed directly to finalize with 0 damage → general survives → hero suffers penalty
@@ -1341,6 +1347,8 @@ Object.assign(game, {
                 cardsToUse.length = 0;
                 cardsToUse.push(...remainingCards);
                 
+                // v2: close parchment-box before showInfoModal
+                curseHTML += '</div>';
                 // Show curse results, then continue combat in callback
                 this.showInfoModal('🔥 Demonic Curse! 🔥', curseHTML, () => {
                     this._continueSoloCombat(hero, general, cardsToUse);
@@ -2125,16 +2133,12 @@ Object.assign(game, {
                 }).join('');
 
             // Hero life token rows
-            // v2: use penaltyResults instead of heroes.map(h) so health reflects post-penalty values
-            // v1: heroes.map(h => h.health) showed pre-penalty health — penalties only applied in closeGroupPenaltyModal
-            const heroRows = penaltyResults.map(r => {
-                const h = r.hero;
-                const postHealth = Math.max(0, h.health - r.woundsTaken);
-                const healthColor = postHealth <= 1 ? '#b91c1c' : '#2c1810';
+            const heroRows = heroes.map(h => {
+                const healthColor = h.health <= 1 ? '#b91c1c' : '#2c1810';
                 const hColor = heroColorMap[h.name] || '#374151';
                 return `<div style="background:rgba(139,115,85,0.1);border:1px solid rgba(139,115,85,0.3);border-radius:5px;padding:5px 10px;color:#2c1810;display:flex;justify-content:space-between;align-items:center;font-size:0.9em;margin-bottom:4px;">
                     <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;">${h.symbol} ${h.name}</span>
-                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${healthColor};">❤️ ${postHealth}/${h.maxHealth}</span>
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:${healthColor};">❤️ ${h.health}/${h.maxHealth}</span>
                 </div>`;
             }).join('');
 
@@ -2321,8 +2325,16 @@ Object.assign(game, {
             
             this.addLog(message);
             
-            // Show acknowledgment alert
-            this.showInfoModal('📋 Card Loss Penalty', `<div>${reason}<br><br>${message}</div>`);
+            // v2: parchment design
+            this.showInfoModal('📋 Card Loss Penalty', `
+                <div class="modal-title-bar" style="margin-bottom:8px">📋 Card Loss Penalty</div>
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Defeated By General</span></div>
+                    <div style="margin:10px 0">
+                        <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">${message}</div>
+                    </div>
+                </div>
+            `);
             return;
         }
         

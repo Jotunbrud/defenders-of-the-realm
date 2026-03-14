@@ -14,7 +14,17 @@ Object.assign(game, {
         
         // Sorceress Shape Shifter: block movement to restricted locations
         if (this._isShapeshiftRestricted(locationName)) {
-            this.showInfoModal('⚡ Shape Shifter', '<div style="color: #ef4444;">Cannot enter this location while in enemy form!</div><div style="color: #999; margin-top: 5px; font-size: 0.9em;">Monarch City and Inns are restricted when shape shifted.</div>');
+            // v2: parchment design
+            this.showInfoModal('⚡ Shape Shifter', `
+                <div class="modal-title-bar" style="margin-bottom:8px">⚡ Shape Shifter</div>
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Movement Blocked</span></div>
+                    <div style="margin:10px 0">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:6px">Cannot enter this location while in enemy form!</div>
+                        <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">Monarch City and Inns are restricted when shape shifted.</div>
+                    </div>
+                </div>
+            `);
             return true; // Consumed the click
         }
         
@@ -188,7 +198,7 @@ Object.assign(game, {
             const _mgBtn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_mgBtn) _mgBtn.style.display = 'none';
             const _mgTitle = document.getElementById('info-modal-title');
-            if (_mgTitle) { _mgTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _mgTitle.style.marginBottom = '8px'; }
+            if (_mgTitle) { _mgTitle.className = 'modal-heading'; _mgTitle.style.textAlign = 'center'; _mgTitle.style.marginBottom = '12px'; }
             
             return true;
         }
@@ -275,7 +285,7 @@ Object.assign(game, {
             const _hvDefaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_hvDefaultBtn) _hvDefaultBtn.style.display = 'none';
             const _hvTitle = document.getElementById('info-modal-title');
-            if (_hvTitle) { _hvTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _hvTitle.style.marginBottom = '8px'; }
+            if (_hvTitle) { _hvTitle.className = 'modal-heading'; _hvTitle.style.textAlign = 'center'; _hvTitle.style.marginBottom = '12px'; }
             
             // Check for combat at destination for the moved hero
             if (moveInfo.targetHeroIndex === this.currentPlayerIndex) {
@@ -362,7 +372,7 @@ Object.assign(game, {
             const _spBtn = document.querySelector('#info-modal .modal-content > div:last-child');
             if (_spBtn) _spBtn.style.display = 'none';
             const _spTitle = document.getElementById('info-modal-title');
-            if (_spTitle) { _spTitle.className = 'modal-title-bar'; /* v2: modal-title-bar matches Attack General heading style (Cinzel 900, #d4af37, 1.15em) — was modal-heading (700 weight, no size) */ _spTitle.style.marginBottom = '8px'; }
+            if (_spTitle) { _spTitle.className = 'modal-heading'; _spTitle.style.textAlign = 'center'; _spTitle.style.marginBottom = '12px'; }
             
             return true;
         }

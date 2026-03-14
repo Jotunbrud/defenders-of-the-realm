@@ -173,7 +173,8 @@ Object.assign(game, {
                         </div>
                     </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Magic Gate</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <!-- v1: card-banner-inner — v2: card-banner for consistency -->
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Magic Gate</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
                             <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Place a Magic Gate at any location (no action used)</span></div>
                             <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
@@ -188,6 +189,11 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default, center title per design system
+            const _mgBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_mgBtn) _mgBtn.style.display = 'none';
+            const _mgTitle = document.getElementById('info-modal-title');
+            if (_mgTitle) { _mgTitle.className = 'modal-heading'; _mgTitle.style.textAlign = 'center'; _mgTitle.style.marginBottom = '12px'; }
             
             return true;
         }
@@ -346,7 +352,8 @@ Object.assign(game, {
                         </div>
                     </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Spell of Purity</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <!-- v1: card-banner-inner — v2: card-banner for consistency -->
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spell of Purity</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
                             <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove all Taint Crystals from one location (no action used)</span></div>
                             <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
@@ -361,6 +368,11 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default, center title per design system
+            const _spBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_spBtn) _spBtn.style.display = 'none';
+            const _spTitle = document.getElementById('info-modal-title');
+            if (_spTitle) { _spTitle.className = 'modal-heading'; _spTitle.style.textAlign = 'center'; _spTitle.style.marginBottom = '12px'; }
             
             return true;
         }

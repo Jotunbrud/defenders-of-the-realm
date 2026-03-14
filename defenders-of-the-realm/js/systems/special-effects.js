@@ -1382,10 +1382,27 @@ Object.assign(game, {
                 <div style="margin-top:10px;margin-bottom:10px">${resultsHTML}</div>
                 <div class="card-wrap">
                     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Cavalry Sweep</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
-                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div>
+                        <!-- v2: general token + dice added per design standard -->
+                        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                            <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
+                        </div>
+                        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                            <span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- v2: phb Continue injected, shell default hidden -->
+            <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
         `);
+        // v2: hide shell default, center title per design system
+        const _csResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_csResBtn) _csResBtn.style.display = 'none';
+        const _csResTitle = document.getElementById('info-modal-title');
+        if (_csResTitle) { _csResTitle.className = 'modal-heading'; _csResTitle.style.textAlign = 'center'; _csResTitle.style.marginBottom = '12px'; }
     },
     
     
@@ -1861,6 +1878,11 @@ Object.assign(game, {
         
         setTimeout(() => {
             this.showInfoModal('🌟 Special Card Details', summaryHTML);
+            // v2: hide shell default, center title per design system
+            const _dvResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_dvResBtn) _dvResBtn.style.display = 'none';
+            const _dvResTitle = document.getElementById('info-modal-title');
+            if (_dvResTitle) { _dvResTitle.className = 'modal-heading'; _dvResTitle.style.textAlign = 'center'; _dvResTitle.style.marginBottom = '12px'; }
         }, 300);
     },
     
@@ -1993,6 +2015,11 @@ Object.assign(game, {
         this.showInfoModal('🌟 Special Card Details', milResultHTML, () => {
             this.showDarknessCardPreview(card, cardNum, totalCards, generalOnly);
         });
+        // v2: hide shell default, center title per design system
+        const _milResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_milResBtn) _milResBtn.style.display = 'none';
+        const _milResTitle = document.getElementById('info-modal-title');
+        if (_milResTitle) { _milResTitle.className = 'modal-heading'; _milResTitle.style.textAlign = 'center'; _milResTitle.style.marginBottom = '12px'; }
     },
     
     // ===== STRONG DEFENSES =====
@@ -2363,6 +2390,11 @@ Object.assign(game, {
         this.showInfoModal('🌟 Special Card Details', spyResultHTML, () => {
             this.showDaytimeModal(hero, damageInfo);
         });
+        // v2: hide shell default, center title per design system
+        const _spyResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_spyResBtn) _spyResBtn.style.display = 'none';
+        const _spyResTitle = document.getElementById('info-modal-title');
+        if (_spyResTitle) { _spyResTitle.className = 'modal-heading'; _spyResTitle.style.textAlign = 'center'; _spyResTitle.style.marginBottom = '12px'; }
     },
     
 

@@ -666,7 +666,7 @@ Object.assign(game, {
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#3b82f6">${blueGeneral.name}</span>
                         </div>
                         <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                            <span class="die" style="background:#3b82f6">🎲</span>
+                            <span class="die" style="background:#3b82f6;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
                         </div>
                     </div>
                     </div>
@@ -818,7 +818,7 @@ Object.assign(game, {
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${generalColor}">${blueGeneral.name}</span>
                         </div>
                         <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                            <span class="die" style="background:${generalColor}">🎲</span>
+                            <span class="die" style="background:${generalColor};width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
                         </div>
                     </div>
                 </div>

@@ -1854,6 +1854,9 @@ Object.assign(game, {
         this.showInfoModal('🌟 Special Card Details', contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#hammer-confirm-btn')) defaultBtnDiv.style.display = 'none';
+        // v2: title → modal-title-bar per Attack General heading standard
+        const _tElH = document.getElementById('info-modal-title');
+        if (_tElH) { _tElH.className = 'modal-title-bar'; _tElH.style.marginBottom = '8px'; }
     },
     
     selectHammerHero(heroIdx) {

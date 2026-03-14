@@ -484,6 +484,9 @@ Object.assign(game, {
         this.showInfoModal('🌟 Special Card Details', contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#local-info-confirm-btn')) defaultBtnDiv.style.display = 'none';
+        // v2: title → modal-title-bar per Attack General heading standard
+        const _tEl = document.getElementById('info-modal-title');
+        if (_tEl) { _tEl.className = 'modal-title-bar'; _tEl.style.marginBottom = '8px'; }
     },
     
     _localInfoSelectColor(color) {
@@ -629,6 +632,9 @@ Object.assign(game, {
         // v2: hide shell default, inject phb Continue is already in summaryHTML above
         const defaultBtnDiv2 = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv2 && !defaultBtnDiv2.querySelector('#li-continue-btn')) defaultBtnDiv2.style.display = 'none';
+        // v2: title → modal-title-bar per Attack General heading standard
+        const _tEl2 = document.getElementById('info-modal-title');
+        if (_tEl2) { _tEl2.className = 'modal-title-bar'; _tEl2.style.marginBottom = '8px'; }
     },
     
     
@@ -771,16 +777,17 @@ Object.assign(game, {
             const fbg = factionBg[color];
             for (let i = 0; i < availableCount; i++) {
                 const id = `kg-m-${minionId}`;
-                pillsHTML += `<div id="${id}" data-color="${color}" data-mid="${minionId}"
-                    onclick="game._kingsGuardToggle(${minionId})"
-                    style="background:${fbg};border:1px solid ${fcolor};border-radius:5px;padding:5px 10px;margin:4px 0;cursor:pointer;transition:all 0.15s">
-                    <div style="display:flex;justify-content:space-between;align-items:center">
-                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fcolor}"><span class="mdot" style="width:14px;height:14px;background:${fcolor};margin-right:3px"></span>${label}</span>
-                        <span style="display:flex;align-items:center;gap:8px">
+                // v2: checkbox moved outside pill to match CS row pattern (flex wrapper → pill + checkbox sibling)
+                pillsHTML += `<div style="display:flex;align-items:center;gap:8px;margin:4px 0">
+                    <div id="${id}" data-color="${color}" data-mid="${minionId}"
+                        onclick="game._kingsGuardToggle(${minionId})"
+                        style="flex:1;background:${fbg};border:1px solid ${fcolor};border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fcolor}"><span class="mdot" style="width:14px;height:14px;background:${fcolor};margin-right:3px"></span>${label}</span>
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
-                            <span id="${id}-check" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
-                        </span>
+                        </div>
                     </div>
+                    <span id="${id}-check" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
                 </div>`;
                 minionId++;
             }
@@ -823,6 +830,9 @@ Object.assign(game, {
         this.showInfoModal('🌟 Special Card Details', contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#kg-confirm-btn')) defaultBtnDiv.style.display = 'none';
+        // v2: title → modal-title-bar per Attack General heading standard
+        const _tEl = document.getElementById('info-modal-title');
+        if (_tEl) { _tEl.className = 'modal-title-bar'; _tEl.style.marginBottom = '8px'; }
     },
     _kingsGuardToggle(minionId) {
         const state = this.kingsGuardState;
@@ -1028,7 +1038,12 @@ Object.assign(game, {
                 <div style="margin-top:10px;margin-bottom:10px">${resultsHTML}</div>
                 <div class="card-wrap">
                     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 King's Guard Attack</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
-                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div>
+                        <!-- v2: general token + dice added per mockup F2 — KG is blue/Sapphire -->
+                        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#3b82f6">🐉</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#3b82f6">Sapphire</span></div>
+                        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#3b82f6;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+                    </div>
                 </div>
             </div>
             <!-- v2: phb Continue injected, shell default hidden below -->
@@ -1039,6 +1054,9 @@ Object.assign(game, {
         // v1: if (_kgResBtn && !_kgResBtn.querySelector('.phb')) — condition unreliable
         // v2: always hide unconditionally
         if (_kgResBtn) _kgResBtn.style.display = 'none';
+        // v2: title → modal-title-bar per Attack General heading standard
+        const _tEl3 = document.getElementById('info-modal-title');
+        if (_tEl3) { _tEl3.className = 'modal-title-bar'; _tEl3.style.marginBottom = '8px'; }
     },
     
     
@@ -1209,7 +1227,12 @@ Object.assign(game, {
                 </div>
                 <div class="card-wrap">
                     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Cavalry Sweep</span><span class="hero-banner-name" style="font-size:0.8em">${state.heroSymbol} ${state.heroName}</span></div>
-                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div>
+                        <!-- v2: general token + dice added per mockup F3 — CS is any/purple -->
+                        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+                        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+                    </div>
                 </div>
             </div>
             <button id="cs-confirm-btn" class="phb" onclick="game._cavalrySweepConfirmLocation()">Confirm</button>
@@ -1219,6 +1242,9 @@ Object.assign(game, {
         this.showInfoModal('🌟 Special Card Details', contentHTML);
         const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtnDiv && !defaultBtnDiv.querySelector('#cs-confirm-btn')) defaultBtnDiv.style.display = 'none';
+        // v2: title → modal-title-bar per Attack General heading standard
+        const _tEl = document.getElementById('info-modal-title');
+        if (_tEl) { _tEl.className = 'modal-title-bar'; _tEl.style.marginBottom = '8px'; }
     },
     
     _cavalrySweepToggle(minionId) {

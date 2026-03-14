@@ -1275,6 +1275,15 @@
           box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
           display: inline-flex; align-items: center; justify-content: center;
         }
+        /* v2: die-purple — used by special card pickers (King's Guard / Cavalry Sweep remaining counter) */
+        .die-purple {
+          width: 50px; height: 50px; font-size: 1.5em; font-weight: 900;
+          border-radius: 8px; color: #fff;
+          background: linear-gradient(145deg, #7c3aed, #5b21b6);
+          border: 2px solid rgba(0,0,0,0.3);
+          box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4), 0 0 8px rgba(124,58,237,0.25);
+          display: inline-flex; align-items: center; justify-content: center;
+        }
 
         /* ── PARCHMENT HERO BUTTON ── */
         .phb {

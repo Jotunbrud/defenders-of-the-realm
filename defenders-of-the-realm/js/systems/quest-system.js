@@ -345,6 +345,11 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default, center title per design system (K1)
+            const _k1Btn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_k1Btn) _k1Btn.style.display = 'none';
+            const _k1Title = document.getElementById('info-modal-title');
+            if (_k1Title) { _k1Title.className = 'modal-heading'; _k1Title.style.textAlign = 'center'; _k1Title.style.marginBottom = '12px'; }
         } else if (card.specialAction === 'battle_fury') {
             this.executeBattleFury(heroIndex, cardIndex);
         } else if (card.specialAction === 'local_information') {
@@ -378,6 +383,11 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default, center title per design system (K2)
+            const _k2Btn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_k2Btn) _k2Btn.style.display = 'none';
+            const _k2Title = document.getElementById('info-modal-title');
+            if (_k2Title) { _k2Title.className = 'modal-heading'; _k2Title.style.textAlign = 'center'; _k2Title.style.marginBottom = '12px'; }
         } else if (card.specialAction === 'strong_defenses') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
@@ -401,6 +411,11 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default, center title per design system (K3)
+            const _k3Btn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_k3Btn) _k3Btn.style.display = 'none';
+            const _k3Title = document.getElementById('info-modal-title');
+            if (_k3Title) { _k3Title.className = 'modal-heading'; _k3Title.style.textAlign = 'center'; _k3Title.style.marginBottom = '12px'; }
         } else if (card.specialAction === 'spy_in_camp') {
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
@@ -424,6 +439,11 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default, center title per design system (K4)
+            const _k4Btn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_k4Btn) _k4Btn.style.display = 'none';
+            const _k4Title = document.getElementById('info-modal-title');
+            if (_k4Title) { _k4Title.className = 'modal-heading'; _k4Title.style.textAlign = 'center'; _k4Title.style.marginBottom = '12px'; }
         }
     },
     

@@ -185,7 +185,14 @@ Object.assign(game, {
                     </div>
                 </div>
             </div>
+            <!-- v2: phb Continue injected per mockup G2 -->
+            <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
         `);
+        // v2: hide shell default, center title per design system
+        const _bsBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_bsBtn && !_bsBtn.querySelector('.phb')) _bsBtn.style.display = 'none';
+        const _bsTitle = document.getElementById('info-modal-title');
+        if (_bsTitle) { _bsTitle.className = 'modal-heading'; _bsTitle.style.textAlign = 'center'; _bsTitle.style.marginBottom = '12px'; }
     },
     
     // v2: Helper — returns general token + dice HTML from card object, used in C/E section modals
@@ -605,7 +612,17 @@ Object.assign(game, {
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No minions on or adjacent to Monarch City!</div>
                     <div class="card-wrap">
                         <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 King's Guard Attack</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
-                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div></div>
+                        <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div>
+                        <!-- v2: general token + dice added per mockup F2 -->
+                        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                            <div class="modal-general-token" style="background:#3b82f6">🐉</div>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#3b82f6">${blueGeneral.name}</span>
+                        </div>
+                        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                            <span class="die" style="background:#3b82f6">🎲</span>
+                        </div>
+                    </div>
                     </div>
                 </div>
             `);
@@ -682,8 +699,10 @@ Object.assign(game, {
         const minionsObj = this.minions[locationName];
         const remaining = state.maxMinions - state.totalSelected;
         const factionLabels = { green: 'Orcs', black: 'Undead', red: 'Demons', blue: 'Dragonkin' };
-        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
-        const factionBg = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
+        // v1: const factionColors = { green: '#16a34a', black: '#6b7280', ... };
+        // v2: black → #374151, factionBg black updated to match mockup F1
+        const factionColors = { green: '#16a34a', black: '#374151', red: '#dc2626', blue: '#3b82f6' };
+        const factionBg = { green: 'rgba(22,163,74,0.1)', black: 'rgba(55,65,81,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
         
         // Calculate pending removals at this location
         const pendingForLoc = {};
@@ -730,7 +749,9 @@ Object.assign(game, {
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Remove Minions</span></div>
                 <div style="margin-top:10px;margin-bottom:10px">
                     <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Remaining minions to remove:</div>
-                    <div style="text-align:center;margin-bottom:10px"><div class="die die-g" id="kg-remaining-die" style="display:inline-flex;align-items:center;justify-content:center">${remaining}</div></div>
+                    <div style="text-align:center;margin-bottom:10px"><!-- v1: <div class="die die-g" id="kg-remaining-die" ... -->
+                    <!-- v2: die-g → die-purple per mockup F1 -->
+                    <div class="die die-purple" id="kg-remaining-die" style="display:inline-flex;align-items:center;justify-content:center">${remaining}</div></div>
                     ${pillsHTML}
                 </div>
                 <div class="card-wrap">
@@ -764,7 +785,8 @@ Object.assign(game, {
         
         const remaining = state.maxMinions - state.totalSelected;
         const color = el.getAttribute('data-color');
-        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
+        // v1: black: '#6b7280' — v2: #374151 per mockup F1
+        const factionColors = { green: '#16a34a', black: '#374151', red: '#dc2626', blue: '#3b82f6' };
         const fcolor = factionColors[color] || '#888';
         
         if (this._kgSelected.has(minionId)) {
@@ -903,7 +925,9 @@ Object.assign(game, {
         
         // Apply all removals
         const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
+        // v1: black '#6b7280', red '#ef4444'
+        // v2: #374151 / #dc2626 per mockup F2
+        const factionColors = { green: '#16a34a', black: '#374151', red: '#dc2626', blue: '#3b82f6' };
         let totalRemoved = 0;
         
         const byLocation = {};
@@ -918,7 +942,8 @@ Object.assign(game, {
         });
         
         // Build parchment pill results
-        const _kgFcMap = { green: { bg: 'rgba(22,163,74,0.1)', border: '#16a34a', label: 'Orcs' }, red: { bg: 'rgba(239,68,68,0.1)', border: '#dc2626', label: 'Demons' }, blue: { bg: 'rgba(59,130,246,0.1)', border: '#3b82f6', label: 'Dragonkin' }, black: { bg: 'rgba(107,114,128,0.1)', border: '#6b7280', label: 'Undead' } };
+        // v1: black border '#6b7280' — v2: #374151 per mockup F2
+        const _kgFcMap = { green: { bg: 'rgba(22,163,74,0.1)', border: '#16a34a', label: 'Orcs' }, red: { bg: 'rgba(239,68,68,0.1)', border: '#dc2626', label: 'Demons' }, blue: { bg: 'rgba(59,130,246,0.1)', border: '#3b82f6', label: 'Dragonkin' }, black: { bg: 'rgba(55,65,81,0.1)', border: '#374151', label: 'Undead' } };
         let resultsHTML = '';
         if (totalRemoved === 0) {
             resultsHTML = `<div style="font-family:'Cinzel',Georgia,serif;font-size:0.8em;color:#8b7355;text-align:center;padding:8px">No minions were removed.</div>`;
@@ -954,7 +979,12 @@ Object.assign(game, {
                     <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove up to 6 minions on or next to Monarch City</span></div></div>
                 </div>
             </div>
+            <!-- v2: phb Continue injected, shell default hidden below -->
+            <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
         `);
+        // v2: hide shell default button — was causing double button
+        const _kgResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_kgResBtn && !_kgResBtn.querySelector('.phb')) _kgResBtn.style.display = 'none';
     },
     
     
@@ -1066,55 +1096,56 @@ Object.assign(game, {
         const minionsObj = this.minions[locationName];
         const budgetLeft = state.budgetMax - state.budgetUsed;
         const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
+        // v1: black '#6b7280', red '#ef4444'
+        // v2: black → #374151, red → #dc2626 per mockup F3
+        const factionColors = { green: '#16a34a', black: '#374151', red: '#dc2626', blue: '#3b82f6' };
         const factionIcons = { green: '🪓', black: '💀', red: '🔥', blue: '🐉' };
         
         this._csSweepSelected = new Set();
         this._csSweepCost = 0;
         this._csSweepMaxPerLoc = 2;
         
+        // v1: dark-bg minion rows with icons, cost labels, checkbox emoji
+        // v2: parchment pill rows matching King's Guard style (F1) per mockup F3
         let minionId = 0;
-        let listHTML = '<div id="cs-minion-list" style="max-height: 280px; overflow-y: auto; padding-right: 5px;">';
-        
-        // Sort factions for consistent display
+        let listHTML = '<div id="cs-minion-list" style="max-height:240px;overflow-y:auto;padding-right:3px">';
+        const factionLabelsCS = { green: 'Orcs', black: 'Undead', red: 'Demons', blue: 'Dragonkin' };
+        const factionBgCS = { green: 'rgba(22,163,74,0.1)', black: 'rgba(55,65,81,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
         const factionOrder = ['green', 'red', 'black', 'blue'];
         factionOrder.forEach(color => {
             const count = (minionsObj && minionsObj[color]) || 0;
             if (count === 0) return;
-            const fname = factionNames[color];
-            const fcolor = factionColors[color];
-            const ficon = factionIcons[color];
             const cost = color === 'blue' ? 2 : 1;
-            
+            const fcolor = factionColors[color];
+            const fbg = factionBgCS[color];
+            const label = factionLabelsCS[color];
             for (let i = 0; i < count; i++) {
                 const canAfford = cost <= budgetLeft;
                 const id = `cs-m-${minionId}`;
-                listHTML += `
-                    <div id="${id}" data-color="${color}" data-cost="${cost}" data-mid="${minionId}"
-                         onclick="game._cavalrySweepToggle(${minionId})"
-                         style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin: 3px 0; border: 2px solid ${fcolor}; border-radius: 6px; cursor: ${canAfford ? 'pointer' : 'not-allowed'}; background: rgba(0,0,0,0.3); transition: all 0.15s; ${!canAfford ? 'opacity: 0.4;' : ''}"
-                         onmouseover="if(!this.classList.contains('cs-sel') && this.style.opacity !== '0.4') this.style.background='rgba(255,255,255,0.08)'"
-                         onmouseout="if(!this.classList.contains('cs-sel')) this.style.background='rgba(0,0,0,0.3)'">
-                        <span style="font-size: 1.3em;">${ficon}</span>
-                        <span style="flex: 1; color: ${fcolor}; font-weight: bold;">${fname} Minion</span>
-                        <span style="color: #999; font-size: 0.8em;">${cost === 2 ? '⚠️ Cost: 2' : 'Cost: 1'}</span>
-                        <span id="${id}-check" style="font-size: 1.2em; opacity: 0.3;">☐</span>
+                listHTML += `<div id="${id}" data-color="${color}" data-cost="${cost}" data-mid="${minionId}"
+                    onclick="game._cavalrySweepToggle(${minionId})"
+                    style="display:flex;align-items:center;gap:8px;margin:4px 0;cursor:${canAfford ? 'pointer' : 'not-allowed'};${!canAfford ? 'opacity:0.4;' : ''}">
+                    <div style="flex:1;background:${fbg};border:1px solid ${fcolor};border-radius:5px;padding:5px 10px">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fcolor}"><span class="mdot" style="width:14px;height:14px;background:${fcolor};margin-right:3px"></span>${label}</span>
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
+                        </div>
                     </div>
-                `;
+                    <span id="${id}-check" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
+                </div>`;
                 minionId++;
             }
         });
-        
         listHTML += '</div>';
         
         const contentHTML = `
             <div class="parchment-box">
                 <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Remove Minions</span></div>
                 <div style="margin-top:10px;margin-bottom:10px">
-                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Budget remaining:</div>
-                    <div style="text-align:center;margin-bottom:10px"><div class="die die-g" id="cs-remaining-die" style="display:inline-flex;align-items:center;justify-content:center">${budgetLeft}</div></div>
-                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:6px">📍 ${locationName} — Select up to 2 minions (Dragonkin cost 2):</div>
-                    <div id="cs-budget-display" style="font-family:'Cinzel',Georgia,serif;font-size:0.75em;color:#3d2b1f;margin-bottom:6px">Selected: 0 at this location</div>
+                    <!-- v1: "Budget remaining:", die-g, location header, budget display div -->
+                    <!-- v2: per mockup F3 — label, die-purple, no extra displays -->
+                    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Remaining minions to remove:</div>
+                    <div style="text-align:center;margin-bottom:10px"><div class="die die-purple" id="cs-remaining-die" style="display:inline-flex;align-items:center;justify-content:center">${budgetLeft}</div></div>
                     ${listHTML}
                 </div>
                 <div class="card-wrap">
@@ -1142,13 +1173,14 @@ Object.assign(game, {
         const cost = parseInt(el.getAttribute('data-cost'));
         const budgetLeft = state.budgetMax - state.budgetUsed;
         
+        // v1: dark-bg style toggle with checkbox emoji
+        // v2: parchment-aware toggle matching King's Guard style (F1)
         if (this._csSweepSelected.has(minionId)) {
-            // Deselect
+            // Deselect — clear inline styles so parchment row CSS resets
             this._csSweepSelected.delete(minionId);
             this._csSweepCost -= cost;
             el.classList.remove('cs-sel');
-            el.style.background = 'rgba(0,0,0,0.3)';
-            if (check) { check.textContent = '☐'; check.style.opacity = '0.3'; check.style.color = ''; }
+            if (check) { check.textContent = ''; check.style.background = 'transparent'; }
         } else {
             // Check per-location limit (2 minions)
             if (this._csSweepSelected.size >= this._csSweepMaxPerLoc) return;
@@ -1158,14 +1190,13 @@ Object.assign(game, {
             this._csSweepSelected.add(minionId);
             this._csSweepCost += cost;
             el.classList.add('cs-sel');
-            el.style.background = 'rgba(255,215,0,0.2)';
-            if (check) { check.textContent = '☑'; check.style.opacity = '1'; check.style.color = '#4ade80'; }
+            if (check) { check.textContent = '✓'; check.style.background = '#6d28a8'; }
         }
         
-        // Update budget display
+        // v2: update remaining die (was updating cs-budget-display which is removed)
         const newBudgetLeft = budgetLeft - this._csSweepCost;
-        const display = document.getElementById('cs-budget-display');
-        if (display) display.textContent = `Budget: ${newBudgetLeft} / ${state.budgetMax} remaining — Selected: ${this._csSweepSelected.size} at this location`;
+        const die = document.getElementById('cs-remaining-die');
+        if (die) die.textContent = newBudgetLeft;
         
         // Update confirm button text
         const btn = document.getElementById('cs-confirm-btn');
@@ -1173,7 +1204,7 @@ Object.assign(game, {
             btn.textContent = 'Confirm';
         }
         
-        // Update affordability of unselected minions
+        // v2: dim unselectable rows — same pattern as King's Guard toggle
         document.querySelectorAll('#cs-minion-list > div').forEach(div => {
             const mid = parseInt(div.getAttribute('data-mid'));
             if (this._csSweepSelected.has(mid)) return;
@@ -1290,7 +1321,9 @@ Object.assign(game, {
         
         // Apply all removals
         const factionNames = { green: 'Orc', black: 'Undead', red: 'Demon', blue: 'Dragon' };
-        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#ef4444', blue: '#3b82f6' };
+        // v1: black '#6b7280', red '#ef4444'
+        // v2: #374151 / #dc2626 per mockup F3
+        const factionColors = { green: '#16a34a', black: '#374151', red: '#dc2626', blue: '#3b82f6' };
         let totalRemoved = 0;
         let totalCost = 0;
         
@@ -1309,7 +1342,8 @@ Object.assign(game, {
         });
         
         // Build parchment pill results
-        const _csFcMap = { green: { bg: 'rgba(22,163,74,0.1)', border: '#16a34a', label: 'Orcs' }, red: { bg: 'rgba(239,68,68,0.1)', border: '#dc2626', label: 'Demons' }, blue: { bg: 'rgba(59,130,246,0.1)', border: '#3b82f6', label: 'Dragonkin' }, black: { bg: 'rgba(107,114,128,0.1)', border: '#6b7280', label: 'Undead' } };
+        // v1: black border '#6b7280' — v2: #374151 per mockup F3
+        const _csFcMap = { green: { bg: 'rgba(22,163,74,0.1)', border: '#16a34a', label: 'Orcs' }, red: { bg: 'rgba(239,68,68,0.1)', border: '#dc2626', label: 'Demons' }, blue: { bg: 'rgba(59,130,246,0.1)', border: '#3b82f6', label: 'Dragonkin' }, black: { bg: 'rgba(55,65,81,0.1)', border: '#374151', label: 'Undead' } };
         let resultsHTML = '';
         if (totalRemoved === 0) {
             resultsHTML = `<div style="font-family:'Cinzel',Georgia,serif;font-size:0.8em;color:#8b7355;text-align:center;padding:8px">No minions were removed.</div>`;

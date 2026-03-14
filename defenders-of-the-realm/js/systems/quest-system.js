@@ -2068,8 +2068,10 @@ Object.assign(game, {
             boardContainer.style.pointerEvents = 'auto';
         }
         
-        const factionColors = { green: '#16a34a', black: '#6b7280', red: '#dc2626', blue: '#3b82f6' };
-        const factionBg    = { green: 'rgba(22,163,74,0.1)', black: 'rgba(107,114,128,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
+        // v1: black '#6b7280', factionBg black 107,114,128
+        // v2: black → #374151 per mockup G1
+        const factionColors = { green: '#16a34a', black: '#374151', red: '#dc2626', blue: '#3b82f6' };
+        const factionBg    = { green: 'rgba(22,163,74,0.1)', black: 'rgba(55,65,81,0.1)', red: 'rgba(239,68,68,0.1)', blue: 'rgba(59,130,246,0.1)' };
         
         // Build pill rows — one per faction per location
         let pillsHTML = '';
@@ -2080,7 +2082,7 @@ Object.assign(game, {
                 if (!r.factions || r.factions.length === 0) {
                     pillsHTML += `<div style="background:rgba(107,114,128,0.1);border:1px solid #6b7280;border-radius:5px;padding:5px 10px;margin:4px 0">
                         <div style="display:flex;justify-content:space-between;align-items:center">
-                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#6b7280">No minions</span>
+                            <!-- v1: color:#6b7280 --><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">No minions</span>
                             <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${r.location}</span>
                         </div>
                     </div>`;
@@ -2091,7 +2093,7 @@ Object.assign(game, {
                             const fb = factionBg[f.color] || 'rgba(136,136,136,0.1)';
                             pillsHTML += `<div style="background:${fb};border:1px solid ${fc};border-radius:5px;padding:5px 10px;margin:4px 0">
                                 <div style="display:flex;justify-content:space-between;align-items:center">
-                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc}"><span style="display:inline-block;width:14px;height:14px;background:${fc};border-radius:50%;margin-right:3px;vertical-align:middle"></span>${f.label}</span>
+                                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fc}"><!-- v1: inline mdot style --><span class="mdot" style="width:14px;height:14px;background:${fc};margin-right:3px"></span>${f.label}</span>
                                     <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${r.location}</span>
                                 </div>
                             </div>`;
@@ -2142,6 +2144,11 @@ Object.assign(game, {
         `;
         
         this.showInfoModal('🌟 Special Card Details', contentHTML);
+        // v2: hide shell default, center title per design system
+        const _eaBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_eaBtn && !_eaBtn.querySelector('.phb')) _eaBtn.style.display = 'none';
+        const _eaTitle = document.getElementById('info-modal-title');
+        if (_eaTitle) { _eaTitle.className = 'modal-heading'; _eaTitle.style.textAlign = 'center'; _eaTitle.style.marginBottom = '12px'; }
     },
     
     executeBattleStrategy(heroIndex, cardIndex) {

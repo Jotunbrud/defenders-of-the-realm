@@ -4,6 +4,17 @@
 
 Object.assign(game, {
     showInfoModal(title, contentHTML, callback) {
+        // v2: Reset shell button div visibility at open so any prior display:none hide
+        // (e.g. from _showQuestCardsForHeroes, K1-K4 special cards, Fireball, etc.)
+        // does not bleed into the next modal and cause missing buttons.
+        // Root cause identified: "Fucking Bugs and Overwrites" commit 2 weeks ago added
+        // unconditional hide at quest-system.js line 641 with no restore on open.
+        // Fix: closeInfoModal already restores display='' on close, but auto-fired modals
+        // (setTimeout, Promise.resolve) bypass closeInfoModal so the div stays hidden.
+        // This reset covers all paths. Special card hides run AFTER this returns, so they
+        // still correctly hide the shell for their own modals.
+        const _simDefaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (_simDefaultBtn) _simDefaultBtn.style.display = '';
         document.getElementById('info-modal-title').innerHTML = title;
         document.getElementById('info-modal-content').innerHTML = contentHTML;
         this._infoModalCallback = callback || null;

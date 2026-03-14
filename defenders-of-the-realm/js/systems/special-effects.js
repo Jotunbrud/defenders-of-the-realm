@@ -290,6 +290,7 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-heading'; _eTtl.style.textAlign = 'center'; _eTtl.style.marginBottom = '12px'; } }
             return;
         }
         
@@ -310,6 +311,7 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-heading'; _eTtl.style.textAlign = 'center'; _eTtl.style.marginBottom = '12px'; } }
             return;
         }
         
@@ -334,6 +336,7 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-heading'; _eTtl.style.textAlign = 'center'; _eTtl.style.marginBottom = '12px'; } }
             return;
         }
         
@@ -435,6 +438,7 @@ Object.assign(game, {
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+        { const _eBtn = document.querySelector('#info-modal .modal-content > div:last-child'); if (_eBtn) _eBtn.style.display = 'none'; const _eTtl = document.getElementById('info-modal-title'); if (_eTtl) { _eTtl.className = 'modal-heading'; _eTtl.style.textAlign = 'center'; _eTtl.style.marginBottom = '12px'; } }
             return;
         }
         
@@ -773,7 +777,10 @@ Object.assign(game, {
                     style="background:${fbg};border:1px solid ${fcolor};border-radius:5px;padding:5px 10px;margin:4px 0;cursor:pointer;transition:all 0.15s">
                     <div style="display:flex;justify-content:space-between;align-items:center">
                         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${fcolor}"><span class="mdot" style="width:14px;height:14px;background:${fcolor};margin-right:3px"></span>${label}</span>
-                        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
+                        <span style="display:flex;align-items:center;gap:8px">
+                            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
+                            <span id="${id}-check" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #6d28a8;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span>
+                        </span>
                     </div>
                 </div>`;
                 minionId++;
@@ -837,12 +844,16 @@ Object.assign(game, {
             el.classList.remove('kg-sel');
             el.style.border = `1px solid ${fcolor}`;
             el.style.boxShadow = '';
+            const chkD = document.getElementById(`kg-m-${minionId}-check`);
+            if (chkD) { chkD.textContent = ''; chkD.style.background = 'transparent'; chkD.style.borderColor = '#6d28a8'; }
         } else {
             // At limit — do nothing
             if (this._kgSelected.size >= remaining) return;
             this._kgSelected.add(minionId);
             el.classList.add('kg-sel');
             el.style.border = `2px solid #d4af37`;
+            const chk = document.getElementById(`kg-m-${minionId}-check`);
+            if (chk) { chk.textContent = '✓'; chk.style.background = '#6d28a8'; chk.style.borderColor = '#6d28a8'; }
             el.style.boxShadow = '0 0 8px rgba(212,175,55,0.5)';
         }
         
@@ -1564,7 +1575,7 @@ Object.assign(game, {
             <div class="dv-kept">
                 <div class="dv-ctrl">
                     <button class="dv-btn" style="background:${isFirst ? '#ccc' : '#8b7355'};color:${isFirst ? '#999' : '#fff'}" ${isFirst ? 'disabled' : ''} onclick="game._darkVisionsMoveUp(${cardIdx})">▲</button>
-                    <button class="dv-btn" style="background:${isLast ? '#ccc' : '#8b7355'};color:${isLast ? '#999' : '#fff'}" ${isLast ? 'disabled' : ''} onclick="game._darkVisionsMoveDown(${cardIdx})">▼</button>
+                    <button class="dv-btn" style="background:#8b7355;color:#fff" onclick="game._darkVisionsMoveDown(${cardIdx})" title="${isLast ? 'Move to Discard' : 'Move down'}">▼</button>
                 </div>
                 <div style="flex:1;min-width:0;padding:8px">
                     ${thumbHTML}
@@ -1808,7 +1819,14 @@ Object.assign(game, {
         
         const keptOnly = state.keptOrder.filter(i => !state.discarded.has(i));
         const pos = keptOnly.indexOf(cardIdx);
-        if (pos < 0 || pos >= keptOnly.length - 1) return;
+        if (pos < 0) return;
+        
+        // v2: if last in Keep, move to Discard instead of blocking
+        if (pos >= keptOnly.length - 1) {
+            state.discarded.add(cardIdx);
+            this._darkVisionsRender();
+            return;
+        }
         
         // Swap in keptOrder
         const fullPos = state.keptOrder.indexOf(cardIdx);

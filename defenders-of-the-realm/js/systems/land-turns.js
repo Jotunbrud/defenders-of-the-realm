@@ -1786,6 +1786,11 @@ Object.assign(game, {
             
             // Reshuffle all decks
             this.darknessDeck = this.createDarknessDeck();
+            // v2: clear heroDeck before rebuild so undrawn special cards in the old deck
+            // are not counted as "unavailable" by createHeroDeckFromDiscard and excluded
+            // from the new deck. Bug: Monarch City reshuffle was removing 10-14 specials
+            // because createHeroDeckFromDiscard counted this.heroDeck contents as held/played.
+            this.heroDeck = [];
             this.heroDeck = this.createHeroDeckFromDiscard();
             this.heroDiscardPile = 0;
             this.updateDeckCounts();

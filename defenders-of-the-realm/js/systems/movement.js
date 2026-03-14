@@ -1234,6 +1234,7 @@ Object.assign(game, {
         let bannerHTML = '';
         let bodyHTML = '';
         if (card.special) {
+            // v2: Use 🌟 icon explicitly (was using card.icon which could be ⭐ on some card data)
             bannerHTML = `<div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
                 <div class="hero-banner-name">🌟 ${card.name}</div>
             </div>`;
@@ -1276,7 +1277,9 @@ Object.assign(game, {
 
         detailContent.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">🎴 Card Detail</h2>
+                <!-- v1: <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">🎴 Card Detail</h2> -->
+                <!-- v2: Special cards get correct title per mockup section A -->
+                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">${card.special ? '🌟 Special Card Details' : '🎴 Card Detail'}</h2>
                 <button onclick="game._heroDetailView='hero';game._renderHeroDetailContent();" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Back to Hero">×</button>
             </div>
             <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cColor.border};border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">

@@ -2166,7 +2166,9 @@ Object.assign(game, {
         this.showInfoModal('🌟 Special Card Details', contentHTML);
         // v2: hide shell default, center title per design system
         const _eaBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (_eaBtn && !_eaBtn.querySelector('.phb')) _eaBtn.style.display = 'none';
+        // v1: !_eaBtn.querySelector('.phb') — found injected button, shell was not hidden
+        // v2: always hide unconditionally
+        if (_eaBtn) _eaBtn.style.display = 'none';
         const _eaTitle = document.getElementById('info-modal-title');
         if (_eaTitle) { _eaTitle.className = 'modal-heading'; _eaTitle.style.textAlign = 'center'; _eaTitle.style.marginBottom = '12px'; }
     },

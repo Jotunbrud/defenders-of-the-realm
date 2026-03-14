@@ -197,6 +197,27 @@ Object.assign(game, {
         if (_bsTitle) { _bsTitle.className = 'modal-heading'; _bsTitle.style.textAlign = 'center'; _bsTitle.style.marginBottom = '12px'; }
     },
     
+    // v2: Validation helper — call after every special card showInfoModal to:
+    //   1. Hide the shell default Continue button (prevents double-button bug)
+    //   2. Center the modal title
+    // Usage: this._scHideShell();
+    // Pass namedId if content injects a specifically-IDed button (e.g. '#kg-confirm-btn')
+    // so the check is precise; omit to always hide unconditionally.
+    _scHideShell(namedId) {
+        const shellBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (shellBtn) {
+            if (!namedId || !shellBtn.querySelector(namedId)) {
+                shellBtn.style.display = 'none';
+            }
+        }
+        const titleEl = document.getElementById('info-modal-title');
+        if (titleEl) {
+            titleEl.className = 'modal-heading';
+            titleEl.style.textAlign = 'center';
+            titleEl.style.marginBottom = '12px';
+        }
+    },
+
     // v2: Helper — returns general token + dice HTML from card object, used in C/E section modals
     _cardGeneralDiceHTML(card) {
         const gc = (card.color && card.color !== 'any') ? ({'red':'#dc2626','blue':'#3b82f6','green':'#16a34a','black':'#374151'}[card.color] || '#6d28a8') : '#6d28a8';

@@ -1686,79 +1686,63 @@ Object.assign(game, {
             </div>`;
         }
         
-        const general = this.generals.find(g => g.color === card.general);
-        const genPath = (this._generalPaths && this._generalPaths[card.general]) || [];
-        const genPosition = (general && genPath.length > 0) ? genPath.indexOf(general.location) : -1;
-        const gc = this._generalColors[card.general] || '#888';
-        const nextIdx = Math.min(genPosition + 1, genPath.length - 1);
+        // v1: showed merged minion dots + full general path chain ("Next Location" with all stops)
+        // v2: reverted to old mockup structure — faction placements as separate dots+ring groups,
+        //     general as single token+name→destination ring. Matches special_cards_mockup_old_dark_visions.html.
         
-        let minionDotsHTML = '';
+        const gc = this._generalColors[card.general] || '#888';
+        const generalTokenHTML = this._generalTokenHTML(card.general, 48);
+        const gn = this._generalNames[card.general] || 'Unknown';
+        
         if (card.type === 'patrol') {
-            // Patrol: no minion dots, just general + description
+            // Patrol: description text + general → next location ring
             const isWarParty = card.patrolType === 'orc_war_party';
             const patrolDesc = isWarParty ? '1 orc added to each solo orc location' : '1 orc added to each empty green location';
             const patrolColor = isWarParty ? '#dc2626' : '#16a34a';
             const patrolTitle = card.patrolName || (isWarParty ? 'Orc War Party' : 'Orc Patrols');
-            minionDotsHTML = `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:${patrolColor}">${patrolTitle}</div>
-                <div style="margin-bottom:4px"><span class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">${patrolDesc}</span></div>`;
-        } else {
-            // Regular card: minion dots from both faction slots combined
-            const dots1 = card.minions1 > 0 ? this._minionDotsHTML(card.faction1, card.minions1, 22) : '';
-            const dots2 = card.minions2 > 0 ? this._minionDotsHTML(card.faction2, card.minions2, 22) : '';
-            if (dots1 || dots2) {
-                // Merge dots into a single column
-                const gc1 = this._generalColors[card.faction1] || '#888';
-                const gc2 = this._generalColors[card.faction2] || '#888';
-                let mergedDots = '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">';
-                for (let i = 0; i < (card.minions1 || 0); i++) mergedDots += `<span class="modal-minion-dot" style="background:${gc1};width:22px;height:22px"></span>`;
-                for (let i = 0; i < (card.minions2 || 0); i++) mergedDots += `<span class="modal-minion-dot" style="background:${gc2};width:22px;height:22px"></span>`;
-                mergedDots += '</div>';
-                minionDotsHTML = mergedDots;
-            }
-        }
-        
-        // Build path rings for general movement (Next Location)
-        let pathCircles = '';
-        genPath.forEach((loc, li) => {
-            const isTarget = li === nextIdx;
-            const zIdx = isTarget ? genPath.length + 1 : genPath.length - li;
-            const ml = li === 0 ? 0 : -18;
-            pathCircles += `<div style="margin-left:${ml}px;z-index:${zIdx};position:relative">${this._locationRingHTML(loc, card.general, 90, isTarget)}</div>`;
-        });
-        
-        const generalTokenHTML = this._generalTokenHTML(card.general, 48);
-        const gn = this._generalNames[card.general] || 'Unknown';
-        
-        const innerContent = `<div style="display:flex;align-items:center;gap:10px">
-            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-                ${minionDotsHTML && card.type !== 'patrol' ? minionDotsHTML : ''}
-                <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                    ${generalTokenHTML}
-                    <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${gc}">${gn}</div>
-                </div>
-            </div>
-            <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-            <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                <div style="display:flex;align-items:center;padding:6px">${pathCircles}</div>
-                <div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${gc}">Next Location</div>
-            </div>
-        </div>`;
-        
-        if (card.type === 'patrol') {
-            return `${minionDotsHTML}
-            <div style="overflow:hidden;height:68px;display:flex;align-items:center">
-                <div style="padding-left:8px">
-                    <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-                        ${innerContent}
-                    </div>
-                </div>
+            return `<div style="display:flex;flex-direction:column;justify-content:center;gap:3px;margin-bottom:4px">
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:${patrolColor}">${patrolTitle}</div>
+                <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">${patrolDesc}</div>
             </div>`;
         }
         
-        return `<div style="overflow:hidden;height:68px;display:flex;align-items:center">
+        // Regular card: faction1 group + faction2 group + general → location3 ring
+        const gc1 = this._generalColors[card.faction1] || '#888';
+        const gc2 = this._generalColors[card.faction2] || '#888';
+        
+        // Faction 1: dots column + location ring
+        let faction1HTML = '';
+        if (card.minions1 > 0 && card.location1) {
+            let dots1 = '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">';
+            for (let i = 0; i < card.minions1; i++) dots1 += `<span class="modal-minion-dot" style="background:${gc1};width:22px;height:22px"></span>`;
+            dots1 += '</div>';
+            faction1HTML = `<div style="display:flex;align-items:center;gap:8px">${dots1}<div class="location-ring" style="width:90px;height:90px;background:${gc1};"><span class="location-ring-name" style="font-size:0.74em">${card.location1}</span></div></div>`;
+        }
+        
+        // Faction 2: dots column + location ring
+        let faction2HTML = '';
+        if (card.minions2 > 0 && card.location2) {
+            let dots2 = '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">';
+            for (let i = 0; i < card.minions2; i++) dots2 += `<span class="modal-minion-dot" style="background:${gc2};width:22px;height:22px"></span>`;
+            dots2 += '</div>';
+            faction2HTML = `<div style="display:flex;align-items:center;gap:8px">${dots2}<div class="location-ring" style="width:90px;height:90px;background:${gc2};"><span class="location-ring-name" style="font-size:0.74em">${card.location2}</span></div></div>`;
+        }
+        
+        // General section: token + name → location3 ring
+        const loc3Color = this._generalColors[card.general] || gc;
+        const generalHTML = `<div style="display:flex;align-items:center;gap:10px">
+            <div style="display:flex;flex-direction:column;align-items:center">
+                ${generalTokenHTML}
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${gc};white-space:nowrap">${gn}</span>
+            </div>
+            <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
+            <div class="location-ring" style="width:90px;height:90px;background:${loc3Color};"><span class="location-ring-name" style="font-size:0.74em">${card.location3 || ''}</span></div>
+        </div>`;
+        
+        return `<div style="overflow:hidden;height:52px;display:flex;align-items:center">
             <div style="padding-left:8px">
                 <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-                    ${innerContent}
+                    ${faction1HTML}${faction2HTML}${generalHTML}
                 </div>
             </div>
         </div>`;

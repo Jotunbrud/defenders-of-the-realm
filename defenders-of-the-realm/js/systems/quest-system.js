@@ -88,8 +88,11 @@ Object.assign(game, {
         `;
 
         this.showInfoModal('', contentHTML);
+        // v2: hide shell default Continue button
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
     },
-    
+
     // v2: selection helper for fireball card picker
     _selectFireballCard(cardIndex, origBorderColor) {
         this._pendingFireballCard = cardIndex;
@@ -184,7 +187,7 @@ Object.assign(game, {
                 </div>
             `;
             const rerollHTML = fireballBanner + resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
-            this.showCombatResults(rerollHTML, `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, true);
+            this.showCombatResults(`🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, rerollHTML, '', '', true);
             return;
         }
         
@@ -219,7 +222,7 @@ Object.assign(game, {
         this.addLog(`🔥 Fireball: ${hero.name} incinerated ${totalDefeated} of ${totalMinions} minions!`);
         
         // Show results
-        this.showCombatResults(fireballBanner + resultsHTML, `🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`);
+        this.showCombatResults(`🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`, fireballBanner + resultsHTML, '');
         
         this.updateGameStatus();
         this.renderHeroes();

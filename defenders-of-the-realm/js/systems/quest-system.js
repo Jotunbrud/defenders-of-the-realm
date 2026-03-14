@@ -606,8 +606,11 @@ Object.assign(game, {
             ${archivedHTML}
 
             <div id="quest-use-context-hint" style="text-align: center;"></div>
-            <button id="use-quest-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmUseQuest()">Use</button>
-            <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button>
+            <!-- v1: <button id="use-quest-btn" class="phase-btn" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmUseQuest()">Use</button> -->
+            <!-- v1: <button class="phase-btn" onclick="game.closeInfoModal()">Cancel</button> -->
+            <!-- v2: phase-btn → phb per design system, matching mockup Use/Cancel pattern -->
+            <button id="use-quest-btn" class="phb" style="opacity: 0.4; cursor: not-allowed; margin-top: 12px;" disabled onclick="game.confirmUseQuest()">Use</button>
+            <button class="phb" style="margin-top: 6px;" onclick="game.closeInfoModal()">Cancel</button>
         `;
         
         this.showInfoModal(modalTitle, contentHTML);
@@ -1841,7 +1844,11 @@ Object.assign(game, {
             const el = document.getElementById(`hammer-hero-${i}`);
             if (el) {
                 el.classList.remove('hammer-selected');
-                el.style.border = `1px solid ${h.color}`;
+                // v1: el.style.border = `1px solid ${h.color}`; // h.color doesn't exist on hero objects
+                // v2: clear inline styles so .hero-row CSS class takes over
+                el.style.border = '';
+                el.style.background = '';
+                el.style.boxShadow = '';
             }
         });
         
@@ -1850,7 +1857,9 @@ Object.assign(game, {
         if (selected) {
             selected.classList.add('hammer-selected');
             selected.style.border = '2px solid #d4af37';
-            selected.style.boxShadow = '0 0 8px rgba(212,175,55,0.5)';
+            // v2: added missing background per mockup D2
+            selected.style.background = 'rgba(212,175,55,0.2)';
+            selected.style.boxShadow = '0 0 8px rgba(212,175,55,0.35)';
         }
         
         // Enable confirm button

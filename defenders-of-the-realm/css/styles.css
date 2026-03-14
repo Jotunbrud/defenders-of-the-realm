@@ -1246,6 +1246,19 @@
           padding: 6px 14px; border-bottom: 2px solid #8b7355;
           display: flex; align-items: center; justify-content: space-between;
         }
+        /* v2: .hero-row — special card hero picker rows (Hammer of Valor / L-section only) */
+        .hero-row {
+          border-radius: 8px; padding: 8px 12px;
+          display: flex; align-items: center; gap: 10px;
+          cursor: pointer; border: 2px solid #8b7355;
+          background: rgba(92,61,46,0.08); transition: all 0.2s;
+        }
+        .hero-row.selected {
+          border-color: #d4af37;
+          background: rgba(212,175,55,0.2);
+          box-shadow: 0 0 8px rgba(212,175,55,0.35);
+        }
+
         /* v2: .card-banner added globally — was missing, causing purple banner to not render */
         .card-banner {
           background: linear-gradient(135deg, #6d28a8cc 0%, #6d28a899 100%);

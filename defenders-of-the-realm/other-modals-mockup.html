@@ -471,10 +471,44 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
   <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:12px">Confirm</button>
   <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Cancel</button>
 </div>
+
+<div class="col">
+<div class="tag">J3 · Fireball result — combat-results-modal shell</div>
+<div class="mc">
+  <!-- combat-results-modal title -->
+  <div class="modal-title-bar">🔥 Fireball</div>
+  <!-- resultsHTML: parchment-box Combat Roll -->
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
+    <div style="margin:10px 0">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px">Dragon Minions — 2+ to Hit</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px">
+        <div class="die die-blue" style="background:linear-gradient(145deg,#3b82f6,#1d4ed8);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;width:50px;height:50px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold">4</div>
+      </div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px">Orc Minions — 2+ to Hit</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px">
+        <div class="die die-green" style="background:linear-gradient(145deg,#16a34a,#15803d);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;width:50px;height:50px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold">5</div>
+      </div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px">Defeated Minions:</div>
+      <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span>Dragonkin</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Orc Valley</span>
+      </div>
+      <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Orc Valley</span>
+      </div>
+    </div>
+  </div>
+  <!-- buttonsHTML injected by showCombatResults -->
+  <button class="phb" style="margin-top:8px">Continue</button>
 </div>
+</div>
+
 
 </div>
 
+</div>
 <div class="section">K. Quest Modals Missing Parchment (quest-system.js)</div>
 <div class="grid">
 

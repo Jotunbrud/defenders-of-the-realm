@@ -187,7 +187,13 @@ Object.assign(game, {
                 </div>
             `;
             const rerollHTML = fireballBanner + resultsHTML + this._buildBattleLuckHTML(blCard, failedCount);
-            this.showCombatResults(`🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`, rerollHTML, '', '', true);
+            this.showCombatResults(
+                `🔥 Fireball: ${totalDefeated} defeated — Battle Luck?`,
+                rerollHTML,
+                '',
+                '',
+                true
+            );
             return;
         }
         
@@ -222,7 +228,12 @@ Object.assign(game, {
         this.addLog(`🔥 Fireball: ${hero.name} incinerated ${totalDefeated} of ${totalMinions} minions!`);
         
         // Show results
-        this.showCombatResults(`🔥 Fireball: ${totalDefeated} of ${totalMinions} minion(s) defeated!`, fireballBanner + resultsHTML, '');
+        this.showCombatResults(
+            '🔥 Fireball',
+            resultsHTML,
+            '',
+            `<button class="phb" style="margin-top:8px" onclick="game.closeCombatResults()">Continue</button>`
+        );
         
         this.updateGameStatus();
         this.renderHeroes();

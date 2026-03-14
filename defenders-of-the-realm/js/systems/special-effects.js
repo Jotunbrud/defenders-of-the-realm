@@ -188,6 +188,20 @@ Object.assign(game, {
         `);
     },
     
+    // v2: Helper — returns general token + dice HTML from card object, used in C/E section modals
+    _cardGeneralDiceHTML(card) {
+        const gc = (card.color && card.color !== 'any') ? ({'red':'#dc2626','blue':'#3b82f6','green':'#16a34a','black':'#374151'}[card.color] || '#6d28a8') : '#6d28a8';
+        const gi = (card.color && card.color !== 'any') ? ({'red':'👹','blue':'🐉','green':'👺','black':'💀'}[card.color] || '⚔️') : '⚔️';
+        const gn = (card.color && card.color !== 'any') ? ({'red':'Balazarg','blue':'Sapphire','green':'Gorgutt','black':'Varkolak'}[card.color] || 'Any General') : 'Any General';
+        const dice = Array(card.dice || 1).fill(0).map(() => `<span class="die" style="background:${gc};width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>`).join('');
+        return `
+            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                <div class="modal-general-token" style="background:${gc}">${gi}</div>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:${gc}">${gn}</span>
+            </div>
+            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">${dice}</div>`;
+    },
+
     executeSkipDarkness(heroIndex, cardIndex) {
         const cardHero = this.heroes[heroIndex];
         const card = cardHero.cards[cardIndex];
@@ -208,6 +222,8 @@ Object.assign(game, {
                     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 All Is Quiet</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                     <div class="card-body">
                         <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Do not draw any Darkness Spreads cards this turn</span></div>
+                        <!-- v2: general token + dice added per mockup C2 -->
+                        ${this._cardGeneralDiceHTML(card)}
                     </div>
                 </div>
             </div>
@@ -230,7 +246,11 @@ Object.assign(game, {
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">Battle Fury can only be played by the active hero!</div>
                     <div class="card-wrap">
                         <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Battle Fury</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
-                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div></div>
+                        <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div>
+                        <!-- v2: general token + dice added per mockup C3/C4 -->
+                        ${this._cardGeneralDiceHTML(card)}
+                    </div>
                     </div>
                 </div>
             `);
@@ -245,7 +265,11 @@ Object.assign(game, {
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No actions remaining! Battle Fury requires 1 action to play.</div>
                     <div class="card-wrap">
                         <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Battle Fury</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
-                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div></div>
+                        <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div>
+                        <!-- v2: general token + dice added per mockup C3/C4 -->
+                        ${this._cardGeneralDiceHTML(card)}
+                    </div>
                     </div>
                 </div>
             `);
@@ -264,7 +288,11 @@ Object.assign(game, {
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">No minions at ${location}! There are no enemy minions to defeat.</div>
                     <div class="card-wrap">
                         <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Battle Fury</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
-                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div></div>
+                        <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div>
+                        <!-- v2: general token + dice added per mockup C3/C4 -->
+                        ${this._cardGeneralDiceHTML(card)}
+                    </div>
                     </div>
                 </div>
             `);
@@ -317,7 +345,11 @@ Object.assign(game, {
                 </div>
                 <div class="card-wrap">
                     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Battle Fury</span><span class="hero-banner-name" style="font-size:0.8em">${activeHero.symbol} ${activeHero.name}</span></div>
-                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Defeat all enemy minions at your current location. You must spend 1 Action.</span></div>
+                        <!-- v2: general token + dice added per mockup C3/C4 -->
+                        ${this._cardGeneralDiceHTML(card)}
+                    </div>
                 </div>
             </div>
         `);
@@ -351,7 +383,11 @@ Object.assign(game, {
                     <div class="modal-desc-text" style="text-align:center;margin-top:10px;margin-bottom:10px;font-size:0.8em;color:#3d2b1f">${cardHero.name} must be at an Inn to play this card!</div>
                     <div class="card-wrap">
                         <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
-                        <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div></div>
+                        <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div>
+                        <!-- v2: general token + dice added per mockup C5/E1 -->
+                        ${this._cardGeneralDiceHTML(card)}
+                    </div>
                     </div>
                 </div>
             `);
@@ -391,7 +427,11 @@ Object.assign(game, {
                 </div>
                 <div class="card-wrap">
                     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
-                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div>
+                        <!-- v2: general token + dice added per mockup C5/E1 -->
+                        ${this._cardGeneralDiceHTML(card)}
+                    </div>
                 </div>
             </div>
             <button id="local-info-confirm-btn" class="phb" onclick="game._localInfoConfirmColor()" disabled>Confirm</button>
@@ -517,7 +557,11 @@ Object.assign(game, {
                 <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;margin-bottom:10px">${cardsHTML}</div>
                 <div class="card-wrap">
                     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Local Information</span><span class="hero-banner-name" style="font-size:0.8em">${hero.symbol} ${hero.name}</span></div>
-                    <div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div></div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">At an Inn, draw 5 cards — keep all that match a chosen color and all Special cards</span></div>
+                        <!-- v2: general token + dice added per mockup C5/E1 -->
+                        ${this._cardGeneralDiceHTML(card)}
+                    </div>
                 </div>
             </div>
         `;

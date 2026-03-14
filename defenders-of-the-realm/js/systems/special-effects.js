@@ -190,7 +190,9 @@ Object.assign(game, {
         `);
         // v2: hide shell default, center title per design system
         const _bsBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (_bsBtn && !_bsBtn.querySelector('.phb')) _bsBtn.style.display = 'none';
+        // v1: if (_bsBtn && !_bsBtn.querySelector('.phb')) — condition unreliable
+        // v2: always hide unconditionally
+        if (_bsBtn) _bsBtn.style.display = 'none';
         const _bsTitle = document.getElementById('info-modal-title');
         if (_bsTitle) { _bsTitle.className = 'modal-heading'; _bsTitle.style.textAlign = 'center'; _bsTitle.style.marginBottom = '12px'; }
     },
@@ -984,7 +986,9 @@ Object.assign(game, {
         `);
         // v2: hide shell default button — was causing double button
         const _kgResBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-        if (_kgResBtn && !_kgResBtn.querySelector('.phb')) _kgResBtn.style.display = 'none';
+        // v1: if (_kgResBtn && !_kgResBtn.querySelector('.phb')) — condition unreliable
+        // v2: always hide unconditionally
+        if (_kgResBtn) _kgResBtn.style.display = 'none';
     },
     
     

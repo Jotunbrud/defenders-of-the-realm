@@ -269,8 +269,10 @@ Object.assign(game, {
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
             // v2: hide shell default Continue (was causing double button) + center title per design system
+            // v1: if (_hvDefaultBtn && !_hvDefaultBtn.querySelector('.phb')) — condition was unreliable
+            // v2: always hide unconditionally since we inject our own .phb button above
             const _hvDefaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
-            if (_hvDefaultBtn && !_hvDefaultBtn.querySelector('.phb')) _hvDefaultBtn.style.display = 'none';
+            if (_hvDefaultBtn) _hvDefaultBtn.style.display = 'none';
             const _hvTitle = document.getElementById('info-modal-title');
             if (_hvTitle) { _hvTitle.className = 'modal-heading'; _hvTitle.style.textAlign = 'center'; _hvTitle.style.marginBottom = '12px'; }
             

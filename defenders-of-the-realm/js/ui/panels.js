@@ -334,7 +334,7 @@ Object.assign(game, {
                 if (i >= hero.health && i < hero.health + questActionBonus) {
                     actionIcons += '<span title="Bonus action (Boots of Speed)" style="filter: hue-rotate(300deg);">⚡</span>';
                 } else if (i >= hero.health + questActionBonus) {
-                    const bonusSource = hero.name === 'Eagle Rider' ? 'Fresh Mount' : hero.name === 'Dwarf' ? 'Mountain Lore' : 'Bonus';
+                    const bonusSource = hero.name === 'Eagle Rider' ? 'Fresh Mount' : (hero.name === 'Dwarf' || hero.name === 'Noble Dwarf') ? 'Mountain Lore' : 'Bonus'; // v2: Noble Dwarf
                     actionIcons += `<span title="Bonus action (${bonusSource})" style="filter: hue-rotate(180deg);">⚡</span>`;
                 } else {
                     actionIcons += '<span title="Action available">⚡</span>';
@@ -382,7 +382,7 @@ Object.assign(game, {
             if (i < currentActions) {
                 if (i >= hero.health) {
                     // Bonus action from ability
-                    const bonusSource = hero.name === 'Eagle Rider' ? 'Fresh Mount' : hero.name === 'Dwarf' ? 'Mountain Lore' : 'Bonus';
+                    const bonusSource = hero.name === 'Eagle Rider' ? 'Fresh Mount' : (hero.name === 'Dwarf' || hero.name === 'Noble Dwarf') ? 'Mountain Lore' : 'Bonus'; // v2: Noble Dwarf
                     html += `<span style="font-size: 1.1em; filter: hue-rotate(180deg);" title="Bonus action (${bonusSource})">⚡</span>`;
                 } else {
                     html += '<span style="font-size: 1.1em;">⚡</span>';
@@ -813,6 +813,7 @@ Object.assign(game, {
             // Define which heroes have active skills
             const heroSkills = {
                 'Paladin': { name: 'Noble Steed', icon: '🐴', title: 'Noble Steed' },
+                'Errant Paladin': { name: 'Noble Steed', icon: '🐴', title: 'Noble Steed' }, // v2: same as Paladin
                 'Wizard': { name: 'Teleport', icon: '✨', title: 'Teleport' },
                 'Eagle Rider': { name: 'Eagle Flight', icon: '🦅', title: 'Eagle Flight' }
             };
@@ -846,7 +847,23 @@ Object.assign(game, {
             }
         }
         
-        // Update Unicorn Steed button (dynamic — only shown when hero has completed quest)
+        // Dwarven Rum button — Noble Dwarf only; always shown, enabled when 0 actions + co-located hero + not used this turn
+        const dwarvenRumBtn = document.getElementById('dwarven-rum-btn');
+        if (dwarvenRumBtn) {
+            if (hero.name === 'Noble Dwarf') {
+                dwarvenRumBtn.style.display = 'block';
+                const heroesHere = this.heroes.filter(h => h !== hero && h.health > 0 && h.location === hero.location);
+                const canUse = !hasActions && heroesHere.length > 0 && !this._dwarvenRumUsedThisTurn;
+                dwarvenRumBtn.disabled = !canUse;
+                dwarvenRumBtn.className = 'phase-btn';
+                if (canUse) {
+                    dwarvenRumBtn.style.opacity = '';
+                    dwarvenRumBtn.style.cursor = '';
+                }
+            } else {
+                dwarvenRumBtn.style.display = 'none';
+            }
+        }
         // Placed in top action row with movement buttons
         let unicornBtn = document.getElementById('unicorn-steed-btn');
         const hasUnicornSteed = this._hasUnicornSteed(hero);

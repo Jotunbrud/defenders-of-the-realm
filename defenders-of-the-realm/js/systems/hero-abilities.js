@@ -177,11 +177,12 @@ Object.assign(game, {
     
     // Mountain Lore: Dwarf gains +1 action when starting turn in a Red location
     _applyMountainLoreBonus(hero) {
-        if (hero.name === 'Dwarf') {
+        // v2: Noble Dwarf shares Mountain Lore with Dwarf
+        if (hero.name === 'Dwarf' || hero.name === 'Noble Dwarf') {
             const loc = this.locationCoords[hero.location];
             if (loc && loc.faction === 'red') {
                 this.actionsRemaining += 1;
-                this.addLog(`⛏️ Mountain Lore: ${hero.name} draws strength from the red mountains of ${hero.location} — +1 action! (${this.actionsRemaining} total)`);
+                this.addLog(`⚒️ Mountain Lore: ${hero.name} draws strength from the red mountains of ${hero.location} — +1 action! (${this.actionsRemaining} total)`);
             }
         }
     },
@@ -610,5 +611,187 @@ Object.assign(game, {
             return Object.values(minions).reduce((a, b) => a + b, 0) > 0;
         });
     },
-    
+
+    // ── Dwarven Rum ───────────────────────────────────────────
+    // fromEndTurn: if true, cancelling skips to _executeEndTurn
+    showDwarvenRumModal(fromEndTurn) {
+        fromEndTurn = fromEndTurn || false;
+        const hero = this.heroes[this.currentPlayerIndex];
+        const heroesHere = this.heroes.filter(h => h !== hero && h.health > 0 && h.location === hero.location);
+        if (heroesHere.length === 0) {
+            if (fromEndTurn) this._executeEndTurn(false);
+            return;
+        }
+
+        this._dwarvenRumFromEndTurn = fromEndTurn;
+        this._dwarvenRumSelected = new Set(); // indices into this.heroes
+
+        // Include Noble Dwarf themselves + co-located heroes
+        const participants = [hero, ...heroesHere];
+
+        let heroesHTML = '<div style="display:flex;flex-direction:column;gap:6px">';
+        participants.forEach((h, i) => {
+            const heroIdx = this.heroes.indexOf(h);
+            heroesHTML += `<div id="rum-hero-${heroIdx}" onclick="game._dwarvenRumToggle(${heroIdx})" class="hero-row" style="cursor:pointer">
+                <div style="font-size:1.3em">${h.symbol}</div>
+                <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">${h.name}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">${h.location}</div>
+                </div>
+            </div>`;
+        });
+        heroesHTML += '</div>';
+
+        const contentHTML = `
+            <div class="modal-title-bar" style="margin-bottom:8px">🍻 Dwarven Rum</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Select Heroes:</span></div>
+                <div style="margin-top:10px;margin-bottom:10px">
+                    ${heroesHTML}
+                </div>
+                <div class="card-wrap" style="border-color:#92400e">
+                    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:linear-gradient(135deg,#92400ecc 0%,#92400e99 100%)">
+                        <span class="hero-banner-name">🍻 Dwarven Rum</span>
+                        <span class="hero-banner-name" style="font-size:0.8em">⚒️ Noble Dwarf</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Heroes present <strong>MAY</strong> draw 1 Hero Card. If drawn card matches location color, that hero loses 1 action next turn.</span></div>
+                    </div>
+                </div>
+            </div>
+            <button id="rum-confirm-btn" class="phb" style="margin-top:12px;opacity:0.4;cursor:not-allowed" disabled onclick="game._dwarvenRumConfirm()">Confirm</button>
+            <button class="phb phb-cancel" onclick="game._dwarvenRumSkip()">Cancel</button>
+        `;
+
+        this.showInfoModal('', contentHTML);
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
+    },
+
+    _dwarvenRumToggle(heroIdx) {
+        const el = document.getElementById(`rum-hero-${heroIdx}`);
+        if (!el) return;
+        if (this._dwarvenRumSelected.has(heroIdx)) {
+            this._dwarvenRumSelected.delete(heroIdx);
+            el.style.border = '';
+            el.style.background = '';
+            el.style.boxShadow = '';
+        } else {
+            this._dwarvenRumSelected.add(heroIdx);
+            el.style.border = '2px solid #d4af37';
+            el.style.background = 'rgba(212,175,55,0.2)';
+            el.style.boxShadow = '0 0 8px rgba(212,175,55,0.35)';
+        }
+        const btn = document.getElementById('rum-confirm-btn');
+        if (btn) {
+            const canConfirm = this._dwarvenRumSelected.size > 0;
+            btn.disabled = !canConfirm;
+            btn.style.opacity = canConfirm ? '1' : '0.4';
+            btn.style.cursor = canConfirm ? 'pointer' : 'not-allowed';
+        }
+    },
+
+    _dwarvenRumSkip() {
+        this.closeInfoModal();
+        if (this._dwarvenRumFromEndTurn) {
+            this._dwarvenRumFromEndTurn = false;
+            this._executeEndTurn(false);
+        }
+    },
+
+    _dwarvenRumConfirm() {
+        this.closeInfoModal();
+        this._dwarvenRumUsedThisTurn = true;
+
+        const hero = this.heroes[this.currentPlayerIndex];
+        const location = hero.location;
+        const locData = this.locationCoords[location];
+        const locFaction = locData ? locData.faction : null;
+        const locColorHex = { red: '#dc2626', green: '#16a34a', blue: '#3b82f6', black: '#374151' }[locFaction] || '#8b7355';
+        const locColorLabel = { red: 'Red', green: 'Green', blue: 'Blue', black: 'Black' }[locFaction] || '';
+
+        // Only process heroes the player selected
+        const participants = Array.from(this._dwarvenRumSelected).map(i => this.heroes[i]);
+
+        // Each hero draws 1 card, check if it matches location color
+        const results = participants.map(h => {
+            const card = this.generateRandomCard();
+            const matchesLocation = locFaction && card.color === locFaction;
+            if (matchesLocation) {
+                // Flag for next turn penalty
+                h._dwarvenRumPenalty = (h._dwarvenRumPenalty || 0) + 1;
+            } else {
+                h.cards.push(card);
+            }
+            return { hero: h, card, matchesLocation };
+        });
+
+        this.renderHeroes();
+        this.updateDeckCounts();
+
+        // Build results using same card tile + hero banner pattern as showGeneralRewardModal
+        const ccMap = {
+            blue: { border: '#3b82f6', text: '#3b82f6' },
+            red: { border: '#dc2626', text: '#dc2626' },
+            green: { border: '#16a34a', text: '#16a34a' },
+            black: { border: '#374151', text: '#374151' },
+        };
+
+        let rewardHTML = '';
+        results.forEach(r => {
+            const cc = r.card.special ? { border: '#6d28a8', text: '#6d28a8' } : (ccMap[r.card.color] || { border: '#6d28a8', text: '#6d28a8' });
+            const iconDisplay = r.card.special ? '🌟' : (r.card.icon || '🎴');
+            const shadow = r.card.special ? 'box-shadow:0 0 8px rgba(109,40,168,0.4);' : 'box-shadow:0 2px 6px rgba(0,0,0,0.3);';
+            const diceHTML = Array.from({ length: r.card.dice }).map(() =>
+                `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${cc.border};border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span>`
+            ).join('');
+            const penaltyBadge = r.matchesLocation
+                ? `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin-top:4px"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#b91c1c">🍻 Dwarven Rum:</strong> Loses 1 action next turn</div>`
+                : '';
+            const cardTile = `
+                <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cc.border};border-radius:8px;padding:8px 6px;text-align:center;${shadow}">
+                    <div style="font-size:1.2em;margin-bottom:2px">${iconDisplay}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:${cc.text};line-height:1.2">${r.card.name}</div>
+                    <div style="display:flex;justify-content:center;gap:2px;margin-top:4px">${diceHTML}</div>
+                </div>`;
+            rewardHTML += `
+                <div class="parchment-box" style="margin-top:8px">
+                    <div class="parchment-banner"><span class="hero-banner-name">${r.hero.symbol} ${r.hero.name} — Card Drawn</span></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:8px 0">
+                        ${cardTile}
+                    </div>
+                    ${penaltyBadge}
+                    <div style="text-align:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(139,115,85,0.3)">
+                        <span style="font-size:0.82em;color:#2c1810;font-family:'Cinzel',Georgia,serif;font-weight:900">🎴 Total Cards: ${r.hero.cards.length}</span>
+                    </div>
+                </div>`;
+        });
+
+        
+
+        const contentHTML = `
+            <div class="modal-title-bar" style="margin-bottom:8px">🍻 Dwarven Rum</div>
+            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:0.85em;color:#d4af37;margin-bottom:12px">
+                DWARVEN RUM AT ${location.toUpperCase()}!<br>
+                <span style="font-weight:400;font-size:0.9em;">${results.length} hero${results.length !== 1 ? 'es draw' : ' draws'} 1 card each</span>
+            </div>
+            ${rewardHTML}
+            <button class="phb" style="margin-top:12px" onclick="game._dwarvenRumFinish()">Continue</button>
+        `;
+
+        this.showInfoModal('', contentHTML);
+        const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
+        if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
+
+        this.addLog(`🍻 Dwarven Rum: ${hero.name} shared drinks at ${location}!`);
+    },
+
+    _dwarvenRumFinish() {
+        this.closeInfoModal();
+        if (this._dwarvenRumFromEndTurn) {
+            this._dwarvenRumFromEndTurn = false;
+            this._executeEndTurn(false);
+        }
+    },
+
 });

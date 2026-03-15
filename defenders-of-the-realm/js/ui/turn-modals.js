@@ -1166,6 +1166,13 @@ Object.assign(game, {
                 this.actionsRemaining += questBonus2;
                 this.addLog(`📜 Boots of Speed: ${nextHero.name} gains +${questBonus2} actions!`);
             }
+            // v2: Dwarven Rum penalty — lose 1 action if flagged last turn
+            if (nextHero._dwarvenRumPenalty && nextHero._dwarvenRumPenalty > 0) {
+                this.actionsRemaining = Math.max(0, this.actionsRemaining - nextHero._dwarvenRumPenalty);
+                this.addLog(`🍻 Dwarven Rum: ${nextHero.name} loses ${nextHero._dwarvenRumPenalty} action(s) from last turn's rum!`);
+                nextHero._dwarvenRumPenalty = 0;
+            }
+            this._dwarvenRumUsedThisTurn = false;
             this.rumorsUsedThisTurn = 0;
             this.wizardTeleportUsedThisTurn = false;
             this.skipDarknessThisTurn = false;
@@ -1206,6 +1213,13 @@ Object.assign(game, {
                 this.actionsRemaining += questBonus3;
                 this.addLog(`📜 Boots of Speed: ${nextHero.name} gains +${questBonus3} actions!`);
             }
+            // v2: Dwarven Rum penalty — lose 1 action if flagged last turn
+            if (nextHero._dwarvenRumPenalty && nextHero._dwarvenRumPenalty > 0) {
+                this.actionsRemaining = Math.max(0, this.actionsRemaining - nextHero._dwarvenRumPenalty);
+                this.addLog(`🍻 Dwarven Rum: ${nextHero.name} loses ${nextHero._dwarvenRumPenalty} action(s) from last turn's rum!`);
+                nextHero._dwarvenRumPenalty = 0;
+            }
+            this._dwarvenRumUsedThisTurn = false;
             this.rumorsUsedThisTurn = 0;
         this.wizardTeleportUsedThisTurn = false;
         this.skipDarknessThisTurn = false;

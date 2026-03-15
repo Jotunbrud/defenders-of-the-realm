@@ -1166,6 +1166,13 @@ Object.assign(game, {
             this.actionsRemaining += questBonus;
             this.addLog(`📜 Boots of Speed: ${nextHero.name} gains +${questBonus} actions!`);
         }
+        // v2: Dwarven Rum penalty
+        if (nextHero._dwarvenRumPenalty && nextHero._dwarvenRumPenalty > 0) {
+            this.actionsRemaining = Math.max(0, this.actionsRemaining - nextHero._dwarvenRumPenalty);
+            this.addLog(`🍻 Dwarven Rum: ${nextHero.name} loses ${nextHero._dwarvenRumPenalty} action(s) from last turn's rum!`);
+            nextHero._dwarvenRumPenalty = 0;
+        }
+        this._dwarvenRumUsedThisTurn = false;
         this.rumorsUsedThisTurn = 0;
         this.wizardTeleportUsedThisTurn = false;
         

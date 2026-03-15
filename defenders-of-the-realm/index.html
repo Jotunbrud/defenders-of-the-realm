@@ -173,9 +173,26 @@
     </div>
 
     <!-- Setup Modal -->
-    <div class="modal active" id="setup-modal">
+    <!-- ═══ Game Setup Modal (shown after splash, before hero selection) ═══ -->
+    <div class="modal" id="game-setup-modal" style="z-index: 50001;">
+        <div class="modal-content" style="max-width:520px" onclick="event.stopPropagation()">
+            <div class="modal-title-bar" style="margin-bottom:12px">⚔️ Game Setup</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Game Mode</span></div>
+                <div id="game-setup-mode-section" style="display:flex;gap:8px;margin:10px 0"></div>
+            </div>
+            <div id="game-setup-rules-section" style="display:none"></div>
+            <div class="parchment-box" style="margin-top:10px">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Expansions</span></div>
+                <div id="game-setup-expansion-section" style="margin-top:10px"></div>
+            </div>
+            <button class="phb" style="margin-top:12px" onclick="game.confirmGameSetup()">Continue</button>
+        </div>
+    </div>
+
+    <div class="modal" id="setup-modal">
         <div class="modal-content">
-            <h2 class="modal-heading" style="color: #d4af37; margin: 0; font-size: 1.2em; text-align: center;">⚔️ Hero Selection</h2>
+            <div class="modal-title-bar" style="margin-bottom:12px">⚔️ Hero Selection</div>
             <div class="modal-heading" style="text-align:center;color:#d4af37;font-size:0.85em;margin-bottom:12px">Select your heroes (1-4 players)</div>
             <div id="hero-selection"></div>
             
@@ -192,9 +209,7 @@
                 </label>
             </div>
             
-            <button class="phase-btn" style="margin-top: 15px;" onclick="game.startGame()">
-                Start Game
-            </button>
+            <button class="phb" style="margin-top:15px" onclick="game.startGame()">Start Game</button>
         </div>
     </div>
 
@@ -269,6 +284,9 @@
                     </button>
                     <button class="phase-btn" id="crafty-btn" onclick="game.craftyAction()" style="display: none;" title="Crafty: Draw 5 cards at Inn, keep matching color + specials">
                         <span class="action-btn-icon">🗡️ </span>Crafty
+                    </button>
+                    <button class="phase-btn" id="dwarven-rum-btn" onclick="game.showDwarvenRumModal()" style="display: none;" title="Dwarven Rum: Heroes at this location may each draw 1 Hero Card">
+                        <span class="action-btn-icon">🍻 </span>Dwarven Rum
                     </button>
                     <button class="phase-btn" id="build-magic-gate-btn" onclick="game.buildMagicGate()" disabled title="Build a magic gate">
                         <span class="action-btn-icon">💫 </span>Build Magic Gate
@@ -494,6 +512,7 @@
 
     <!-- ═══ SYSTEMS ═══ -->
     <script src="js/systems/setup.js"></script>
+    <script src="js/systems/game-setup.js"></script>
     <script src="js/systems/quest-system.js"></script>
     <script src="js/systems/special-effects.js"></script>
     <script src="js/systems/combat-general.js"></script>
@@ -783,10 +802,13 @@
     <div id="game-over-modal" class="modal" style="z-index: 50000;">
         <div class="modal-content" style="max-width: 600px; text-align: center;">
             <div id="game-over-content"></div>
-            <!-- v2: phb buttons matching parchment design standard -->
-            <div style="margin-top:12px">
-                <button class="phb" onclick="location.reload()">Start New Game</button>
-                <button class="phb phb-cancel" onclick="game.continueGame()">Continue Game</button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="location.reload()" style="flex: 1; font-size: 1.1em;">
+                    Start New Game
+                </button>
+                <button class="btn btn-primary" onclick="game.continueGame()" style="flex: 1; font-size: 1.1em;">
+                    Continue Game
+                </button>
             </div>
         </div>
     </div>

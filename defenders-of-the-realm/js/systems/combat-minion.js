@@ -610,7 +610,70 @@ Object.assign(game, {
         if (hero.name === 'Sorceress') {
             this.ambushMinionUsed = true;
         }
-        
+
+        // ===== BROADSWORD OF MIGHT (Errant Paladin) =====
+        // If 2+ dice were rolled and any two show the same number, all minions are defeated
+        if (hero.name === 'Errant Paladin') {
+            const allRolls = colorResults.flatMap(cr => cr.rolls.map(r => r.roll));
+            const totalDice = allRolls.length;
+            const hasDoubles = totalDice >= 2 && new Set(allRolls).size < allRolls.length;
+
+            if (hasDoubles) {
+                // Find the doubled value for display
+                const rollCounts = {};
+                allRolls.forEach(r => rollCounts[r] = (rollCounts[r] || 0) + 1);
+                const doubledValue = Object.keys(rollCounts).find(k => rollCounts[k] >= 2);
+
+                // Override: all minions defeated
+                colorResults.forEach(cr => {
+                    cr.defeated = cr.count;
+                    cr.broadswordTriggered = true;
+                });
+                totalDefeated = colorResults.reduce((sum, cr) => sum + cr.count, 0);
+
+                this.addLog(`⚜️ Broadsword of Might: ${hero.name} rolled doubles (${doubledValue}s) — ALL minions at ${location} defeated!`);
+
+                // Apply kills now (same as _applyMinionCombatResults)
+                colorResults.forEach(cr => {
+                    minionsObj[cr.color] -= cr.defeated;
+                    if (minionsObj[cr.color] < 0) minionsObj[cr.color] = 0;
+                });
+                this._trackQuestMinionDefeats(colorResults);
+                this.actionsRemaining--;
+                this.closeCombat();
+                this.renderTokens();
+                this.updateGameStatus();
+
+                const resultsHTML = this._buildMinionResultsHTML(colorResults, true, location);
+
+                // Check Battle Luck (still available even on Broadsword trigger)
+                const blCard = this._findBattleLuckCard();
+                const buttonsHTML = blCard
+                    ? `<button class="phb" style="margin-top:8px" onclick="game.useBattleLuck()">Battle Luck (Re-Roll All Dice)</button>
+                       <button class="phb" style="margin-top:6px" onclick="game.acceptMinionCombatRoll()">Continue</button>`
+                    : `<button class="phb" style="margin-top:8px" onclick="game.acceptMinionCombatRoll()">Continue</button>`;
+
+                this.showCombatResults('⚔️ Engage Minions', resultsHTML, '', buttonsHTML, true);
+
+                // Store pending results for acceptMinionCombatRoll
+                this._pendingRerollCombat = {
+                    type: 'minions',
+                    subtype: 'broadsword',
+                    hero,
+                    location,
+                    minionsObj,
+                    colorResults,
+                    totalDefeated,
+                    originalMinions: {}
+                };
+                for (let cr of colorResults) {
+                    this._pendingRerollCombat.originalMinions[cr.color] = cr.count;
+                }
+                return;
+            }
+        }
+        // ================================
+
         // Check if Eagle Rider can re-roll (Ground Attack, not vs Undead faction specifically excluded)
         const canReroll = hero.name === 'Eagle Rider' 
             && this.eagleRiderAttackStyle === 'ground' 
@@ -649,7 +712,7 @@ Object.assign(game, {
         // ===== DWARF DRAGON SLAYER RE-ROLL PHASE (minions) =====
         const hasBlueMinions = colorResults.some(cr => cr.color === 'blue');
         const hasFailedBlueDice = colorResults.some(cr => cr.color === 'blue' && cr.rolls.some(r => !r.hit));
-        const canDwarfReroll = hero.name === 'Dwarf' 
+        const canDwarfReroll = (hero.name === 'Dwarf' || hero.name === 'Noble Dwarf') // v2: Noble Dwarf
             && hasBlueMinions
             && hasFailedBlueDice
             && !this.dwarfDragonSlayerUsed;
@@ -737,6 +800,13 @@ Object.assign(game, {
         });
 
         const totalDefeated = colorResults.reduce((sum, cr) => sum + cr.defeated, 0);
+
+        // v2: Broadsword of Might — inline note below dice, no separate banner
+        const broadswordTriggered = colorResults.some(cr => cr.broadswordTriggered);
+        if (broadswordTriggered) {
+            html += `<div style="font-size:0.75em;line-height:1.5;font-family:'Comic Sans MS',cursive;color:#3d2b1f;margin:4px 0 6px 0;"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#8b5cf6;">⚜️ Broadsword of Might:</strong> Rolling doubles defeats all minions</div>`;
+        }
+
         html += '<div class="combat-results-label">Defeated Minions:</div>';
         if (totalDefeated > 0) {
             colorResults.forEach(cr => {
@@ -845,6 +915,9 @@ Object.assign(game, {
         const colorResults = state.colorResults;
         const totalDefeated = state.totalDefeated;
         this._pendingRerollCombat = null;
+
+        // v2: broadsword path already applied kills and closed combat-modal — don't re-apply
+        if (state.subtype === 'broadsword') return;
         
         this._applyMinionCombatResults(colorResults, totalDefeated);
     },
@@ -864,9 +937,14 @@ Object.assign(game, {
     },
     
     _buildBattleLuckHTML(blCard, failedCount) {
-        // v2: no parchment box — just the phb button (was parchment with buttons inside, then outside)
         return `
-            <button class="phb" style="margin-top:8px" onclick="game.useBattleLuck()">Battle Luck (Re-Roll ${failedCount} Failed Dice)</button>
+            <div class="parchment-box" style="margin-top:10px;">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">🍀 Battle Luck — Re-roll Available</span></div>
+                <p style="font-family:'Comic Sans MS',cursive; font-size:0.9em; color:#3d2b1f; margin:8px 0 4px 0;">Re-roll ${failedCount} failed dice. Card from ${blCard.hero.symbol} ${blCard.hero.name}'s hand will be discarded.</p>
+                <p style="font-family:'Comic Sans MS',cursive; font-size:0.85em; color:#6b5a3e; margin-bottom:8px;">This cannot be undone.</p>
+                <button class="phb" onclick="game.useBattleLuck()">Battle Luck (Re-Roll All Failed Dice)</button>
+                <button class="phb" onclick="game.declineBattleLuck()">Continue</button>
+            </div>
         `;
     },
     
@@ -1463,7 +1541,7 @@ Object.assign(game, {
         
         // ===== DWARF DRAGON SLAYER RE-ROLL PHASE (solo general) =====
         const hasFailedDice = diceRolls.some(r => !r.hit);
-        const canDwarfReroll = hero.name === 'Dwarf' 
+        const canDwarfReroll = (hero.name === 'Dwarf' || hero.name === 'Noble Dwarf') // v2: Noble Dwarf
             && general.faction === 'Dragon'
             && hasFailedDice
             && !this.dwarfDragonSlayerUsed;
@@ -1875,10 +1953,10 @@ Object.assign(game, {
                     this.addLog(`${hero.name} takes ${woundsTaken} wound(s) from failing to defeat ${general.name}!`);
                 }
                 
-                // Paladin's Aura of Righteousness / Dwarf's Armor and Toughness: Ignore 1 wound from generals
-                if ((hero.name === 'Paladin' || hero.name === 'Dwarf') && woundsTaken > 0) {
+                // v2: Errant Paladin shares Aura of Righteousness with Paladin
+                if (((hero.name === 'Paladin' || hero.name === 'Errant Paladin') || hero.name === 'Dwarf' || hero.name === 'Noble Dwarf') && woundsTaken > 0) { // v2: Noble Dwarf
                     woundsTaken = Math.max(0, woundsTaken - 1);
-                    const abilityName = hero.name === 'Paladin' ? 'Aura of Righteousness' : 'Armor and Toughness';
+                    const abilityName = (hero.name === 'Paladin' || hero.name === 'Errant Paladin') ? 'Aura of Righteousness' : 'Armor and Toughness';
                     this.addLog(`${hero.symbol} ${hero.name}'s ${abilityName} reduces damage by 1! Final damage: ${woundsTaken}`);
                 }
                 
@@ -2100,8 +2178,8 @@ Object.assign(game, {
                 let woundsTaken = baseWounds;
                 let cardsToLose = baseCards;
 
-                // Paladin Aura / Dwarf Armor: reduce wounds by 1
-                if ((hero.name === 'Paladin' || hero.name === 'Dwarf') && woundsTaken > 0) {
+                // v2: Errant Paladin shares Aura of Righteousness with Paladin
+                if (((hero.name === 'Paladin' || hero.name === 'Errant Paladin') || hero.name === 'Dwarf' || hero.name === 'Noble Dwarf') && woundsTaken > 0) { // v2: Noble Dwarf
                     woundsTaken = Math.max(0, woundsTaken - 1);
                 }
 
@@ -2109,13 +2187,13 @@ Object.assign(game, {
             });
 
             // Build new parchment-style penalty HTML
-            const heroColorMap = { 'Paladin': '#6d28a8', 'Cleric': '#1e3a7a', 'Wizard': '#7c3aed', 'Sorceress': '#fbbf24', 'Eagle Rider': '#6b7b8d', 'Dwarf': '#b45309', 'Ranger': '#15803d', 'Rogue': '#374151' };
+            const heroColorMap = { 'Paladin': '#6d28a8', 'Errant Paladin': '#8b5cf6', 'Cleric': '#1e3a7a', 'Wizard': '#7c3aed', 'Sorceress': '#fbbf24', 'Eagle Rider': '#6b7b8d', 'Dwarf': '#b45309', 'Noble Dwarf': '#92400e', 'Ranger': '#15803d', 'Rogue': '#374151' }; // v2: Noble Dwarf
 
             // Skill reduction lines
             const skillLines = penaltyResults
                 .filter(r => !r.skyAttackProtected && !r.warBannerProtected && r.woundRoll !== null && r.woundsTaken < baseWounds)
                 .map(r => {
-                    const ab = r.hero.name === 'Paladin' ? 'Aura of Righteousness' : 'Armor of the Dwarves';
+                    const ab = (r.hero.name === 'Paladin' || r.hero.name === 'Errant Paladin') ? 'Aura of Righteousness' : 'Armor and Toughness'; // covers Dwarf + Noble Dwarf
                     return `<div class="hi-sub modal-desc-text" style="margin-top:3px;color:#3d2b1f;font-size:0.75em;line-height:1.5;">🛡️ <strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#1a0f0a;">${r.hero.name}'s ${ab}:</strong> Reduced by ${baseWounds - r.woundsTaken}</div>`;
                 }).join('');
 

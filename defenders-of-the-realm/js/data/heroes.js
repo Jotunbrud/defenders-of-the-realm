@@ -113,3 +113,49 @@ const HEROES_DATA = [
         questCards: []
     }
 ];
+
+// ═══════════════════════════════════════════════════════════════
+// HERO EXPANSION — Additional heroes unlocked via setup screen
+// ═══════════════════════════════════════════════════════════════
+
+const EXPANSION_HEROES_DATA = [
+    {
+        name: 'Barbarian',
+        health: 5,
+        maxHealth: 5,
+        location: 'Monarch City',
+        color: '#7f1d1d',
+        symbol: '🪓',
+        ability: '<strong>Battle Rage:</strong> May spend action points prior to attack roll to modify the dice. Add +1 to the die rolled for each action point spent.<br><span style="color: #ef4444;">May not be used when attacking a General.</span><br><br><strong>Famed Warrior:</strong> If two or more enemies are defeated with the first attack in a location, remove 1 enemy minion from each adjacent location as they flee.<br><span style="color: #ef4444;">Enemies at a location with a General do not flee.</span><br><br><strong>Local Support:</strong> If ending turn at an Inn or Black location, draw 3 Hero Cards, choose 2 and discard 1.',
+        cards: [],
+        taint: 0,
+        questCards: [],
+        expansion: 'hero_expansion'
+    },
+    {
+        name: 'Errant Paladin',
+        health: 5,
+        maxHealth: 5,
+        location: 'Monarch City',
+        color: '#8b5cf6',
+        symbol: '⚜️',
+        ability: '<strong>Noble Steed:</strong> May spend an action to travel on horseback (2 spaces) without discarding a horse travel card<br><br><strong>Bravery:</strong> If ending a turn in a location with Undead minions, do not suffer any penalties from fear<br><br><strong>Aura of Righteousness:</strong> Ignore 1 wound from minions and Generals<br><br><strong>Broadsword of Might:</strong> Rolling doubles of any number when attacking 2 or more minions defeats all minions at a location.',
+        cards: [],
+        taint: 0,
+        questCards: [],
+        expansion: 'hero_expansion'
+    },
+    {
+        name: 'Noble Dwarf',
+        health: 5,
+        maxHealth: 5,
+        location: 'Monarch City',
+        color: '#92400e',
+        symbol: '⚒️',
+        ability: '<strong>Mountain Lore:</strong> When starting a turn in a Red location, gain 1 action for that turn.<br><br><strong>Dragon Slayer:</strong> May re-roll any failed dice in combat against Dragonkin.<br><span style="color: #ef4444;">May be used in combat with Sapphire.</span><br><br><strong>Armor and Toughness:</strong> Ignore 1 wound from minions and Generals.<br><br><strong>Dwarven Rum:</strong> When ending your turn at the same location as another Hero, you and the other Heroes present <strong>MAY</strong> draw 1 Hero Card. If the card drawn matches the color of your Location, the drawing Hero loses 1 Action on their next turn.',
+        cards: [],
+        taint: 0,
+        questCards: [],
+        expansion: 'hero_expansion'
+    },
+];

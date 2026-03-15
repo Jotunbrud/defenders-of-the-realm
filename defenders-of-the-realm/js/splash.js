@@ -66,6 +66,8 @@
         setTimeout(() => {
             splash.remove();
             if (splashAnimFrame) cancelAnimationFrame(splashAnimFrame);
+            // v2: show game setup modal before hero selection
+            game.showGameSetupModal();
         }, 1300);
     };
 

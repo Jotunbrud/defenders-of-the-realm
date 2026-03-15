@@ -110,7 +110,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 <div class="section">A. Card Detail — existing (reference)</div>
 <div class="grid">
 
-<div class="col"><div class="tag">A1 · _renderCardDetailView — special card (existing reference)</div>
+<div class="col"><div class="tag">A1 · _renderCardDetailView — special card ✅ UPDATED</div>
 <div class="mc">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <h2 class="modal-title">🌟 Special Card Details</h2>
@@ -144,7 +144,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 <div class="section">B. Special Cards — Selection</div>
 <div class="grid">
 
-<div class="col"><div class="tag">B1 · showSpecialCardsModal — no selection</div>
+<div class="col"><div class="tag">B1 · showSpecialCardsModal — no selection ✅ UPDATED (.card-banner global fix)</div>
 <div class="mc">
   <h2 class="modal-title modal-heading" style="margin-bottom:6px">🌟 Special Cards</h2>
   <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;text-align:center;font-size:0.85em;margin-bottom:12px">Special cards can be played at any time without using an action.</div>
@@ -204,7 +204,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
   <button class="phb phb-cancel">Cancel</button>
 </div></div>
 
-<div class="col"><div class="tag">B2 · showSpecialCardsModal — card selected (gold border)</div>
+<div class="col"><div class="tag">B2 · showSpecialCardsModal — card selected ✅ UPDATED</div>
 <div class="mc">
   <h2 class="modal-title modal-heading" style="margin-bottom:6px">🌟 Special Cards</h2>
   <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;text-align:center;font-size:0.85em;margin-bottom:12px">Special cards can be played at any time without using an action.</div>
@@ -854,7 +854,7 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 <div class="section">H. Dark Visions</div>
 <div class="grid">
 
-<div class="col"><div class="tag">H1b · alternate — mini card visual</div>
+<div class="col"><div class="tag">H1 · _darkVisionsRender — picker (✅ UPDATED mini cards)</div>
 <div class="mc">
   <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
   <div class="pb">
@@ -862,244 +862,96 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div style="max-height:380px;overflow-y:auto;overflow-x:hidden;margin-bottom:10px">
       <div style="background:rgba(92,61,46,0.08);border:1px solid rgba(139,115,85,0.35);border-radius:5px;padding:6px 10px;margin-bottom:8px">
         <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#2c1810;margin-bottom:3px">How to use:</div>
-        <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f;margin:2px 0">▲ ▼ to reorder and move to Discard or move back to Keep.</div>
+        <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f;margin:2px 0">▲ ▼ to reorder. ▼ on last Keep card moves to Discard. ▲ in Discard moves back to Keep.</div>
       </div>
       <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:4px">Keep:</div>
       <div class="dv-kept">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#ccc;color:#999" disabled>▲</button><button class="dv-btn" style="background:#8b7355;color:#fff" >▼</button></div>
+        <div class="dv-ctrl"><button class="dv-btn" style="background:#ccc;color:#999" disabled>▲</button><button class="dv-btn" style="background:#8b7355;color:#fff">▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="margin-left:-18px;z-index:10;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Thorny Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Amarak Peak</span></div>
-          </div>
+          <div style="overflow:hidden;height:52px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Crystal Hills</span></div></div><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a;white-space:nowrap">Gorgutt</span></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Thorny Woods</span></div><div style="border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Amarak Peak</span></div></div>
         </div>
-      </div>      <div class="dv-kept">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff" >▲</button><button class="dv-btn" style="background:#8b7355;color:#fff" >▼</button></div>
+      </div>
+      <div class="dv-kept">
+        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#8b7355;color:#fff">▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="margin-left:-18px;z-index:9;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;outline:3px solid #374151;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #37415199;"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Angel Tear Falls</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Angel Tear Falls</span></div>
-          </div>
+          <div style="overflow:hidden;height:52px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Ember Peaks</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;white-space:nowrap">Balazarg</span></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div><div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Angel Tear Falls</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Angel Tear Falls</span></div></div>
         </div>
-      </div>      <div class="dv-kept">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff" >▲</button><button class="dv-btn" style="background:#8b7355;color:#fff" >▼</button></div>
+      </div>
+      <div class="dv-kept">
+        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#8b7355;color:#fff">▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
           <div style="display:flex;flex-direction:column;justify-content:center;gap:3px;margin-bottom:4px">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#6d28a8">All is Quiet</div>
             <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">No minions spread. No generals move.</div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span></div>
-          </div>
+          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span></div></div>
         </div>
-      </div>      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 4px">Discard:</div>      <div class="dv-disc" style="display:flex;padding:0">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#ccc;color:#999" disabled>▼</button></div>
-        <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div><div style="margin-left:-18px;z-index:8;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;outline:3px solid #dc2626;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #dc262699;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Dark Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Orc Valley</span></div>
-          </div>
-        </div>
-      </div>      <div class="dv-disc" style="display:flex;padding:0">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#ccc;color:#999" disabled>▼</button></div>
-        <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="margin-left:-18px;z-index:8;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Ghost Marsh</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Ghost Marsh</span></div>
-          </div>
-        </div>
-      </div>      <div class="dv-kept">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff" >▲</button><button class="dv-btn" style="background:#8b7355;color:#fff" >▼</button></div>
+      </div>
+      <div class="dv-kept">
+        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#8b7355;color:#fff">▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
           <div style="display:flex;flex-direction:column;justify-content:center;gap:3px;margin-bottom:4px">
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#7c3aed">Monarch City</div>
             <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">Place 1 minion of each adjacent color. Reshuffle all decks.</div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span></div>
-          </div>
+          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span></div></div>
         </div>
-      </div>      <div class="dv-kept">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff" >▲</button><button class="dv-btn" style="background:#8b7355;color:#fff" >▼</button></div>
+      </div>
+      <div class="dv-kept">
+        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#ccc;color:#999" disabled>▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="display:flex;flex-direction:column;justify-content:center;gap:3px;margin-bottom:4px">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#16a34a">Orc Patrols</div>
-            <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f"></div>
-          </div>          <div style="margin-bottom:4px">
-            <span class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">1 orc added to each empty green location</span>
-          </div>
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center">
-            <div style="padding-left:8px">
-              <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-                    <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                      <div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div>
-                      <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div>
-                    </div>
-                  </div>
-                  <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                  <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                    <div style="display:flex;align-items:center;padding:6px">
-                      <div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div>
-                      <div style="margin-left:-18px;z-index:6;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div>
-                      <div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div>
-                      <div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div>
-                      <div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div>
-                    </div>
-                    <div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Next Location</span></div>
-          </div>
+          <div style="overflow:hidden;height:52px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Dark Woods</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Crystal Hills</span></div></div><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#3b82f6;width:48px;height:48px;font-size:1.5em">🐉</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6;white-space:nowrap">Sapphire</span></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div><div style="border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Eagle Peak Pass</span></div></div>
         </div>
-      </div>      <div class="dv-kept">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff" >▲</button><button class="dv-btn" style="background:#ccc;color:#999" disabled>▼</button></div>
+      </div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 4px">Discard:</div>
+      <div class="dv-disc" style="display:flex;padding:0">
+        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff">▲</button><button class="dv-btn" style="background:#ccc;color:#999" disabled>▼</button></div>
         <div style="flex:1;min-width:0;padding:8px">
-          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3b82f6;margin-bottom:4px">Orc War Party</div>
-          <div style="margin-bottom:4px">
-            <span class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">1 orc added to each solo orc location</span>
-          </div>
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center">
-            <div style="padding-left:8px">
-              <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-                    <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                      <div class="modal-general-token" style="background:#3b82f6;width:48px;height:48px;font-size:1.5em">🐉</div>
-                      <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Sapphire</div>
-                    </div>
-                  </div>
-                  <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                  <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                    <div style="display:flex;align-items:center;padding:6px">
-                      <div style="z-index:6;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;outline:3px solid #7c3aed;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #7c3aed99;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div>
-                    </div>
-                    <div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#7c3aed">Next Location</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Monarch City</span></div>
-          </div>
-        </div>
-      </div>      <div class="dv-kept">
-        <div class="dv-ctrl"><button class="dv-btn" style="background:#8b7355;color:#fff" >▲</button><button class="dv-btn" style="background:#ccc;color:#999" disabled>▼</button></div>
-        <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center">
-            <div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center">
-              <div style="display:flex;align-items:center;gap:10px">
-                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div>
-                  <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                    <div class="modal-general-token" style="background:#374151;width:48px;height:48px;font-size:1.5em">💀</div>
-                    <div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">Varkolak</div>
-                  </div>
-                </div>
-                <span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span>
-                <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-                  <div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Dark Woods</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Windy Pass</span></div></div><div style="margin-left:-18px;z-index:6;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;outline:3px solid #374151;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #37415199;"><span class="location-ring-name" style="font-size:0.74em">Sea Bird Port</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Father Oak Forest</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div>
-                  <div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">Next Location</div>
-                </div>
-              </div>
-            </div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Dark Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Next Location</span></div>
-          </div>
+          <div style="overflow:hidden;height:52px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Dark Woods</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a;white-space:nowrap">Gorgutt</span></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Dark Woods</span></div><div style="border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Orc Valley</span></div></div>
         </div>
       </div>
     </div>
-    <div class="card-wrap">
-      <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">🧝 Ranger</span></div>
-      <div class="card-body">
-        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, return the rest in any order.</span></div>
-        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-          <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
-        </div>
-        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-          <span class="die" style="background:#6d28a8">🎲</span>
-        </div>
-      </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, return the rest in any order.</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
     </div>
   </div>
-  <button class="phb" style="margin-top:12px">Confirm</button>
+  </div><button class="phb" style="margin-top:12px">Confirm</button>
   <button class="phb phb-cancel">Cancel</button>
 </div></div>
 
-<div class="col"><div class="tag">H2 · summary</div>
+<div class="col"><div class="tag">H2 · _darkVisionsConfirm — result summary (✅ UPDATED mini cards)</div>
 <div class="mc">
   <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
   <div class="pb">
     <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
-    <div style="max-height:380px;overflow-y:auto;overflow-x:hidden;margin-bottom:10px">
-      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:4px">Kept:</div>
-      <div class="dv-kept">
-        <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="margin-left:-18px;z-index:10;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Thorny Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Amarak Peak</span></div>
-          </div>
-        </div>
-      </div>      <div class="dv-kept">
-        <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="margin-left:-18px;z-index:9;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151;outline:3px solid #374151;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #37415199;"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="margin-left:-18px;z-index:2;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed;"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Angel Tear Falls</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Angel Tear Falls</span></div>
-          </div>
-        </div>
-      </div>      <div class="dv-kept">
-        <div style="flex:1;min-width:0;padding:8px">
-          <div style="display:flex;flex-direction:column;justify-content:center;gap:3px;margin-bottom:4px">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#6d28a8">All is Quiet</div>
-            <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">No minions spread. No generals move.</div>
-          </div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span></div>
-          </div>
-        </div>
-      </div>      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 4px">Discarded:</div>      <div class="dv-disc" style="display:flex;padding:0">
-        <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#16a34a;width:48px;height:48px;font-size:1.5em">👺</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">Gorgutt</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Thorny Woods</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.74em">Amarak Peak</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6"><span class="location-ring-name" style="font-size:0.74em">Eagle Peak Pass</span></div></div><div style="margin-left:-18px;z-index:8;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;outline:3px solid #dc2626;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #dc262699;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span><span style="color:#2c1810">→ Dark Woods</span></div><div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Orc Valley</span></div>
-          </div>
-        </div>
-      </div>      <div class="dv-disc" style="display:flex;padding:0">
-        <div style="flex:1;min-width:0;padding:8px">
-          <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:5;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151"><span class="location-ring-name" style="font-size:0.74em">Ghost Marsh</span></div></div><div style="margin-left:-18px;z-index:4;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#16a34a"><span class="location-ring-name" style="font-size:0.74em">Raven Forest</span></div></div><div style="margin-left:-18px;z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#374151"><span class="location-ring-name" style="font-size:0.74em">Angel Tear Falls</span></div></div><div style="margin-left:-18px;z-index:8;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;outline:3px solid #3b82f6;outline-offset:2px;box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 0 8px rgba(255,255,255,0.15),0 0 12px #3b82f699;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="margin-left:-18px;z-index:1;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#7c3aed"><span class="location-ring-name" style="font-size:0.74em">Monarch City</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">Next Location</div></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
-            <div style="border:1px solid #9333ea;background:rgba(147,51,234,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#7e22ce">Taint Crystal will be placed</span><span style="color:#2c1810">→ Ghost Marsh</span></div><div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#8b7355">General will not advance</span><span style="color:#2c1810">→ Ghost Marsh</span></div>
-          </div>
-        </div>
+  <div style="max-height:380px;overflow-y:auto;overflow-x:hidden;margin-bottom:10px">
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:4px">Kept:</div>
+    <div class="dv-kept">
+      <div style="flex:1;min-width:0;padding:8px">
+        <div style="overflow:hidden;height:52px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#3b82f6;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Bounty Bay</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#374151;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#374151;"><span class="location-ring-name" style="font-size:0.74em">Dancing Stone</span></div></div><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#3b82f6;width:48px;height:48px;font-size:1.5em">🐉</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6;white-space:nowrap">Sapphire</span></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div class="location-ring" style="width:90px;height:90px;background:#3b82f6;"><span class="location-ring-name" style="font-size:0.74em">Wolf Pass</span></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div><div style="border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Wolf Pass</span></div></div>
       </div>
     </div>
-    <div class="card-wrap">
-      <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">🧝 Ranger</span></div>
-      <div class="card-body">
-        <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, return the rest in any order.</span></div>
-        <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-          <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
-        </div>
-        <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-          <span class="die" style="background:#6d28a8">🎲</span>
-        </div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 4px">Discarded:</div>
+    <div class="dv-disc" style="display:flex;padding:0">
+      <div style="flex:1;min-width:0;padding:8px">
+        <div style="overflow:hidden;height:52px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Orc Valley</span></div></div><div style="display:flex;align-items:center;gap:8px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#16a34a;width:22px;height:22px"></span></div><div class="location-ring" style="width:90px;height:90px;background:#16a34a;"><span class="location-ring-name" style="font-size:0.74em">Father Oak Forest</span></div></div><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;white-space:nowrap">Balazarg</span></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div class="location-ring" style="width:90px;height:90px;background:#dc2626;"><span class="location-ring-name" style="font-size:0.74em">Fire River</span></div></div></div></div></div><div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div><div style="border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0;overflow:hidden"><span style="color:#dc2626">General will advance</span><span style="color:#2c1810">→ Fire River</span></div></div>
       </div>
     </div>
   </div>
-  <button class="phb" style="margin-top:12px">Continue</button>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, return the rest in any order.</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
 </div></div>
 
 </div>
-
 
 
 <!-- ═══════════════════════════════════════
@@ -1108,17 +960,24 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
 <div class="section">I. Night/Daytime Pickers</div>
 <div class="grid">
 
-<div class="col"><div class="tag">I1 · Militia Secures Area — cancel a placement</div>
+<div class="col"><div class="tag">I1 · _militiaSecuresShowPicker — slot selection ✅ UPDATED</div>
 <div class="mc">
   <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
   <div class="pb">
-    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Choose Placement to Cancel</span></div>
   <div style="margin-top:10px;margin-bottom:10px">
-    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minion Placement Cancelled:</div>
-    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Select which minion placement to cancel:</div>
+    <div class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
+        <span style="display:flex;align-items:center;gap:4px"><span class="mdot" style="width:14px;height:14px;background:#16a34a"></span><span class="mdot" style="width:14px;height:14px;background:#16a34a"></span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a;margin-left:4px">Orcs</span></span>
         <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
+      </div>
+      <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:4px 8px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;margin-top:4px;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span></div>
+    </div>
+    <div class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="display:flex;align-items:center;gap:4px"><span class="mdot" style="width:14px;height:14px;background:#374151"></span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151;margin-left:4px">Undead</span></span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span>
       </div>
     </div>
   </div>
@@ -1126,29 +985,69 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Militia Secures Area</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div>
     <div class="card-body">
       <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Night Phase: Cancel 1 minion placement from a Darkness Spreads card.</span></div>
-      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <div class="modal-general-token" style="background:#374151">💀</div>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#374151">Varkolak</span>
-      </div>
-      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-        <span class="die" style="background:#374151">🎲</span>
-      </div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#16a34a">👺</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">Gorgutt</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#16a34a;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
     </div>
   </div>
-  </div><button class="phb" style="margin-top:12px">Continue</button>
+  </div><button class="phb" style="margin-top:12px;opacity:0.4;cursor:not-allowed" disabled>Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
 </div></div>
 
-<div class="col"><div class="tag">I2 · Spy In The Camp — block a general's healing</div>
+<div class="col"><div class="tag">I1b · _militiaSecuresShowPicker — slot selected ✅ UPDATED</div>
 <div class="mc">
   <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
   <div class="pb">
-    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Choose Placement to Cancel</span></div>
   <div style="margin-top:10px;margin-bottom:10px">
-    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Prevent General Healing:</div>
-    <div style="background:rgba(220,38,38,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Select which minion placement to cancel:</div>
+    <div class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0;border-color:#d4af37;background:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.35)">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="display:flex;align-items:center;gap:6px;color:#dc2626"><span class="modal-general-token" style="background:#dc2626;width:24px;height:24px;font-size:0.75em">👹</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em">Balazarg</span></span>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#b91c1c">❤️ 4/10 — Healing Blocked</span>
+        <span style="display:flex;align-items:center;gap:4px"><span class="mdot" style="width:14px;height:14px;background:#16a34a"></span><span class="mdot" style="width:14px;height:14px;background:#16a34a"></span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a;margin-left:4px">Orcs</span></span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
+      </div>
+      <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:4px 8px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;margin-top:4px;overflow:hidden"><span style="color:#b91c1c">Overrun will be triggered</span></div>
+    </div>
+    <div class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="display:flex;align-items:center;gap:4px"><span class="mdot" style="width:14px;height:14px;background:#374151"></span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151;margin-left:4px">Undead</span></span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Militia Secures Area</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Night Phase: Cancel 1 minion placement from a Darkness Spreads card.</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#16a34a">👺</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">Gorgutt</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#16a34a;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
+</div></div>
+<div class="col"><div class="tag">I2 · _spyInCampShowPicker — no selection ✅ UPDATED</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Choose General to Block</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Select a wounded General to block their healing:</div>
+    <div class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="display:flex;align-items:center;gap:6px">
+          <span class="modal-general-token" style="background:#dc2626;width:24px;height:24px;font-size:0.75em">👹</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Balazarg</span>
+        </span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#ef4444">Major Wounds ❤️ 3/6</span>
+      </div>
+    </div>
+    <div class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="display:flex;align-items:center;gap:6px">
+          <span class="modal-general-token" style="background:#16a34a;width:24px;height:24px;font-size:0.75em">👺</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Gorgutt</span>
+        </span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#ef4444">Minor Wounds ❤️ 4/6</span>
       </div>
     </div>
   </div>
@@ -1156,16 +1055,50 @@ body{background:#111;font-family:Georgia,serif;padding:20px}
     <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spy In The Camp</span><span class="hero-banner-name" style="font-size:0.8em">⛏️ Dwarf</span></div>
     <div class="card-body">
       <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Step 1: Prevent 1 General from healing its battle wounds for 1 player's turn.</span></div>
-      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px;opacity:0.4;cursor:not-allowed" disabled>Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
+</div></div>
+
+<div class="col"><div class="tag">I2b · _spyInCampShowPicker — selected (gold border) ✅ UPDATED</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Choose General to Block</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div class="modal-desc-text" style="font-size:0.8em;color:#3d2b1f;margin-bottom:8px">Select a wounded General to block their healing:</div>
+    <div class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0;border-color:#d4af37;background:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.35)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="display:flex;align-items:center;gap:6px">
+          <span class="modal-general-token" style="background:#dc2626;width:24px;height:24px;font-size:0.75em">👹</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Balazarg</span>
+        </span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#ef4444">Major Wounds ❤️ 3/6</span>
       </div>
-      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-        <span class="die" style="background:#6d28a8">🎲</span>
+    </div>
+    <div class="hero-row" style="cursor:pointer;display:block;padding:8px 12px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="display:flex;align-items:center;gap:6px">
+          <span class="modal-general-token" style="background:#16a34a;width:24px;height:24px;font-size:0.75em">👺</span>
+          <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Gorgutt</span>
+        </span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#ef4444">Minor Wounds ❤️ 4/6</span>
       </div>
     </div>
   </div>
-  </div><button class="phb" style="margin-top:12px">Continue</button>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spy In The Camp</span><span class="hero-banner-name" style="font-size:0.8em">⛏️ Dwarf</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Step 1: Prevent 1 General from healing its battle wounds for 1 player's turn.</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
 </div></div>
 </div></div>
 
@@ -1499,5 +1432,147 @@ END COMMENTED OUT -->
 </div>
 
 END COMMENTED OUT -->
+<div style="height:60px"></div>
+
+
+<!-- ═══════════════════════════════════════════════
+     O. MISSING RESULT MODALS (added after code audit)
+════════════════════════════════════════════════ -->
+<div class="section">O. Additional Result Modals</div>
+<div class="grid">
+
+<!-- O1: Cavalry Sweep result -->
+<div class="col"><div class="tag">O1 · _finishCavalrySweep — result</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minions Removed</div>
+    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Eagle Peak Pass</span>
+      </div>
+    </div>
+    <div style="background:rgba(55,65,81,0.1);border:1px solid #374151;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span>
+      </div>
+    </div>
+    <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6"><span class="mdot" style="width:14px;height:14px;background:#3b82f6;margin-right:3px"></span>Dragonkin <span style="font-size:0.75em;color:#b91c1c">(×2)</span></span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Bounty Bay</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Cavalry Sweep</span><span class="hero-banner-name" style="font-size:0.8em">🧙 Wizard</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove minions across the board (up to 2 per location, Dragonkin count as 2)</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+<!-- O2: Dark Visions confirm result -->
+<div class="col"><div class="tag">O2 · _darkVisionsConfirm — result (kept + discarded summary)</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+  <div style="max-height:380px;overflow-y:auto;overflow-x:hidden;margin-bottom:10px">
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:4px">Kept:</div>
+    <div class="dv-kept">
+      <div style="flex:1;min-width:0;padding:8px">
+        <div style="display:flex;flex-direction:column;justify-content:center;gap:3px;margin-bottom:4px">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#6d28a8">All is Quiet</div>
+          <div class="modal-desc-text" style="font-size:0.72em;color:#3d2b1f">No minions spread. No generals move.</div>
+        </div>
+        <div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
+          <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">General will not advance</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 4px">Discarded:</div>
+    <div class="dv-disc" style="display:flex;padding:0">
+      <div style="flex:1;min-width:0;padding:8px">
+        <div style="overflow:hidden;height:68px;display:flex;align-items:center"><div style="padding-left:8px"><div style="transform:scale(0.5);transform-origin:left center;white-space:nowrap;display:flex;gap:10px;align-items:center"><div style="display:flex;align-items:center;gap:10px"><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span><span class="modal-minion-dot" style="background:#dc2626;width:22px;height:22px"></span></div><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div class="modal-general-token" style="background:#dc2626;width:48px;height:48px;font-size:1.5em">👹</div><div style="position:absolute;top:100%;margin-top:2px;white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Balazarg</div></div></div><span style="font-size:3em;color:#fff;font-weight:900;-webkit-text-stroke:2px rgba(0,0,0,0.25);text-shadow:0 2px 6px rgba(0,0,0,0.6)">→</span><div style="position:relative;display:flex;flex-direction:column;align-items:center"><div style="display:flex;align-items:center;padding:6px"><div style="z-index:3;position:relative"><div class="location-ring" style="width:90px;height:90px;background:#dc2626;outline:3px solid #dc2626;outline-offset:2px;box-shadow:0 0 12px #dc262699"><span class="location-ring-name" style="font-size:0.74em">Fire River</span></div></div></div><div style="white-space:nowrap;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">Next Location</div></div></div></div></div></div>
+        <div style="margin-top:4px;padding-top:4px;border-top:2px solid rgba(139,115,85,0.4)">
+          <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#2c1810;margin-bottom:5px">Darkness Spreads Effects</div>
+          <div style="border:1px solid #ef4444;background:rgba(239,68,68,0.08);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#b91c1c">General will advance</span><span style="color:#2c1810">→ Fire River</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Dark Visions</span><span class="hero-banner-name" style="font-size:0.8em">🧝 Ranger</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Draw the top 5 Darkness Spreads cards. Discard any you wish to avoid, return the rest in any order.</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#6d28a8">⚔️</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+<!-- O3: Militia Secures Area result -->
+<div class="col"><div class="tag">O3 · _militiaSecuresConfirm — result</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Minion Placement Cancelled:</div>
+    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Thorny Woods</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Militia Secures Area</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Night Phase: Cancel 1 minion placement from a Darkness Spreads card.</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#16a34a">👺</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#16a34a">Gorgutt</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#16a34a;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+<!-- O4: Spy In The Camp result -->
+<div class="col"><div class="tag">O4 · _spyInTheCampConfirm — result</div>
+<div class="mc">
+  <h2 class="modal-title modal-heading" style="margin-bottom:12px">🌟 Special Card Details</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
+  <div style="margin-top:10px;margin-bottom:10px">
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:6px">Prevent General Healing:</div>
+    <div style="background:rgba(220,38,38,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="display:flex;align-items:center;gap:6px;color:#dc2626"><span class="modal-general-token" style="background:#dc2626;width:24px;height:24px;font-size:0.75em">👹</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em">Balazarg</span></span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#b91c1c">🩸 3/6 — Healing Blocked</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-wrap">
+    <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spy In The Camp</span><span class="hero-banner-name" style="font-size:0.8em">⛏️ Dwarf</span></div>
+    <div class="card-body">
+      <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">During Step 1: Prevent 1 General from healing its battle wounds for 1 player's turn.</span></div>
+      <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px"><div class="modal-general-token" style="background:#dc2626">👹</div><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#dc2626">Balazarg</span></div>
+      <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center"><span class="die" style="background:#dc2626;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span></div>
+    </div>
+  </div>
+  </div><button class="phb" style="margin-top:12px">Continue</button>
+</div></div>
+
+</div>
 <div style="height:60px"></div>
 </body></html>

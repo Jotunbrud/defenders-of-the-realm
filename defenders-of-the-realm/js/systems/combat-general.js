@@ -614,24 +614,24 @@ Object.assign(game, {
             this._pendingCombatBonusDice = bonusDiceQuest;
             this._pendingGroupCombatArgs = { hero, general, cardsToUse };
             
+            // v2: parchment design — quest card display, phb Confirm/Cancel
             this.showInfoModal('💫 Find Magic Gate', `
-                <div style="text-align: center;">
-                    <div style="font-size: 2em; margin-bottom: 8px;">💫</div>
-                    <div style="color: #d4af37; margin-bottom: 12px;">
-                        Discard <strong>Find Magic Gate</strong> quest card to add <strong>+2 bonus dice</strong> to ${hero.name}'s roll vs ${general.name}?
-                    </div>
-                    <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">
-                        This quest card will be permanently discarded.
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" style="flex: 1; background: #dc2626;" onclick="game._useCombatBonusDiceGroup()">
-                            💫 Use (+2 Dice)
-                        </button>
-                        <button class="btn" style="flex: 1; background: #666;" onclick="game._skipCombatBonusDiceGroup()">
-                            Skip
-                        </button>
+                <div class="modal-title-bar" style="margin-bottom:8px">💫 Find Magic Gate</div>
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Use Quest Card</span></div>
+                    <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);margin-top:8px">
+                        <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center">
+                            <span class="hero-banner-name">📜 Find Magic Gate</span>
+                        </div>
+                        <div style="padding:14px">
+                            <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px">Build a Magic Gate on any Red Location. Spend 1 action and a matching location card to build the gate (standard gate rules apply).</div>
+                            <div style="margin-top:8px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">Reward:</span><span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5"> Discard this Quest Card to add 2 dice to any combat roll, including a battle against a General.</span></div>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d">Completed</span></div>
+                        </div>
                     </div>
                 </div>
+                <button class="phb" style="margin-top:12px" onclick="game._useCombatBonusDiceGroup()">Confirm</button>
+                <button class="phb phb-cancel" onclick="game._skipCombatBonusDiceGroup()">Cancel</button>
             `);
             const defaultBtnDiv = document.querySelector('#info-modal .modal-content > div:last-child');
             if (defaultBtnDiv) defaultBtnDiv.style.display = 'none';
@@ -1427,7 +1427,17 @@ Object.assign(game, {
         
         // Sorceress Shape Shifter: cannot enter Monarch City or Inns in enemy form
         if (this._isShapeshiftRestricted(locationName)) {
-            this.showInfoModal('⚡ Shape Shifter', '<div style="color: #ef4444;">Cannot enter this location while in enemy form!</div><div style="color: #999; margin-top: 5px; font-size: 0.9em;">Monarch City and Inns are restricted when shape shifted.</div>');
+            // v2: parchment design
+            this.showInfoModal('⚡ Shape Shifter', `
+                <div class="modal-title-bar" style="margin-bottom:8px">⚡ Shape Shifter</div>
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Movement Blocked</span></div>
+                    <div style="margin:10px 0">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:6px">Cannot enter this location while in enemy form!</div>
+                        <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">Monarch City and Inns are restricted when shape shifted.</div>
+                    </div>
+                </div>
+            `);
             return;
         }
         
@@ -1624,48 +1634,30 @@ Object.assign(game, {
             return;
         }
         
-        // Both options available - show choice modal
+        // v2: parchment design — option pills with #3d2b1f title text, phb Cancel
         let optionsHTML = `
-            <div class="modal-title" style="margin-bottom: 10px;">🌀 Magic Gate Travel</div>
-            <div style="text-align: center; color: #d4af37; margin-bottom: 15px;">
-                Choose your travel method:
-            </div>
-            
-            <div onclick="game.closeInfoModal(); game.showGateToGateTravel(null)" 
-                 style="padding: 15px; margin: 10px 0; border: 2px solid #9333ea; border-radius: 8px; 
-                        background: rgba(147, 51, 234, 0.15); cursor: pointer; transition: all 0.2s;"
-                 onmouseover="this.style.background='rgba(147, 51, 234, 0.3)'"
-                 onmouseout="this.style.background='rgba(147, 51, 234, 0.15)'">
-                <div style="font-size: 1.1em; font-weight: bold; color: #c084fc; margin-bottom: 5px;">
-                    🌀 Gate-to-Gate Travel
-                </div>
-                <div style="font-size: 0.9em; color: #999;">
-                    Teleport to another Magic Gate — no card required!
-                </div>
-                <div style="font-size: 0.85em; color: #4ade80; margin-top: 5px;">
-                    ${otherGates.length} gate${otherGates.length > 1 ? 's' : ''} available
+            <div class="modal-title-bar" style="margin-bottom:8px">🌀 Magic Gate Travel</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Select Travel Method</span></div>
+                <div style="margin:8px 0">
+                    <div onclick="game.closeInfoModal(); game.showGateToGateTravel(null)"
+                         style="padding:12px;margin:6px 0;border:2px solid #9333ea;border-radius:8px;background:rgba(147,51,234,0.15);cursor:pointer">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:4px">🌀 Gate-to-Gate Travel</div>
+                        <div class="modal-desc-text" style="font-size:0.78em;color:#3d2b1f">Teleport to another Magic Gate — no card required!</div>
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#3d2b1f;margin-top:4px">${otherGates.length} gate${otherGates.length > 1 ? 's' : ''} available</div>
+                    </div>
+                    <div onclick="game.closeInfoModal(); game.showMovementCardSelection([${magicGateCards.join(',')}], 'Magic Gate')"
+                         style="padding:12px;margin:6px 0;border:2px solid #d97706;border-radius:8px;background:rgba(217,119,6,0.15);cursor:pointer">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:4px">🎴 Discard a Magic Gate Card</div>
+                        <div class="modal-desc-text" style="font-size:0.78em;color:#3d2b1f">Teleport to the card's location or any existing gate</div>
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#3d2b1f;margin-top:4px">${magicGateCards.length} card${magicGateCards.length > 1 ? 's' : ''} available</div>
+                    </div>
                 </div>
             </div>
-            
-            <div onclick="game.closeInfoModal(); game.showMovementCardSelection([${magicGateCards.join(',')}], 'Magic Gate')" 
-                 style="padding: 15px; margin: 10px 0; border: 2px solid #d97706; border-radius: 8px; 
-                        background: rgba(217, 119, 6, 0.15); cursor: pointer; transition: all 0.2s;"
-                 onmouseover="this.style.background='rgba(217, 119, 6, 0.3)'"
-                 onmouseout="this.style.background='rgba(217, 119, 6, 0.15)'">
-                <div style="font-size: 1.1em; font-weight: bold; color: #fbbf24; margin-bottom: 5px;">
-                    🎴 Discard a Magic Gate Card
-                </div>
-                <div style="font-size: 0.9em; color: #999;">
-                    Teleport to the card's location or any existing gate
-                </div>
-                <div style="font-size: 0.85em; color: #fbbf24; margin-top: 5px;">
-                    ${magicGateCards.length} card${magicGateCards.length > 1 ? 's' : ''} available
-                </div>
-            </div>
+            <button class="phb phb-cancel" style="margin-top:12px" onclick="game.closeInfoModal()">Cancel</button>
         `;
-        
+
         this.showInfoModal('', optionsHTML);
-        // Hide default Continue button
         const defaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
         if (defaultBtn && defaultBtn.querySelector('button[onclick="game.closeInfoModal()"]')) {
             defaultBtn.style.display = 'none';

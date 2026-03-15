@@ -14,7 +14,17 @@ Object.assign(game, {
         
         // Sorceress Shape Shifter: block movement to restricted locations
         if (this._isShapeshiftRestricted(locationName)) {
-            this.showInfoModal('⚡ Shape Shifter', '<div style="color: #ef4444;">Cannot enter this location while in enemy form!</div><div style="color: #999; margin-top: 5px; font-size: 0.9em;">Monarch City and Inns are restricted when shape shifted.</div>');
+            // v2: parchment design
+            this.showInfoModal('⚡ Shape Shifter', `
+                <div class="modal-title-bar" style="margin-bottom:8px">⚡ Shape Shifter</div>
+                <div class="parchment-box">
+                    <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Movement Blocked</span></div>
+                    <div style="margin:10px 0">
+                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:6px">Cannot enter this location while in enemy form!</div>
+                        <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">Monarch City and Inns are restricted when shape shifted.</div>
+                    </div>
+                </div>
+            `);
             return true; // Consumed the click
         }
         
@@ -167,27 +177,28 @@ Object.assign(game, {
                     <div style="margin-top:10px;margin-bottom:10px">
                         <div style="background:rgba(147,51,234,0.1);border:1px solid #9333ea;border-radius:5px;padding:5px 10px;margin:4px 0">
                             <div style="display:flex;justify-content:space-between;align-items:center">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">Magic Gate Created</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">🌀 Magic Gate Created</span>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
                             </div>
                         </div>
                     </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Magic Gate</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <!-- v1: card-banner-inner — v2: card-banner for consistency -->
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Magic Gate</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
                             <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Place a Magic Gate at any location (no action used)</span></div>
-                            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-                                <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
-                            </div>
-                            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8">🎲</span><span class="die" style="background:#6d28a8">🎲</span>
-                            </div>
+                            <!-- v1: hardcoded Any General purple — v2: faction-specific via _cardGeneralDiceHTML -->
+                            ${this._cardGeneralDiceHTML(card)}
                         </div>
                     </div>
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default, center title per design system
+            const _mgBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_mgBtn) _mgBtn.style.display = 'none';
+            const _mgTitle = document.getElementById('info-modal-title');
+            if (_mgTitle) { _mgTitle.className = 'modal-heading'; _mgTitle.style.textAlign = 'center'; _mgTitle.style.marginBottom = '12px'; }
             
             return true;
         }
@@ -240,34 +251,41 @@ Object.assign(game, {
             this.updateMovementButtons();
             this.updateActionButtons();
             
-            // Show confirmation — all heroes listed, moved one gold-highlighted
-            const heroRowsHTML = this.heroes.map((h, i) => {
-                const isMoved = (i === moveInfo.targetHeroIndex);
-                const dest = isMoved ? locationName : h.location;
-                const sel = isMoved ? ' style="border-color:#d4af37;background:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.35)"' : '';
-                return `<div class="hero-row"${sel}>
-                    <div style="font-size:1.3em">${h.symbol}</div>
-                    <div style="flex:1;display:flex;align-items:center;justify-content:space-between">
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">${h.name}</div>
-                        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${dest}</div>
-                    </div>
-                </div>`;
-            }).join('');
+            // Show confirmation — moved hero as purple pill
             this.showInfoModal('🌟 Special Card Details', `
                 <div class="parchment-box">
                     <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">Special Card Result</span></div>
-                    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">
-                        ${heroRowsHTML}
+                    <div style="margin-top:10px;margin-bottom:10px">
+                        <div style="background:rgba(147,51,234,0.1);border:1px solid #9333ea;border-radius:5px;padding:5px 10px;margin:4px 0">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">${targetHero.symbol} ${targetHero.name}</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Hammer of Valor</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Hammer of Valor</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
-                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Move any hero to any location</span></div>
+                            <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Move any hero to any location (no action used)</span></div>
+                            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+                                <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
+                            </div>
+                            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
+                                <span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span><span class="die" style="background:#6d28a8;width:22px;height:22px;font-size:0.8em;border-radius:4px;animation:none">🎲</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default Continue (was causing double button) + center title per design system
+            // v1: if (_hvDefaultBtn && !_hvDefaultBtn.querySelector('.phb')) — condition was unreliable
+            // v2: always hide unconditionally since we inject our own .phb button above
+            const _hvDefaultBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_hvDefaultBtn) _hvDefaultBtn.style.display = 'none';
+            const _hvTitle = document.getElementById('info-modal-title');
+            if (_hvTitle) { _hvTitle.className = 'modal-heading'; _hvTitle.style.textAlign = 'center'; _hvTitle.style.marginBottom = '12px'; }
             
             // Check for combat at destination for the moved hero
             if (moveInfo.targetHeroIndex === this.currentPlayerIndex) {
@@ -333,27 +351,28 @@ Object.assign(game, {
                     <div style="margin-top:10px;margin-bottom:10px">
                         <div style="background:rgba(147,51,234,0.1);border:1px solid #9333ea;border-radius:5px;padding:5px 10px;margin:4px 0">
                             <div style="display:flex;justify-content:space-between;align-items:center">
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">${crystalsRemoved} Taint Crystal${crystalsRemoved !== 1 ? 's' : ''} Removed</span>
+                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#9333ea">💎 ${crystalsRemoved} Taint Crystal${crystalsRemoved !== 1 ? 's' : ''} Removed</span>
                                 <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ ${locationName}</span>
                             </div>
                         </div>
                     </div>
                     <div class="card-wrap">
-                        <div class="card-banner-inner"><span class="hero-banner-name">🌟 Spell of Purity</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
+                        <!-- v1: card-banner-inner — v2: card-banner for consistency -->
+                        <div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px"><span class="hero-banner-name">🌟 Spell of Purity</span><span class="hero-banner-name" style="font-size:0.8em">${cardHero.symbol} ${cardHero.name}</span></div>
                         <div class="card-body">
                             <div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Special:</strong> <span class="modal-desc-text">Remove all Taint Crystals from one location (no action used)</span></div>
-                            <div style="text-align:center;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
-                                <div class="modal-general-token" style="background:#6d28a8">⚔️</div>
-                                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#6d28a8">Any General</span>
-                            </div>
-                            <div style="text-align:center;margin:10px 0;display:flex;gap:4px;justify-content:center">
-                                <span class="die" style="background:#6d28a8">🎲</span><span class="die" style="background:#6d28a8">🎲</span>
-                            </div>
+                            <!-- v1: hardcoded Any General purple — v2: faction-specific via _cardGeneralDiceHTML -->
+                            ${this._cardGeneralDiceHTML(card)}
                         </div>
                     </div>
                 </div>
                 <button class="phb" style="margin-top:12px" onclick="game.closeInfoModal()">Continue</button>
             `);
+            // v2: hide shell default, center title per design system
+            const _spBtn = document.querySelector('#info-modal .modal-content > div:last-child');
+            if (_spBtn) _spBtn.style.display = 'none';
+            const _spTitle = document.getElementById('info-modal-title');
+            if (_spTitle) { _spTitle.className = 'modal-heading'; _spTitle.style.textAlign = 'center'; _spTitle.style.marginBottom = '12px'; }
             
             return true;
         }
@@ -514,13 +533,15 @@ Object.assign(game, {
             const minionsHere = this.minions[locationName];
             let totalRemoved = 0;
             const factionDetails = [];
+            const factionBreakdown = [];
             
             if (minionsHere) {
                 const factionNames = { 'red': 'Demons', 'blue': 'Dragonkin', 'green': 'Orcs', 'black': 'Undead' };
-                const factionColors = { 'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'black': '#6b7280' };
+                const factionColors = { 'red': '#dc2626', 'blue': '#3b82f6', 'green': '#16a34a', 'black': '#374151' };
                 for (let [color, count] of Object.entries(minionsHere)) {
                     if (count > 0) {
                         factionDetails.push(`<span style="color: ${factionColors[color] || '#999'};">${count} ${factionNames[color] || color}</span>`);
+                        factionBreakdown.push({ color, count });
                         totalRemoved += count;
                         // Track kills for quest progress (e.g. Orc Hunter)
                         this._trackQuestMinionDefeatsRaw(color, count);
@@ -531,7 +552,8 @@ Object.assign(game, {
             
             state.minionResults.push({
                 location: locationName,
-                details: `${totalRemoved} minion${totalRemoved !== 1 ? 's' : ''} removed (${factionDetails.join(', ')})`
+                details: `${totalRemoved} minion${totalRemoved !== 1 ? 's' : ''} removed (${factionDetails.join(', ')})`,
+                factions: factionBreakdown
             });
             state.minionsUsesRemaining--;
             
@@ -1231,6 +1253,7 @@ Object.assign(game, {
         let bannerHTML = '';
         let bodyHTML = '';
         if (card.special) {
+            // v2: Use 🌟 icon explicitly (was using card.icon which could be ⭐ on some card data)
             bannerHTML = `<div style="background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center;">
                 <div class="hero-banner-name">🌟 ${card.name}</div>
             </div>`;
@@ -1273,7 +1296,9 @@ Object.assign(game, {
 
         detailContent.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">🎴 Card Detail</h2>
+                <!-- v1: <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">🎴 Card Detail</h2> -->
+                <!-- v2: Special cards get correct title per mockup section A -->
+                <h2 class="modal-title modal-heading" style="margin:0;font-size:1.2em;">${card.special ? '🌟 Special Card Details' : '🎴 Card Detail'}</h2>
                 <button onclick="game._heroDetailView='hero';game._renderHeroDetailContent();" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.5);" title="Back to Hero">×</button>
             </div>
             <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid ${cColor.border};border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3);">

@@ -198,9 +198,9 @@ Object.assign(game, {
         
         const borderColor = {
             'red': '#dc2626',
-            'blue': '#2563eb',
+            'blue': '#3b82f6',
             'green': '#16a34a',
-            'black': '#1f2937'
+            'black': '#374151'
         }[card.color] || '#8B7355';
         
         // Map color to general name
@@ -276,7 +276,7 @@ Object.assign(game, {
         
         // Show color selection modal
         const colorOptions = [
-            { color: 'black', label: 'Undead', hex: '#6b7280', icon: '💀' },
+            { color: 'black', label: 'Undead', hex: '#374151', icon: '💀' },
             { color: 'blue', label: 'Dragonkin', hex: '#3b82f6', icon: '🐉' },
             { color: 'green', label: 'Orcs', hex: '#16a34a', icon: '🪓' },
             { color: 'red', label: 'Demons', hex: '#dc2626', icon: '🔥' }
@@ -366,7 +366,7 @@ Object.assign(game, {
         }
         
         const colorNames = { black: 'Black', blue: 'Blue', green: 'Green', red: 'Red' };
-        const colorHexes = { black: '#6b7280', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
+        const colorHexes = { black: '#374151', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
         const chosenName = colorNames[color] || color;
         const chosenHex = colorHexes[color] || '#d4af37';
         
@@ -409,7 +409,7 @@ Object.assign(game, {
         
         // Build results HTML matching Evening modal card style
         const ccMap = {
-            blue: { border: '#3b82f6', text: '#2563eb' },
+            blue: { border: '#3b82f6', text: '#3b82f6' },
             red: { border: '#dc2626', text: '#dc2626' },
             green: { border: '#16a34a', text: '#16a34a' },
             black: { border: '#374151', text: '#374151' },
@@ -500,7 +500,7 @@ Object.assign(game, {
         
         // Show color selection modal (same as Local Information)
         const colorOptions = [
-            { color: 'black', label: 'Undead', hex: '#6b7280', icon: '💀' },
+            { color: 'black', label: 'Undead', hex: '#374151', icon: '💀' },
             { color: 'blue', label: 'Dragonkin', hex: '#3b82f6', icon: '🐉' },
             { color: 'green', label: 'Orcs', hex: '#16a34a', icon: '🪓' },
             { color: 'red', label: 'Demons', hex: '#dc2626', icon: '🔥' }
@@ -587,7 +587,7 @@ Object.assign(game, {
         }
         
         const colorNames = { black: 'Black', blue: 'Blue', green: 'Green', red: 'Red' };
-        const colorHexes = { black: '#6b7280', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
+        const colorHexes = { black: '#374151', blue: '#3b82f6', green: '#16a34a', red: '#dc2626' };
         const chosenName = colorNames[color] || color;
         const chosenHex = colorHexes[color] || '#d4af37';
         
@@ -630,7 +630,7 @@ Object.assign(game, {
         
         // Build results HTML matching Evening modal card style
         const ccMap = {
-            blue: { border: '#3b82f6', text: '#2563eb' },
+            blue: { border: '#3b82f6', text: '#3b82f6' },
             red: { border: '#dc2626', text: '#dc2626' },
             green: { border: '#16a34a', text: '#16a34a' },
             black: { border: '#374151', text: '#374151' },
@@ -691,7 +691,7 @@ Object.assign(game, {
         const content = document.getElementById('rumors-content');
         
         const ccMap = {
-            blue: { border: '#3b82f6', text: '#2563eb' },
+            blue: { border: '#3b82f6', text: '#3b82f6' },
             red: { border: '#dc2626', text: '#dc2626' },
             green: { border: '#16a34a', text: '#16a34a' },
             black: { border: '#374151', text: '#374151' },
@@ -733,7 +733,7 @@ Object.assign(game, {
         const content = document.getElementById('general-reward-content');
         
         const ccMap = {
-            blue: { border: '#3b82f6', text: '#2563eb' },
+            blue: { border: '#3b82f6', text: '#3b82f6' },
             red: { border: '#dc2626', text: '#dc2626' },
             green: { border: '#16a34a', text: '#16a34a' },
             black: { border: '#374151', text: '#374151' },
@@ -745,9 +745,7 @@ Object.assign(game, {
             : `${heroRewards.length} contributing heroes receive 3 cards each:`;
         
         let html = `
-            <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:1.15em;color:#d4af37;margin-bottom:4px;">
-                🎉 General Defeated — Rewards!
-            </div>
+            <!-- v1: duplicate title removed — shell modal-title-bar already shows "🎉 General Defeated — Rewards!" -->
             <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:0.85em;color:#d4af37;margin-bottom:12px;">
                 ${generalName.toUpperCase()} HAS BEEN VANQUISHED!<br>
                 <span style="font-weight:400;font-size:0.9em;">${rewardText}</span>
@@ -801,63 +799,66 @@ Object.assign(game, {
     },
     
     showVictoryModal() {
+        // v2: redesigned to use parchment design standard (modal-title-bar, .pb/.pbn, faction pills, .phb buttons)
+        // v1: plain text, old btn style, no parchment
         const modal = document.getElementById('victory-modal');
         const content = document.getElementById('victory-content');
         
         const isFlawless = this.defeatList.length === 0;
-        const titleText = isFlawless ? 'FLAWLESS VICTORY!' : 'TAINTED VICTORY...';
-        const titleColor = isFlawless ? '#ffd700' : '#ef4444';
-        const subtitleText = isFlawless 
+        // v2: 💔 broken heart for tainted (was ⚔️), 🏆 for flawless
+        const titleText = isFlawless ? '🏆 Flawless Victory!' : '💔 Tainted Victory...';
+        const bannerText = isFlawless ? 'The Realm Is Saved!' : 'The Realm Is Saved... At A Cost.';
+        const subtitleText = isFlawless
             ? 'The Heroes Have Defended the Realm Without Defeat!'
-            : 'The Realm Is Saved... But At A Cost.';
-        const emoji = isFlawless ? '🏆' : '⚔️';
-        
+            : '';
+
+        // General defeated pills — ☠️ + name (faction) on left, "Defeated" on right
+        // v2: 💀 → ☠️, separate faction label → inline in name, label → "Defeated"
+        const generalPills = [
+            { name: 'Varkolak', faction: 'Undead',    color: '#374151', bg: 'rgba(55,65,81,0.1)'    },
+            { name: 'Balazarg', faction: 'Demons',    color: '#dc2626', bg: 'rgba(220,38,38,0.1)'   },
+            { name: 'Gorgutt',  faction: 'Orcs',      color: '#16a34a', bg: 'rgba(22,163,74,0.1)'   },
+            { name: 'Sapphire', faction: 'Dragonkin', color: '#3b82f6', bg: 'rgba(59,130,246,0.1)'  },
+        ].map(g => `
+            <div style="background:${g.bg};border:1px solid ${g.color};border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:${g.color}">☠️ ${g.name} (${g.faction})</span>
+                <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+            </div>`).join('');
+
+        // Defeat conditions section (tainted only) — no ⚠️ icon on header
         let defeatSection = '';
         if (!isFlawless) {
-            const defeatLines = this.defeatList.map(d => 
-                `<div style="padding: 6px 8px; margin: 4px 0; border-left: 3px solid #ef4444; background: rgba(0,0,0,0.3); border-radius: 3px;">💀 ${d}</div>`
+            const defeatPills = this.defeatList.map(d =>
+                `<div style="background:rgba(220,38,38,0.08);border:1px solid #ef4444;border-radius:5px;padding:5px 10px;margin:4px 0">
+                    <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#b91c1c">💥 ${d}</span>
+                </div>`
             ).join('');
+            // v2: removed ⚠️ icon from header label
             defeatSection = `
-                <div style="margin: 20px 0; padding: 15px; border: 2px solid #ef4444; background: rgba(239,68,68,0.1); border-radius: 8px;">
-                    <div style="color: #ef4444; font-weight: bold; margin-bottom: 10px;">Lose Conditions Triggered (${this.defeatList.length}):</div>
-                    ${defeatLines}
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3)">
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#b91c1c;margin-bottom:6px">Defeat Conditions Triggered (${this.defeatList.length}):</div>
+                    ${defeatPills}
                 </div>`;
         }
-        
+
+        const subtitleHTML = subtitleText
+            ? `<div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:10px">${subtitleText}</div>`
+            : '';
+
+        // v2: buttons use .phb, no emoji icons on button text
         content.innerHTML = `
-            <div style="text-align: center;">
-                <div style="font-size: 3em; margin-bottom: 20px;">
-                    ${emoji}
-                </div>
-                <div style="font-size: 2em; color: ${titleColor}; font-weight: bold; margin-bottom: 20px;">
-                    ${titleText}
-                </div>
-                <div style="font-size: 1.3em; color: #d4af37; margin-bottom: 30px;">
-                    ${subtitleText}
-                </div>
-                <div style="margin: 30px 0; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                    <div style="font-size: 1.1em; margin-bottom: 15px;">
-                        All four generals have been vanquished:
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-                        <div style="color: #1f2937;">⚔️ Varkolak (Undead)</div>
-                        <div style="color: #dc2626;">⚔️ Balazarg (Demons)</div>
-                        <div style="color: #16a34a;">⚔️ Gorgutt (Orcs)</div>
-                        <div style="color: #2563eb;">⚔️ Sapphire (Dragonkin)</div>
-                    </div>
-                </div>
+            <div class="modal-title-bar" style="margin-bottom:8px">${titleText}</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">${bannerText}</span></div>
+                <div style="margin:10px 0 6px">${subtitleHTML}</div>
+                <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:6px">Generals:</div>
+                ${generalPills}
                 ${defeatSection}
-                <div style="margin-top: 30px;">
-                    <button class="btn btn-primary" onclick="location.reload()" style="font-size: 1.1em; padding: 12px 30px; margin: 5px;">
-                        🎮 New Game
-                    </button>
-                    <button class="btn" onclick="window.close()" style="font-size: 1.1em; padding: 12px 30px; margin: 5px;">
-                        ✕ Quit
-                    </button>
-                </div>
             </div>
+            <button class="phb" style="margin-top:12px" onclick="location.reload()">New Game</button>
+            <button class="phb" style="margin-top:6px;background:linear-gradient(135deg,#b8960c,#9a7a0a)" onclick="window.close()">Quit</button>
         `;
-        
+
         modal.classList.add('active');
         this.addLog(isFlawless ? '=== FLAWLESS VICTORY! THE REALM IS SAVED! ===' : '=== TAINTED VICTORY... THE REALM IS SAVED, BUT AT A COST ===');
     },

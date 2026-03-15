@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html><head><title>Other Modals — Needs Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#111;font-family:Georgia,serif;padding:20px}
+.modal-title{font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.2em;margin:0}
+.modal-title-bar{font-family:'Cinzel',Georgia,serif;font-weight:900;text-align:center;font-size:1.15em;color:#d4af37;margin-bottom:8px;letter-spacing:1px}
+.modal-heading{text-align:center}
+.hero-banner-name{font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1.05em;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.9)}
+.modal-desc-text{font-family:'Comic Sans MS','Comic Sans',cursive}
+.modal-general-token{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:1.2em;border:2px solid rgba(255,255,255,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.5)}
+/* Modal shell */
+.mc{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:2px solid #d4af37;border-radius:12px;padding:20px;max-width:480px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.6);color:#f4e4c1}
+/* OLD shell — to show current state */
+.mc-old{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:2px solid #d4af37;border-radius:12px;padding:20px;max-width:480px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.6);color:#f4e4c1;outline:3px dashed #ef4444;outline-offset:4px}
+/* Parchment */
+.pb{padding:10px;margin-top:10px;border-radius:8px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:2px solid #8b7355}
+.pbn{background:linear-gradient(135deg,#5c3d2ecc 0%,#4a2f20cc 100%);padding:6px 14px;margin:-10px -10px 10px -10px;border-radius:8px 8px 0 0;border-bottom:2px solid #8b7355;text-align:center}
+/* Card wrap */
+.card-wrap{background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #6d28a8;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+.card-banner{background:linear-gradient(135deg,#6d28a8cc 0%,#6d28a899 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center}
+.card-body{padding:14px}
+/* Buttons */
+.phb{width:100%;margin-top:10px;padding:11px;border-radius:8px;font-weight:bold;font-size:0.95em;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;font-variant:small-caps;cursor:pointer;display:block;text-align:center}
+.phb-cancel{margin-top:6px}
+.btn{padding:10px 20px;border-radius:8px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;cursor:pointer;border:2px solid #8b7355;background:rgba(139,115,85,0.2);color:#d4af37}
+.btn-primary{background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border-color:#d4af37}
+.btn-danger{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border-color:#ef4444}
+/* Hero row */
+.hero-row{border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;border:2px solid #8b7355;background:rgba(92,61,46,0.08);transition:all 0.2s;margin:4px 0}
+.hero-row.selected{border-color:#d4af37;background:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.35)}
+/* Faction tiles */
+.ftile{border-radius:8px;padding:14px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);text-align:center;cursor:pointer;border:3px solid #8b7355}
+.ftile.selected{border-color:#d4af37;box-shadow:0 0 12px rgba(212,175,55,0.5)}
+/* die */
+.die{display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:8px;font-size:1.5em;font-weight:bold;border:2px solid rgba(0,0,0,0.3)}
+.die-sm{width:22px;height:22px;font-size:0.8em;border-radius:4px}
+.die-black{background:linear-gradient(145deg,#374151,#1f2937);color:#fff}
+/* Layout */
+.section{font-family:'Cinzel',Georgia,serif;font-size:1.3em;font-weight:900;text-align:center;margin:36px 0 16px;padding-bottom:10px;border-bottom:2px solid #d4af37;color:#d4af37}
+.grid{display:flex;flex-wrap:wrap;justify-content:center;gap:32px;margin-bottom:32px}
+.col{display:flex;flex-direction:column;gap:8px;align-items:center;width:480px}
+.tag{font-family:'Cinzel',Georgia,serif;font-size:0.7em;color:#888;margin-bottom:4px;text-align:center}
+.old-tag{font-family:'Cinzel',Georgia,serif;font-size:0.7em;color:#ef4444;margin-bottom:4px;text-align:center}
+/* Status pills */
+.stat-pill{padding:5px 10px;border-radius:5px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0}
+.stat-green{background:rgba(22,163,74,0.1);border:1px solid #16a34a}
+.stat-red{background:rgba(220,38,38,0.1);border:1px solid #dc2626}
+.stat-purple{background:rgba(124,58,237,0.1);border:1px solid #7c3aed}
+/* mdot */
+.mdot{display:inline-block;border-radius:50%;border:1.5px solid rgba(0,0,0,0.3);box-shadow:0 1px 2px rgba(0,0,0,0.3);vertical-align:middle}
+/* card tile (old style) */
+.ctile-old{background:rgba(0,0,0,0.3);border:3px solid #9333ea;border-radius:8px;padding:10px;text-align:center;cursor:pointer;flex:1;min-width:80px;max-width:110px}
+</style></head><body>
+
+<div class="section">A. Victory Modal (actions.js: showVictoryModal)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">A1 · Flawless Victory — no defeats</div>
+<div class="mc">
+  <div class="modal-title-bar">🏆 Flawless Victory!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">The Realm Is Saved!</span></div>
+    <div style="text-align:center;margin:12px 0 6px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:10px">The Heroes Have Defended the Realm Without Defeat!</div>
+    </div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:6px">Generals:</div>
+    <div style="background:rgba(55,65,81,0.1);border:1px solid #374151;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">☠️ Varkolak (Undead)</span>
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+    </div>
+    <div style="background:rgba(220,38,38,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">☠️ Balazarg (Demons)</span>
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+    </div>
+    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">☠️ Gorgutt (Orcs)</span>
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+    </div>
+    <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">☠️ Sapphire (Dragonkin)</span>
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+    </div>
+  </div>
+  <button class="phb" style="margin-top:12px">New Game</button>
+  <button class="phb phb-cancel">Quit</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">A2 · Tainted Victory — defeat conditions triggered</div>
+<div class="mc">
+  <div class="modal-title-bar">💔 Tainted Victory...</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">The Realm Is Saved... At A Cost.</span></div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:10px 0 6px">Generals:</div>
+    <div style="background:rgba(55,65,81,0.1);border:1px solid #374151;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151">☠️ Varkolak (Undead)</span>
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+    </div>
+    <div style="background:rgba(220,38,38,0.1);border:1px solid #dc2626;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626">☠️ Balazarg (Demons)</span>
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+    </div>
+    <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a">☠️ Gorgutt (Orcs)</span>
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+    </div>
+    <div style="background:rgba(59,130,246,0.1);border:1px solid #3b82f6;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3b82f6">☠️ Sapphire (Dragonkin)</span>
+      <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">Defeated</span>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(139,115,85,0.3)">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#b91c1c;margin-bottom:6px">Defeat Conditions Triggered (2):</div>
+      <div style="background:rgba(220,38,38,0.08);border:1px solid #ef4444;border-radius:5px;padding:5px 10px;margin:4px 0">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#b91c1c">💥 Gorgutt reached Monarch City</span>
+      </div>
+      <div style="background:rgba(220,38,38,0.08);border:1px solid #ef4444;border-radius:5px;padding:5px 10px;margin:4px 0">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.8em;color:#b91c1c">💥 Eagle Rider was defeated</span>
+      </div>
+    </div>
+  </div>
+  <button class="phb" style="margin-top:12px">New Game</button>
+  <button class="phb phb-cancel">Quit</button>
+</div>
+</div>
+
+</div>
+<div class="section">B. Rumors at the Inn (actions.js: 311 + 460)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">B1 · Rumors picker — no selection ✅ MATCHES IN-GAME</div>
+<div class="mc">
+  <!-- title: JS sets className=modal-heading + inline fontSize:1.15em, textAlign:center -->
+  <h2 style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:12px">🍺 Rumors at the Inn</h2>
+  <div style="text-align:center;font-size:0.85em;color:#d4af37;margin-bottom:10px">
+    Choose a color — you will draw 2 cards and keep all that match this color, plus any Special cards. Non-matching cards are discarded.
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0">
+    <div style="border:3px solid #374151;cursor:pointer;padding:14px;border-radius:8px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3)">
+      <div style="color:#374151;font-weight:bold;font-family:'Cinzel',Georgia,serif">BLACK</div>
+    </div>
+    <div style="border:3px solid #d4af37;cursor:pointer;padding:14px;border-radius:8px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);text-align:center;box-shadow:0 0 12px rgba(212,175,55,0.5),0 4px 12px rgba(0,0,0,0.4)">
+      <div style="color:#3b82f6;font-weight:bold;font-family:'Cinzel',Georgia,serif">BLUE</div>
+    </div>
+    <div style="border:3px solid #16a34a;cursor:pointer;padding:14px;border-radius:8px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3)">
+      <div style="color:#16a34a;font-weight:bold;font-family:'Cinzel',Georgia,serif">GREEN</div>
+    </div>
+    <div style="border:3px solid #dc2626;cursor:pointer;padding:14px;border-radius:8px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3)">
+      <div style="color:#dc2626;font-weight:bold;font-family:'Cinzel',Georgia,serif">RED</div>
+    </div>
+  </div>
+  <!-- Confirm: phase-btn disabled = grey (#444 bg, #888 text, #666 border, 0.5 opacity) -->
+  <button style="width:100%;margin-top:14px;padding:11px;border-radius:8px;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:#444;color:#888;border:2px solid #666;opacity:0.5;cursor:not-allowed" disabled>Confirm</button>
+  <!-- Cancel: phase-btn enabled = gold (same as phb) -->
+  <button style="width:100%;margin-top:14px;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37">Cancel</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">B2 · Rumors result — all discarded ✅ MATCHES IN-GAME</div>
+<div class="mc">
+  <h2 style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:12px">🍺 Rumors — Results</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;text-align:center;margin-bottom:6px">Color Chosen: <span style="color:#374151">Black</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><div style="position:relative;flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px 10px;text-align:center;opacity:0.45;box-shadow:0 2px 8px rgba(0,0,0,0.3);"><div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4)">✕</div><div style="font-size:1.4em;margin-bottom:2px">🦅</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#16a34a">Greenleaf Village</div><div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div><div style="position:relative;flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #3b82f6;border-radius:8px;padding:8px 10px;text-align:center;opacity:0.45;box-shadow:0 2px 8px rgba(0,0,0,0.3);"><div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4)">✕</div><div style="font-size:1.4em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#3b82f6">Amarak Peak</div><div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#3b82f6;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div></div>
+  </div>
+  <!-- shell btn-primary converted to phb via JS: className=phb, marginTop:8px -->
+  <button class="phb" style="margin-top:8px">Continue</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">B3 · Rumors result — mixed kept/discarded ✅ MATCHES IN-GAME</div>
+<div class="mc">
+  <h2 style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:12px">🍺 Rumors — Results</h2>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">🎴 Cards Drawn</span></div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#5c3d2e;text-align:center;margin-bottom:6px">Color Chosen: <span style="color:#16a34a">Green</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><div style="flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><div style="font-size:1.4em;margin-bottom:2px">🦅</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#16a34a">Greenleaf Village</div><div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div><div style="position:relative;flex:1 1 120px;max-width:160px;min-width:100px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #3b82f6;border-radius:8px;padding:8px 10px;text-align:center;opacity:0.45;box-shadow:0 2px 8px rgba(0,0,0,0.3);"><div style="position:absolute;top:-8px;right:-8px;background:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4)">✕</div><div style="font-size:1.4em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.72em;color:#3b82f6">Amarak Peak</div><div style="display:flex;justify-content:center;gap:3px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#3b82f6;border-radius:3px;font-size:0.7em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div></div>
+  </div>
+  <button class="phb" style="margin-top:8px">Continue</button>
+</div>
+</div>
+
+</div>
+<div class="section">C. Find Magic Gate Quest (combat-general.js / combat-minion.js)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">C · Find Magic Gate — Use Quest Card prompt</div>
+<div class="mc">
+  <div class="modal-title-bar">💫 Find Magic Gate</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Use Quest Card</span></div>
+    <div style="margin:10px 0">
+      <!-- Quest card — exact structure from showQuestDetailModal -->
+      <div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3)">
+        <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center">
+          <div class="hero-banner-name">📜 Find Magic Gate</div>
+        </div>
+        <div style="padding:14px">
+          <div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px">Build a Magic Gate on any Red Location. Spend 1 action and a matching location card to build the gate (standard gate rules apply).</div>
+          <div style="margin-top:8px">
+            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">Reward:</span>
+            <span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5"> Discard this Quest Card to add 2 dice to any combat roll, including a battle against a General.</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px">
+            <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d">Completed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="phb" style="margin-top:12px">Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">D. Shape Shifter Restriction (combat-general.js / movement.js)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">D · Shape Shifter — new design</div>
+<div class="mc">
+  <div class="modal-title-bar">⚡ Shape Shifter</div>
+  <div class="pb"><div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Movement Blocked</span></div>
+  <div style="margin:10px 0">
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#dc2626;margin-bottom:6px">Cannot enter this location while in enemy form!</div>
+    <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f;margin:6px 0">Monarch City and Inns are restricted when shape shifted.</div>
+  </div>
+  </div>
+  <button class="phb" style="margin-top:12px">Continue</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">E. Gate-to-Gate Travel (combat-general.js)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">E1 · Travel choice — both options available</div>
+<div class="mc">
+  <div style="text-align:right;margin-bottom:8px"><span style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%">×</span></div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:4px">🌀 Magic Gate Travel</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:0.85em;text-align:center;margin-bottom:12px">Choose your travel method:</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">Select Travel Method</span></div>
+    <div style="margin:8px 0">
+      <!-- pill title uses hero-banner-name color: #fff with dark text-shadow (parchment banner standard) -->
+      <div style="padding:12px;margin:6px 0;border:2px solid #9333ea;border-radius:8px;background:rgba(147,51,234,0.15);cursor:pointer">
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:4px">🌀 Gate-to-Gate Travel</div>
+        <div class="modal-desc-text" style="font-size:0.78em;color:#3d2b1f">Teleport to another Magic Gate — no card required!</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#3d2b1f;margin-top:4px">3 gates available</div>
+      </div>
+      <div style="padding:12px;margin:6px 0;border:2px solid #d97706;border-radius:8px;background:rgba(217,119,6,0.15);cursor:pointer">
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f;margin-bottom:4px">🎴 Discard a Magic Gate Card</div>
+        <div class="modal-desc-text" style="font-size:0.78em;color:#3d2b1f">Teleport to the card's location or any existing gate</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;color:#3d2b1f;margin-top:4px">2 cards available</div>
+      </div>
+    </div>
+  </div>
+  <!-- phb Confirm disabled until selection made, Cancel always enabled -->
+  <button style="width:100%;margin-top:6px;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:#444;color:#888;border:2px solid #666;opacity:0.5;cursor:not-allowed" disabled>Confirm</button>
+  <button style="width:100%;margin-top:14px;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Cancel</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">E2 · Gate-to-Gate selection — no selection (Confirm disabled)</div>
+<div class="mc">
+  <div style="text-align:right;margin-bottom:8px"><span style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%">×</span></div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:4px">🌀 Gate-to-Gate Travel</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:0.85em;text-align:center;margin-bottom:12px">Select a destination gate — no card required!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">Select a Destination</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:8px 0">
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#16a34a;line-height:1.2">Father Oak Forest</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#16a34a;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #3b82f6;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#3b82f6;line-height:1.2">Amarak Peak</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#3b82f6;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#dc2626;line-height:1.2">Withered Hills</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#dc2626;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+    </div>
+  </div>
+  <button style="width:100%;margin-top:6px;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:#444;color:#888;border:2px solid #666;opacity:0.5;cursor:not-allowed" disabled>Confirm</button>
+  <button style="width:100%;margin-top:14px;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Cancel</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">E2b · Gate-to-Gate selection — Amarak Peak selected (Confirm enabled)</div>
+<div class="mc">
+  <div style="text-align:right;margin-bottom:8px"><span style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;background:rgba(100,100,100,0.9);border:2px solid #666;border-radius:50%">×</span></div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:4px">🌀 Gate-to-Gate Travel</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:0.85em;text-align:center;margin-bottom:12px">Select a destination gate — no card required!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">Select a Destination</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:8px 0">
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#16a34a;line-height:1.2">Father Oak Forest</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#16a34a;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #d4af37;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 0 12px rgba(212,175,55,0.5),0 4px 12px rgba(0,0,0,0.4)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#3b82f6;line-height:1.2">Amarak Peak</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#3b82f6;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)"><div style="font-size:1.2em;margin-bottom:2px">🌀</div><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#dc2626;line-height:1.2">Withered Hills</div><div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#dc2626;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div></div>
+    </div>
+  </div>
+  <button style="width:100%;margin-top:14px;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37">Confirm</button>
+  <button style="width:100%;margin-top:14px;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Cancel</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">F. Demonic Curse (combat-minion.js / combat-general.js)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">F1 · Solo — some cards lost</div>
+<div class="mc">
+  <div class="modal-title-bar">General Combat Skill</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Discarded Cards</span></div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 10px">Discard a card for each 1 rolled.</div>
+    <div style="display:flex;gap:10px;justify-content:center;margin:10px 0;flex-wrap:wrap">
+      <div style="width:50px;height:50px;background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)">1</div><div style="width:50px;height:50px;background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)">4</div>
+    </div>
+    <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">Thorny Woods</span><span style="color:#b91c1c">Lost</span></div>
+    <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">Wolf Pass</span><span style="color:#2c1810">Kept</span></div>
+  </div>
+  <button class="phb" style="margin-top:12px">Continue to Combat</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">F2 · Solo — all cards destroyed</div>
+<div class="mc">
+  <div class="modal-title-bar">General Combat Skill</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Discarded Cards</span></div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 10px">Discard a card for each 1 rolled.</div>
+    <div style="display:flex;gap:10px;justify-content:center;margin:10px 0;flex-wrap:wrap">
+      <div style="width:50px;height:50px;background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)">1</div><div style="width:50px;height:50px;background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)">1</div>
+    </div>
+    <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">Thorny Woods</span><span style="color:#b91c1c">Lost</span></div>
+    <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">Wolf Pass</span><span style="color:#b91c1c">Lost</span></div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#dc2626;margin-top:8px">All cards were destroyed! Dwarf must still face Balazarg unarmed!</div>
+  </div>
+  <button class="phb" style="margin-top:12px">Continue to Combat</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">F3 · Group — multiple heroes each have own roll section</div>
+<div class="mc">
+  <div class="modal-title-bar">General Combat Skill</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Discarded Cards</span></div>
+    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin:8px 0 10px">Discard a card for each 1 rolled.</div>
+    <!-- Hero 1: Dwarf #b45309 -->
+    <div style="background:linear-gradient(135deg,#b45309cc 0%,#b4530999 100%);padding:5px 10px;margin:8px 0 4px;border-radius:5px;border:1px solid rgba(0,0,0,0.3)"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">⛏️ DWARF</span></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin:6px 0;flex-wrap:wrap">
+      <div style="width:50px;height:50px;background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)">1</div><div style="width:50px;height:50px;background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)">3</div>
+    </div>
+    <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">Thorny Woods</span><span style="color:#b91c1c">Lost</span></div>
+    <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">Wolf Pass</span><span style="color:#2c1810">Kept</span></div>
+    <!-- Hero 2: Rogue #b91c1c -->
+    <div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:5px 10px;margin:8px 0 4px;border-radius:5px;border:1px solid rgba(0,0,0,0.3)"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;color:#fff;font-size:0.9em;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.5);letter-spacing:1.5px;">🗡️ ROGUE</span></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin:6px 0;flex-wrap:wrap">
+      <div style="width:50px;height:50px;background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)">4</div><div style="width:50px;height:50px;background:linear-gradient(145deg,#dc2626,#991b1b);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(220,38,38,0.25)">6</div>
+    </div>
+    <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">Orc Valley</span><span style="color:#2c1810">Kept</span></div>
+    <div style="border:1px solid rgba(139,115,85,0.3);background:rgba(139,115,85,0.1);border-radius:5px;padding:5px 10px;font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.78em;display:flex;justify-content:space-between;align-items:center;margin:3px 0"><span style="color:#8b7355">Dark Woods</span><span style="color:#2c1810">Kept</span></div>
+  </div>
+  <button class="phb" style="margin-top:12px">Continue to Combat</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">G. Card Loss Penalty — Acknowledgment (combat-minion.js)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">G1 · Hero has no cards to discard</div>
+<div class="mc">
+  <div class="modal-title-bar">📋 Card Loss Penalty</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Defeated By General</span></div>
+    <div style="margin-top:8px">
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">Rogue has no cards to discard.</div>
+    </div>
+  </div>
+  <button class="phb" style="margin-top:12px">Continue</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">G2 · Penalty is 0 cards</div>
+<div class="mc">
+  <div class="modal-title-bar">📋 Card Loss Penalty</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Defeated By General</span></div>
+    <div style="margin-top:8px">
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">Rogue would lose 0 cards - no penalty!</div>
+    </div>
+  </div>
+  <button class="phb" style="margin-top:12px">Continue</button>
+</div>
+</div>
+
+</div>
+
+<div class="section" style="color:#666;border-color:#444">H. Healed (turn-modals.js: 1271, 1287) — ⚠️ DEPRECATED (dead code — showInfoModal calls are in commented-out code)</div>
+<div class="grid">
+<div class="col">
+<div class="old-tag" style="color:#888;font-style:italic">⚠️ DEPRECATED — Both showInfoModal calls are inside // commented-out blocks. Never executes.</div>
+<div class="mc-old" style="opacity:0.5">
+  <div class="modal-title-bar">❤️ Healed</div>
+  <div>Healed Paladin for 2 wounds!</div>
+  <button class="phb" style="margin-top:12px">Continue</button>
+</div>
+</div>
+</div>
+
+<div class="section" style="color:#666;border-color:#444">I. Teleported (turn-modals.js: 1363) — ⚠️ DEPRECATED (dead code — inside old prompt() flow never reached)</div>
+<div class="grid">
+<div class="col">
+<div class="old-tag" style="color:#888;font-style:italic">⚠️ DEPRECATED — Wizard teleport now uses showWizardTeleport() in combat-general.js. This modal is unreachable.</div>
+<div class="mc-old" style="opacity:0.5">
+  <div class="modal-title-bar">✨ Teleported</div>
+  <div>Teleported to Father Oak Forest!</div>
+  <button class="phb" style="margin-top:12px">Continue</button>
+</div>
+</div>
+</div>
+
+<div class="section">J. Fireball (quest-system.js: wizardFireball)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">J1 · Card picker — no selection (Confirm disabled)</div>
+<div class="mc">
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:4px">🔥 Fireball</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:0.85em;text-align:center;margin-bottom:12px">Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">Select a Card to Discard</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #16a34a;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)">
+        <div style="font-size:1.2em;margin-bottom:2px">🌀</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#16a34a;line-height:1.2">Thorny Woods</div>
+        <div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#16a34a;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+      </div>
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)">
+        <div style="font-size:1.2em;margin-bottom:2px">🌀</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#dc2626;line-height:1.2">Withered Hills</div>
+        <div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#dc2626;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+      </div>
+    </div>
+  </div>
+  <button style="width:100%;padding:11px;border-radius:8px;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:#444;color:#888;border:2px solid #666;opacity:0.4;cursor:not-allowed;margin-top:12px" disabled>Confirm</button>
+  <button style="width:100%;margin-top:6px;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37">Cancel</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">J2 · Card selected (Confirm enabled)</div>
+<div class="mc">
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:1.15em;text-align:center;margin-bottom:4px">🔥 Fireball</div>
+  <div style="font-family:'Cinzel',Georgia,serif;font-weight:700;color:#d4af37;font-size:0.85em;text-align:center;margin-bottom:12px">Discard a card matching any minion color present to incinerate ALL minions at this location. A roll of 2+ defeats each minion, regardless of type!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name">Select a Card to Discard</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #d4af37;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 0 12px rgba(212,175,55,0.5),0 4px 12px rgba(0,0,0,0.4)">
+        <div style="font-size:1.2em;margin-bottom:2px">🌀</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#16a34a;line-height:1.2">Thorny Woods</div>
+        <div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#16a34a;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+      </div>
+      <div style="flex:1 1 90px;max-width:120px;min-width:80px;background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #dc2626;border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3)">
+        <div style="font-size:1.2em;margin-bottom:2px">🌀</div>
+        <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.62em;color:#dc2626;line-height:1.2">Withered Hills</div>
+        <div style="display:flex;justify-content:center;gap:2px;margin-top:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#dc2626;border-radius:3px;font-size:0.65em;border:1.5px solid rgba(0,0,0,0.3)">🎲</span></div>
+      </div>
+    </div>
+  </div>
+  <button class="phb" style="margin-top:12px">Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">J3 · Result — with optional Battle Luck button (shown if card available)</div>
+<div class="mc">
+  <div class="modal-title-bar">🔥 Fireball</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Combat Roll</span></div>
+    <div style="margin:10px 0">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px">Dragon Minions — 2+ to Hit</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px">
+        <div style="width:50px;height:50px;background:linear-gradient(145deg,#3b82f6,#1d4ed8);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold;opacity:0.4">1</div>
+      </div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px">Orc Minions — 2+ to Hit</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px">
+        <div style="width:50px;height:50px;background:linear-gradient(145deg,#16a34a,#15803d);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.5em;font-weight:bold">5</div>
+      </div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#1a0f0a;margin-bottom:6px">Defeated Minions:</div>
+      <div style="background:rgba(22,163,74,0.1);border:1px solid #16a34a;border-radius:5px;padding:5px 10px;margin:4px 0;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#16a34a"><span class="mdot" style="width:14px;height:14px;background:#16a34a;margin-right:3px"></span>Orcs</span>
+        <span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Orc Valley</span>
+      </div>
+    </div>
+  </div>
+  <!-- Battle Luck button (only shown if Battle Luck card in hand) -->
+  <button class="phb" style="margin-top:8px">Battle Luck (Re-Roll 1 Failed Dice)</button>
+  <button class="phb phb-cancel">Continue</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">K. Quest Modals Missing Parchment (quest-system.js)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">K1 · Use Raids? — new design</div>
+<div class="mc">
+  <div class="modal-title-bar">📜 Use Raids?</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Use Quest Card</span></div>
+    <div style="margin-top:8px"><div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3)"><div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center"><span class="hero-banner-name">📜 Raids</span></div><div style="padding:14px"><div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px">Coordinate raids against the enemy. Complete objectives across multiple locations to weaken the darkness.</div><div style="margin-top:8px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">Reward:</span><span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5"> Discard this card to skip ALL Darkness Spreads cards at the end of your current turn.</span></div><div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(22,163,74,0.15);border:1px solid #16a34a;color:#15803d">Completed</span></div></div></div></div>
+    <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f;margin-top:10px">This will skip ALL Darkness Spreads cards at the end of your current turn.</div>
+  </div>
+  <button class="phb" style="margin-top:12px">Confirm</button>
+  <button class="phb phb-cancel">Cancel</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">K2 · Quest Details — new design (title-bar + phb Close)</div>
+<div class="mc">
+  <div class="modal-title-bar">📜 Quest Details</div>
+  <!-- quest card — already uses card-wrap format in code, shown here directly -->
+  <div style="margin-top:8px"><div style="background:linear-gradient(135deg,#f0e6d3 0%,#ddd0b8 50%,#c8bb9f 100%);border:3px solid #8b7355;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 0 0 1px rgba(139,115,85,0.3)"><div style="background:linear-gradient(135deg,#b91c1ccc 0%,#b91c1c99 100%);padding:6px 14px;border-bottom:2px solid #8b7355;text-align:center"><span class="hero-banner-name">📜 Scout the General</span></div><div style="padding:14px"><div class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5;margin-bottom:8px">Spend 1 action at an adjacent location to reveal the general's planned movement path.</div><div style="margin-top:8px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;color:#b91c1c">Reward:</span><span class="modal-desc-text" style="font-size:0.75em;color:#3d2b1f;line-height:1.5"> +1 additional action on your next turn.</span></div><div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.75em;padding:2px 8px;border-radius:4px;background:rgba(202,138,4,0.15);border:1px solid #ca8a04;color:#a16207">In Progress</span></div></div></div></div>
+  <button class="phb" style="margin-top:12px">Close</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">L. Game Over — Lose Conditions (game-status.js: showGameOver)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">L1 · General reaches Monarch City</div>
+<div class="mc">
+  <!-- game-over-content injected here -->
+  <div class="modal-title-bar" style="color:#dc2626">💥 Defeat!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">The Realm Has Fallen</span></div>
+    <div style="text-align:center;margin:12px 0">
+      <div style="font-size:3em;margin-bottom:10px">👹</div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.95em;color:#3d2b1f;margin-bottom:6px">Balazarg has reached Monarch City!</div>
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">The realm has fallen!</div>
+    </div>
+  </div>
+  <!-- shell buttons: phb -->
+  <button class="phb" style="margin-top:12px">Start New Game</button>
+  <button class="phb phb-cancel">Continue Game</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">L2 · 5 minions overrun Monarch City</div>
+<div class="mc">
+  <!-- game-over-content injected here -->
+  <div class="modal-title-bar" style="color:#dc2626">💥 Defeat!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">The Realm Has Fallen</span></div>
+    <div style="text-align:center;margin:12px 0">
+      <div style="font-size:3em;margin-bottom:10px">🏰</div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.95em;color:#3d2b1f;margin-bottom:6px">5 minions have overrun Monarch City!</div>
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">The capital has fallen!</div>
+    </div>
+  </div>
+  <!-- shell buttons: phb -->
+  <button class="phb" style="margin-top:12px">Start New Game</button>
+  <button class="phb phb-cancel">Continue Game</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">L3 · 12 Taint Crystals placed</div>
+<div class="mc">
+  <!-- game-over-content injected here -->
+  <div class="modal-title-bar" style="color:#dc2626">💥 Defeat!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">The Realm Has Fallen</span></div>
+    <div style="text-align:center;margin:12px 0">
+      <div style="font-size:3em;margin-bottom:10px">💎</div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.95em;color:#3d2b1f;margin-bottom:6px">The land is consumed by corruption!</div>
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">All taint crystals have been placed!</div>
+    </div>
+  </div>
+  <!-- shell buttons: phb -->
+  <button class="phb" style="margin-top:12px">Start New Game</button>
+  <button class="phb phb-cancel">Continue Game</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">L4 · Minion color exhausted</div>
+<div class="mc">
+  <!-- game-over-content injected here -->
+  <div class="modal-title-bar" style="color:#dc2626">💥 Defeat!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">The Realm Has Fallen</span></div>
+    <div style="text-align:center;margin:12px 0">
+      <div style="font-size:3em;margin-bottom:10px">🔥</div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.95em;color:#3d2b1f;margin-bottom:6px">No red minions remaining!</div>
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">Balazarg's forces tried to place 2 minions at Fire River but none are left!</div>
+    </div>
+  </div>
+  <!-- shell buttons: phb -->
+  <button class="phb" style="margin-top:12px">Start New Game</button>
+  <button class="phb phb-cancel">Continue Game</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">M. Hero Defeated — Respawn Screen (land-turns.js: heroDefeated)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">M1 · No hero selected (Confirm disabled)</div>
+<div class="mc">
+  <div class="modal-title-bar">☠️ Hero Defeated!</div>
+  <!-- One parchment box: fallen hero summary + hero selection rows -->
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Hero Fallen</span></div>
+    <div style="text-align:center;margin:10px 0 12px">
+      <div style="font-size:2.5em;margin-bottom:6px">🏹</div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#dc2626;margin-bottom:6px">Ranger has fallen!</div>
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f;margin-bottom:2px">Health reduced to 0</div>
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">4 card(s) discarded</div>
+    </div>
+    <!-- Divider then hero selection inside the parchment -->
+    <div style="border-top:1px solid rgba(139,115,85,0.4);padding-top:10px;margin-top:4px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Select a new hero or respawn the same hero:</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🛡️</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Paladin</div></div></div><div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🧙‍♂️</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Wizard</div></div></div><div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🧙‍♀️</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Sorceress</div></div></div><div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🦅</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Eagle Rider</div></div></div><div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🏹</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Ranger</div></div></div>
+      </div>
+    </div>
+  </div>
+  <button class="phb" style="margin-top:12px;opacity:0.5;cursor:not-allowed" disabled>Confirm</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">M2 · Ranger selected (Confirm enabled)</div>
+<div class="mc">
+  <div class="modal-title-bar">☠️ Hero Defeated!</div>
+  <div class="pb">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Hero Fallen</span></div>
+    <div style="text-align:center;margin:10px 0 12px">
+      <div style="font-size:2.5em;margin-bottom:6px">🏹</div>
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#dc2626;margin-bottom:6px">Ranger has fallen!</div>
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f;margin-bottom:2px">Health reduced to 0</div>
+      <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">4 card(s) discarded</div>
+    </div>
+    <div style="border-top:1px solid rgba(139,115,85,0.4);padding-top:10px;margin-top:4px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Select a new hero or respawn the same hero:</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🛡️</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Paladin</div></div></div><div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🧙‍♂️</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Wizard</div></div></div><div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🧙‍♀️</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Sorceress</div></div></div><div class="hero-row" style="cursor:pointer;"><div style="font-size:1.3em">🦅</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Eagle Rider</div></div></div><div class="hero-row" style="cursor:pointer;border:2px solid #d4af37;background:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.35)"><div style="font-size:1.3em">🏹</div><div style="flex:1"><div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#3d2b1f">Ranger</div></div></div>
+      </div>
+    </div>
+  </div>
+  <button class="phb" style="margin-top:12px">Confirm</button>
+</div>
+</div>
+
+</div>
+
+<div class="section">N. Turn Undead — Picker (hero-abilities.js: _turnUndeadShowPicker)</div>
+<div class="grid">
+
+<div class="col">
+<div class="tag">N1 · 1 undead — unchecked (Confirm disabled)</div>
+<div class="mc">
+  <div class="modal-title-bar">✝️ Turn Undead</div>
+  <div class="pb" style="margin-top:8px">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Move to Location</span></div>
+    <div style="margin-top:10px;margin-bottom:10px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Move Undead:</div>
+      <div style="text-align:center;margin-bottom:10px"><div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;background:linear-gradient(145deg,#374151,#1f2937);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25)">0</div></div>
+      <div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.1);border:1px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span></div>
+    </div>
+    <div class="card-wrap" style="border-color:#1e3a7a"><div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:linear-gradient(135deg,#1e3a7acc 0%,#1e3a7a99 100%)"><span class="hero-banner-name">✝️ Turn Undead</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div><div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move all Undead minions at your location to any adjacent location(s).</span></div></div></div>
+  </div>
+  <button style="width:100%;padding:11px;border-radius:8px;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:#444;color:#888;border:2px solid #666;opacity:0.4;cursor:not-allowed;margin-top:12px" disabled>Confirm</button>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Back</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">N1b · 1 undead — checked (Confirm enabled)</div>
+<div class="mc">
+  <div class="modal-title-bar">✝️ Turn Undead</div>
+  <div class="pb" style="margin-top:8px">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Move to Location</span></div>
+    <div style="margin-top:10px;margin-bottom:10px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Move Undead:</div>
+      <div style="text-align:center;margin-bottom:10px"><div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;background:linear-gradient(145deg,#374151,#1f2937);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25)">1</div></div>
+      <div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.2);border:2px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Dark Woods</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:#374151;font-size:0.85em;font-weight:900;color:#fff">✓</span></div>
+    </div>
+    <div class="card-wrap" style="border-color:#1e3a7a"><div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:linear-gradient(135deg,#1e3a7acc 0%,#1e3a7a99 100%)"><span class="hero-banner-name">✝️ Turn Undead</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div><div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move all Undead minions at your location to any adjacent location(s).</span></div></div></div>
+  </div>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:12px">Confirm</button>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Back</button>
+</div>
+</div>
+
+<div class="col">
+<div class="tag">N2 · 3 undead — 2 checked</div>
+<div class="mc">
+  <div class="modal-title-bar">✝️ Turn Undead</div>
+  <div class="pb" style="margin-top:8px">
+    <div class="pbn"><span class="hero-banner-name" style="font-size:0.9em">Move to Location</span></div>
+    <div style="margin-top:10px;margin-bottom:10px">
+      <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.82em;color:#3d2b1f;margin-bottom:8px">Move Undead:</div>
+      <div style="text-align:center;margin-bottom:10px"><div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;background:linear-gradient(145deg,#374151,#1f2937);color:#fff;border:2px solid rgba(0,0,0,0.3);border-radius:8px;font-size:1.5em;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.4),0 0 8px rgba(55,65,81,0.25)">2</div></div>
+      <div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.2);border:2px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Wolf Pass</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:#374151;font-size:0.85em;font-weight:900;color:#fff">✓</span></div><div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.2);border:2px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Wolf Pass</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:#374151;font-size:0.85em;font-weight:900;color:#fff">✓</span></div><div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="flex:1;background:rgba(55,65,81,0.1);border:1px solid #374151;border-radius:5px;padding:5px 10px;cursor:pointer;transition:all 0.15s"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.9em;color:#374151"><span class="mdot" style="width:14px;height:14px;background:#374151;margin-right:3px"></span>Undead</span><span style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.85em;color:#2c1810">→ Wolf Pass</span></div></div><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #374151;border-radius:3px;flex-shrink:0;background:transparent;font-size:0.85em;font-weight:900;color:#fff"></span></div>
+    </div>
+    <div class="card-wrap" style="border-color:#1e3a7a"><div class="card-banner" style="display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:linear-gradient(135deg,#1e3a7acc 0%,#1e3a7a99 100%)"><span class="hero-banner-name">✝️ Turn Undead</span><span class="hero-banner-name" style="font-size:0.8em">✝️ Cleric</span></div><div class="card-body"><div style="font-size:0.8em;color:#3d2b1f;line-height:1.5"><strong style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:1em;color:#1a0f0a">Ability:</strong> <span class="modal-desc-text">Move all Undead minions at your location to any adjacent location(s).</span></div></div></div>
+  </div>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:12px">Confirm</button>
+  <button style="width:100%;padding:11px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:0.95em;letter-spacing:0.5px;font-family:'Cinzel',Georgia,serif;background:linear-gradient(135deg,#d4af37,#b8960c);color:#1a0f0a;border:2px solid #d4af37;margin-top:6px">Back</button>
+</div>
+</div>
+
+</div>
+
+<div style="height:60px"></div>
+</body></html>

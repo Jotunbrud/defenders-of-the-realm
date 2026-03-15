@@ -864,14 +864,9 @@ Object.assign(game, {
     },
     
     _buildBattleLuckHTML(blCard, failedCount) {
+        // v2: no parchment box — just the phb button (was parchment with buttons inside, then outside)
         return `
-            <div class="parchment-box" style="margin-top:10px;">
-                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">🍀 Battle Luck — Re-roll Available</span></div>
-                <p style="font-family:'Comic Sans MS',cursive; font-size:0.9em; color:#3d2b1f; margin:8px 0 4px 0;">Re-roll ${failedCount} failed dice. Card from ${blCard.hero.symbol} ${blCard.hero.name}'s hand will be discarded.</p>
-                <p style="font-family:'Comic Sans MS',cursive; font-size:0.85em; color:#6b5a3e; margin-bottom:8px;">This cannot be undone.</p>
-                <button class="phb" onclick="game.useBattleLuck()">Battle Luck (Re-Roll All Failed Dice)</button>
-                <button class="phb" onclick="game.declineBattleLuck()">Continue</button>
-            </div>
+            <button class="phb" style="margin-top:8px" onclick="game.useBattleLuck()">Battle Luck (Re-Roll ${failedCount} Failed Dice)</button>
         `;
     },
     
@@ -2134,7 +2129,9 @@ Object.assign(game, {
                 </div>`;
             }).join('');
 
-            const cardsDieVal = baseCards === 'all' ? '★' : baseCards;
+            // v1: const cardsDieVal = baseCards === 'all' ? '★' : baseCards;
+            // v2: 'ALL' is clearer than a star for players reading the penalty die
+            const cardsDieVal = baseCards === 'all' ? '<span style="font-size:0.55em;letter-spacing:-0.5px">ALL</span>' : baseCards;
             const cardsDesc = baseCards === 'all' ? 'All cards lost' : `${baseCards} card${baseCards !== 1 ? 's' : ''} lost`;
 
             let summaryHTML = this._parchmentBoxOpen('Hero Defeated Penalty');

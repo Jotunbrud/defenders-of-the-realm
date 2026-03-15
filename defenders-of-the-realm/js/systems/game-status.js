@@ -28,18 +28,16 @@ Object.assign(game, {
         this._currentLoseConditionKey = conditionKey || 'unknown';
         this._currentLoseConditionTitle = defeatDesc || title;
         const content = document.getElementById('game-over-content');
+        // v2: parchment design
         content.innerHTML = `
-            <div style="font-size: 80px; margin: 20px 0;">
-                ${icon}
-            </div>
-            <h1 style="color: #dc2626; font-size: 2.5em; margin: 20px 0;">
-                💀 DEFEAT 💀
-            </h1>
-            <div style="font-size: 1.5em; color: #ffd700; margin: 15px 0;">
-                ${title}
-            </div>
-            <div style="font-size: 1.2em; color: #d4af37; margin: 10px 0;">
-                ${subtitle}
+            <div class="modal-title-bar" style="color:#dc2626;margin-bottom:8px">💥 Defeat!</div>
+            <div class="parchment-box">
+                <div class="parchment-banner"><span class="hero-banner-name" style="font-size:0.9em">The Realm Has Fallen</span></div>
+                <div style="text-align:center;margin:12px 0">
+                    <div style="font-size:3em;margin-bottom:10px">${icon}</div>
+                    <div style="font-family:'Cinzel',Georgia,serif;font-weight:900;font-size:0.95em;color:#3d2b1f;margin-bottom:6px">${title}</div>
+                    <div class="modal-desc-text" style="font-size:0.82em;color:#3d2b1f">${subtitle}</div>
+                </div>
             </div>
         `;
         document.getElementById('game-over-modal').classList.add('active');
@@ -171,7 +169,7 @@ Object.assign(game, {
                         this.showGameOver(
                             `No ${color} minions remaining!`, 
                             `${info.generalName}'s forces tried to place ${info.count} minion${info.count > 1 ? 's' : ''} at ${info.location} but none are left!`, 
-                            generalSymbol, key, 
+                            '🔥', key, // v2: flame icon for minion exhaustion
                             `No additional ${info.generalName} minions can be added to the board`
                         );
                         this.addLog(`=== DEFEAT! ${color.toUpperCase()} MINIONS EXHAUSTED! ===`);
